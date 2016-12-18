@@ -1,10 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TouchScript;
 
 public class TouchControls : MonoBehaviour {
     ParkerMove _moveScript;
+    int touchControlLayer;
+    int? leftBtnTouchId = null;
+    int? rightBtnTouchId = null;
+
     ParkerMove moveScript {
         get {
             if (_moveScript == null) {
@@ -16,39 +19,35 @@ public class TouchControls : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        //
+        touchControlLayer = LayerMask.NameToLayer("Touch Controls");
+        print("init");
     }
 
     // Update is called once per frame
     void Update () {
         //
-    }
-
-    /// <returns>Name of first touched object, or empty string.</returns>
-    string GetTouchObjectName(TouchEventArgs args) {
-        var rb = args.Touches[0].Hit.RaycastHit2D.rigidbody;
-        if (rb == null) {
-            return "";
-        }
-        return rb.gameObject.name;
-    }
-    void OnEnable() {
-        TouchManager.Instance.TouchesBegan += (sender, args) => {
-            var name = GetTouchObjectName(args);
-            if (name == "left-button") {
-                moveScript.LeftBtnDown();
-            } else if (name == "right-button") {
-                moveScript.RightBtnDown();
+        if (Input.touchCount == 0) return;
+        var touch = Input.GetTouch(0);
+        if (touch.phase == TouchPhase.Began) {
+            var ray = Camera.main.ScreenToWorldPoint(touch.position);
+            var hit = Physics2D.Raycast(ray, Vector2.zero, Mathf.Infinity, touchControlLayer);
+            if (hit) {
+                if (hit.rigidbody.gameObject.name == "left-button") {
+                    leftBtnTouchId = touch.fingerId;
+                    moveScript.LeftBtnDown();
+                } else if (hit.rigidbody.gameObject.name == "right-button") {
+                    rightBtnTouchId = touch.fingerId;
+                    moveScript.RightBtnDown();
+                }
             }
-
-        };
-        TouchManager.Instance.TouchesEnded += (sender, args) => {
-            var name = GetTouchObjectName(args);
-            if (name == "left-button") {
+        } else if (touch.phase == TouchPhase.Ended) {
+            if (touch.fingerId == leftBtnTouchId) {
+                leftBtnTouchId = null;
                 moveScript.LeftBtnUp();
-            } else if (name == "right-button") {
+            } else if (touch.fingerId == rightBtnTouchId) {
+                rightBtnTouchId = null;
                 moveScript.RightBtnUp();
             }
-        };
+        }
     }
 }
