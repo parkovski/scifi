@@ -6,6 +6,8 @@ public class ParkerMove : NetworkBehaviour {
     bool movingLeft = false;
     bool movingRight = false;
     bool shouldJump = false;
+    bool canJump = false;
+    int groundCollisions = 0;
     int touchControlLayer;
     int? leftBtnFingerId = null;
     int? rightBtnFingerId = null;
@@ -14,6 +16,30 @@ public class ParkerMove : NetworkBehaviour {
     void Start () {
         rb = GetComponent<Rigidbody2D>();
         touchControlLayer = LayerMask.NameToLayer("Touch Controls");
+
+        if (!Input.touchSupported) {
+            Destroy(GameObject.Find("left-button"));
+            Destroy(GameObject.Find("right-button"));
+        }
+    }
+
+    public override void OnStartLocalPlayer() {
+        GetComponent<SpriteRenderer>().color = new Color(.8f, .9f, 1f, .8f);
+    }
+
+    void OnCollisionEnter2D(Collision2D collision) {
+        if (collision.gameObject.tag == "Ground") {
+            ++groundCollisions;
+            canJump = true;
+        }
+    }
+
+    void OnCollisionExit2D(Collision2D collision) {
+        if (collision.gameObject.tag == "Ground") {
+            if (--groundCollisions == 0) {
+                canJump = false;
+            }
+        }
     }
 
     // Update is called once per frame
@@ -30,9 +56,9 @@ public class ParkerMove : NetworkBehaviour {
         if (movingRight || (rightBtnFingerId != null)) {
             rb.AddForce(transform.right * 10f);
         }
-        if (shouldJump) {
-            rb.AddForce(transform.up * 8f, ForceMode2D.Impulse);
-            shouldJump = false;
+        if (shouldJump && canJump) {
+            rb.AddForce(transform.up * 5f, ForceMode2D.Impulse);
+            canJump = shouldJump = false;
         }
     }
 
@@ -49,11 +75,10 @@ public class ParkerMove : NetworkBehaviour {
             movingLeft = movingRight = false;
         }
 
-        if (verticalAxis != 0) {
-            // TODO: Check for collision with floor instead.
-            if (rb.velocity.y == 0f) {
-                shouldJump = true;
-            }
+        if (verticalAxis > 0) {
+            shouldJump = true;
+        } else {
+            shouldJump = false;
         }
 
         if (Input.touchCount > 0) {
