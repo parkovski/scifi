@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.Networking;
 
-public class ParkerMove : MonoBehaviour {
+public class ParkerMove : NetworkBehaviour {
     Rigidbody2D rb;
     bool movingLeft = false;
     bool movingRight = false;
@@ -18,6 +18,10 @@ public class ParkerMove : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
+        if (!isLocalPlayer) {
+            return;
+        }
+
         HandleInput();
 
         if (movingLeft || (leftBtnFingerId != null)) {
