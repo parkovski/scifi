@@ -31,7 +31,7 @@ public class ParkerMove : NetworkBehaviour, IPlayer {
     }
 
     public override void OnStartLocalPlayer() {
-        GetComponent<SpriteRenderer>().color = new Color(.8f, .9f, 1f, .8f);
+        //GetComponent<SpriteRenderer>().color = new Color(.8f, .9f, 1f, .8f);
     }
 
     void OnCollisionEnter2D(Collision2D collision) {
