@@ -55,7 +55,9 @@ public class ParkerMove : NetworkBehaviour {
         }
 
         HandleInput();
+    }
 
+    void FixedUpdate() {
         if (movingLeft || (leftBtnFingerId != null)) {
             rb.AddForce(transform.right * -10f);
         }
@@ -72,7 +74,7 @@ public class ParkerMove : NetworkBehaviour {
             if (Time.time > cooldownOver) {
                 cooldownOver = Time.time + 0.5f;
 
-                var newApple = (GameObject)Instantiate(apple, gameObject.transform.position, Quaternion.identity);
+                var newApple = Instantiate(apple, gameObject.transform.position, Quaternion.identity);
                 var appleRb = newApple.GetComponent<Rigidbody2D>();
                 appleRb.AddForce(transform.right * 5f);
                 appleRb.AddForce(transform.up * 2f);
