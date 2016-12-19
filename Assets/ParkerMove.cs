@@ -15,7 +15,6 @@ public class ParkerMove : NetworkBehaviour {
     bool shouldShoot = false;
     GameObject apple;
 
-    // Use this for initialization
     void Start () {
         rb = GetComponent<Rigidbody2D>();
         touchControlLayer = LayerMask.NameToLayer("Touch Controls");
@@ -48,16 +47,16 @@ public class ParkerMove : NetworkBehaviour {
         }
     }
 
-    // Update is called once per frame
     void Update () {
+    }
+
+    void FixedUpdate() {
         if (!isLocalPlayer) {
             return;
         }
 
         HandleInput();
-    }
 
-    void FixedUpdate() {
         if (movingLeft || (leftBtnFingerId != null)) {
             rb.AddForce(transform.right * -10f);
         }
