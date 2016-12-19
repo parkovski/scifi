@@ -11,6 +11,9 @@ public class ParkerMove : NetworkBehaviour {
     int touchControlLayer;
     int? leftBtnFingerId = null;
     int? rightBtnFingerId = null;
+    float cooldownOver = 0f;
+    bool shouldShoot = false;
+    GameObject apple;
 
     // Use this for initialization
     void Start () {
@@ -20,7 +23,10 @@ public class ParkerMove : NetworkBehaviour {
         if (!Input.touchSupported) {
             Destroy(GameObject.Find("left-button"));
             Destroy(GameObject.Find("right-button"));
+            Destroy(GameObject.Find("fire-button"));
         }
+
+        apple = Resources.Load<GameObject>("Apple");
     }
 
     public override void OnStartLocalPlayer() {
@@ -60,6 +66,18 @@ public class ParkerMove : NetworkBehaviour {
             rb.AddForce(transform.up * 5f, ForceMode2D.Impulse);
             canJump = shouldJump = false;
         }
+
+        if (shouldShoot) {
+            shouldShoot = false;
+            if (Time.time > cooldownOver) {
+                cooldownOver = Time.time + 0.5f;
+
+                var newApple = (GameObject)Instantiate(apple, gameObject.transform.position, Quaternion.identity);
+                var appleRb = newApple.GetComponent<Rigidbody2D>();
+                appleRb.AddForce(transform.right * 5f);
+                appleRb.AddForce(transform.up * 2f);
+            }
+        }
     }
 
     void HandleInput() {
@@ -81,16 +99,23 @@ public class ParkerMove : NetworkBehaviour {
             shouldJump = false;
         }
 
+        if (Input.GetButton("Fire1")) {
+            shouldShoot = true;
+        }
+
         if (Input.touchCount > 0) {
             foreach (var touch in Input.touches) {
                 if (touch.phase == TouchPhase.Began) {
                     var ray = Camera.main.ScreenToWorldPoint(touch.position);
                     var hit = Physics2D.Raycast(ray, Vector2.zero, Mathf.Infinity, 1 << touchControlLayer);
                     if (hit) {
-                        if (hit.rigidbody.gameObject.name == "left-button") {
+                        var name = hit.rigidbody.gameObject.name;
+                        if (name == "left-button") {
                             leftBtnFingerId = touch.fingerId;
-                        } else if (hit.rigidbody.gameObject.name == "right-button") {
+                        } else if (name == "right-button") {
                             rightBtnFingerId = touch.fingerId;
+                        } else if (name == "fire-button") {
+                            shouldShoot = true;
                         }
                     }
                 } else if (touch.phase == TouchPhase.Ended) {
