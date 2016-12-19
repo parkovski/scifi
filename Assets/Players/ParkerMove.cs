@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
 
-public class ParkerMove : NetworkBehaviour {
+public class ParkerMove : NetworkBehaviour, IPlayer {
     Rigidbody2D rb;
+    Collider2D[] colliders;
     bool movingLeft = false;
     bool movingRight = false;
     bool shouldJump = false;
@@ -13,11 +14,12 @@ public class ParkerMove : NetworkBehaviour {
     int? rightBtnFingerId = null;
     float cooldownOver = 0f;
     bool shouldShoot = false;
-    GameObject apple;
+    public GameObject apple;
 
     // Use this for initialization
     void Start () {
         rb = GetComponent<Rigidbody2D>();
+        colliders = GetComponents<Collider2D>();
         touchControlLayer = LayerMask.NameToLayer("Touch Controls");
 
         if (!Input.touchSupported) {
@@ -26,7 +28,7 @@ public class ParkerMove : NetworkBehaviour {
             Destroy(GameObject.Find("fire-button"));
         }
 
-        apple = Resources.Load<GameObject>("Apple");
+        GetComponent<PlayerProxy>().PlayerDelegate = this;
     }
 
     public override void OnStartLocalPlayer() {
@@ -75,6 +77,13 @@ public class ParkerMove : NetworkBehaviour {
                 cooldownOver = Time.time + 0.5f;
 
                 var newApple = Instantiate(apple, gameObject.transform.position, Quaternion.identity);
+                // Don't let the apple damage its creator
+                var appleColliders = newApple.GetComponents<Collider2D>();
+                foreach (var coll in colliders) {
+                    foreach (var appleColl in appleColliders) {
+                        Physics2D.IgnoreCollision(coll, appleColl);
+                    }
+                }
                 var appleRb = newApple.GetComponent<Rigidbody2D>();
                 appleRb.AddForce(transform.right * 5f);
                 appleRb.AddForce(transform.up * 2f);
@@ -129,5 +138,9 @@ public class ParkerMove : NetworkBehaviour {
                 }
             }
         }
+    }
+
+    public void TakeDamage(int amount) {
+        print(string.Format("taking {0} damage", amount));
     }
 }
