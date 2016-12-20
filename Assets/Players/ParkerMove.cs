@@ -20,6 +20,8 @@ public class ParkerMove : NetworkBehaviour, IPlayer {
         rb = GetComponent<Rigidbody2D>();
         colliders = GetComponents<Collider2D>();
         touchControlLayer = LayerMask.NameToLayer("Touch Controls");
+        // TODO: Remove when objects are instantiated via GameController
+        this.GameController = GameObject.Find("GameController").GetComponent<GameController>();
 
         if (!Input.touchSupported) {
             Destroy(GameObject.Find("left-button"));
@@ -139,7 +141,13 @@ public class ParkerMove : NetworkBehaviour, IPlayer {
         }
     }
 
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int Lives { get; set; }
+    public int Damage { get; set; }
+    public GameController GameController { get; set; }
     public void TakeDamage(int amount) {
-        print(string.Format("taking {0} damage", amount));
+        this.Damage += amount;
+        this.GameController.TakeDamage(this, amount);
     }
 }
