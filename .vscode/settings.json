@@ -1,4 +1,6 @@
 {
+	"editor.tabSize": 4,
+	"editor.insertSpaces": true,
 	"files.exclude":
 	{
 		"**/.DS_Store":true,
@@ -51,7 +53,8 @@
 		"library/":true,
 		"obj/":true,
 		"Obj/":true,
-		"ProjectSettings/":true,		"temp/":true,
+		"ProjectSettings/":true,
+		"temp/":true,
 		"Temp/":true
 	}
 }
