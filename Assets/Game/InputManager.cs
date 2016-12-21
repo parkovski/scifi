@@ -274,11 +274,25 @@ public class InputManager : MonoBehaviour {
 
         foreach (var touch in Input.touches) {
             if (touch.phase == TouchPhase.Began) {
-                var control = GetTouchControl(GetControlAtTouch(touch));
+                var controlName = GetControlAtTouch(touch);
+                if (controlName == null) {
+                    continue;
+                }
+                var control = GetTouchControl(controlName);
+                if (control == -1) {
+                    continue;
+                }
                 BeginTouch(control);
                 activeTouches.Add(touch.fingerId, control);
             } else if (touch.phase == TouchPhase.Moved) {
-                var newControl = GetTouchControl(GetControlAtTouch(touch));
+                var newControlName = GetControlAtTouch(touch);
+                if (newControlName == null) {
+                    continue;
+                }
+                var newControl = GetTouchControl(newControlName);
+                if (newControl == -1) {
+                    continue;
+                }
                 var currentControl = activeTouches[touch.fingerId];
                 var combo = GetTouchCombo(activeTouches[touch.fingerId], newControl);
                 if (combo != -1) {
