@@ -13,7 +13,7 @@ using System.Collections.Generic;
 // Since we support both touch and traditional input,
 // we store each in a separate flag. If one is set when the other is released,
 // we should not reset this button.
-public class ButtonState {
+struct ButtonState {
     public bool isPressed;
     public bool isTouched;
     public bool isInvalidated;
@@ -30,14 +30,14 @@ public static class Control {
     public const int ArrayLength = 5;
 }
 
-public class InputState {
+class InputState {
     public ButtonState[] states;
 
     public InputState() {
         states = new ButtonState[Control.ArrayLength];
         for (var i = 0; i < states.Length; i++) {
             states[i] = new ButtonState();
-            Reset(i);
+            ForceReset(i);
         }
     }
 
@@ -157,6 +157,7 @@ public delegate void ControlCanceledHandler(object sender, ControlCanceledEventA
 public class InputManager : MonoBehaviour {
     int touchControlLayerId;
     InputState state = new InputState();
+    // Maps from finger ID to Control.
     Dictionary<int, int> activeTouches;
 
     public bool IsControlActive(int control) {

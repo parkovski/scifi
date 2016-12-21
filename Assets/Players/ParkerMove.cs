@@ -1,29 +1,24 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
+using Random = UnityEngine.Random;
 
 public class ParkerMove : NetworkBehaviour, IPlayer {
     Rigidbody2D rb;
     Collider2D[] colliders;
-    bool movingLeft = false;
-    bool movingRight = false;
-    bool shouldJump = false;
     bool canJump = false;
     int groundCollisions = 0;
-    int touchControlLayer;
-    int? leftBtnFingerId = null;
-    int? rightBtnFingerId = null;
     float cooldownOver = 0f;
-    bool shouldShoot = false;
     public GameObject apple;
+    InputManager inputManager;
 
     static int playerNumber = 0;
     void Start () {
         rb = GetComponent<Rigidbody2D>();
         colliders = GetComponents<Collider2D>();
-        touchControlLayer = LayerMask.NameToLayer("Touch Controls");
         // TODO: Remove when objects are instantiated via GameController
         this.GameController = GameObject.Find("GameController").GetComponent<GameController>();
         this.Id = ++playerNumber;
+        inputManager = GameObject.Find("GameController").GetComponent<InputManager>();
 
         if (!Input.touchSupported) {
             Destroy(GameObject.Find("left-button"));
@@ -61,22 +56,20 @@ public class ParkerMove : NetworkBehaviour, IPlayer {
             return;
         }
 
-        HandleInput();
-
-        if (movingLeft || (leftBtnFingerId != null)) {
+        if (inputManager.IsControlActive(Control.Left)) {
             rb.AddForce(transform.right * -10f);
         }
-        if (movingRight || (rightBtnFingerId != null)) {
+        if (inputManager.IsControlActive(Control.Right)) {
             rb.AddForce(transform.right * 10f);
         }
-        if (canJump && shouldJump) {
-            shouldJump = false;
+        if (canJump && inputManager.IsControlActive(Control.Up)) {
+            inputManager.InvalidateControl(Control.Up);
             canJump = false;
             rb.AddForce(transform.up * 6f, ForceMode2D.Impulse);
         }
 
-        if (shouldShoot) {
-            shouldShoot = false;
+        if (inputManager.IsControlActive(Control.Attack)) {
+            inputManager.InvalidateControl(Control.Attack);
             if (Time.time > cooldownOver) {
                 cooldownOver = Time.time + 0.5f;
 
@@ -91,56 +84,7 @@ public class ParkerMove : NetworkBehaviour, IPlayer {
                 var appleRb = newApple.GetComponent<Rigidbody2D>();
                 appleRb.AddForce(transform.right * 5f);
                 appleRb.AddForce(transform.up * 2f);
-                appleRb.AddTorque(-.1f);
-            }
-        }
-    }
-
-    void HandleInput() {
-        var horizontalAxis = Input.GetAxis("Horizontal");
-        var verticalAxis = Input.GetAxis("Vertical");
-        if (horizontalAxis < 0) {
-            movingLeft = true;
-            movingRight = false;
-        } else if (horizontalAxis > 0) {
-            movingLeft = false;
-            movingRight = true;
-        } else {
-            movingLeft = movingRight = false;
-        }
-
-        if (verticalAxis > 0) {
-            shouldJump = true;
-        } else {
-            shouldJump = false;
-        }
-
-        if (Input.GetButton("Fire1")) {
-            shouldShoot = true;
-        }
-
-        if (Input.touchCount > 0) {
-            foreach (var touch in Input.touches) {
-                if (touch.phase == TouchPhase.Began) {
-                    var ray = Camera.main.ScreenToWorldPoint(touch.position);
-                    var hit = Physics2D.Raycast(ray, Vector2.zero, Mathf.Infinity, 1 << touchControlLayer);
-                    if (hit) {
-                        var name = hit.rigidbody.gameObject.name;
-                        if (name == "left-button") {
-                            leftBtnFingerId = touch.fingerId;
-                        } else if (name == "right-button") {
-                            rightBtnFingerId = touch.fingerId;
-                        } else if (name == "fire-button") {
-                            shouldShoot = true;
-                        }
-                    }
-                } else if (touch.phase == TouchPhase.Ended) {
-                    if (touch.fingerId == leftBtnFingerId) {
-                        leftBtnFingerId = null;
-                    } else if (touch.fingerId == rightBtnFingerId) {
-                        rightBtnFingerId = null;
-                    }
-                }
+                appleRb.AddTorque(Random.Range(-.2f, .2f));
             }
         }
     }
