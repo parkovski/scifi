@@ -12,6 +12,7 @@ public class AppleBehavior : MonoBehaviour {
         if (collision.gameObject.tag == "Player") {
             collision.gameObject.GetComponent<PlayerProxy>().TakeDamage(5);
             var exploding = Instantiate(explodingApple, gameObject.transform.position, Quaternion.identity);
+            exploding.transform.rotation = gameObject.transform.rotation;
             Destroy(gameObject);
             exploding.GetComponent<Animator>().Play("AppleExplode");
         }

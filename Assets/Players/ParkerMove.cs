@@ -91,6 +91,7 @@ public class ParkerMove : NetworkBehaviour, IPlayer {
                 var appleRb = newApple.GetComponent<Rigidbody2D>();
                 appleRb.AddForce(transform.right * 5f);
                 appleRb.AddForce(transform.up * 2f);
+                appleRb.AddTorque(-.1f);
             }
         }
     }

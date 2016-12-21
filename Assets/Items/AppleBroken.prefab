@@ -35,7 +35,8 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4137374294134792}
-  - component: {fileID: 111234214349290416}
+  - component: {fileID: 95679349818421480}
+  - component: {fileID: 114780625846021030}
   m_Layer: 0
   m_Name: AppleBroken
   m_TagString: Untagged
@@ -115,7 +116,7 @@ Transform:
   m_GameObject: {fileID: 1067510251126116}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_Children:
   - {fileID: 4800934216133980}
   - {fileID: 4356818144925676}
@@ -190,20 +191,34 @@ Transform:
   m_Father: {fileID: 4137374294134792}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 6.9750004}
---- !u!111 &111234214349290416
-Animation:
+--- !u!95 &95679349818421480
+Animator:
+  serializedVersion: 3
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1067510251126116}
   m_Enabled: 1
-  serializedVersion: 3
-  m_Animation: {fileID: 7400000, guid: 2dee04555879041498a4891c41a6b10b, type: 2}
-  m_Animations: []
-  m_WrapMode: 0
-  m_PlayAutomatically: 1
-  m_AnimatePhysics: 0
-  m_CullingType: 0
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: c6ca6df0df902439cb32ccbb0494c51a, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+--- !u!114 &114780625846021030
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1067510251126116}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdded732313fb8b4b8d54b5f7fb8f141, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!212 &212135074394511216
 SpriteRenderer:
   m_ObjectHideFlags: 1

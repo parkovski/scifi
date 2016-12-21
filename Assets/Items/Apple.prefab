@@ -90,7 +90,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   explodingApple: {fileID: 1067510251126116, guid: 7d6a37a4da9154edc9a116afb28f4920,
     type: 2}
-  explodeAnimation: {fileID: 0}
+  explodeAnimation: {fileID: 7400000, guid: 2dee04555879041498a4891c41a6b10b, type: 2}
 --- !u!212 &212658536644460594
 SpriteRenderer:
   m_ObjectHideFlags: 1
