@@ -16,12 +16,14 @@ public class ParkerMove : NetworkBehaviour, IPlayer {
     bool shouldShoot = false;
     public GameObject apple;
 
+    static int playerNumber = 0;
     void Start () {
         rb = GetComponent<Rigidbody2D>();
         colliders = GetComponents<Collider2D>();
         touchControlLayer = LayerMask.NameToLayer("Touch Controls");
         // TODO: Remove when objects are instantiated via GameController
         this.GameController = GameObject.Find("GameController").GetComponent<GameController>();
+        this.Id = ++playerNumber;
 
         if (!Input.touchSupported) {
             Destroy(GameObject.Find("left-button"));
@@ -67,9 +69,10 @@ public class ParkerMove : NetworkBehaviour, IPlayer {
         if (movingRight || (rightBtnFingerId != null)) {
             rb.AddForce(transform.right * 10f);
         }
-        if (shouldJump && canJump) {
-            rb.AddForce(transform.up * 5f, ForceMode2D.Impulse);
-            canJump = shouldJump = false;
+        if (canJump && shouldJump) {
+            shouldJump = false;
+            canJump = false;
+            rb.AddForce(transform.up * 6f, ForceMode2D.Impulse);
         }
 
         if (shouldShoot) {

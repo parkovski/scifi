@@ -20,6 +20,6 @@ public class DamageCounter : MonoBehaviour {
     }
 
     void UpdateInfo(int id, int lives, int damage) {
-        text.text = string.Format("P{0}x{1} D: {2}", id+1, lives, damage);
+        text.text = string.Format("P{0}x{1} D: {2}", id, lives, damage);
     }
 }

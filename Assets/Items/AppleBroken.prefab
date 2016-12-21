@@ -35,6 +35,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4137374294134792}
+  - component: {fileID: 111234214349290416}
   m_Layer: 0
   m_Name: AppleBroken
   m_TagString: Untagged
@@ -189,6 +190,20 @@ Transform:
   m_Father: {fileID: 4137374294134792}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 6.9750004}
+--- !u!111 &111234214349290416
+Animation:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1067510251126116}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Animation: {fileID: 7400000, guid: 2dee04555879041498a4891c41a6b10b, type: 2}
+  m_Animations: []
+  m_WrapMode: 0
+  m_PlayAutomatically: 1
+  m_AnimatePhysics: 0
+  m_CullingType: 0
 --- !u!212 &212135074394511216
 SpriteRenderer:
   m_ObjectHideFlags: 1
