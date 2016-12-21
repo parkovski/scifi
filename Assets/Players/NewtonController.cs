@@ -6,19 +6,35 @@ public class NewtonController : NetworkBehaviour, IPlayer {
     Rigidbody2D rb;
     Collider2D[] colliders;
     bool canJump = false;
+    bool canDoubleJump = false;
     int groundCollisions = 0;
     float cooldownOver = 0f;
     public GameObject apple;
     InputManager inputManager;
+    DebugPrinter debug;
+    int debugVelocityField;
+
+    // Physics parameters
+    const float maxSpeed = 6.5f;
+    const float walkForce = 1500f;
+    const float jumpForce = 600f;
+    const float appleHorizontalForce = 50f;
+    const float appleVerticalForce = 20f;
+    // Torque is random from (-appleTorqueRange, appleTorqueRange).
+    const float appleTorqueRange = 5f;
+    const float attackCooldown = .5f;
 
     static int playerNumber = 0;
     void Start () {
         rb = GetComponent<Rigidbody2D>();
         colliders = GetComponents<Collider2D>();
+        var gameControllerGo = GameObject.Find("GameController");
         // TODO: Remove when objects are instantiated via GameController
-        this.GameController = GameObject.Find("GameController").GetComponent<GameController>();
+        this.GameController = gameControllerGo.GetComponent<GameController>();
         this.Id = ++playerNumber;
-        inputManager = GameObject.Find("GameController").GetComponent<InputManager>();
+        inputManager = gameControllerGo.GetComponent<InputManager>();
+        debug = gameControllerGo.GetComponent<DebugPrinter>();
+        debugVelocityField = debug.NewField();
 
         if (!Input.touchSupported) {
             Destroy(GameObject.Find("left-button"));
@@ -37,6 +53,7 @@ public class NewtonController : NetworkBehaviour, IPlayer {
         if (collision.gameObject.tag == "Ground") {
             ++groundCollisions;
             canJump = true;
+            canDoubleJump = false;
         }
     }
 
@@ -44,6 +61,7 @@ public class NewtonController : NetworkBehaviour, IPlayer {
         if (collision.gameObject.tag == "Ground") {
             if (--groundCollisions == 0) {
                 canJump = false;
+                canDoubleJump = true;
             }
         }
     }
@@ -57,21 +75,36 @@ public class NewtonController : NetworkBehaviour, IPlayer {
         }
 
         if (inputManager.IsControlActive(Control.Left)) {
-            rb.AddForce(transform.right * -10f);
+            if (rb.velocity.x > -maxSpeed) {
+                rb.AddForce(transform.right * -walkForce);
+            }
         }
         if (inputManager.IsControlActive(Control.Right)) {
-            rb.AddForce(transform.right * 10f);
+            if (rb.velocity.x < maxSpeed) {
+                rb.AddForce(transform.right * walkForce);
+            }
         }
-        if (canJump && inputManager.IsControlActive(Control.Up)) {
-            inputManager.InvalidateControl(Control.Up);
-            canJump = false;
-            rb.AddForce(transform.up * 6f, ForceMode2D.Impulse);
+        debug.SetField(debugVelocityField, string.Format("Vel: ({0}, {1})", rb.velocity.x, rb.velocity.y));
+        if (inputManager.IsControlActive(Control.Up)) {
+            if (canJump) {
+                inputManager.InvalidateControl(Control.Up);
+                canJump = false;
+                canDoubleJump = true;
+                rb.AddForce(transform.up * jumpForce, ForceMode2D.Impulse);
+            } else if (canDoubleJump) {
+                inputManager.InvalidateControl(Control.Up);
+                canDoubleJump = false;
+                if (rb.velocity.y < 2f) {
+                    rb.velocity = new Vector2(rb.velocity.x, 2f);
+                }
+                rb.AddForce(transform.up * jumpForce / 2, ForceMode2D.Impulse);
+            }
         }
 
         if (inputManager.IsControlActive(Control.Attack)) {
             inputManager.InvalidateControl(Control.Attack);
             if (Time.time > cooldownOver) {
-                cooldownOver = Time.time + 0.5f;
+                cooldownOver = Time.time + attackCooldown;
 
                 var newApple = Instantiate(apple, gameObject.transform.position, Quaternion.identity);
                 // Don't let the apple damage its creator
@@ -82,9 +115,9 @@ public class NewtonController : NetworkBehaviour, IPlayer {
                     }
                 }
                 var appleRb = newApple.GetComponent<Rigidbody2D>();
-                appleRb.AddForce(transform.right * 5f);
-                appleRb.AddForce(transform.up * 2f);
-                appleRb.AddTorque(Random.Range(-.2f, .2f));
+                appleRb.AddForce(transform.right * appleHorizontalForce);
+                appleRb.AddForce(transform.up * appleVerticalForce);
+                appleRb.AddTorque(Random.Range(-appleTorqueRange, appleTorqueRange));
             }
         }
     }

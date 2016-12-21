@@ -38,7 +38,7 @@ Transform:
   m_GameObject: {fileID: 1357499644953146}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -2.60648, y: -1.0740268, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
+  m_LocalScale: {x: 0.25, y: 0.25, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -54,7 +54,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 0.01
+  m_Mass: 0.1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 1
@@ -90,7 +90,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   explodingApple: {fileID: 1067510251126116, guid: 7d6a37a4da9154edc9a116afb28f4920,
     type: 2}
-  explodeAnimation: {fileID: 7400000, guid: 2dee04555879041498a4891c41a6b10b, type: 2}
 --- !u!212 &212658536644460594
 SpriteRenderer:
   m_ObjectHideFlags: 1
