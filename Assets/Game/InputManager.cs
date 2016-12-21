@@ -56,20 +56,20 @@ class InputState {
     }
 
     public void Reset(int button) {
+        states[button].isPressed = false;
         if (states[button].isTouched) {
             return;
         }
         states[button].axisAmount = 0f;
-        states[button].isPressed = false;
         states[button].isInvalidated = false;
     }
 
     public void TouchReset(int button) {
+        states[button].isTouched = false;
         if (states[button].isPressed) {
             return;
         }
         states[button].axisAmount = 0f;
-        states[button].isTouched = false;
         states[button].isInvalidated = false;
     }
 
@@ -82,15 +82,15 @@ class InputState {
     }
 
     public void PressOrTouch(int button, float amount, bool press) {
-        if (press) {
-            states[button].isPressed = true;
-        } else {
-            states[button].isTouched = true;
-        }
         if (states[button].isPressed || states[button].isTouched) {
             states[button].timeHeld += Time.deltaTime;
         } else {
             states[button].timeHeld = 0f;
+        }
+        if (press) {
+            states[button].isPressed = true;
+        } else {
+            states[button].isTouched = true;
         }
         states[button].axisAmount = amount;
     }
@@ -161,8 +161,8 @@ public class InputManager : MonoBehaviour {
     Dictionary<int, int> activeTouches;
 
     public bool IsControlActive(int control) {
-        var s = state.states[control];
-        return s.isPressed || s.isTouched;
+        var s = state.states;
+        return s[control].isPressed || s[control].isTouched;
     }
 
     public float GetControlHoldTime(int control) {
