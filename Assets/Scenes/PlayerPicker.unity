@@ -498,6 +498,14 @@ Prefab:
       propertyPath: m_TransformSyncMode
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4073678529830766, guid: 6fd8ac635fa114c41a4491e9070621b6, type: 2}
+      propertyPath: m_LocalScale.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4073678529830766, guid: 6fd8ac635fa114c41a4491e9070621b6, type: 2}
+      propertyPath: m_LocalScale.y
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 114381770374893904, guid: 6fd8ac635fa114c41a4491e9070621b6, type: 2}
     - {fileID: 114955048988714856, guid: 6fd8ac635fa114c41a4491e9070621b6, type: 2}
@@ -507,6 +515,7 @@ Prefab:
     - {fileID: 58309631591817466, guid: 6fd8ac635fa114c41a4491e9070621b6, type: 2}
     - {fileID: 58767711717038062, guid: 6fd8ac635fa114c41a4491e9070621b6, type: 2}
     - {fileID: 114472960648013564, guid: 6fd8ac635fa114c41a4491e9070621b6, type: 2}
+    - {fileID: 114521384671853816, guid: 6fd8ac635fa114c41a4491e9070621b6, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: 6fd8ac635fa114c41a4491e9070621b6, type: 2}
   m_IsPrefabParent: 0
 --- !u!1 &957719621

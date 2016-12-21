@@ -18,6 +18,7 @@ public class NewtonController : NetworkBehaviour, IPlayer {
     const float maxSpeed = 6.5f;
     const float walkForce = 1500f;
     const float jumpForce = 600f;
+    const float minDoubleJumpVelocity = 2f;
     const float appleHorizontalForce = 50f;
     const float appleVerticalForce = 20f;
     // Torque is random from (-appleTorqueRange, appleTorqueRange).
@@ -86,16 +87,15 @@ public class NewtonController : NetworkBehaviour, IPlayer {
         }
         debug.SetField(debugVelocityField, string.Format("Vel: ({0}, {1})", rb.velocity.x, rb.velocity.y));
         if (inputManager.IsControlActive(Control.Up)) {
+            inputManager.InvalidateControl(Control.Up);
             if (canJump) {
-                inputManager.InvalidateControl(Control.Up);
                 canJump = false;
                 canDoubleJump = true;
                 rb.AddForce(transform.up * jumpForce, ForceMode2D.Impulse);
             } else if (canDoubleJump) {
-                inputManager.InvalidateControl(Control.Up);
                 canDoubleJump = false;
-                if (rb.velocity.y < 2f) {
-                    rb.velocity = new Vector2(rb.velocity.x, 2f);
+                if (rb.velocity.y < minDoubleJumpVelocity) {
+                    rb.velocity = new Vector2(rb.velocity.x, minDoubleJumpVelocity);
                 }
                 rb.AddForce(transform.up * jumpForce / 2, ForceMode2D.Impulse);
             }
