@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections.Generic;
 
 // Types of input we need to handle:
@@ -41,6 +42,7 @@ public class InputState {
     }
 
     public void Invalidate(int button) {
+        states[button].isInvalidated = true;
         states[button].isPressed = false;
         states[button].isTouched = false;
         states[button].axisAmount = 0f;
@@ -101,7 +103,6 @@ public class InputState {
     public void UpdateButton(int button, bool active, float amount) {
         if (active) {
             if (states[button].isInvalidated) {
-                Invalidate(button);
                 return;
             }
 
@@ -130,7 +131,6 @@ public class InputState {
     public void TouchUpdateButton(int button, bool active, float amount) {
         if (active) {
             if (states[button].isInvalidated) {
-                Invalidate(button);
                 return;
             }
 
@@ -144,6 +144,15 @@ public class InputState {
         TouchUpdateButton(button, active, 1f);
     }
 }
+
+public class ControlCanceledEventArgs : EventArgs {
+    public int Control { get; private set; }
+
+    public ControlCanceledEventArgs(int control) {
+        this.Control = control;
+    }
+}
+public delegate void ControlCanceledHandler(object sender, ControlCanceledEventArgs args);
 
 public class InputManager : MonoBehaviour {
     int touchControlLayerId;
@@ -164,8 +173,10 @@ public class InputManager : MonoBehaviour {
     }
 
     public void InvalidateControl(int control) {
-        state.states[control].isInvalidated = true;
+        state.Invalidate(control);
     }
+
+    public event ControlCanceledHandler ControlCanceled;
 
     void Start() {
         touchControlLayerId = LayerMask.NameToLayer("Touch Controls");
@@ -251,6 +262,10 @@ public class InputManager : MonoBehaviour {
         state.states[control].timeHeld += Time.deltaTime;
     }
 
+    int GetTouchCombo(int first, int second) {
+        return -1;
+    }
+
     void CheckTouchInput() {
         if (Input.touchCount == 0) {
             return;
@@ -262,7 +277,15 @@ public class InputManager : MonoBehaviour {
                 BeginTouch(control);
                 activeTouches.Add(touch.fingerId, control);
             } else if (touch.phase == TouchPhase.Moved) {
-                //
+                var newControl = GetTouchControl(GetControlAtTouch(touch));
+                var currentControl = activeTouches[touch.fingerId];
+                var combo = GetTouchCombo(activeTouches[touch.fingerId], newControl);
+                if (combo != -1) {
+                    InvalidateControl(currentControl);
+                    ControlCanceled(this, new ControlCanceledEventArgs(currentControl));
+                    activeTouches[touch.fingerId] = combo;
+                    BeginTouch(combo);
+                }
             } else if (touch.phase == TouchPhase.Stationary) {
                 UpdateTouchTime(activeTouches[touch.fingerId]);
             } else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled) {
