@@ -2,7 +2,7 @@
 using UnityEngine.Networking;
 using Random = UnityEngine.Random;
 
-public class ParkerMove : NetworkBehaviour, IPlayer {
+public class NewtonController : NetworkBehaviour, IPlayer {
     Rigidbody2D rb;
     Collider2D[] colliders;
     bool canJump = false;

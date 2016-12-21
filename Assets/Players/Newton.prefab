@@ -69,7 +69,7 @@ GameObject:
   - component: {fileID: 4073678529830766}
   - component: {fileID: 114472960648013564}
   - component: {fileID: 114955048988714856}
-  - component: {fileID: 114381770374893904}
+  - component: {fileID: 114521384671853816}
   - component: {fileID: 50993783148244024}
   - component: {fileID: 114846927447625442}
   - component: {fileID: 60544207634570406}
@@ -267,18 +267,6 @@ PolygonCollider2D:
       - {x: 2.2739325, y: 0.9775343}
       - {x: 0.8064251, y: 0.13671279}
       - {x: 1.7207394, y: -2.497692}
---- !u!114 &114381770374893904
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1445736531698702}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3b3f1be30081ea742b04c7079fcaf5c1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  apple: {fileID: 1357499644953146, guid: c0cadcf302e68684fbf4486bf3efe53c, type: 2}
 --- !u!114 &114472960648013564
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -311,6 +299,18 @@ MonoBehaviour:
     i15: 182
   m_ServerOnly: 0
   m_LocalPlayerAuthority: 1
+--- !u!114 &114521384671853816
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1445736531698702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b3f1be30081ea742b04c7079fcaf5c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  apple: {fileID: 1357499644953146, guid: c0cadcf302e68684fbf4486bf3efe53c, type: 2}
 --- !u!114 &114846927447625442
 MonoBehaviour:
   m_ObjectHideFlags: 1
