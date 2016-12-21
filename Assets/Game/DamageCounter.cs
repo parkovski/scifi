@@ -16,10 +16,10 @@ public class DamageCounter : MonoBehaviour {
         if (args.Player.Id != player) {
             return;
         }
-        UpdateInfo(args.Player.Lives, args.Player.Damage);
+        UpdateInfo(args.Player.Id, args.Player.Lives, args.Player.Damage);
     }
 
-    void UpdateInfo(int lives, int damage) {
-        text.text = string.Format("P1x{0} D: {1}", lives, damage);
+    void UpdateInfo(int id, int lives, int damage) {
+        text.text = string.Format("P{0}x{1} D: {2}", id+1, lives, damage);
     }
 }
