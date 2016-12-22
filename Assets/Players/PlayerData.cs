@@ -10,6 +10,8 @@ public class PlayerData : NetworkBehaviour {
     public int lives;
     [SyncVar]
     public int damage;
+    [SyncVar]
+    public Direction direction;
 
     static int idCounter = 0;
     public override void OnStartServer() {

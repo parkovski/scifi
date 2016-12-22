@@ -3,6 +3,7 @@ using UnityEngine.Networking;
 using Random = UnityEngine.Random;
 
 public class NewtonController : Player {
+    PlayerData data;
     Rigidbody2D rb;
     bool canJump = false;
     bool canDoubleJump = false;
@@ -26,6 +27,7 @@ public class NewtonController : Player {
 
     void Start () {
         rb = GetComponent<Rigidbody2D>();
+        data = GetComponent<PlayerData>();
         var gameControllerGo = GameObject.Find("GameController");
         // TODO: Remove when objects are instantiated via GameController
         inputManager = gameControllerGo.GetComponent<InputManager>();
@@ -74,10 +76,16 @@ public class NewtonController : Player {
             if (rb.velocity.x > -maxSpeed) {
                 rb.AddForce(transform.right * -walkForce);
             }
+            if (data.direction == Direction.Right) {
+                CmdChangeDirection(Direction.Left);
+            }
         }
         if (inputManager.IsControlActive(Control.Right)) {
             if (rb.velocity.x < maxSpeed) {
                 rb.AddForce(transform.right * walkForce);
+            }
+            if (data.direction == Direction.Left) {
+                CmdChangeDirection(Direction.Right);
             }
         }
         debug.SetField(debugVelocityField, string.Format("Vel: ({0}, {1})", rb.velocity.x, rb.velocity.y));
@@ -106,11 +114,20 @@ public class NewtonController : Player {
     }
 
     [Command]
+    void CmdChangeDirection(Direction direction) {
+        data.direction = direction;
+    }
+
+    [Command]
     void CmdSpawnApple(NetworkInstanceId netId) {
         var newApple = Instantiate(apple, gameObject.transform.position, Quaternion.identity);
         newApple.GetComponent<AppleBehavior>().spawnedBy = netId;
         var appleRb = newApple.GetComponent<Rigidbody2D>();
-        appleRb.AddForce(transform.right * appleHorizontalForce);
+        var force = transform.right * appleHorizontalForce;
+        if (data.direction == Direction.Left) {
+            force = -force;
+        }
+        appleRb.AddForce(force);
         appleRb.AddForce(transform.up * appleVerticalForce);
         appleRb.AddTorque(Random.Range(-appleTorqueRange, appleTorqueRange));
         NetworkServer.Spawn(newApple);
