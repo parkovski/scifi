@@ -29,6 +29,7 @@ public class AppleBehavior : NetworkBehaviour {
         }
         if (collision.gameObject.tag == "Player") {
             GameController.Instance.TakeDamage(collision.gameObject, 5);
+            GameController.Instance.Knockback(gameObject, collision.gameObject, 5f);
             var exploding = Instantiate(explodingApple, gameObject.transform.position, gameObject.transform.rotation);
             NetworkServer.Spawn(exploding);
             Destroy(gameObject);

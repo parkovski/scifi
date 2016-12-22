@@ -56,6 +56,18 @@ public class GameController : NetworkBehaviour {
         EventHealthChanged(args);
     }
 
+    [Server]
+    public void Knockback(GameObject attackingObject, GameObject playerObject, float force) {
+        var data = playerObject.GetComponent<PlayerData>();
+        force *= data.damage;
+        var vector = playerObject.transform.position - attackingObject.transform.position;
+        if (vector.x < 0) {
+            force = -force;
+        }
+        playerObject.GetComponent<Rigidbody2D>().AddForce(transform.right * force, ForceMode2D.Impulse);
+        playerObject.GetComponent<Rigidbody2D>().AddForce(transform.up * force, ForceMode2D.Impulse);
+    }
+
     void Awake() {
         Instance = this;
         characters = new Dictionary<string, GameObject>() {
