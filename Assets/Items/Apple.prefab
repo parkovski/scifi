@@ -23,6 +23,8 @@ GameObject:
   - component: {fileID: 114582542024119394}
   - component: {fileID: 50158982170073844}
   - component: {fileID: 58431733497880524}
+  - component: {fileID: 114536395684050878}
+  - component: {fileID: 114150680437719354}
   m_Layer: 10
   m_Name: Apple
   m_TagString: Untagged
@@ -77,6 +79,58 @@ CircleCollider2D:
   m_Offset: {x: 0, y: -0.09}
   serializedVersion: 2
   m_Radius: 0.46
+--- !u!114 &114150680437719354
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1357499644953146}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1768714887, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_TransformSyncMode: 2
+  m_SendInterval: 0.04761905
+  m_SyncRotationAxis: 3
+  m_RotationSyncCompression: 0
+  m_SyncSpin: 0
+  m_MovementTheshold: 0.001
+  m_SnapThreshold: 5
+  m_InterpolateRotation: 1
+  m_InterpolateMovement: 1
+--- !u!114 &114536395684050878
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1357499644953146}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 372142912, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SceneId:
+    m_Value: 0
+  m_AssetId:
+    i0: 192
+    i1: 202
+    i2: 220
+    i3: 243
+    i4: 2
+    i5: 230
+    i6: 134
+    i7: 132
+    i8: 251
+    i9: 244
+    i10: 72
+    i11: 107
+    i12: 243
+    i13: 239
+    i14: 229
+    i15: 60
+  m_ServerOnly: 0
+  m_LocalPlayerAuthority: 0
 --- !u!114 &114582542024119394
 MonoBehaviour:
   m_ObjectHideFlags: 1

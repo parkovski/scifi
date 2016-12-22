@@ -1,21 +1,22 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 
 public interface IPlayer {
     int Id { get; set; }
+    NetworkInstanceId NetId { get; }
     string Name { get; set; }
     int Lives { get; set; }
     int Damage { get; set; }
     GameController GameController { get; set; }
-    void TakeDamage(int amount);
 }
 
 class EmptyPlayer : IPlayer {
     public int Id { get; set; }
+    public NetworkInstanceId NetId { get { return NetworkInstanceId.Invalid; } }
     public string Name { get; set; }
     public int Lives { get; set; }
     public int Damage { get; set; }
     public GameController GameController { get; set; }
-    public void TakeDamage(int amount) {}
 }
 
 public class PlayerProxy : MonoBehaviour, IPlayer {
@@ -35,6 +36,12 @@ public class PlayerProxy : MonoBehaviour, IPlayer {
         }
         set {
             playerDelegate.Id = value;
+        }
+    }
+
+    public NetworkInstanceId NetId {
+        get {
+            return playerDelegate.NetId;
         }
     }
 
@@ -72,9 +79,5 @@ public class PlayerProxy : MonoBehaviour, IPlayer {
         set {
             playerDelegate.GameController = value;
         }
-    }
-
-    public void TakeDamage(int amount) {
-        playerDelegate.TakeDamage(amount);
     }
 }

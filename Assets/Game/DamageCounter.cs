@@ -7,16 +7,15 @@ public class DamageCounter : MonoBehaviour {
     Text text;
 
     void Start() {
-        var controller = GameObject.Find("GameController").GetComponent<GameController>();
-        controller.HealthChanged += PlayerDamageChanged;
+        GameController.Instance.EventHealthChanged += PlayerDamageChanged;
         text = GetComponent<Text>();
     }
 
-    void PlayerDamageChanged(object sender, DamageChangedEventArgs args) {
-        if (args.Player.Id != player) {
+    void PlayerDamageChanged(DamageChangedEventArgs args) {
+        if (args.player.id!= player) {
             return;
         }
-        UpdateInfo(args.Player.Id, args.Player.Lives, args.Player.Damage);
+        UpdateInfo(args.player.id, args.player.lives, args.player.damage);
     }
 
     void UpdateInfo(int id, int lives, int damage) {

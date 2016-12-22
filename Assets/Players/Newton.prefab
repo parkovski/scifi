@@ -75,6 +75,7 @@ GameObject:
   - component: {fileID: 60544207634570406}
   - component: {fileID: 58309631591817466}
   - component: {fileID: 58767711717038062}
+  - component: {fileID: 114396861904846668}
   m_Layer: 9
   m_Name: Newton
   m_TagString: Player
@@ -267,6 +268,21 @@ PolygonCollider2D:
       - {x: 2.2739325, y: 0.9775343}
       - {x: 0.8064251, y: 0.13671279}
       - {x: 1.7207394, y: -2.497692}
+--- !u!114 &114396861904846668
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1445736531698702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 762d697cc3d19334ba5605a1585ee630, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  id: 0
+  displayName: 
+  lives: 0
+  damage: 0
 --- !u!114 &114472960648013564
 MonoBehaviour:
   m_ObjectHideFlags: 1
