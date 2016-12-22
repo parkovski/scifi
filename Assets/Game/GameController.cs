@@ -5,14 +5,14 @@ using System.Collections.Generic;
 using System.Linq;
 
 public class DamageChangedEventArgs : EventArgs {
-    public PlayerData player;
-    public int deltaDamage;
+    public int playerId;
+    public int newDamage;
 }
 public delegate void DamageChangedHandler(DamageChangedEventArgs args);
 
 public class LifeChangedEventArgs : EventArgs {
-    public PlayerData player;
-    public int deltaLives;
+    public int playerId;
+    public int newLives;
 }
 public delegate void LifeChangedHandler(LifeChangedEventArgs args);
 
@@ -27,19 +27,31 @@ public class GameController : NetworkBehaviour {
     // guaranteed not null if a game is running.
     GameObject[] activePlayersGo;
     Player[] activePlayers;
+    PlayerData[] activePlayersData;
 
     [SyncEvent]
     public event DamageChangedHandler EventHealthChanged;
 
     public static GameController Instance { get; private set; }
 
+    public PlayerData GetPlayerData(int id) {
+        return activePlayersData[id];
+    }
+
+    // TODO: This class should create players, won't need this when that's working.
+    public void RegisterNewPlayer(GameObject playerObject) {
+        activePlayersGo = activePlayersGo.Concat(new[] { playerObject } ).ToArray();
+        activePlayersData = activePlayersGo.Select(p => p.GetComponent<PlayerData>()).ToArray();
+        activePlayersData[activePlayersData.Length - 1].id = activePlayersData.Length - 1;
+    }
+
     [Server]
     public void TakeDamage(GameObject playerObject, int amount) {
         var player = playerObject.GetComponent<PlayerData>();
         player.damage += amount;
         var args = new DamageChangedEventArgs {
-            player = player,
-            deltaDamage = amount,
+            playerId = player.id,
+            newDamage = player.damage,
         };
         EventHealthChanged(args);
     }
@@ -49,14 +61,6 @@ public class GameController : NetworkBehaviour {
         characters = new Dictionary<string, GameObject>() {
             { "Newton", newton }
         };
-
-        /*activePlayersGo = new[] {
-            //Instantiate(newton, new Vector2(0, 0), Quaternion.identity)
-        };
-        activePlayers = activePlayersGo.Select(p => {
-            var proxy = p.GetComponent<PlayerProxy>();
-            proxy.GameController = this;
-            return proxy.PlayerDelegate;
-        }).ToArray();*/
+        activePlayersGo = new GameObject[0];
     }
 }

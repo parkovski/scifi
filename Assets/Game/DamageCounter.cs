@@ -3,22 +3,28 @@ using UnityEngine.UI;
 
 public class DamageCounter : MonoBehaviour {
     public int player;
+    int lives;
+    int damage;
 
     Text text;
 
     void Start() {
         GameController.Instance.EventHealthChanged += PlayerDamageChanged;
         text = GetComponent<Text>();
+
+        lives = 1;
+        damage = 0;
     }
 
     void PlayerDamageChanged(DamageChangedEventArgs args) {
-        if (args.player.id != player) {
+        if (args.playerId != player) {
             return;
         }
-        UpdateInfo(args.player.id, args.player.lives, args.player.damage);
+        damage = args.newDamage;
+        UpdateInfo();
     }
 
-    void UpdateInfo(int id, int lives, int damage) {
-        text.text = string.Format("P{0}x{1} D: {2}", id, lives, damage);
+    void UpdateInfo() {
+        text.text = string.Format("P{0}x{1} D: {2}", player + 1, lives, damage);
     }
 }

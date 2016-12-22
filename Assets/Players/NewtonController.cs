@@ -32,6 +32,8 @@ public class NewtonController : Player {
         debug = gameControllerGo.GetComponent<DebugPrinter>();
         debugVelocityField = debug.NewField();
 
+        GameController.Instance.RegisterNewPlayer(gameObject);
+
         if (!Input.touchSupported) {
             Destroy(GameObject.Find("left-button"));
             Destroy(GameObject.Find("right-button"));
