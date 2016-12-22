@@ -40,6 +40,8 @@ public class NewtonController : Player {
             Destroy(GameObject.Find("left-button"));
             Destroy(GameObject.Find("right-button"));
             Destroy(GameObject.Find("fire-button"));
+            Destroy(GameObject.Find("jump-button"));
+            Destroy(GameObject.Find("block-button"));
         }
     }
 
@@ -108,7 +110,7 @@ public class NewtonController : Player {
             inputManager.InvalidateControl(Control.Attack);
             if (Time.time > cooldownOver) {
                 cooldownOver = Time.time + attackCooldown;
-                CmdSpawnApple(netId);
+                CmdSpawnApple(netId, inputManager.IsControlActive(Control.Down));
             }
         }
     }
@@ -119,16 +121,20 @@ public class NewtonController : Player {
     }
 
     [Command]
-    void CmdSpawnApple(NetworkInstanceId netId) {
+    void CmdSpawnApple(NetworkInstanceId netId, bool down) {
         var newApple = Instantiate(apple, gameObject.transform.position, Quaternion.identity);
         newApple.GetComponent<AppleBehavior>().spawnedBy = netId;
         var appleRb = newApple.GetComponent<Rigidbody2D>();
         var force = transform.right * appleHorizontalForce;
-        if (data.direction == Direction.Left) {
-            force = -force;
+        if (down) {
+            force = -transform.up * appleHorizontalForce;
+        } else {
+            if (data.direction == Direction.Left) {
+                force = -force;
+            }
+            appleRb.AddForce(transform.up * appleVerticalForce);
         }
         appleRb.AddForce(force);
-        appleRb.AddForce(transform.up * appleVerticalForce);
         appleRb.AddTorque(Random.Range(-appleTorqueRange, appleTorqueRange));
         NetworkServer.Spawn(newApple);
     }

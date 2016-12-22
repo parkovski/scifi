@@ -225,6 +225,10 @@ public class InputManager : MonoBehaviour {
             return Control.Left;
         case "right-button":
             return Control.Right;
+        case "jump-button":
+            return Control.Up;
+        case "block-button":
+            return Control.Down;
         case "fire-button":
             return Control.Attack;
         default:
@@ -240,6 +244,12 @@ public class InputManager : MonoBehaviour {
         case Control.Right:
             state.TouchUpdateAxis(Control.Right, Control.Left, 1f);
             break;
+        case Control.Up:
+            state.TouchUpdateAxis(Control.Up, Control.Down, 1f);
+            break;
+        case Control.Down:
+            state.TouchUpdateAxis(Control.Down, Control.Up, 1f);
+            break;
         case Control.Attack:
             state.TouchUpdateButton(Control.Attack, true);
             break;
@@ -252,6 +262,11 @@ public class InputManager : MonoBehaviour {
         case Control.Right:
             state.TouchReset(Control.Left);
             state.TouchReset(Control.Right);
+            break;
+        case Control.Up:
+        case Control.Down:
+            state.TouchReset(Control.Up);
+            state.TouchReset(Control.Down);
             break;
         case Control.Attack:
             state.TouchReset(Control.Attack);
