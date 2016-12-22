@@ -2,7 +2,7 @@
 using UnityEngine.Networking;
 using Random = UnityEngine.Random;
 
-public class NewtonController : NetworkBehaviour, IPlayer {
+public class NewtonController : Player {
     Rigidbody2D rb;
     bool canJump = false;
     bool canDoubleJump = false;
@@ -24,13 +24,10 @@ public class NewtonController : NetworkBehaviour, IPlayer {
     const float appleTorqueRange = 5f;
     const float attackCooldown = .5f;
 
-    static int playerNumber = 0;
     void Start () {
         rb = GetComponent<Rigidbody2D>();
         var gameControllerGo = GameObject.Find("GameController");
         // TODO: Remove when objects are instantiated via GameController
-        this.GameController = gameControllerGo.GetComponent<GameController>();
-        this.Id = ++playerNumber;
         inputManager = gameControllerGo.GetComponent<InputManager>();
         debug = gameControllerGo.GetComponent<DebugPrinter>();
         debugVelocityField = debug.NewField();
@@ -40,8 +37,6 @@ public class NewtonController : NetworkBehaviour, IPlayer {
             Destroy(GameObject.Find("right-button"));
             Destroy(GameObject.Find("fire-button"));
         }
-
-        GetComponent<PlayerProxy>().PlayerDelegate = this;
     }
 
     public override void OnStartLocalPlayer() {
@@ -118,15 +113,4 @@ public class NewtonController : NetworkBehaviour, IPlayer {
         appleRb.AddTorque(Random.Range(-appleTorqueRange, appleTorqueRange));
         NetworkServer.Spawn(newApple);
     }
-
-    public int Id { get; set; }
-    public NetworkInstanceId NetId {
-        get {
-            return netId;
-        }
-    }
-    public string Name { get; set; }
-    public int Lives { get; set; }
-    public int Damage { get; set; }
-    public GameController GameController { get; set; }
 }

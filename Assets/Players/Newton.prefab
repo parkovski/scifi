@@ -68,7 +68,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4073678529830766}
   - component: {fileID: 114472960648013564}
-  - component: {fileID: 114955048988714856}
   - component: {fileID: 114521384671853816}
   - component: {fileID: 50993783148244024}
   - component: {fileID: 114846927447625442}
@@ -347,17 +346,6 @@ MonoBehaviour:
   m_SnapThreshold: 5
   m_InterpolateRotation: 1
   m_InterpolateMovement: 1
---- !u!114 &114955048988714856
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1445736531698702}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d456595aed1f4ad59597d4059bbb9c2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!212 &212343850666959070
 SpriteRenderer:
   m_ObjectHideFlags: 1

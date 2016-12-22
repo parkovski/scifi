@@ -26,7 +26,7 @@ public class GameController : NetworkBehaviour {
     // Active players, even if dead. Null if no game is running,
     // guaranteed not null if a game is running.
     GameObject[] activePlayersGo;
-    IPlayer[] activePlayers;
+    Player[] activePlayers;
 
     [SyncEvent]
     public event DamageChangedHandler EventHealthChanged;

@@ -12,7 +12,7 @@ public class DamageCounter : MonoBehaviour {
     }
 
     void PlayerDamageChanged(DamageChangedEventArgs args) {
-        if (args.player.id!= player) {
+        if (args.player.id != player) {
             return;
         }
         UpdateInfo(args.player.id, args.player.lives, args.player.damage);

@@ -38,7 +38,6 @@ GameObject:
   - component: {fileID: 95679349818421480}
   - component: {fileID: 114780625846021030}
   - component: {fileID: 114513511986967446}
-  - component: {fileID: 114394495451791750}
   m_Layer: 0
   m_Name: AppleBroken
   m_TagString: Untagged
@@ -210,17 +209,6 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
---- !u!114 &114394495451791750
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1067510251126116}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 10c67486b81d0e848924797f2447f032, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &114513511986967446
 MonoBehaviour:
   m_ObjectHideFlags: 1
