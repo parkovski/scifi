@@ -13,6 +13,8 @@ public class PlayerData : NetworkBehaviour {
     [SyncVar]
     public Direction direction;
 
+    public Player player;
+
     static int idCounter = 0;
     public override void OnStartServer() {
         id = ++idCounter;

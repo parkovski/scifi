@@ -8,10 +8,12 @@ public class DebugPrinter : MonoBehaviour {
     public Text text;
     public bool showDebugInfo;
 
-    void Start() {
+    public DebugPrinter() {
         fields = new List<string>();
         fields.Add("Debug:");
+    }
 
+    void Start() {
         if (!showDebugInfo) {
             Destroy(text);
             text = null;

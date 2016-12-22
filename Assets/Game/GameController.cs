@@ -57,15 +57,16 @@ public class GameController : NetworkBehaviour {
     }
 
     [Server]
-    public void Knockback(GameObject attackingObject, GameObject playerObject, float force) {
+    public void Knockback(GameObject attackingObject, GameObject playerObject, float amount) {
         var data = playerObject.GetComponent<PlayerData>();
-        force *= data.damage;
+        amount *= data.damage;
         var vector = playerObject.transform.position - attackingObject.transform.position;
-        playerObject.GetComponent<Rigidbody2D>().AddForce(transform.up * force, ForceMode2D.Impulse);
+        var force = transform.up * amount;
         if (vector.x < 0) {
-            force = -force;
+            amount = -amount;
         }
-        playerObject.GetComponent<Rigidbody2D>().AddForce(transform.right * force, ForceMode2D.Impulse);
+        force += transform.right * amount;
+        ((NewtonController)data.player).RpcKnockback(force);
     }
 
     void Awake() {

@@ -28,6 +28,7 @@ public class NewtonController : Player {
     void Start () {
         rb = GetComponent<Rigidbody2D>();
         data = GetComponent<PlayerData>();
+        data.player = this;
         var gameControllerGo = GameObject.Find("GameController");
         // TODO: Remove when objects are instantiated via GameController
         inputManager = gameControllerGo.GetComponent<InputManager>();
@@ -137,5 +138,13 @@ public class NewtonController : Player {
         appleRb.AddForce(force);
         appleRb.AddTorque(Random.Range(-appleTorqueRange, appleTorqueRange));
         NetworkServer.Spawn(newApple);
+    }
+
+    [ClientRpc]
+    public void RpcKnockback(Vector2 force) {
+        if (!isLocalPlayer) {
+            return;
+        }
+        rb.AddForce(force, ForceMode2D.Impulse);
     }
 }
