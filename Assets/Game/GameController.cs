@@ -61,11 +61,11 @@ public class GameController : NetworkBehaviour {
         var data = playerObject.GetComponent<PlayerData>();
         force *= data.damage;
         var vector = playerObject.transform.position - attackingObject.transform.position;
+        playerObject.GetComponent<Rigidbody2D>().AddForce(transform.up * force, ForceMode2D.Impulse);
         if (vector.x < 0) {
             force = -force;
         }
         playerObject.GetComponent<Rigidbody2D>().AddForce(transform.right * force, ForceMode2D.Impulse);
-        playerObject.GetComponent<Rigidbody2D>().AddForce(transform.up * force, ForceMode2D.Impulse);
     }
 
     void Awake() {
