@@ -20,8 +20,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4851719258097188}
   - component: {fileID: 212198882525106390}
+  - component: {fileID: 114987066694963906}
   m_Layer: 0
-  m_Name: FireBall 1
+  m_Name: FireBallInactive
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -34,12 +35,44 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1931044926520130}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.83026457, y: -0.29319942, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114987066694963906
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1931044926520130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 372142912, guid: 870353891bb340e2b2a9c8707e7419ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SceneId:
+    m_Value: 0
+  m_AssetId:
+    i0: 238
+    i1: 231
+    i2: 73
+    i3: 69
+    i4: 119
+    i5: 72
+    i6: 153
+    i7: 36
+    i8: 235
+    i9: 3
+    i10: 150
+    i11: 87
+    i12: 78
+    i13: 112
+    i14: 227
+    i15: 207
+  m_ServerOnly: 0
+  m_LocalPlayerAuthority: 0
 --- !u!212 &212198882525106390
 SpriteRenderer:
   m_ObjectHideFlags: 1
