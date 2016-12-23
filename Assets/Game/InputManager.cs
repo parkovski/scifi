@@ -27,7 +27,8 @@ public static class Control {
     public const int Up = 2;
     public const int Down = 3;
     public const int Attack = 4;
-    public const int ArrayLength = 5;
+    public const int Attack2 = 5;
+    public const int ArrayLength = 6;
 }
 
 class InputState {
@@ -182,12 +183,21 @@ public class InputManager : MonoBehaviour {
     void Start() {
         touchControlLayerId = LayerMask.NameToLayer("Touch Controls");
         activeTouches = new Dictionary<int, int>();
+
+        if (!Input.touchSupported) {
+            Destroy(GameObject.Find("left-button"));
+            Destroy(GameObject.Find("right-button"));
+            Destroy(GameObject.Find("fire-button"));
+            Destroy(GameObject.Find("jump-button"));
+            Destroy(GameObject.Find("block-button"));
+        }
     }
 
     void CheckUnityInput() {
         var horizontal = Input.GetAxis("Horizontal");
         var vertical = Input.GetAxis("Vertical");
-        var fire = Input.GetButton("Fire1");
+        var attack1 = Input.GetButton("Fire1");
+        var attack2 = Input.GetButton("Fire2");
 
         if (horizontal > 0f) {
             state.UpdateAxis(Control.Right, Control.Left, horizontal);
@@ -207,7 +217,8 @@ public class InputManager : MonoBehaviour {
             state.Reset(Control.Down);
         }
 
-        state.UpdateButton(Control.Attack, fire);
+        state.UpdateButton(Control.Attack, attack1);
+        state.UpdateButton(Control.Attack2, attack2);
     }
 
     string GetControlAtTouch(Touch touch) {

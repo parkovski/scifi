@@ -121,7 +121,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1445736531698702}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.44, y: -1.5, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.25, y: 0.25, z: 1}
   m_Children:
   - {fileID: 4458737582547326}
@@ -283,6 +283,7 @@ MonoBehaviour:
   lives: 0
   damage: 0
   direction: 0
+  player: {fileID: 0}
 --- !u!114 &114472960648013564
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -326,6 +327,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b3f1be30081ea742b04c7079fcaf5c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxSpeed: 6.5
+  walkForce: 1500
+  jumpForce: 600
+  minDoubleJumpVelocity: 2
+  attackCooldown: 0.5
   apple: {fileID: 1357499644953146, guid: c0cadcf302e68684fbf4486bf3efe53c, type: 2}
 --- !u!114 &114846927447625442
 MonoBehaviour:

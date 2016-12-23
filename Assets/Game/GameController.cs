@@ -66,7 +66,7 @@ public class GameController : NetworkBehaviour {
             amount = -amount;
         }
         force += transform.right * amount;
-        ((NewtonController)data.player).RpcKnockback(force);
+        data.player.RpcKnockback(force);
     }
 
     void Awake() {
