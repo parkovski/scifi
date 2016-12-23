@@ -26,9 +26,10 @@ public static class Control {
     public const int Right = 1;
     public const int Up = 2;
     public const int Down = 3;
-    public const int Attack = 4;
+    public const int Attack1 = 4;
     public const int Attack2 = 5;
-    public const int ArrayLength = 6;
+    public const int SpecialAttack = 6;
+    public const int ArrayLength = 7;
 }
 
 class InputState {
@@ -221,7 +222,7 @@ public class InputManager : MonoBehaviour {
             state.Reset(Control.Down);
         }
 
-        state.UpdateButton(Control.Attack, attack1);
+        state.UpdateButton(Control.Attack1, attack1);
         state.UpdateButton(Control.Attack2, attack2);
     }
 
@@ -245,7 +246,7 @@ public class InputManager : MonoBehaviour {
         case "block-button":
             return Control.Down;
         case "fire-button":
-            return Control.Attack;
+            return Control.Attack1;
         default:
             return -1;
         }
@@ -265,8 +266,8 @@ public class InputManager : MonoBehaviour {
         case Control.Down:
             state.TouchUpdateAxis(Control.Down, Control.Up, 1f);
             break;
-        case Control.Attack:
-            state.TouchUpdateButton(Control.Attack, true);
+        case Control.Attack1:
+            state.TouchUpdateButton(Control.Attack1, true);
             break;
         }
     }
@@ -283,8 +284,8 @@ public class InputManager : MonoBehaviour {
             state.TouchReset(Control.Up);
             state.TouchReset(Control.Down);
             break;
-        case Control.Attack:
-            state.TouchReset(Control.Attack);
+        case Control.Attack1:
+            state.TouchReset(Control.Attack1);
             break;
         }
     }

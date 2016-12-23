@@ -88,25 +88,25 @@ public abstract class Player : NetworkBehaviour {
             }
         }
 
-        var attackActive = inputManager.IsControlActive(Control.Attack);
+        var attack1Active = inputManager.IsControlActive(Control.Attack1);
         if (attack1CanCharge) {
             // For chargeable attacks, fire events for button state change.
             if (attack1IsCharging) {
-                if (!attackActive) {
+                if (!attack1Active) {
                     attack1IsCharging = false;
-                    EndChargingAttack1(inputManager.GetControlHoldTime(Control.Attack));
+                    EndChargingAttack1(inputManager.GetControlHoldTime(Control.Attack1));
                 }
             } else {
-                if (attackActive) {
+                if (attack1Active) {
                     attack1IsCharging = true;
                     BeginChargingAttack1();
                 }
             }
         } else {
-            if (attackActive) {
+            if (attack1Active) {
                 // For non-chargeable attacks, invalidate the button
                 // so you have to release and press it again to attack again.
-                inputManager.InvalidateControl(Control.Attack);
+                inputManager.InvalidateControl(Control.Attack1);
                 if (Time.time > cooldownOver) {
                     cooldownOver = Time.time + attackCooldown;
                     Attack1();
@@ -141,7 +141,7 @@ public abstract class Player : NetworkBehaviour {
     protected virtual void BeginChargingAttack1() {}
     protected virtual void EndChargingAttack1(float chargeTime) {}
     protected void CancelChargingAttack1() {
-        inputManager.InvalidateControl(Control.Attack);
+        inputManager.InvalidateControl(Control.Attack1);
         attack1IsCharging = false;
     }
 
