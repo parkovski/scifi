@@ -22,6 +22,12 @@ public abstract class Player : NetworkBehaviour {
     public float minDoubleJumpVelocity;
     public float attackCooldown;
 
+    // Parameters for child classes to change behavior
+    protected bool attack1CanCharge = false;
+    private bool attack1IsCharging = false;
+    protected bool attack2CanCharge = false;
+    private bool attack2IsCharging = false;
+
     protected void BaseStart() {
         rb = GetComponent<Rigidbody2D>();
         data = GetComponent<PlayerData>();
@@ -82,21 +88,68 @@ public abstract class Player : NetworkBehaviour {
             }
         }
 
-        if (inputManager.IsControlActive(Control.Attack)) {
-            inputManager.InvalidateControl(Control.Attack);
-            if (Time.time > cooldownOver) {
-                cooldownOver = Time.time + attackCooldown;
-                Attack1();
+        var attackActive = inputManager.IsControlActive(Control.Attack);
+        if (attack1CanCharge) {
+            // For chargeable attacks, fire events for button state change.
+            if (attack1IsCharging) {
+                if (!attackActive) {
+                    attack1IsCharging = false;
+                    EndChargingAttack1(inputManager.GetControlHoldTime(Control.Attack));
+                }
+            } else {
+                if (attackActive) {
+                    attack1IsCharging = true;
+                    BeginChargingAttack1();
+                }
+            }
+        } else {
+            if (attackActive) {
+                // For non-chargeable attacks, invalidate the button
+                // so you have to release and press it again to attack again.
+                inputManager.InvalidateControl(Control.Attack);
+                if (Time.time > cooldownOver) {
+                    cooldownOver = Time.time + attackCooldown;
+                    Attack1();
+                }
             }
         }
 
-        if (inputManager.IsControlActive(Control.Attack2)) {
-            inputManager.InvalidateControl(Control.Attack2);
-            if (Time.time > cooldownOver) {
-                cooldownOver = Time.time + attackCooldown;
-                Attack2();
+        var attack2Active = inputManager.IsControlActive(Control.Attack2);
+        if (attack2CanCharge) {
+            if (attack2IsCharging) {
+                if (!attack2Active) {
+                    attack2IsCharging = false;
+                    EndChargingAttack2(inputManager.GetControlHoldTime(Control.Attack2));
+                }
+            } else {
+                if (attack2Active) {
+                    attack2IsCharging = true;
+                    BeginChargingAttack2();
+                }
+            }
+        } else {
+            if (attack2Active) {
+                inputManager.InvalidateControl(Control.Attack2);
+                if (Time.time > cooldownOver) {
+                    cooldownOver = Time.time + attackCooldown;
+                    Attack2();
+                }
             }
         }
+    }
+
+    protected virtual void BeginChargingAttack1() {}
+    protected virtual void EndChargingAttack1(float chargeTime) {}
+    protected void CancelChargingAttack1() {
+        inputManager.InvalidateControl(Control.Attack);
+        attack1IsCharging = false;
+    }
+
+    protected virtual void BeginChargingAttack2() {}
+    protected virtual void EndChargingAttack2(float chargeTime) {}
+    protected void CancelChargingAttack2() {
+        inputManager.InvalidateControl(Control.Attack2);
+        attack2IsCharging = false;
     }
 
     [Server]
@@ -111,6 +164,9 @@ public abstract class Player : NetworkBehaviour {
 
     protected abstract void CmdChangeDirection(Direction direction);
     public abstract void RpcKnockback(Vector2 force);
-    protected abstract void Attack1();
-    protected abstract void Attack2();
+
+    // These methods are called only for attacks that don't charge.
+    // For charging attacks, use the Begin/End versions above.
+    protected virtual void Attack1() {}
+    protected virtual void Attack2() {}
 }

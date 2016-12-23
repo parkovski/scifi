@@ -4,6 +4,9 @@ using UnityEngine.Networking;
 public class Kelvin : Player {
     public GameObject iceBall;
     public GameObject fireBall;
+    public GameObject fireBallInactive;
+
+    private GameObject chargingFireBall;
 
     const float iceBallHorizontalForce = 200f;
     const float iceBallVerticalForce = 100f;
@@ -12,6 +15,8 @@ public class Kelvin : Player {
     const float fireBallHorizontalForce = 50f;
 
     void Start() {
+        attack2CanCharge = true;
+
         BaseStart();
     }
 
@@ -55,6 +60,19 @@ public class Kelvin : Player {
     }
 
     [Command]
+    void CmdSpawnChargingFireBall() {
+        var offset = data.direction == Direction.Left ? new Vector3(-.5f, .4f) : new Vector3(.5f, .4f);
+        chargingFireBall = Instantiate(fireBallInactive, gameObject.transform.position + offset, Quaternion.identity);
+        chargingFireBall.transform.parent = gameObject.transform;
+        NetworkServer.Spawn(chargingFireBall);
+    }
+
+    [Command]
+    void CmdDestroyChargingFireBall() {
+        Destroy(chargingFireBall);
+    }
+
+    [Command]
     void CmdSpawnFireBall(NetworkInstanceId netId) {
         var force = transform.right;
         if (data.direction == Direction.Left) {
@@ -77,7 +95,11 @@ public class Kelvin : Player {
         CmdSpawnIceBall(netId, inputManager.IsControlActive(Control.Down));
     }
 
-    protected override void Attack2() {
-        CmdSpawnFireBall(netId);
+    protected override void BeginChargingAttack2() {
+        CmdSpawnChargingFireBall();
+    }
+
+    protected override void EndChargingAttack2(float chargeTime) {
+        CmdDestroyChargingFireBall();
     }
 }

@@ -43,6 +43,10 @@ class InputState {
     }
 
     public void Invalidate(int button) {
+        // Only invalidate controls that are active.
+        if (!states[button].isPressed & !states[button].isTouched) {
+            return;
+        }
         states[button].isInvalidated = true;
         states[button].isPressed = false;
         states[button].isTouched = false;
