@@ -24,7 +24,8 @@ GameObject:
   - component: {fileID: 61620452661810058}
   - component: {fileID: 114176084807624708}
   - component: {fileID: 114780275990631150}
-  m_Layer: 0
+  - component: {fileID: 114633825588795610}
+  m_Layer: 10
   m_Name: FireBall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -39,7 +40,7 @@ Transform:
   m_GameObject: {fileID: 1029048364040172}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -1.095336, y: -1.7436637, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -55,15 +56,15 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 0.1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!61 &61620452661810058
 BoxCollider2D:
   m_ObjectHideFlags: 1
@@ -110,6 +111,19 @@ MonoBehaviour:
     i15: 149
   m_ServerOnly: 0
   m_LocalPlayerAuthority: 0
+--- !u!114 &114633825588795610
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1029048364040172}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 261669bf00bc28a42bf52db26d04f2f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  explodingApple: {fileID: 1067510251126116, guid: 7d6a37a4da9154edc9a116afb28f4920,
+    type: 2}
 --- !u!114 &114780275990631150
 MonoBehaviour:
   m_ObjectHideFlags: 1
