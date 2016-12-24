@@ -78,7 +78,7 @@ public class Newton : Player {
 
     [ClientRpc]
     public override void RpcKnockback(Vector2 force) {
-        if (!isLocalPlayer) {
+        if (!hasAuthority) {
             return;
         }
         rb.AddForce(force, ForceMode2D.Impulse);

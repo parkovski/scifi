@@ -1,5 +1,5 @@
 public class Bomb : Item {
     void Start() {
-        Destroy(gameObject, 5f);
+        Destroy(gameObject, 10f);
     }
 }

@@ -35,7 +35,10 @@ public class GameController : NetworkBehaviour {
     PlayerData[] activePlayersData;
 
     [SyncEvent]
-    public event DamageChangedHandler EventHealthChanged;
+    public event DamageChangedHandler EventDamageChanged;
+    /// Implies damage is set to 0.
+    [SyncEvent]
+    public event LifeChangedHandler EventLifeChanged;
 
     public static GameController Instance { get; private set; }
 
@@ -47,13 +50,25 @@ public class GameController : NetworkBehaviour {
     public void RegisterNewPlayer(GameObject playerObject) {
         activePlayersGo = activePlayersGo.Concat(new[] { playerObject } ).ToArray();
         activePlayersData = activePlayersGo.Select(p => p.GetComponent<PlayerData>()).ToArray();
-        activePlayersData[activePlayersData.Length - 1].id = activePlayersData.Length - 1;
+        var data = activePlayersData[activePlayersData.Length - 1];
+        data.id = activePlayersData.Length - 1;
+        EventLifeChanged(new LifeChangedEventArgs {
+            playerId = data.id,
+            newLives = data.lives,
+        });
     }
 
     [Command]
     public void CmdDie(GameObject playerObject) {
         playerObject.transform.position = new Vector3(0f, 7f);
         playerObject.GetComponent<Rigidbody2D>().velocity = new Vector2(0f, 0f);
+        var data = playerObject.GetComponent<PlayerData>();
+        --data.lives;
+        data.damage = 0;
+        EventLifeChanged(new LifeChangedEventArgs {
+            playerId = data.id,
+            newLives = data.lives,
+        });
     }
 
     [Server]
@@ -64,7 +79,7 @@ public class GameController : NetworkBehaviour {
             playerId = player.id,
             newDamage = player.damage,
         };
-        EventHealthChanged(args);
+        EventDamageChanged(args);
     }
 
     [Server]

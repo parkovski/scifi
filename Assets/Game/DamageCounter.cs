@@ -9,11 +9,9 @@ public class DamageCounter : MonoBehaviour {
     Text text;
 
     void Start() {
-        GameController.Instance.EventHealthChanged += PlayerDamageChanged;
         text = GetComponent<Text>();
-
-        lives = 1;
-        damage = 0;
+        GameController.Instance.EventLifeChanged += PlayerLifeChanged;
+        GameController.Instance.EventDamageChanged += PlayerDamageChanged;
     }
 
     void PlayerDamageChanged(DamageChangedEventArgs args) {
@@ -21,6 +19,15 @@ public class DamageCounter : MonoBehaviour {
             return;
         }
         damage = args.newDamage;
+        UpdateInfo();
+    }
+
+    void PlayerLifeChanged(LifeChangedEventArgs args) {
+        if (args.playerId != player) {
+            return;
+        }
+        lives = args.newLives;
+        damage = 0;
         UpdateInfo();
     }
 

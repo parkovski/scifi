@@ -34,6 +34,7 @@ public abstract class Player : NetworkBehaviour {
         data = GetComponent<PlayerData>();
         data.player = this;
         data.direction = defaultDirection;
+        data.lives = 3;
         var gameControllerGo = GameObject.Find("GameController");
         inputManager = gameControllerGo.GetComponent<InputManager>();
 
