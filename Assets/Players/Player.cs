@@ -185,6 +185,12 @@ public abstract class Player : NetworkBehaviour {
         NetworkServer.Spawn(projectile);
     }
 
+    [ClientRpc]
+    public void RpcRespawn(Vector3 position) {
+        transform.position = position;
+        rb.velocity = new Vector2(0f, 0f);
+    }
+
     [Command]
     void CmdChangeDirection(Direction direction) {
         data.direction = direction;

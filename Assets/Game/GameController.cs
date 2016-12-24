@@ -65,11 +65,10 @@ public class GameController : NetworkBehaviour {
 
     [Command]
     public void CmdDie(GameObject playerObject) {
-        playerObject.transform.position = new Vector3(0f, 7f);
-        playerObject.GetComponent<Rigidbody2D>().velocity = new Vector2(0f, 0f);
         var data = playerObject.GetComponent<PlayerData>();
         --data.lives;
         data.damage = 0;
+        data.player.RpcRespawn(new Vector3(0f, 7f));
         EventLifeChanged(new LifeChangedEventArgs {
             playerId = data.id,
             newLives = data.lives,
