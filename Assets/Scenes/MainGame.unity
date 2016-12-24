@@ -1090,7 +1090,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1176952578}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -822479833, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
+  m_Script: {fileID: 11500000, guid: ffa6cd4bca92e9d42940ccb01fb837bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_NetworkPort: 7777
@@ -1102,13 +1102,14 @@ MonoBehaviour:
   m_ScriptCRCCheck: 1
   m_MaxDelay: 0.01
   m_LogLevel: 2
-  m_PlayerPrefab: {fileID: 1456088037116718, guid: 97e910a513a1be44394d891d1d560d15,
-    type: 2}
-  m_AutoCreatePlayer: 1
+  m_PlayerPrefab: {fileID: 0}
+  m_AutoCreatePlayer: 0
   m_PlayerSpawnMethod: 0
   m_OfflineScene: 
   m_OnlineScene: 
   m_SpawnPrefabs:
+  - {fileID: 1445736531698702, guid: 6fd8ac635fa114c41a4491e9070621b6, type: 2}
+  - {fileID: 1456088037116718, guid: 97e910a513a1be44394d891d1d560d15, type: 2}
   - {fileID: 1357499644953146, guid: c0cadcf302e68684fbf4486bf3efe53c, type: 2}
   - {fileID: 1067510251126116, guid: 7d6a37a4da9154edc9a116afb28f4920, type: 2}
   - {fileID: 1029048364040172, guid: 03d7afc17b64a1041b6fd882e9672e95, type: 2}
@@ -1156,6 +1157,7 @@ MonoBehaviour:
   matchSize: 4
   isNetworkActive: 0
   matchMaker: {fileID: 0}
+  spawnPosition: {x: 0, y: 0, z: 0}
 --- !u!4 &1176952581
 Transform:
   m_ObjectHideFlags: 0
