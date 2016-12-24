@@ -35,6 +35,11 @@ public abstract class Player : NetworkBehaviour {
         var gameControllerGo = GameObject.Find("GameController");
         inputManager = gameControllerGo.GetComponent<InputManager>();
 
+        if (isLocalPlayer) {
+            inputManager.ObjectSelected += ObjectSelected;
+            inputManager.ControlCanceled += ControlCanceled;
+        }
+
         // TODO: Remove when GameController manages players
         GameController.Instance.RegisterNewPlayer(gameObject);
     }
@@ -136,6 +141,16 @@ public abstract class Player : NetworkBehaviour {
                 }
             }
         }
+    }
+
+    void ObjectSelected(ObjectSelectedEventArgs args) {
+        if (args.gameObject.name.StartsWith("Bomb")) {
+            DebugPrinter.Instance.SetField(DebugPrinter.Instance.NewField(), "bomb selected");
+        }
+    }
+
+    void ControlCanceled(ControlCanceledEventArgs args) {
+        //
     }
 
     protected virtual void BeginChargingAttack1() {}

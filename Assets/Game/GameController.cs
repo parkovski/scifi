@@ -3,6 +3,7 @@ using UnityEngine.Networking;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Random = UnityEngine.Random;
 
 public class DamageChangedEventArgs : EventArgs {
     public int playerId;
@@ -22,6 +23,9 @@ public class GameController : NetworkBehaviour {
 
     // Map from character names to the properties set via the editor.
     Dictionary<string, GameObject> characters;
+
+    // Items
+    public GameObject bomb;
 
     // Active players, even if dead. Null if no game is running,
     // guaranteed not null if a game is running.
@@ -75,5 +79,19 @@ public class GameController : NetworkBehaviour {
             { "Newton", newton }
         };
         activePlayersGo = new GameObject[0];
+    }
+
+    float nextItemTime;
+    void Update() {
+        if (Time.time > nextItemTime) {
+            nextItemTime = Time.time + Random.Range(7f, 15f);
+            CmdSpawnItem();
+        }
+    }
+
+    [Command]
+    void CmdSpawnItem() {
+        Instantiate(bomb, new Vector2(Random.Range(-6f, 6f), 5f), Quaternion.identity);
+        NetworkServer.Spawn(bomb);
     }
 }

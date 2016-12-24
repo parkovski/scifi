@@ -8,7 +8,11 @@ public class DebugPrinter : MonoBehaviour {
     public Text text;
     public bool showDebugInfo;
 
+    public static DebugPrinter Instance { get; private set; }
+
     public DebugPrinter() {
+        Instance = this;
+
         fields = new List<string>();
         fields.Add("Debug:");
     }

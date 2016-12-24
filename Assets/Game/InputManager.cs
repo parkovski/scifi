@@ -158,10 +158,21 @@ public class ControlCanceledEventArgs : EventArgs {
         this.Control = control;
     }
 }
-public delegate void ControlCanceledHandler(object sender, ControlCanceledEventArgs args);
+public delegate void ControlCanceledHandler(ControlCanceledEventArgs args);
+
+public class ObjectSelectedEventArgs : EventArgs {
+    public GameObject gameObject;
+
+    public ObjectSelectedEventArgs(GameObject gameObject) {
+        this.gameObject = gameObject;
+    }
+}
+public delegate void ObjectSelectedHandler(ObjectSelectedEventArgs args);
 
 public class InputManager : MonoBehaviour {
     int touchControlLayerId;
+    // Layers that we want to be able to select with touch/click.
+    int layerMask;
     InputState state = new InputState();
     // Maps from finger ID to Control.
     Dictionary<int, int> activeTouches;
@@ -184,9 +195,12 @@ public class InputManager : MonoBehaviour {
     }
 
     public event ControlCanceledHandler ControlCanceled;
+    public event ObjectSelectedHandler ObjectSelected;
 
     void Start() {
-        touchControlLayerId = LayerMask.NameToLayer("Touch Controls");
+        layerMask
+            = 1 << LayerMask.NameToLayer("Touch Controls")
+            | 1 << LayerMask.NameToLayer("Items");
         activeTouches = new Dictionary<int, int>();
 
         if (!Input.touchSupported) {
@@ -226,13 +240,13 @@ public class InputManager : MonoBehaviour {
         state.UpdateButton(Control.Attack2, attack2);
     }
 
-    string GetControlAtTouch(Touch touch) {
+    GameObject GetObjectAtTouch(Touch touch) {
         var ray = Camera.main.ScreenToWorldPoint(touch.position);
-        var hit = Physics2D.Raycast(ray, Vector2.zero, Mathf.Infinity, 1 << touchControlLayerId);
+        var hit = Physics2D.Raycast(ray, Vector2.zero, Mathf.Infinity, layerMask);
         if (!hit) {
             return null;
         }
-        return hit.rigidbody.gameObject.name;
+        return hit.rigidbody.gameObject;
     }
 
     int GetTouchControl(string controlName) {
@@ -305,18 +319,20 @@ public class InputManager : MonoBehaviour {
 
         foreach (var touch in Input.touches) {
             if (touch.phase == TouchPhase.Began) {
-                var controlName = GetControlAtTouch(touch);
+                var obj = GetObjectAtTouch(touch);
+                var controlName = obj.name;
                 if (controlName == null) {
                     continue;
                 }
                 var control = GetTouchControl(controlName);
                 if (control == -1) {
+                    ObjectSelected(new ObjectSelectedEventArgs(obj));
                     continue;
                 }
                 BeginTouch(control);
                 activeTouches.Add(touch.fingerId, control);
             } else if (touch.phase == TouchPhase.Moved) {
-                var newControlName = GetControlAtTouch(touch);
+                var newControlName = GetObjectAtTouch(touch).name;
                 if (newControlName == null) {
                     continue;
                 }
@@ -328,7 +344,7 @@ public class InputManager : MonoBehaviour {
                 var combo = GetTouchCombo(activeTouches[touch.fingerId], newControl);
                 if (combo != -1) {
                     InvalidateControl(currentControl);
-                    ControlCanceled(this, new ControlCanceledEventArgs(currentControl));
+                    ControlCanceled(new ControlCanceledEventArgs(currentControl));
                     activeTouches[touch.fingerId] = combo;
                     BeginTouch(combo);
                 }
