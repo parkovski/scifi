@@ -16,6 +16,7 @@ public abstract class Player : NetworkBehaviour {
     private float cooldownOver = 0f;
 
     // Unity editor parameters
+    public Direction defaultDirection;
     public float maxSpeed;
     public float walkForce;
     public float jumpForce;
@@ -32,6 +33,7 @@ public abstract class Player : NetworkBehaviour {
         rb = GetComponent<Rigidbody2D>();
         data = GetComponent<PlayerData>();
         data.player = this;
+        data.direction = defaultDirection;
         var gameControllerGo = GameObject.Find("GameController");
         inputManager = gameControllerGo.GetComponent<InputManager>();
 

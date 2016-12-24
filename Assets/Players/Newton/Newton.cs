@@ -38,6 +38,23 @@ public class Newton : Player {
     [Command]
     protected override void CmdChangeDirection(Direction direction) {
         data.direction = direction;
+        //RpcChangeDirection();
+        //gameObject.transform.rotation.SetFromToRotation(Vector3.right, Vector3.left);
+        //gameObject.transform.rotation *= Quaternion.FromToRotation(Vector3.right, Vector3.left);
+        foreach (var sr in gameObject.GetComponentsInChildren<SpriteRenderer>()) {
+            sr.flipX = !sr.flipX;
+        }
+        for (var i = 0; i < gameObject.transform.childCount; i++) {
+            var child = gameObject.transform.GetChild(i);
+            child.localPosition = new Vector3(-child.localPosition.x, child.localPosition.y, child.localPosition.z);
+        }
+    }
+
+    [ClientRpc]
+    void RpcChangeDirection() {
+        if (!isLocalPlayer) {
+            return;
+        }
     }
 
     [Command]
