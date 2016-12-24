@@ -50,6 +50,12 @@ public class GameController : NetworkBehaviour {
         activePlayersData[activePlayersData.Length - 1].id = activePlayersData.Length - 1;
     }
 
+    [Command]
+    public void CmdDie(GameObject playerObject) {
+        playerObject.transform.position = new Vector3(0f, 7f);
+        playerObject.GetComponent<Rigidbody2D>().velocity = new Vector2(0f, 0f);
+    }
+
     [Server]
     public void TakeDamage(GameObject playerObject, int amount) {
         var player = playerObject.GetComponent<PlayerData>();
