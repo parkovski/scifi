@@ -20,6 +20,7 @@ public delegate void LifeChangedHandler(LifeChangedEventArgs args);
 public class GameController : NetworkBehaviour {
     // Player characters
     public GameObject newton;
+    public GameObject kelvin;
 
     // Map from character names to the properties set via the editor.
     Dictionary<string, GameObject> characters;
@@ -76,7 +77,8 @@ public class GameController : NetworkBehaviour {
     void Awake() {
         Instance = this;
         characters = new Dictionary<string, GameObject>() {
-            { "Newton", newton }
+            { "Newton", newton },
+            { "Kelvin", kelvin },
         };
         activePlayersGo = new GameObject[0];
     }
