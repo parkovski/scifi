@@ -14,6 +14,7 @@ public abstract class Player : NetworkBehaviour {
     protected bool canJump;
     protected bool canDoubleJump;
     private float cooldownOver = 0f;
+    private Direction cachedDirection;
 
     // Unity editor parameters
     public Direction defaultDirection;
@@ -33,7 +34,7 @@ public abstract class Player : NetworkBehaviour {
         rb = GetComponent<Rigidbody2D>();
         data = GetComponent<PlayerData>();
         data.player = this;
-        data.direction = defaultDirection;
+        data.direction = cachedDirection = defaultDirection;
         data.lives = 3;
         var gameControllerGo = GameObject.Find("GameController");
         inputManager = gameControllerGo.GetComponent<InputManager>();
@@ -69,7 +70,10 @@ public abstract class Player : NetworkBehaviour {
             if (rb.velocity.x > -maxSpeed) {
                 rb.AddForce(transform.right * -walkForce);
             }
-            if (data.direction == Direction.Right) {
+            // Without the cached parameter, this will get triggered
+            // multiple times until the direction has had a chance to sync.
+            if (data.direction == Direction.Right && cachedDirection == Direction.Right) {
+                cachedDirection = Direction.Left;
                 CmdChangeDirection(Direction.Left);
             }
         }
@@ -77,7 +81,8 @@ public abstract class Player : NetworkBehaviour {
             if (rb.velocity.x < maxSpeed) {
                 rb.AddForce(transform.right * walkForce);
             }
-            if (data.direction == Direction.Left) {
+            if (data.direction == Direction.Left && cachedDirection == Direction.Left) {
+                cachedDirection = Direction.Right;
                 CmdChangeDirection(Direction.Right);
             }
         }
@@ -180,8 +185,22 @@ public abstract class Player : NetworkBehaviour {
         NetworkServer.Spawn(projectile);
     }
 
-    protected abstract void CmdChangeDirection(Direction direction);
-    public abstract void RpcKnockback(Vector2 force);
+    [Command]
+    void CmdChangeDirection(Direction direction) {
+        data.direction = direction;
+        RpcChangeDirection(direction);
+    }
+
+    [ClientRpc]
+    protected virtual void RpcChangeDirection(Direction direction) {}
+
+    [ClientRpc]
+    public void RpcKnockback(Vector2 force) {
+        if (!hasAuthority) {
+            return;
+        }
+        rb.AddForce(force, ForceMode2D.Impulse);
+    }
 
     // These methods are called only for attacks that don't charge.
     // For charging attacks, use the Begin/End versions above.

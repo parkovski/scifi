@@ -37,11 +37,6 @@ public class Kelvin : Player {
     }
 
     [Command]
-    protected override void CmdChangeDirection(Direction direction) {
-        data.direction = direction;
-    }
-
-    [Command]
     void CmdSpawnIceBall(NetworkInstanceId netId, bool down) {
         Vector2 force;
         if (down) {
@@ -81,14 +76,6 @@ public class Kelvin : Player {
             force *= fireBallHorizontalForce;
         }
         SpawnProjectile(netId, fireBall, gameObject.transform.position, force, 0f);
-    }
-
-    [ClientRpc]
-    public override void RpcKnockback(Vector2 force) {
-        if (!isLocalPlayer) {
-            return;
-        }
-        rb.AddForce(force, ForceMode2D.Impulse);
     }
 
     protected override void Attack1() {

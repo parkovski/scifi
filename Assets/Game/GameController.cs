@@ -52,10 +52,15 @@ public class GameController : NetworkBehaviour {
         activePlayersData = activePlayersGo.Select(p => p.GetComponent<PlayerData>()).ToArray();
         var data = activePlayersData[activePlayersData.Length - 1];
         data.id = activePlayersData.Length - 1;
-        EventLifeChanged(new LifeChangedEventArgs {
+        CmdLifeChangedForNewPlayer(new LifeChangedEventArgs {
             playerId = data.id,
             newLives = data.lives,
         });
+    }
+
+    [Command]
+    void CmdLifeChangedForNewPlayer(LifeChangedEventArgs args) {
+        EventLifeChanged(args);
     }
 
     [Command]
@@ -106,6 +111,10 @@ public class GameController : NetworkBehaviour {
 
     float nextItemTime;
     void Update() {
+        if (!isServer) {
+            return;
+        }
+
         if (Time.time > nextItemTime) {
             nextItemTime = Time.time + Random.Range(7f, 15f);
             CmdSpawnItem();

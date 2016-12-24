@@ -35,25 +35,14 @@ public class Newton : Player {
         BaseInput();
     }
 
-    [Command]
-    protected override void CmdChangeDirection(Direction direction) {
-        data.direction = direction;
-        //RpcChangeDirection();
-        //gameObject.transform.rotation.SetFromToRotation(Vector3.right, Vector3.left);
-        //gameObject.transform.rotation *= Quaternion.FromToRotation(Vector3.right, Vector3.left);
+    [ClientRpc]
+    protected override void RpcChangeDirection(Direction direction) {
         foreach (var sr in gameObject.GetComponentsInChildren<SpriteRenderer>()) {
             sr.flipX = !sr.flipX;
         }
         for (var i = 0; i < gameObject.transform.childCount; i++) {
             var child = gameObject.transform.GetChild(i);
             child.localPosition = new Vector3(-child.localPosition.x, child.localPosition.y, child.localPosition.z);
-        }
-    }
-
-    [ClientRpc]
-    void RpcChangeDirection() {
-        if (!isLocalPlayer) {
-            return;
         }
     }
 
@@ -74,14 +63,6 @@ public class Newton : Player {
         appleRb.AddForce(force);
         appleRb.AddTorque(Random.Range(-appleTorqueRange, appleTorqueRange));
         NetworkServer.Spawn(newApple);
-    }
-
-    [ClientRpc]
-    public override void RpcKnockback(Vector2 force) {
-        if (!hasAuthority) {
-            return;
-        }
-        rb.AddForce(force, ForceMode2D.Impulse);
     }
 
     protected override void Attack1() {
