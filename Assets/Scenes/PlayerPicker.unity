@@ -105,7 +105,7 @@ Halo:
   m_Enabled: 1
   m_Color:
     serializedVersion: 2
-    rgba: 4284483595
+    rgba: 4280043083
   m_Size: 2.5
 --- !u!61 &244797655
 BoxCollider2D:
@@ -482,6 +482,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 539c56f98990b4c3e991c16409b1334c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  goButton: {fileID: 957719623}
 --- !u!114 &854189641
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -630,6 +631,17 @@ BoxCollider2D:
   m_Offset: {x: 0, y: -0.47}
   serializedVersion: 2
   m_Size: {x: 5.57, y: 8.25}
+--- !u!122 &916805402
+Halo:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 916805399}
+  m_Enabled: 0
+  m_Color:
+    serializedVersion: 2
+    rgba: 4280043083
+  m_Size: 2.5
 --- !u!1 &957719621
 GameObject:
   m_ObjectHideFlags: 0
@@ -705,7 +717,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 957719624}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &957719624
