@@ -29,7 +29,8 @@ public static class Control {
     public const int Attack1 = 4;
     public const int Attack2 = 5;
     public const int SpecialAttack = 6;
-    public const int ArrayLength = 7;
+    public const int Item = 7;
+    public const int ArrayLength = 8;
 }
 
 class InputState {
@@ -217,6 +218,7 @@ public class InputManager : MonoBehaviour {
         var vertical = Input.GetAxis("Vertical");
         var attack1 = Input.GetButton("Fire1");
         var attack2 = Input.GetButton("Fire2");
+        var item = Input.GetKey("return");
 
         if (horizontal > 0f) {
             state.UpdateAxis(Control.Right, Control.Left, horizontal);
@@ -238,6 +240,7 @@ public class InputManager : MonoBehaviour {
 
         state.UpdateButton(Control.Attack1, attack1);
         state.UpdateButton(Control.Attack2, attack2);
+        state.UpdateButton(Control.Item, item);
     }
 
     GameObject GetObjectAtTouch(Touch touch) {

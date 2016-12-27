@@ -15,6 +15,7 @@ public abstract class Player : NetworkBehaviour {
     protected bool canDoubleJump;
     private float cooldownOver = 0f;
     private Direction cachedDirection;
+    private GameObject item;
 
     // Unity editor parameters
     public Direction defaultDirection;
@@ -30,6 +31,9 @@ public abstract class Player : NetworkBehaviour {
     protected bool attack2CanCharge = false;
     private bool attack2IsCharging = false;
 
+    //
+    private static int itemsLayer = -1;
+
     protected void BaseStart() {
         rb = GetComponent<Rigidbody2D>();
         data = GetComponent<PlayerData>();
@@ -42,6 +46,10 @@ public abstract class Player : NetworkBehaviour {
         if (isLocalPlayer) {
             inputManager.ObjectSelected += ObjectSelected;
             inputManager.ControlCanceled += ControlCanceled;
+        }
+
+        if (itemsLayer == -1) {
+            itemsLayer = LayerMask.NameToLayer("Items");
         }
 
         // TODO: Remove when GameController manages players
@@ -101,6 +109,15 @@ public abstract class Player : NetworkBehaviour {
             }
         }
 
+        if (inputManager.IsControlActive(Control.Item)) {
+            inputManager.InvalidateControl(Control.Item);
+            if (item != null) {
+                UseItem();
+            } else {
+                PickUpItem();
+            }
+        }
+
         var attack1Active = inputManager.IsControlActive(Control.Attack1);
         if (attack1CanCharge) {
             // For chargeable attacks, fire events for button state change.
@@ -151,9 +168,67 @@ public abstract class Player : NetworkBehaviour {
         }
     }
 
+    void UseItem() {
+        CmdThrowItem(item);
+        item = null;
+    }
+
+    [Command]
+    void CmdThrowItem(GameObject item) {
+        Vector2 force;
+        if (data.direction == Direction.Left) {
+            force = new Vector2(-500f, 300f);
+        } else {
+            force = new Vector2(500f, 300f);
+        }
+        item.GetComponent<Rigidbody2D>().AddForce(force);
+    }
+
+    void PickUpItem(GameObject item = null) {
+        this.item = CircleCastForItem(item);
+    }
+
+    /// If an item is passed, this function will return it
+    /// only if it falls in the circle cast.
+    /// If no item was passed, it will return the first item
+    /// hit by the circle cast.
+    GameObject CircleCastForItem(GameObject item) {
+        var hits = Physics2D.CircleCastAll(
+            gameObject.transform.position,
+            1f,
+            Vector2.zero,
+            Mathf.Infinity,
+            1 << itemsLayer);
+        if (hits.Length == 0) {
+            return null;
+        }
+
+        if (item == null) {
+            return hits[0].collider.gameObject;
+        }
+
+        foreach (var hit in hits) {
+            if (hit.collider.gameObject == item) {
+                return item;
+            }
+        }
+        return null;
+    }
+
     void ObjectSelected(ObjectSelectedEventArgs args) {
-        if (args.gameObject.name.StartsWith("Bomb")) {
-            DebugPrinter.Instance.SetField(DebugPrinter.Instance.NewField(), "bomb selected");
+        if (args.gameObject == this.item) {
+            UseItem();
+            return;
+        }
+
+        // We can only hold one item at a time.
+        if (item != null) {
+            return;
+        }
+        if (args.gameObject.layer == itemsLayer) {
+            if (CircleCastForItem(args.gameObject) == args.gameObject) {
+                PickUpItem(args.gameObject);
+            }
         }
     }
 
