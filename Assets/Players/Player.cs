@@ -175,6 +175,8 @@ public abstract class Player : NetworkBehaviour {
 
     [Command]
     void CmdThrowItem(GameObject item) {
+        LoseOwnershipOfItem(item);
+
         Vector2 force;
         if (data.direction == Direction.Left) {
             force = new Vector2(-500f, 300f);
@@ -186,6 +188,25 @@ public abstract class Player : NetworkBehaviour {
 
     void PickUpItem(GameObject item = null) {
         this.item = CircleCastForItem(item);
+        if (this.item != null) {
+            CmdTakeOwnershipOfItem(this.item);
+        }
+    }
+
+    [Command]
+    void CmdTakeOwnershipOfItem(GameObject item) {
+        var myPosition = gameObject.transform.position;
+        item.transform.position = new Vector2(myPosition.x, myPosition.y + 1.5f);
+        var i = item.GetComponent<ItemData>().item;
+        i.EnablePhysics(false);
+        i.SetOwner(gameObject);
+    }
+
+    [Server]
+    void LoseOwnershipOfItem(GameObject item) {
+        var i = item.GetComponent<ItemData>().item;
+        i.SetOwner(null);
+        i.EnablePhysics(true);
     }
 
     /// If an item is passed, this function will return it

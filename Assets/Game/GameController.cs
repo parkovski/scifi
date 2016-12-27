@@ -116,12 +116,12 @@ public class GameController : NetworkBehaviour {
 
         if (Time.time > nextItemTime) {
             nextItemTime = Time.time + Random.Range(7f, 15f);
-            CmdSpawnItem();
+            SpawnItem();
         }
     }
 
-    [Command]
-    void CmdSpawnItem() {
+    [Server]
+    void SpawnItem() {
         Instantiate(bomb, new Vector2(Random.Range(-6f, 6f), 5f), Quaternion.identity);
         NetworkServer.Spawn(bomb);
     }
