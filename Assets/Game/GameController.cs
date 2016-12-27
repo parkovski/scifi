@@ -122,7 +122,7 @@ public class GameController : NetworkBehaviour {
 
     [Server]
     void SpawnItem() {
-        Instantiate(bomb, new Vector2(Random.Range(-6f, 6f), 5f), Quaternion.identity);
-        NetworkServer.Spawn(bomb);
+        var newBomb = Instantiate(bomb, new Vector2(Random.Range(-6f, 6f), 5f), Quaternion.identity);
+        NetworkServer.Spawn(newBomb);
     }
 }
