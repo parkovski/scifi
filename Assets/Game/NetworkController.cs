@@ -10,7 +10,7 @@ public class NetworkController : NetworkManager {
     //Called on client when connect
     public override void OnClientConnect(NetworkConnection conn) {
         // Create message to set the player
-        var msg = new StringMessage("Newton");
+        var msg = new StringMessage(TransitionParams.playerName);
 
         // Call Add player and pass the message
         ClientScene.AddPlayer(conn, 0, msg);

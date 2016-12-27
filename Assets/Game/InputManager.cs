@@ -30,11 +30,14 @@ public static class Control {
     public const int Attack2 = 5;
     public const int SpecialAttack = 6;
     public const int Item = 7;
-    public const int ArrayLength = 8;
+    public const int MouseButton1 = 8;
+    public const int MouseButton2 = 9;
+    public const int ArrayLength = 10;
 }
 
 class InputState {
     public ButtonState[] states;
+    public Vector2 mousePosition;
 
     public InputState() {
         states = new ButtonState[Control.ArrayLength];
@@ -195,6 +198,10 @@ public class InputManager : MonoBehaviour {
         state.Invalidate(control);
     }
 
+    public Vector2 GetMousePosition() {
+        return state.mousePosition;
+    }
+
     public event ControlCanceledHandler ControlCanceled;
     public event ObjectSelectedHandler ObjectSelected;
 
@@ -219,6 +226,8 @@ public class InputManager : MonoBehaviour {
         var attack1 = Input.GetButton("Fire1");
         var attack2 = Input.GetButton("Fire2");
         var item = Input.GetKey("return");
+        var mouse1 = Input.GetKey("mouse 0");
+        var mouse2 = Input.GetKey("mouse 1");
 
         if (horizontal > 0f) {
             state.UpdateAxis(Control.Right, Control.Left, horizontal);
@@ -241,15 +250,32 @@ public class InputManager : MonoBehaviour {
         state.UpdateButton(Control.Attack1, attack1);
         state.UpdateButton(Control.Attack2, attack2);
         state.UpdateButton(Control.Item, item);
+
+        state.mousePosition = Input.mousePosition;
+        UpdateMouse(Control.MouseButton1, mouse1);
+        UpdateMouse(Control.MouseButton2, mouse2);
     }
 
-    GameObject GetObjectAtTouch(Touch touch) {
-        var ray = Camera.main.ScreenToWorldPoint(touch.position);
+    void UpdateMouse(int control, bool active) {
+        // If the mouse button was just pressed,
+        // we may need to fire an object selected message.
+        GameObject selectedObject = null;
+        if (active && !state.states[control].isPressed) {
+            selectedObject = GetObjectAtPosition(state.mousePosition);
+        }
+        state.UpdateButton(control, active);
+        if (selectedObject != null) {
+            ObjectSelected(new ObjectSelectedEventArgs(selectedObject));
+        }
+    }
+
+    GameObject GetObjectAtPosition(Vector2 position) {
+        var ray = Camera.main.ScreenToWorldPoint(position);
         var hit = Physics2D.Raycast(ray, Vector2.zero, Mathf.Infinity, layerMask);
         if (!hit) {
             return null;
         }
-        return hit.rigidbody.gameObject;
+        return hit.collider.gameObject;
     }
 
     int GetTouchControl(string controlName) {
@@ -322,8 +348,8 @@ public class InputManager : MonoBehaviour {
 
         foreach (var touch in Input.touches) {
             if (touch.phase == TouchPhase.Began) {
-                var obj = GetObjectAtTouch(touch);
-                var controlName = obj.name;
+                var obj = GetObjectAtPosition(touch.position);
+                var controlName = obj == null ? null : obj.name;
                 if (controlName == null) {
                     continue;
                 }
@@ -335,7 +361,8 @@ public class InputManager : MonoBehaviour {
                 BeginTouch(control);
                 activeTouches.Add(touch.fingerId, control);
             } else if (touch.phase == TouchPhase.Moved) {
-                var newControlName = GetObjectAtTouch(touch).name;
+                var newObj = GetObjectAtPosition(touch.position);
+                var newControlName = newObj == null ? null : newObj.name;
                 if (newControlName == null) {
                     continue;
                 }
