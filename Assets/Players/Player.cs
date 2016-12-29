@@ -15,7 +15,7 @@ public abstract class Player : NetworkBehaviour {
     protected bool canDoubleJump;
     private float cooldownOver = 0f;
     private Direction cachedDirection;
-    private GameObject item;
+    protected GameObject item;
 
     // Unity editor parameters
     public Direction defaultDirection;
@@ -80,7 +80,7 @@ public abstract class Player : NetworkBehaviour {
             }
             // Without the cached parameter, this will get triggered
             // multiple times until the direction has had a chance to sync.
-            if (data.direction == Direction.Right && cachedDirection == Direction.Right) {
+            if (cachedDirection == Direction.Right && cachedDirection == Direction.Right) {
                 cachedDirection = Direction.Left;
                 CmdChangeDirection(Direction.Left);
             }
@@ -89,7 +89,7 @@ public abstract class Player : NetworkBehaviour {
             if (rb.velocity.x < maxSpeed) {
                 rb.AddForce(transform.right * walkForce);
             }
-            if (data.direction == Direction.Left && cachedDirection == Direction.Left) {
+            if (cachedDirection == Direction.Left && cachedDirection == Direction.Left) {
                 cachedDirection = Direction.Right;
                 CmdChangeDirection(Direction.Right);
             }
@@ -176,12 +176,13 @@ public abstract class Player : NetworkBehaviour {
     [Command]
     void CmdThrowItem(GameObject item) {
         LoseOwnershipOfItem(item);
+        item.layer = LayerMask.NameToLayer("Projectiles");
 
         Vector2 force;
-        if (data.direction == Direction.Left) {
-            force = new Vector2(-500f, 300f);
+        if (cachedDirection == Direction.Left) {
+            force = new Vector2(-200f, 150f);
         } else {
-            force = new Vector2(500f, 300f);
+            force = new Vector2(200f, 150f);
         }
         item.GetComponent<Rigidbody2D>().AddForce(force);
     }
@@ -195,11 +196,27 @@ public abstract class Player : NetworkBehaviour {
 
     [Command]
     void CmdTakeOwnershipOfItem(GameObject item) {
-        var myPosition = gameObject.transform.position;
-        item.transform.position = new Vector2(myPosition.x, myPosition.y + 1.5f);
+        var position = gameObject.transform.position;
+        if (cachedDirection == Direction.Left) {
+            position.x -= 1f;
+        } else {
+            position.x += 1f;
+        }
+        item.transform.position = position;
         var i = item.GetComponent<ItemData>().item;
         i.EnablePhysics(false);
         i.SetOwner(gameObject);
+    }
+
+    [Server]
+    void MoveItemForChangeDirection(GameObject item, Direction direction) {
+        float dx;
+        if (direction == Direction.Left) {
+            dx = -2f;
+        } else {
+            dx = 2f;
+        }
+        item.GetComponent<ItemData>().item.UpdateOwnerOffset(dx, 0f);
     }
 
     [Server]
@@ -272,9 +289,17 @@ public abstract class Player : NetworkBehaviour {
     }
 
     [Server]
-    protected void SpawnProjectile(NetworkInstanceId netId, GameObject prefab, Vector2 position, Vector2 force, float torque) {
+    protected void SpawnProjectile(
+        NetworkInstanceId netId,
+        NetworkInstanceId extraNetId,
+        GameObject prefab,
+        Vector2 position,
+        Vector2 force,
+        float torque)
+    {
         var projectile = Instantiate(prefab, position, Quaternion.identity);
         projectile.GetComponent<AppleBehavior>().spawnedBy = netId;
+        projectile.GetComponent<AppleBehavior>().spawnedByExtra = extraNetId;
         var projectileRb = projectile.GetComponent<Rigidbody2D>();
         projectileRb.AddForce(force);
         projectileRb.AddTorque(torque);
@@ -290,6 +315,9 @@ public abstract class Player : NetworkBehaviour {
     [Command]
     void CmdChangeDirection(Direction direction) {
         data.direction = direction;
+        if (item != null) {
+            MoveItemForChangeDirection(item, direction);
+        }
         RpcChangeDirection(direction);
     }
 

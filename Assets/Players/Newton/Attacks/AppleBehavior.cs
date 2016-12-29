@@ -6,6 +6,8 @@ public class AppleBehavior : NetworkBehaviour {
 
     [SyncVar]
     public NetworkInstanceId spawnedBy;
+    [SyncVar]
+    public NetworkInstanceId spawnedByExtra = NetworkInstanceId.Invalid;
 
     void Start () {
         Destroy(gameObject, 3f);
@@ -13,12 +15,20 @@ public class AppleBehavior : NetworkBehaviour {
 
     public override void OnStartClient() {
         // Don't let this object hit the player that created it.
-        var player = ClientScene.FindLocalObject(spawnedBy);
-        var appleColliders = gameObject.GetComponents<Collider2D>();
-        var playerColliders = player.GetComponents<Collider2D>();
-        foreach (var playerColl in playerColliders) {
-            foreach (var appleColl in appleColliders) {
-                Physics2D.IgnoreCollision(playerColl, appleColl);
+        IgnoreCollisions(spawnedBy);
+
+        if (spawnedByExtra != NetworkInstanceId.Invalid) {
+            IgnoreCollisions(spawnedByExtra);
+        }
+    }
+
+    void IgnoreCollisions(NetworkInstanceId id) {
+        var obj = ClientScene.FindLocalObject(id);
+        var projectileColliders = gameObject.GetComponents<Collider2D>();
+        var objectColliders = obj.GetComponents<Collider2D>();
+        foreach (var objColl in objectColliders) {
+            foreach (var projColl in projectileColliders) {
+                Physics2D.IgnoreCollision(objColl, projColl);
             }
         }
     }

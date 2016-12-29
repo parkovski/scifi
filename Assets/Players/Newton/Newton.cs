@@ -5,6 +5,9 @@ using Random = UnityEngine.Random;
 public class Newton : Player {
     public GameObject apple;
 
+    private Animator animator;
+    private bool walkAnimationPlaying;
+
     // Physics parameters
     const float appleHorizontalForce = 50f;
     const float appleVerticalForce = 20f;
@@ -13,6 +16,7 @@ public class Newton : Player {
 
     void Start() {
         BaseStart();
+        //animator = GetComponent<Animator>();
     }
 
     public override void OnStartLocalPlayer() {
@@ -34,7 +38,26 @@ public class Newton : Player {
 
         BaseInput();
     }
-
+/*
+    void Update() {
+        if (rb.velocity.x > .5f) {
+            if (!walkAnimationPlaying) {
+                walkAnimationPlaying = true;
+                animator.SetTrigger("WalkRight");
+            }
+        } else if (rb.velocity.x < -.5f) {
+            if (!walkAnimationPlaying) {
+                walkAnimationPlaying = true;
+                animator.SetTrigger("WalkLeft");
+            }
+        } else {
+            if (walkAnimationPlaying) {
+                walkAnimationPlaying = false;
+                animator.SetTrigger("Stand");
+            }
+        }
+    }
+*/
     [ClientRpc]
     protected override void RpcChangeDirection(Direction direction) {
         foreach (var sr in gameObject.GetComponentsInChildren<SpriteRenderer>()) {
@@ -47,26 +70,24 @@ public class Newton : Player {
     }
 
     [Command]
-    void CmdSpawnApple(NetworkInstanceId netId, bool down) {
-        var newApple = Instantiate(apple, gameObject.transform.position, Quaternion.identity);
-        newApple.GetComponent<AppleBehavior>().spawnedBy = netId;
-        var appleRb = newApple.GetComponent<Rigidbody2D>();
-        var force = transform.right * appleHorizontalForce;
+    void CmdSpawnApple(NetworkInstanceId netId, NetworkInstanceId itemNetId, bool down) {
+        var force = transform.up * appleVerticalForce;
         if (down) {
             force = -transform.up * appleHorizontalForce;
         } else {
             if (data.direction == Direction.Left) {
-                force = -force;
+                force += -transform.right * appleHorizontalForce;
+            } else {
+                force += transform.right * appleHorizontalForce;
             }
-            appleRb.AddForce(transform.up * appleVerticalForce);
         }
-        appleRb.AddForce(force);
-        appleRb.AddTorque(Random.Range(-appleTorqueRange, appleTorqueRange));
-        NetworkServer.Spawn(newApple);
+        var torque = Random.Range(-appleTorqueRange, appleTorqueRange);
+        SpawnProjectile(netId, itemNetId, apple, gameObject.transform.position, force, torque);
     }
 
     protected override void Attack1() {
-        CmdSpawnApple(netId, inputManager.IsControlActive(Control.Down));
+        var itemNetId = item == null ? NetworkInstanceId.Invalid : item.GetComponent<ItemData>().item.netId;
+        CmdSpawnApple(netId, itemNetId, inputManager.IsControlActive(Control.Down));
     }
 
     protected override void Attack2() {
