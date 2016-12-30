@@ -15,6 +15,7 @@ public abstract class Player : NetworkBehaviour {
     protected bool canDoubleJump;
     private float cooldownOver = 0f;
     private Direction cachedDirection;
+    protected GameObject item;
 
     // Unity editor parameters
     public Direction defaultDirection;
@@ -43,9 +44,6 @@ public abstract class Player : NetworkBehaviour {
             inputManager.ObjectSelected += ObjectSelected;
             inputManager.ControlCanceled += ControlCanceled;
         }
-
-        // TODO: Remove when GameController manages players
-        GameController.Instance.RegisterNewPlayer(gameObject);
     }
 
     protected void BaseCollisionEnter2D(Collision2D collision) {
@@ -72,7 +70,7 @@ public abstract class Player : NetworkBehaviour {
             }
             // Without the cached parameter, this will get triggered
             // multiple times until the direction has had a chance to sync.
-            if (data.direction == Direction.Right && cachedDirection == Direction.Right) {
+            if (cachedDirection == Direction.Right && cachedDirection == Direction.Right) {
                 cachedDirection = Direction.Left;
                 CmdChangeDirection(Direction.Left);
             }
@@ -81,7 +79,7 @@ public abstract class Player : NetworkBehaviour {
             if (rb.velocity.x < maxSpeed) {
                 rb.AddForce(transform.right * walkForce);
             }
-            if (data.direction == Direction.Left && cachedDirection == Direction.Left) {
+            if (cachedDirection == Direction.Left && cachedDirection == Direction.Left) {
                 cachedDirection = Direction.Right;
                 CmdChangeDirection(Direction.Right);
             }
@@ -98,6 +96,15 @@ public abstract class Player : NetworkBehaviour {
                     rb.velocity = new Vector2(rb.velocity.x, minDoubleJumpVelocity);
                 }
                 rb.AddForce(transform.up * jumpForce / 2, ForceMode2D.Impulse);
+            }
+        }
+
+        if (inputManager.IsControlActive(Control.Item)) {
+            inputManager.InvalidateControl(Control.Item);
+            if (item != null) {
+                UseItem();
+            } else {
+                PickUpItem();
             }
         }
 
@@ -151,9 +158,105 @@ public abstract class Player : NetworkBehaviour {
         }
     }
 
+    void UseItem() {
+        CmdThrowItem(item);
+        item = null;
+    }
+
+    [Command]
+    void CmdThrowItem(GameObject item) {
+        LoseOwnershipOfItem(item);
+        item.layer = Layers.projectiles;
+
+        Vector2 force;
+        if (cachedDirection == Direction.Left) {
+            force = new Vector2(-200f, 150f);
+        } else {
+            force = new Vector2(200f, 150f);
+        }
+        item.GetComponent<Rigidbody2D>().AddForce(force);
+    }
+
+    void PickUpItem(GameObject item = null) {
+        this.item = CircleCastForItem(item);
+        if (this.item != null) {
+            CmdTakeOwnershipOfItem(this.item);
+        }
+    }
+
+    [Command]
+    void CmdTakeOwnershipOfItem(GameObject item) {
+        var position = gameObject.transform.position;
+        if (cachedDirection == Direction.Left) {
+            position.x -= 1f;
+        } else {
+            position.x += 1f;
+        }
+        item.transform.position = position;
+        var i = item.GetComponent<ItemData>().item;
+        i.EnablePhysics(false);
+        i.SetOwner(gameObject);
+    }
+
+    [Server]
+    void MoveItemForChangeDirection(GameObject item, Direction direction) {
+        float dx;
+        if (direction == Direction.Left) {
+            dx = -2f;
+        } else {
+            dx = 2f;
+        }
+        item.GetComponent<ItemData>().item.UpdateOwnerOffset(dx, 0f);
+    }
+
+    [Server]
+    void LoseOwnershipOfItem(GameObject item) {
+        var i = item.GetComponent<ItemData>().item;
+        i.SetOwner(null);
+        i.EnablePhysics(true);
+    }
+
+    /// If an item is passed, this function will return it
+    /// only if it falls in the circle cast.
+    /// If no item was passed, it will return the first item
+    /// hit by the circle cast.
+    GameObject CircleCastForItem(GameObject item) {
+        var hits = Physics2D.CircleCastAll(
+            gameObject.transform.position,
+            1f,
+            Vector2.zero,
+            Mathf.Infinity,
+            1 << Layers.items);
+        if (hits.Length == 0) {
+            return null;
+        }
+
+        if (item == null) {
+            return hits[0].collider.gameObject;
+        }
+
+        foreach (var hit in hits) {
+            if (hit.collider.gameObject == item) {
+                return item;
+            }
+        }
+        return null;
+    }
+
     void ObjectSelected(ObjectSelectedEventArgs args) {
-        if (args.gameObject.name.StartsWith("Bomb")) {
-            DebugPrinter.Instance.SetField(DebugPrinter.Instance.NewField(), "bomb selected");
+        if (args.gameObject == this.item) {
+            UseItem();
+            return;
+        }
+
+        // We can only hold one item at a time.
+        if (item != null) {
+            return;
+        }
+        if (args.gameObject.layer == Layers.items) {
+            if (CircleCastForItem(args.gameObject) == args.gameObject) {
+                PickUpItem(args.gameObject);
+            }
         }
     }
 
@@ -176,9 +279,17 @@ public abstract class Player : NetworkBehaviour {
     }
 
     [Server]
-    protected void SpawnProjectile(NetworkInstanceId netId, GameObject prefab, Vector2 position, Vector2 force, float torque) {
+    protected void SpawnProjectile(
+        NetworkInstanceId netId,
+        NetworkInstanceId extraNetId,
+        GameObject prefab,
+        Vector2 position,
+        Vector2 force,
+        float torque)
+    {
         var projectile = Instantiate(prefab, position, Quaternion.identity);
         projectile.GetComponent<AppleBehavior>().spawnedBy = netId;
+        projectile.GetComponent<AppleBehavior>().spawnedByExtra = extraNetId;
         var projectileRb = projectile.GetComponent<Rigidbody2D>();
         projectileRb.AddForce(force);
         projectileRb.AddTorque(torque);
@@ -197,6 +308,9 @@ public abstract class Player : NetworkBehaviour {
     [Command]
     void CmdChangeDirection(Direction direction) {
         data.direction = direction;
+        if (item != null) {
+            MoveItemForChangeDirection(item, direction);
+        }
         RpcChangeDirection(direction);
     }
 

@@ -10,7 +10,7 @@ public class NetworkController : NetworkManager {
     //Called on client when connect
     public override void OnClientConnect(NetworkConnection conn) {
         // Create message to set the player
-        var msg = new StringMessage("Newton");
+        var msg = new StringMessage(TransitionParams.playerName);
 
         // Call Add player and pass the message
         ClientScene.AddPlayer(conn, 0, msg);
@@ -22,13 +22,6 @@ public class NetworkController : NetworkManager {
         var stream = extraMessageReader.ReadMessage<StringMessage>();
         var playerName = stream.value;
 
-        //Select the prefab from the spawnable objects list
-        var playerPrefab = spawnPrefabs.Find(p => p.name == playerName);
-
-        // Create player object with prefab
-        var player = Instantiate(playerPrefab, spawnPosition, Quaternion.identity) as GameObject;
-        
-        // Add player object for connection
-        NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
+        GameController.Instance.RegisterNewPlayer(conn, playerControllerId, playerName);
     }
  }

@@ -37,7 +37,7 @@ public class Kelvin : Player {
     }
 
     [Command]
-    void CmdSpawnIceBall(NetworkInstanceId netId, bool down) {
+    void CmdSpawnIceBall(NetworkInstanceId netId, NetworkInstanceId itemNetId, bool down) {
         Vector2 force;
         if (down) {
             force = -transform.up * iceBallHorizontalForce;
@@ -51,7 +51,7 @@ public class Kelvin : Player {
             force += (Vector2)transform.up * iceBallVerticalForce;
         }
         var torque = Random.Range(-iceBallTorqueRange, iceBallTorqueRange);
-        SpawnProjectile(netId, iceBall, gameObject.transform.position, force, torque);
+        SpawnProjectile(netId, itemNetId, iceBall, gameObject.transform.position, force, torque);
     }
 
     [Command]
@@ -68,18 +68,19 @@ public class Kelvin : Player {
     }
 
     [Command]
-    void CmdSpawnFireBall(NetworkInstanceId netId) {
+    void CmdSpawnFireBall(NetworkInstanceId netId, NetworkInstanceId itemNetId) {
         var force = transform.right;
         if (data.direction == Direction.Left) {
             force *= -fireBallHorizontalForce;
         } else {
             force *= fireBallHorizontalForce;
         }
-        SpawnProjectile(netId, fireBall, gameObject.transform.position, force, 0f);
+        SpawnProjectile(netId, itemNetId, fireBall, gameObject.transform.position, force, 0f);
     }
 
     protected override void Attack1() {
-        CmdSpawnIceBall(netId, inputManager.IsControlActive(Control.Down));
+        var itemNetId = item == null ? NetworkInstanceId.Invalid : item.GetComponent<ItemData>().item.netId;
+        CmdSpawnIceBall(netId, itemNetId, inputManager.IsControlActive(Control.Down));
     }
 
     protected override void BeginChargingAttack2() {
