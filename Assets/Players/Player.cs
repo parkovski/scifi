@@ -16,6 +16,7 @@ public abstract class Player : NetworkBehaviour {
     private float cooldownOver = 0f;
     private Direction cachedDirection;
     protected GameObject item;
+    private OneWayPlatform currentOneWayPlatform;
 
     // Unity editor parameters
     public Direction defaultDirection;
@@ -51,6 +52,11 @@ public abstract class Player : NetworkBehaviour {
             ++groundCollisions;
             canJump = true;
             canDoubleJump = false;
+
+            var oneWay = collision.gameObject.GetComponent<OneWayPlatform>();
+            if (oneWay != null) {
+                currentOneWayPlatform = oneWay;
+            }
         }
     }
 
@@ -59,6 +65,11 @@ public abstract class Player : NetworkBehaviour {
             if (--groundCollisions == 0) {
                 canJump = false;
                 canDoubleJump = true;
+            }
+
+            var oneWay = collision.gameObject.GetComponent<OneWayPlatform>();
+            if (oneWay != null) {
+                currentOneWayPlatform = null;
             }
         }
     }
@@ -96,6 +107,11 @@ public abstract class Player : NetworkBehaviour {
                     rb.velocity = new Vector2(rb.velocity.x, minDoubleJumpVelocity);
                 }
                 rb.AddForce(transform.up * jumpForce / 2, ForceMode2D.Impulse);
+            }
+        }
+        if (inputManager.IsControlActive(Control.Down)) {
+            if (currentOneWayPlatform != null) {
+                currentOneWayPlatform.FallThrough(gameObject);
             }
         }
 
@@ -261,6 +277,16 @@ public abstract class Player : NetworkBehaviour {
     }
 
     void ControlCanceled(ControlCanceledEventArgs args) {
+        //
+    }
+
+    [Command]
+    void CmdFallThrough() {
+        RpcFallThrough();
+    }
+
+    [Server]
+    void RpcFallThrough() {
         //
     }
 
