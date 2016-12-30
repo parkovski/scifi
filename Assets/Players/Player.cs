@@ -324,6 +324,9 @@ public abstract class Player : NetworkBehaviour {
 
     [ClientRpc]
     public void RpcRespawn(Vector3 position) {
+        if (!hasAuthority) {
+            return;
+        }
         transform.position = position;
         rb.velocity = new Vector2(0f, 0f);
     }
