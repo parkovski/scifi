@@ -38,6 +38,23 @@ public class Item : NetworkBehaviour {
         }
     }
 
+    public static void IgnoreCollisions(GameObject obj1, GameObject obj2, bool ignore = true) {
+        var colls1 = obj1.GetComponents<Collider2D>();
+        var colls2 = obj2.GetComponents<Collider2D>();
+        foreach (var c1 in colls1) {
+            foreach (var c2 in colls2) {
+                Physics2D.IgnoreCollision(c1, c2, ignore);
+            }
+        }
+    }
+
+    public static void IgnoreCollisions(GameObject obj, Collider2D coll, bool ignore = true) {
+        var colls = obj.GetComponents<Collider2D>();
+        foreach (var c in colls) {
+            Physics2D.IgnoreCollision(c, coll, ignore);
+        }
+    }
+
     public void SetOwner(GameObject owner) {
         this.owner = owner;
         if (owner == null) {

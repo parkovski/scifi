@@ -31,9 +31,6 @@ public abstract class Player : NetworkBehaviour {
     protected bool attack2CanCharge = false;
     private bool attack2IsCharging = false;
 
-    //
-    private static int itemsLayer = -1;
-
     protected void BaseStart() {
         rb = GetComponent<Rigidbody2D>();
         data = GetComponent<PlayerData>();
@@ -47,13 +44,6 @@ public abstract class Player : NetworkBehaviour {
             inputManager.ObjectSelected += ObjectSelected;
             inputManager.ControlCanceled += ControlCanceled;
         }
-
-        if (itemsLayer == -1) {
-            itemsLayer = LayerMask.NameToLayer("Items");
-        }
-
-        // TODO: Remove when GameController manages players
-        GameController.Instance.RegisterNewPlayer(gameObject);
     }
 
     protected void BaseCollisionEnter2D(Collision2D collision) {
@@ -176,7 +166,7 @@ public abstract class Player : NetworkBehaviour {
     [Command]
     void CmdThrowItem(GameObject item) {
         LoseOwnershipOfItem(item);
-        item.layer = LayerMask.NameToLayer("Projectiles");
+        item.layer = Layers.projectiles;
 
         Vector2 force;
         if (cachedDirection == Direction.Left) {
@@ -236,7 +226,7 @@ public abstract class Player : NetworkBehaviour {
             1f,
             Vector2.zero,
             Mathf.Infinity,
-            1 << itemsLayer);
+            1 << Layers.items);
         if (hits.Length == 0) {
             return null;
         }
@@ -263,7 +253,7 @@ public abstract class Player : NetworkBehaviour {
         if (item != null) {
             return;
         }
-        if (args.gameObject.layer == itemsLayer) {
+        if (args.gameObject.layer == Layers.items) {
             if (CircleCastForItem(args.gameObject) == args.gameObject) {
                 PickUpItem(args.gameObject);
             }

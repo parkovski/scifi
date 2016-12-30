@@ -30,6 +30,9 @@ public static class Control {
     public const int Attack2 = 5;
     public const int SpecialAttack = 6;
     public const int Item = 7;
+    /// Not used in game - player may set a mouse button
+    /// as one of the other controls - these are used
+    /// only in menus.
     public const int MouseButton1 = 8;
     public const int MouseButton2 = 9;
     public const int ArrayLength = 10;

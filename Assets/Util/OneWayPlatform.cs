@@ -33,9 +33,7 @@ public class OneWayPlatform : MonoBehaviour {
         } else {
             colliderCount[go] = 1;
         }
-        foreach (var coll in go.GetComponents<Collider2D>()) {
-            Physics2D.IgnoreCollision(edgeCollider, coll, true);
-        }
+        Item.IgnoreCollisions(go, edgeCollider);
     }
 
     void OnTriggerExit2D(Collider2D otherCollider) {
@@ -46,11 +44,15 @@ public class OneWayPlatform : MonoBehaviour {
         }
         if (count <= 1) {
             colliderCount[go] = 0;
-            foreach (var coll in go.GetComponents<Collider2D>()) {
-                Physics2D.IgnoreCollision(edgeCollider, coll, false);
-            }
+            Item.IgnoreCollisions(go, edgeCollider, false);
         } else {
             colliderCount[go] = count - 1;
+        }
+    }
+
+    void OnCollisionStay2D(Collision2D collision) {
+        if (Input.GetAxis("Vertical") < 0f) {
+            Item.IgnoreCollisions(collision.gameObject, edgeCollider);
         }
     }
 }

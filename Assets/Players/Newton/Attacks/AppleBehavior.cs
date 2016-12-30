@@ -15,21 +15,10 @@ public class AppleBehavior : NetworkBehaviour {
 
     public override void OnStartClient() {
         // Don't let this object hit the player that created it.
-        IgnoreCollisions(spawnedBy);
+        Item.IgnoreCollisions(gameObject, ClientScene.FindLocalObject(spawnedBy));
 
         if (spawnedByExtra != NetworkInstanceId.Invalid) {
-            IgnoreCollisions(spawnedByExtra);
-        }
-    }
-
-    void IgnoreCollisions(NetworkInstanceId id) {
-        var obj = ClientScene.FindLocalObject(id);
-        var projectileColliders = gameObject.GetComponents<Collider2D>();
-        var objectColliders = obj.GetComponents<Collider2D>();
-        foreach (var objColl in objectColliders) {
-            foreach (var projColl in projectileColliders) {
-                Physics2D.IgnoreCollision(objColl, projColl);
-            }
+            Item.IgnoreCollisions(gameObject, ClientScene.FindLocalObject(spawnedByExtra));
         }
     }
 
