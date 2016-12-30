@@ -472,6 +472,9 @@ MonoBehaviour:
   minDoubleJumpVelocity: 2
   attackCooldown: 0.5
   apple: {fileID: 1357499644953146, guid: c0cadcf302e68684fbf4486bf3efe53c, type: 2}
+  calc1: {fileID: 1583965280471450, guid: 81029c4f4e2844b1f9d1864b78d68789, type: 2}
+  calc2: {fileID: 1177451361045738, guid: 1bbe4c23a18514eb1a2e7f1c618e84f2, type: 2}
+  calc3: {fileID: 1214470367260520, guid: e3ac8cf483c0848bfa910e7cb48ce11e, type: 2}
 --- !u!114 &114846927447625442
 MonoBehaviour:
   m_ObjectHideFlags: 1

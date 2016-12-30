@@ -4,6 +4,11 @@ using Random = UnityEngine.Random;
 
 public class Newton : Player {
     public GameObject apple;
+    public GameObject calc1;
+    public GameObject calc2;
+    public GameObject calc3;
+    private GameObject chargingCalcBook;
+    private int calcBookPower = 0;
 
     private Animator animator;
     private bool walkAnimationPlaying;
@@ -16,6 +21,8 @@ public class Newton : Player {
 
     void Start() {
         BaseStart();
+
+        attack2CanCharge = true;
         //animator = GetComponent<Animator>();
     }
 
@@ -90,7 +97,33 @@ public class Newton : Player {
         CmdSpawnApple(netId, itemNetId, inputManager.IsControlActive(Control.Down));
     }
 
-    protected override void Attack2() {
-        //
+    void SpawnChargingCalcBook(GameObject book) {
+        var offset = data.direction == Direction.Left ? new Vector3(-1f, .5f) : new Vector3(1f, .5f);
+        chargingCalcBook = Instantiate(book, gameObject.transform.position + offset, Quaternion.identity);
+        chargingCalcBook.transform.parent = gameObject.transform;
+        var behavior = chargingCalcBook.GetComponent<CalcBook>();
+        behavior.spawnedBy = gameObject;
+        behavior.finishAttack = () => Destroy(chargingCalcBook);
+    }
+
+    protected override void BeginChargingAttack2() {
+        calcBookPower = 0;
+        SpawnChargingCalcBook(calc1);
+    }
+
+    protected override void KeepChargingAttack2(float chargeTime) {
+        if (chargeTime > .7f && calcBookPower == 0) {
+            ++calcBookPower;
+            Destroy(chargingCalcBook);
+            SpawnChargingCalcBook(calc2);
+        } else if (chargeTime > 1.4f && calcBookPower == 1) {
+            ++calcBookPower;
+            Destroy(chargingCalcBook);
+            SpawnChargingCalcBook(calc3);
+        }
+    }
+
+    protected override void EndChargingAttack2(float chargeTime) {
+        Destroy(chargingCalcBook);
     }
 }

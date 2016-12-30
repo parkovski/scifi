@@ -131,6 +131,8 @@ public abstract class Player : NetworkBehaviour {
                 if (!attack1Active) {
                     attack1IsCharging = false;
                     EndChargingAttack1(inputManager.GetControlHoldTime(Control.Attack1));
+                } else {
+                    KeepChargingAttack1(inputManager.GetControlHoldTime(Control.Attack1));
                 }
             } else {
                 if (attack1Active) {
@@ -156,6 +158,8 @@ public abstract class Player : NetworkBehaviour {
                 if (!attack2Active) {
                     attack2IsCharging = false;
                     EndChargingAttack2(inputManager.GetControlHoldTime(Control.Attack2));
+                } else {
+                    KeepChargingAttack2(inputManager.GetControlHoldTime(Control.Attack2));
                 }
             } else {
                 if (attack2Active) {
@@ -291,6 +295,7 @@ public abstract class Player : NetworkBehaviour {
     }
 
     protected virtual void BeginChargingAttack1() {}
+    protected virtual void KeepChargingAttack1(float chargeTime) {}
     protected virtual void EndChargingAttack1(float chargeTime) {}
     protected void CancelChargingAttack1() {
         inputManager.InvalidateControl(Control.Attack1);
@@ -298,6 +303,7 @@ public abstract class Player : NetworkBehaviour {
     }
 
     protected virtual void BeginChargingAttack2() {}
+    protected virtual void KeepChargingAttack2(float chargeTime) {}
     protected virtual void EndChargingAttack2(float chargeTime) {}
     protected void CancelChargingAttack2() {
         inputManager.InvalidateControl(Control.Attack2);
