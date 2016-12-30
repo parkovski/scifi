@@ -50,9 +50,7 @@ public class OneWayPlatform : MonoBehaviour {
         }
     }
 
-    void OnCollisionStay2D(Collision2D collision) {
-        if (Input.GetAxis("Vertical") < 0f) {
-            Item.IgnoreCollisions(collision.gameObject, edgeCollider);
-        }
+    public void FallThrough(GameObject go) {
+        Item.IgnoreCollisions(go, edgeCollider);
     }
 }
