@@ -14,8 +14,8 @@ public class Newton : Player {
     private bool walkAnimationPlaying;
 
     // Physics parameters
-    const float appleHorizontalForce = 50f;
-    const float appleVerticalForce = 20f;
+    const float appleHorizontalForce = 20f;
+    const float appleVerticalForce = 50f;
     // Torque is random from (-appleTorqueRange, appleTorqueRange).
     const float appleTorqueRange = 5f;
 
@@ -99,7 +99,7 @@ public class Newton : Player {
 
     void SpawnChargingCalcBook(GameObject book) {
         var offset = data.direction == Direction.Left ? new Vector3(-1f, .5f) : new Vector3(1f, .5f);
-        chargingCalcBook = Instantiate(book, gameObject.transform.position + offset, Quaternion.identity);
+        chargingCalcBook = Instantiate(book, gameObject.transform.position + offset, Quaternion.Euler(0f, 0f, 20f));
         chargingCalcBook.transform.parent = gameObject.transform;
         var behavior = chargingCalcBook.GetComponent<CalcBook>();
         behavior.spawnedBy = gameObject;

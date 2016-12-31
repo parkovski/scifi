@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
 
-public class AppleBehavior : NetworkBehaviour {
+public class Apple : NetworkBehaviour {
     public GameObject explodingApple;
 
     [SyncVar]

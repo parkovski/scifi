@@ -39,6 +39,11 @@ public class GameController : NetworkBehaviour {
 
     // Items
     public GameObject bomb;
+    public GameObject bow;
+    public GameObject arrow;
+    public GameObject fireArrow;
+    public GameObject bombArrow;
+    public GameObject rockArrow;
 
     // Active players, even if dead. Null if no game is running,
     // guaranteed not null if a game is running.
@@ -137,7 +142,8 @@ public class GameController : NetworkBehaviour {
 
     [Server]
     void SpawnItem() {
-        var newBomb = Instantiate(bomb, new Vector2(Random.Range(-6f, 6f), 5f), Quaternion.identity);
-        NetworkServer.Spawn(newBomb);
+        var prefab = Random.Range(0f, 1f) > .5f ? bomb : bow;
+        var item = Instantiate(prefab, new Vector2(Random.Range(-6f, 6f), 5f), Quaternion.identity);
+        NetworkServer.Spawn(item);
     }
 }

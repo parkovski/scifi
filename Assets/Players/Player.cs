@@ -151,6 +151,7 @@ public abstract class Player : NetworkBehaviour {
                     isCharging = false;
                     endCharging(inputManager.GetControlHoldTime(control));
                     ResumeFeature(PlayerFeature.Attack);
+                    ResumeFeature(PlayerFeature.Movement);
                 } else {
                     keepCharging(inputManager.GetControlHoldTime(control));
                 }
@@ -158,6 +159,7 @@ public abstract class Player : NetworkBehaviour {
                 if (inputActive && FeatureEnabled(PlayerFeature.Attack)) {
                     isCharging = true;
                     SuspendFeature(PlayerFeature.Attack);
+                    SuspendFeature(PlayerFeature.Movement);
                     beginCharging();
                 }
             }
@@ -352,8 +354,8 @@ public abstract class Player : NetworkBehaviour {
         float torque)
     {
         var projectile = Instantiate(prefab, position, Quaternion.identity);
-        projectile.GetComponent<AppleBehavior>().spawnedBy = netId;
-        projectile.GetComponent<AppleBehavior>().spawnedByExtra = extraNetId;
+        projectile.GetComponent<Apple>().spawnedBy = netId;
+        projectile.GetComponent<Apple>().spawnedByExtra = extraNetId;
         var projectileRb = projectile.GetComponent<Rigidbody2D>();
         projectileRb.AddForce(force);
         projectileRb.AddTorque(torque);
@@ -384,6 +386,9 @@ public abstract class Player : NetworkBehaviour {
     [ClientRpc]
     public void RpcKnockback(Vector2 force) {
         if (!hasAuthority) {
+            return;
+        }
+        if (!FeatureEnabled(PlayerFeature.Knockback)) {
             return;
         }
         rb.AddForce(force, ForceMode2D.Impulse);

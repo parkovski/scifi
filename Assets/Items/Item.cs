@@ -38,6 +38,12 @@ public class Item : NetworkBehaviour {
         }
     }
 
+    protected void BaseCollisionEnter2D(Collision2D collision) {
+        if (collision.gameObject.tag == "Ground") {
+            gameObject.layer = LayerMask.NameToLayer("Items");
+        }
+    }
+
     public static void IgnoreCollisions(GameObject obj1, GameObject obj2, bool ignore = true) {
         var colls1 = obj1.GetComponents<Collider2D>();
         var colls2 = obj2.GetComponents<Collider2D>();

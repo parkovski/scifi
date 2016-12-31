@@ -1174,6 +1174,11 @@ MonoBehaviour:
   - {fileID: 1284917634577738, guid: ab2f5738fa6e25b46bcaf4df5013554a, type: 2}
   - {fileID: 1931044926520130, guid: eee7494577489924eb0396574e70e3cf, type: 2}
   - {fileID: 1677562881235206, guid: 72b7e942859852943b7fa7160b47c974, type: 2}
+  - {fileID: 1787082464910702, guid: 4c1d83ebc6e024263bcaa49e29d1633f, type: 2}
+  - {fileID: 1446669325398844, guid: ff2ef8e5d075f46f6ba33bb57c2ba490, type: 2}
+  - {fileID: 1695519470493172, guid: ac6ba9ff5c62f45409356a082592198c, type: 2}
+  - {fileID: 1468857226336700, guid: 56c12282f22394d9b8c797935b0ff45c, type: 2}
+  - {fileID: 1973570358142584, guid: 2b8ab5e7411ae4490bb62fdf19f194e8, type: 2}
   m_CustomConfig: 0
   m_MaxConnections: 4
   m_ConnectionConfig:
@@ -1277,6 +1282,11 @@ MonoBehaviour:
   newton: {fileID: 1445736531698702, guid: 6fd8ac635fa114c41a4491e9070621b6, type: 2}
   kelvin: {fileID: 1456088037116718, guid: 97e910a513a1be44394d891d1d560d15, type: 2}
   bomb: {fileID: 1677562881235206, guid: 72b7e942859852943b7fa7160b47c974, type: 2}
+  bow: {fileID: 1787082464910702, guid: 4c1d83ebc6e024263bcaa49e29d1633f, type: 2}
+  arrow: {fileID: 1446669325398844, guid: ff2ef8e5d075f46f6ba33bb57c2ba490, type: 2}
+  fireArrow: {fileID: 1468857226336700, guid: 56c12282f22394d9b8c797935b0ff45c, type: 2}
+  bombArrow: {fileID: 1695519470493172, guid: ac6ba9ff5c62f45409356a082592198c, type: 2}
+  rockArrow: {fileID: 1973570358142584, guid: 2b8ab5e7411ae4490bb62fdf19f194e8, type: 2}
 --- !u!114 &1476694107
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1339,7 +1349,7 @@ AudioSource:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1476694104}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 2f96250d019434c6f94d5ba6a6599e1d, type: 3}

@@ -14,9 +14,7 @@ public class Bomb : Item {
             return;
         }
 
-        if (collision.gameObject.tag == "Ground") {
-            gameObject.layer = LayerMask.NameToLayer("Items");
-        }
+        BaseCollisionEnter2D(collision);
 
         if (collision.gameObject.tag == "Player") {
             GameController.Instance.TakeDamage(collision.gameObject, 15);
