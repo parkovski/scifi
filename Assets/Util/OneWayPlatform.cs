@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 public class OneWayPlatform : MonoBehaviour {
-    EdgeCollider2D edgeCollider;
+    Collider2D edgeCollider;
     // Since objects might have multiple colliders,
     // when an object enters the trigger, we increase
     // the collider count, and only stop ignoring
@@ -12,10 +12,10 @@ public class OneWayPlatform : MonoBehaviour {
     Dictionary<GameObject, int> colliderCount;
 
     void Start() {
-        var colliders = GetComponents<EdgeCollider2D>();
+        var colliders = GetComponents<Collider2D>();
         if (colliders.Length != 2 || colliders.Count(c => c.isTrigger) != 1) {
             throw new InvalidOperationException("OneWayPlatform is only valid " +
-                "on objects with one trigger EdgeCollider2D and one non-trigger EdgeCollider2D");
+                "on objects with one trigger Collider2D and one non-trigger Collider2D");
         }
         edgeCollider = colliders.First(c => !c.isTrigger);
 
