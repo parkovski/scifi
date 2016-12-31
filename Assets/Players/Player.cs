@@ -39,7 +39,6 @@ public abstract class Player : NetworkBehaviour {
     protected bool canJump;
     protected bool canDoubleJump;
     private float cooldownOver = 0f;
-    private Direction cachedDirection;
     protected GameObject item;
     private OneWayPlatform currentOneWayPlatform;
     private int[] featureLockout;
@@ -240,7 +239,7 @@ public abstract class Player : NetworkBehaviour {
         item.layer = Layers.projectiles;
 
         Vector2 force;
-        if (cachedDirection == Direction.Left) {
+        if (direction == Direction.Left) {
             force = new Vector2(-200f, 150f);
         } else {
             force = new Vector2(200f, 150f);
@@ -258,7 +257,7 @@ public abstract class Player : NetworkBehaviour {
     [Command]
     void CmdTakeOwnershipOfItem(GameObject item) {
         var position = gameObject.transform.position;
-        if (cachedDirection == Direction.Left) {
+        if (direction == Direction.Left) {
             position.x -= 1f;
         } else {
             position.x += 1f;
