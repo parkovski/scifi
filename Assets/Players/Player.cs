@@ -1,9 +1,17 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
+using System;
 
 public enum Direction {
     Left,
     Right,
+}
+
+public enum PlayerFeature {
+    Movement,
+    Attack,
+    Damage,
+    Knockback,
 }
 
 public abstract class Player : NetworkBehaviour {
@@ -17,6 +25,7 @@ public abstract class Player : NetworkBehaviour {
     private Direction cachedDirection;
     protected GameObject item;
     private OneWayPlatform currentOneWayPlatform;
+    private int[] featureLockout;
 
     // Unity editor parameters
     public Direction defaultDirection;
@@ -45,6 +54,8 @@ public abstract class Player : NetworkBehaviour {
             inputManager.ObjectSelected += ObjectSelected;
             inputManager.ControlCanceled += ControlCanceled;
         }
+
+        featureLockout = new int[Enum.GetNames(typeof(PlayerFeature)).Length];
     }
 
     protected void BaseCollisionEnter2D(Collision2D collision) {
@@ -74,28 +85,97 @@ public abstract class Player : NetworkBehaviour {
         }
     }
 
-    protected void BaseInput() {
-        if (inputManager.IsControlActive(Control.Left)) {
-            if (rb.velocity.x > -maxSpeed) {
-                rb.AddForce(transform.right * -walkForce);
+    protected void SuspendFeature(PlayerFeature feature) {
+        ++featureLockout[(int)feature];
+    }
+
+    protected void ResumeFeature(PlayerFeature feature) {
+        if (featureLockout[(int)feature] > 0) {
+            --featureLockout[(int)feature];
+        }
+    }
+
+    private bool FeatureEnabled(PlayerFeature feature) {
+        return featureLockout[(int)feature] == 0;
+    }
+
+    void HandleLeftRightInput(int control, Direction direction, bool backwards) {
+        bool canSpeedUp;
+        Vector3 force;
+        if (backwards) {
+            canSpeedUp = rb.velocity.x > -maxSpeed;
+            force = transform.right * -walkForce;
+        } else {
+            canSpeedUp = rb.velocity.x < maxSpeed;
+            force = transform.right * walkForce;
+        }
+
+        if (inputManager.IsControlActive(control) && FeatureEnabled(PlayerFeature.Movement)) {
+            if (canSpeedUp) {
+                rb.AddForce(force);
             }
             // Without the cached parameter, this will get triggered
             // multiple times until the direction has had a chance to sync.
-            if (cachedDirection == Direction.Right && cachedDirection == Direction.Right) {
-                cachedDirection = Direction.Left;
-                CmdChangeDirection(Direction.Left);
+            if (data.direction != direction && cachedDirection != direction) {
+                cachedDirection = direction;
+                CmdChangeDirection(direction);
             }
         }
-        if (inputManager.IsControlActive(Control.Right)) {
-            if (rb.velocity.x < maxSpeed) {
-                rb.AddForce(transform.right * walkForce);
+    }
+
+    private void HandleAttackInput(bool inputActive, bool canCharge, ref bool isCharging, int attackNumber) {
+        Action beginCharging;
+        Action<float> keepCharging;
+        Action<float> endCharging;
+        Action attack;
+        int control;
+        if (attackNumber == 1) {
+            beginCharging = BeginChargingAttack1;
+            keepCharging = KeepChargingAttack1;
+            endCharging = EndChargingAttack1;
+            attack = Attack1;
+            control = Control.Attack1;
+        } else if (attackNumber == 2) {
+            beginCharging = BeginChargingAttack2;
+            keepCharging = KeepChargingAttack2;
+            endCharging = EndChargingAttack2;
+            attack = Attack2;
+            control = Control.Attack2;
+        } else {
+            throw new ArgumentException("attackNumber must be a valid attack input", "attackNumber");
+        }
+
+        if (canCharge) {
+            if (isCharging) {
+                if (!inputActive) {
+                    isCharging = false;
+                    endCharging(inputManager.GetControlHoldTime(control));
+                    ResumeFeature(PlayerFeature.Attack);
+                } else {
+                    keepCharging(inputManager.GetControlHoldTime(control));
+                }
+            } else {
+                if (inputActive && FeatureEnabled(PlayerFeature.Attack)) {
+                    isCharging = true;
+                    SuspendFeature(PlayerFeature.Attack);
+                    beginCharging();
+                }
             }
-            if (cachedDirection == Direction.Left && cachedDirection == Direction.Left) {
-                cachedDirection = Direction.Right;
-                CmdChangeDirection(Direction.Right);
+        } else {
+            if (inputActive) {
+                inputManager.InvalidateControl(control);
+                if (Time.time > cooldownOver && FeatureEnabled(PlayerFeature.Attack)) {
+                    cooldownOver = Time.time + attackCooldown;
+                    attack();
+                }
             }
         }
-        if (inputManager.IsControlActive(Control.Up)) {
+    }
+
+    protected void BaseInput() {
+        HandleLeftRightInput(Control.Left, Direction.Left, true);
+        HandleLeftRightInput(Control.Right, Direction.Right, false);
+        if (inputManager.IsControlActive(Control.Up) && FeatureEnabled(PlayerFeature.Movement)) {
             inputManager.InvalidateControl(Control.Up);
             if (canJump) {
                 canJump = false;
@@ -109,13 +189,13 @@ public abstract class Player : NetworkBehaviour {
                 rb.AddForce(transform.up * jumpForce / 2, ForceMode2D.Impulse);
             }
         }
-        if (inputManager.IsControlActive(Control.Down)) {
+        if (inputManager.IsControlActive(Control.Down) && FeatureEnabled(PlayerFeature.Movement)) {
             if (currentOneWayPlatform != null) {
                 currentOneWayPlatform.FallThrough(gameObject);
             }
         }
 
-        if (inputManager.IsControlActive(Control.Item)) {
+        if (inputManager.IsControlActive(Control.Item) && FeatureEnabled(PlayerFeature.Attack)) {
             inputManager.InvalidateControl(Control.Item);
             if (item != null) {
                 UseItem();
@@ -125,57 +205,9 @@ public abstract class Player : NetworkBehaviour {
         }
 
         var attack1Active = inputManager.IsControlActive(Control.Attack1);
-        if (attack1CanCharge) {
-            // For chargeable attacks, fire events for button state change.
-            if (attack1IsCharging) {
-                if (!attack1Active) {
-                    attack1IsCharging = false;
-                    EndChargingAttack1(inputManager.GetControlHoldTime(Control.Attack1));
-                } else {
-                    KeepChargingAttack1(inputManager.GetControlHoldTime(Control.Attack1));
-                }
-            } else {
-                if (attack1Active) {
-                    attack1IsCharging = true;
-                    BeginChargingAttack1();
-                }
-            }
-        } else {
-            if (attack1Active) {
-                // For non-chargeable attacks, invalidate the button
-                // so you have to release and press it again to attack again.
-                inputManager.InvalidateControl(Control.Attack1);
-                if (Time.time > cooldownOver) {
-                    cooldownOver = Time.time + attackCooldown;
-                    Attack1();
-                }
-            }
-        }
-
         var attack2Active = inputManager.IsControlActive(Control.Attack2);
-        if (attack2CanCharge) {
-            if (attack2IsCharging) {
-                if (!attack2Active) {
-                    attack2IsCharging = false;
-                    EndChargingAttack2(inputManager.GetControlHoldTime(Control.Attack2));
-                } else {
-                    KeepChargingAttack2(inputManager.GetControlHoldTime(Control.Attack2));
-                }
-            } else {
-                if (attack2Active) {
-                    attack2IsCharging = true;
-                    BeginChargingAttack2();
-                }
-            }
-        } else {
-            if (attack2Active) {
-                inputManager.InvalidateControl(Control.Attack2);
-                if (Time.time > cooldownOver) {
-                    cooldownOver = Time.time + attackCooldown;
-                    Attack2();
-                }
-            }
-        }
+        HandleAttackInput(attack1Active, attack1CanCharge, ref attack1IsCharging, 1);
+        HandleAttackInput(attack2Active, attack2CanCharge, ref attack2IsCharging, 2);
     }
 
     void UseItem() {
