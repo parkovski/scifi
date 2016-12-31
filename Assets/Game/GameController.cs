@@ -49,7 +49,6 @@ public class GameController : NetworkBehaviour {
     // guaranteed not null if a game is running.
     GameObject[] activePlayersGo;
     Player[] activePlayers;
-    PlayerData[] activePlayersData;
 
     [SyncEvent]
     public event DamageChangedHandler EventDamageChanged;
@@ -59,44 +58,39 @@ public class GameController : NetworkBehaviour {
 
     public static GameController Instance { get; private set; }
 
-    public PlayerData GetPlayerData(int id) {
-        return activePlayersData[id];
-    }
-
     [Server]
     public void RegisterNewPlayer(NetworkConnection conn, short controllerId, string name) {
-        var player = newton;
-        characters.TryGetValue(name, out player);
-        player = Instantiate(player, Vector2.zero, Quaternion.identity);
-        NetworkServer.AddPlayerForConnection(conn, player, controllerId);
+        var playerObject = newton;
+        characters.TryGetValue(name, out playerObject);
+        playerObject = Instantiate(playerObject, Vector2.zero, Quaternion.identity);
+        NetworkServer.AddPlayerForConnection(conn, playerObject, controllerId);
 
-        activePlayersGo = activePlayersGo.Concat(new[] { player }).ToArray();
-        activePlayersData = activePlayersGo.Select(p => p.GetComponent<PlayerData>()).ToArray();
-        var data = activePlayersData[activePlayersData.Length - 1];
-        data.id = activePlayersData.Length - 1;
-        data.lives = 5;
-        activePlayers = activePlayersData.Select(d => d.player).ToArray();
+        activePlayersGo = activePlayersGo.Concat(new[] { playerObject }).ToArray();
+        activePlayers = activePlayersGo.Select(p => p.GetComponent<Player>()).ToArray();
+        var player = activePlayers[activePlayers.Length - 1];
+        player.id = activePlayers.Length - 1;
+        player.lives = 5;
         EventLifeChanged(new LifeChangedEventArgs {
-            playerId = data.id,
-            newLives = data.lives,
+            playerId = player.id,
+            newLives = player.lives,
         });
     }
 
     [Command]
     public void CmdDie(GameObject playerObject) {
-        var data = playerObject.GetComponent<PlayerData>();
-        --data.lives;
-        data.damage = 0;
-        data.player.RpcRespawn(new Vector3(0f, 7f));
+        var player = playerObject.GetComponent<Player>();
+        --player.lives;
+        player.damage = 0;
+        player.RpcRespawn(new Vector3(0f, 7f));
         EventLifeChanged(new LifeChangedEventArgs {
-            playerId = data.id,
-            newLives = data.lives,
+            playerId = player.id,
+            newLives = player.lives,
         });
     }
 
     [Server]
     public void TakeDamage(GameObject playerObject, int amount) {
-        var player = playerObject.GetComponent<PlayerData>();
+        var player = playerObject.GetComponent<Player>();
         player.damage += amount;
         var args = new DamageChangedEventArgs {
             playerId = player.id,
@@ -107,15 +101,15 @@ public class GameController : NetworkBehaviour {
 
     [Server]
     public void Knockback(GameObject attackingObject, GameObject playerObject, float amount) {
-        var data = playerObject.GetComponent<PlayerData>();
-        amount *= data.damage;
+        var player = playerObject.GetComponent<Player>();
+        amount *= player.damage;
         var vector = playerObject.transform.position - attackingObject.transform.position;
         var force = transform.up * amount;
         if (vector.x < 0) {
             amount = -amount;
         }
         force += transform.right * amount;
-        data.player.RpcKnockback(force);
+        player.RpcKnockback(force);
     }
 
     void Awake() {

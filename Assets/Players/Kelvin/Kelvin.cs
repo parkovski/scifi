@@ -43,7 +43,7 @@ public class Kelvin : Player {
             force = -transform.up * iceBallHorizontalForce;
         } else {
             force = transform.right;
-            if (data.direction == Direction.Left) {
+            if (direction == Direction.Left) {
                 force *= -iceBallHorizontalForce;
             } else {
                 force *= iceBallHorizontalForce;
@@ -56,7 +56,7 @@ public class Kelvin : Player {
 
     [Command]
     void CmdSpawnChargingFireBall() {
-        var offset = data.direction == Direction.Left ? new Vector3(-.5f, .4f) : new Vector3(.5f, .4f);
+        var offset = direction == Direction.Left ? new Vector3(-.5f, .4f) : new Vector3(.5f, .4f);
         chargingFireBall = Instantiate(fireBallInactive, gameObject.transform.position + offset, Quaternion.identity);
         chargingFireBall.transform.parent = gameObject.transform;
         NetworkServer.Spawn(chargingFireBall);
@@ -70,7 +70,7 @@ public class Kelvin : Player {
     [Command]
     void CmdSpawnFireBall(NetworkInstanceId netId, NetworkInstanceId itemNetId) {
         var force = transform.right;
-        if (data.direction == Direction.Left) {
+        if (direction == Direction.Left) {
             force *= -fireBallHorizontalForce;
         } else {
             force *= fireBallHorizontalForce;
@@ -79,7 +79,7 @@ public class Kelvin : Player {
     }
 
     protected override void Attack1() {
-        var itemNetId = item == null ? NetworkInstanceId.Invalid : item.GetComponent<ItemData>().item.netId;
+        var itemNetId = item == null ? NetworkInstanceId.Invalid : item.GetComponent<Item>().netId;
         CmdSpawnIceBall(netId, itemNetId, inputManager.IsControlActive(Control.Down));
     }
 

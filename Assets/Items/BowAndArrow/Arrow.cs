@@ -1,4 +1,5 @@
-using UnityEngine.Networking;
-
-public class Arrow : NetworkBehaviour {
+public class Arrow : Projectile {
+    void Start() {
+        BaseStart();
+    }
 }

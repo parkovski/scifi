@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class Item : NetworkBehaviour {
+public abstract class Item : NetworkBehaviour {
     public bool isBeingThrown = false;
 
     /// The item's owner, if any, that it will follow.
@@ -16,7 +16,6 @@ public class Item : NetworkBehaviour {
     const float aliveTimeAfterPickup = 3.5f;
 
     protected void BaseStart(float aliveTime = 5f) {
-        gameObject.GetComponent<ItemData>().item = this;
         this.aliveTime = aliveTime;
         this.destroyTime = Time.time + aliveTime;
     }
@@ -43,6 +42,10 @@ public class Item : NetworkBehaviour {
             gameObject.layer = LayerMask.NameToLayer("Items");
         }
     }
+
+    protected abstract bool ShouldThrow();
+    protected abstract bool ShouldCharge();
+    protected virtual void EndCharging(float chargeTime, Direction direction) {}
 
     public static void IgnoreCollisions(GameObject obj1, GameObject obj2, bool ignore = true) {
         var colls1 = obj1.GetComponents<Collider2D>();

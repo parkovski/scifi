@@ -22,4 +22,12 @@ public class Bomb : Item {
             Destroy(gameObject);
         }
     }
+
+    protected override bool ShouldThrow() {
+        return true;
+    }
+
+    protected override bool ShouldCharge() {
+        return false;
+    }
 }

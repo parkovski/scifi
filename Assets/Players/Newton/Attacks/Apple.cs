@@ -1,25 +1,12 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
 
-public class Apple : NetworkBehaviour {
+public class Apple : Projectile {
     public GameObject explodingApple;
 
-    [SyncVar]
-    public NetworkInstanceId spawnedBy;
-    [SyncVar]
-    public NetworkInstanceId spawnedByExtra = NetworkInstanceId.Invalid;
-
     void Start () {
+        BaseStart();
         Destroy(gameObject, 3f);
-    }
-
-    public override void OnStartClient() {
-        // Don't let this object hit the player that created it.
-        Item.IgnoreCollisions(gameObject, ClientScene.FindLocalObject(spawnedBy));
-
-        if (spawnedByExtra != NetworkInstanceId.Invalid) {
-            Item.IgnoreCollisions(gameObject, ClientScene.FindLocalObject(spawnedByExtra));
-        }
     }
 
     void OnCollisionEnter2D(Collision2D collision) {

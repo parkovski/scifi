@@ -82,7 +82,7 @@ public class Newton : Player {
         if (down) {
             force = -transform.up * appleHorizontalForce;
         } else {
-            if (data.direction == Direction.Left) {
+            if (direction == Direction.Left) {
                 force += -transform.right * appleHorizontalForce;
             } else {
                 force += transform.right * appleHorizontalForce;
@@ -93,12 +93,12 @@ public class Newton : Player {
     }
 
     protected override void Attack1() {
-        var itemNetId = item == null ? NetworkInstanceId.Invalid : item.GetComponent<ItemData>().item.netId;
+        var itemNetId = item == null ? NetworkInstanceId.Invalid : item.GetComponent<Item>().netId;
         CmdSpawnApple(netId, itemNetId, inputManager.IsControlActive(Control.Down));
     }
 
     void SpawnChargingCalcBook(GameObject book) {
-        var offset = data.direction == Direction.Left ? new Vector3(-1f, .5f) : new Vector3(1f, .5f);
+        var offset = direction == Direction.Left ? new Vector3(-1f, .5f) : new Vector3(1f, .5f);
         chargingCalcBook = Instantiate(book, gameObject.transform.position + offset, Quaternion.Euler(0f, 0f, 20f));
         chargingCalcBook.transform.parent = gameObject.transform;
         var behavior = chargingCalcBook.GetComponent<CalcBook>();

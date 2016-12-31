@@ -14,8 +14,25 @@ public enum PlayerFeature {
     Knockback,
 }
 
+public enum PlayerAttack {
+    Attack1,
+    Attack2,
+    SpecialAttack,
+    Item,
+}
+
 public abstract class Player : NetworkBehaviour {
-    protected PlayerData data;
+    [SyncVar]
+    public int id;
+    [SyncVar]
+    public string displayName;
+    [SyncVar]
+    public int lives;
+    [SyncVar]
+    public int damage;
+    [SyncVar]
+    public Direction direction;
+
     protected Rigidbody2D rb;
     protected InputManager inputManager;
     private int groundCollisions;
@@ -40,13 +57,13 @@ public abstract class Player : NetworkBehaviour {
     private bool attack1IsCharging = false;
     protected bool attack2CanCharge = false;
     private bool attack2IsCharging = false;
+    protected bool specialAttackCanCharge = false;
+    private bool specialAttackIsCharging = false;
 
     protected void BaseStart() {
         rb = GetComponent<Rigidbody2D>();
-        data = GetComponent<PlayerData>();
-        data.player = this;
-        data.direction = cachedDirection = defaultDirection;
-        data.lives = 3;
+        direction = Direction.Right;
+        lives = 3;
         var gameControllerGo = GameObject.Find("GameController");
         inputManager = gameControllerGo.GetComponent<InputManager>();
 
@@ -116,8 +133,8 @@ public abstract class Player : NetworkBehaviour {
             }
             // Without the cached parameter, this will get triggered
             // multiple times until the direction has had a chance to sync.
-            if (data.direction != direction && cachedDirection != direction) {
-                cachedDirection = direction;
+            if (this.direction != direction) {
+                this.direction = direction;
                 CmdChangeDirection(direction);
             }
         }
@@ -247,7 +264,7 @@ public abstract class Player : NetworkBehaviour {
             position.x += 1f;
         }
         item.transform.position = position;
-        var i = item.GetComponent<ItemData>().item;
+        var i = item.GetComponent<Item>();
         i.EnablePhysics(false);
         i.SetOwner(gameObject);
     }
@@ -260,12 +277,12 @@ public abstract class Player : NetworkBehaviour {
         } else {
             dx = 2f;
         }
-        item.GetComponent<ItemData>().item.UpdateOwnerOffset(dx, 0f);
+        item.GetComponent<Item>().UpdateOwnerOffset(dx, 0f);
     }
 
     [Server]
     void LoseOwnershipOfItem(GameObject item) {
-        var i = item.GetComponent<ItemData>().item;
+        var i = item.GetComponent<Item>();
         i.SetOwner(null);
         i.EnablePhysics(true);
     }
@@ -344,6 +361,14 @@ public abstract class Player : NetworkBehaviour {
         attack2IsCharging = false;
     }
 
+    protected virtual void BeginChargingSpecialAttack() {}
+    protected virtual void KeepChargingSpecialAttack(float chargeTime) {}
+    protected virtual void EndChargingSpecialAttack(float chargeTime) {}
+    protected virtual void CancelChargingSpecialAttack() {
+        inputManager.InvalidateControl(Control.SpecialAttack);
+        specialAttackIsCharging = false;
+    }
+
     [Server]
     protected void SpawnProjectile(
         NetworkInstanceId netId,
@@ -354,8 +379,8 @@ public abstract class Player : NetworkBehaviour {
         float torque)
     {
         var projectile = Instantiate(prefab, position, Quaternion.identity);
-        projectile.GetComponent<Apple>().spawnedBy = netId;
-        projectile.GetComponent<Apple>().spawnedByExtra = extraNetId;
+        projectile.GetComponent<Projectile>().spawnedBy = netId;
+        projectile.GetComponent<Projectile>().spawnedByExtra = extraNetId;
         var projectileRb = projectile.GetComponent<Rigidbody2D>();
         projectileRb.AddForce(force);
         projectileRb.AddTorque(torque);
@@ -373,7 +398,7 @@ public abstract class Player : NetworkBehaviour {
 
     [Command]
     void CmdChangeDirection(Direction direction) {
-        data.direction = direction;
+        this.direction = direction;
         if (item != null) {
             MoveItemForChangeDirection(item, direction);
         }
