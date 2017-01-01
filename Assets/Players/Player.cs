@@ -5,6 +5,8 @@ using System;
 public enum Direction {
     Left,
     Right,
+    Up,
+    Down,
 }
 
 public enum PlayerFeature {
@@ -38,7 +40,6 @@ public abstract class Player : NetworkBehaviour {
     private int groundCollisions;
     protected bool canJump;
     protected bool canDoubleJump;
-    private float cooldownOver = 0f;
     protected GameObject item;
     private OneWayPlatform currentOneWayPlatform;
     private int[] featureLockout;
@@ -49,15 +50,12 @@ public abstract class Player : NetworkBehaviour {
     public float walkForce;
     public float jumpForce;
     public float minDoubleJumpVelocity;
-    public float attackCooldown;
 
     // Parameters for child classes to change behavior
-    protected bool attack1CanCharge = false;
-    private bool attack1IsCharging = false;
-    protected bool attack2CanCharge = false;
-    private bool attack2IsCharging = false;
-    protected bool specialAttackCanCharge = false;
-    private bool specialAttackIsCharging = false;
+    protected Attack attack1;
+    protected Attack attack2;
+    protected Attack specialAttack;
+    //protected Attack superAttack;
 
     protected void BaseStart() {
         rb = GetComponent<Rigidbody2D>();
@@ -101,17 +99,17 @@ public abstract class Player : NetworkBehaviour {
         }
     }
 
-    protected void SuspendFeature(PlayerFeature feature) {
+    public void SuspendFeature(PlayerFeature feature) {
         ++featureLockout[(int)feature];
     }
 
-    protected void ResumeFeature(PlayerFeature feature) {
+    public void ResumeFeature(PlayerFeature feature) {
         if (featureLockout[(int)feature] > 0) {
             --featureLockout[(int)feature];
         }
     }
 
-    private bool FeatureEnabled(PlayerFeature feature) {
+    public bool FeatureEnabled(PlayerFeature feature) {
         return featureLockout[(int)feature] == 0;
     }
 
@@ -135,57 +133,6 @@ public abstract class Player : NetworkBehaviour {
             if (this.direction != direction) {
                 this.direction = direction;
                 CmdChangeDirection(direction);
-            }
-        }
-    }
-
-    private void HandleAttackInput(bool inputActive, bool canCharge, ref bool isCharging, int attackNumber) {
-        Action beginCharging;
-        Action<float> keepCharging;
-        Action<float> endCharging;
-        Action attack;
-        int control;
-        if (attackNumber == 1) {
-            beginCharging = BeginChargingAttack1;
-            keepCharging = KeepChargingAttack1;
-            endCharging = EndChargingAttack1;
-            attack = Attack1;
-            control = Control.Attack1;
-        } else if (attackNumber == 2) {
-            beginCharging = BeginChargingAttack2;
-            keepCharging = KeepChargingAttack2;
-            endCharging = EndChargingAttack2;
-            attack = Attack2;
-            control = Control.Attack2;
-        } else {
-            throw new ArgumentException("attackNumber must be a valid attack input", "attackNumber");
-        }
-
-        if (canCharge) {
-            if (isCharging) {
-                if (!inputActive) {
-                    isCharging = false;
-                    endCharging(inputManager.GetControlHoldTime(control));
-                    ResumeFeature(PlayerFeature.Attack);
-                    ResumeFeature(PlayerFeature.Movement);
-                } else {
-                    keepCharging(inputManager.GetControlHoldTime(control));
-                }
-            } else {
-                if (inputActive && FeatureEnabled(PlayerFeature.Attack)) {
-                    isCharging = true;
-                    SuspendFeature(PlayerFeature.Attack);
-                    SuspendFeature(PlayerFeature.Movement);
-                    beginCharging();
-                }
-            }
-        } else {
-            if (inputActive) {
-                inputManager.InvalidateControl(control);
-                if (Time.time > cooldownOver && FeatureEnabled(PlayerFeature.Attack)) {
-                    cooldownOver = Time.time + attackCooldown;
-                    attack();
-                }
             }
         }
     }
@@ -222,20 +169,31 @@ public abstract class Player : NetworkBehaviour {
             }
         }
 
-        var attack1Active = inputManager.IsControlActive(Control.Attack1);
-        var attack2Active = inputManager.IsControlActive(Control.Attack2);
-        HandleAttackInput(attack1Active, attack1CanCharge, ref attack1IsCharging, 1);
-        HandleAttackInput(attack2Active, attack2CanCharge, ref attack2IsCharging, 2);
+        attack1.UpdateState(inputManager, Control.Attack1);
+        attack2.UpdateState(inputManager, Control.Attack2);
+        specialAttack.UpdateState(inputManager, Control.SpecialAttack);
+    }
+
+    public NetworkInstanceId GetItemNetId() {
+        return item == null ? NetworkInstanceId.Invalid : item.GetComponent<Item>().netId;
     }
 
     void UseItem() {
-        CmdThrowItem(item);
-        item = null;
+        var i = item.GetComponent<Item>();
+        if (i.ShouldThrow()) {
+            CmdThrowItem(item);
+            item = null;
+        } else if (i.ShouldCharge()) {
+            // TODO: begin charging item
+            i.Use(direction, netId);
+        } else {
+            i.Use(direction, netId);
+        }
     }
 
     [Command]
     void CmdThrowItem(GameObject item) {
-        LoseOwnershipOfItem(item);
+        RpcItemDiscard(item);
         item.layer = Layers.projectiles;
 
         Vector2 force;
@@ -263,9 +221,23 @@ public abstract class Player : NetworkBehaviour {
             position.x += 1f;
         }
         item.transform.position = position;
+        RpcItemPickup(item);
+    }
+
+    [ClientRpc]
+    void RpcItemPickup(GameObject item) {
         var i = item.GetComponent<Item>();
         i.EnablePhysics(false);
         i.SetOwner(gameObject);
+        i.OnPickup(this);
+    }
+
+    [ClientRpc]
+    void RpcItemDiscard(GameObject item) {
+        var i = item.GetComponent<Item>();
+        i.SetOwner(null);
+        i.EnablePhysics(true);
+        i.OnDiscard(this);
     }
 
     [Server]
@@ -277,13 +249,6 @@ public abstract class Player : NetworkBehaviour {
             dx = 2f;
         }
         item.GetComponent<Item>().UpdateOwnerOffset(dx, 0f);
-    }
-
-    [Server]
-    void LoseOwnershipOfItem(GameObject item) {
-        var i = item.GetComponent<Item>();
-        i.SetOwner(null);
-        i.EnablePhysics(true);
     }
 
     /// If an item is passed, this function will return it
@@ -344,48 +309,6 @@ public abstract class Player : NetworkBehaviour {
         //
     }
 
-    protected virtual void BeginChargingAttack1() {}
-    protected virtual void KeepChargingAttack1(float chargeTime) {}
-    protected virtual void EndChargingAttack1(float chargeTime) {}
-    protected void CancelChargingAttack1() {
-        inputManager.InvalidateControl(Control.Attack1);
-        attack1IsCharging = false;
-    }
-
-    protected virtual void BeginChargingAttack2() {}
-    protected virtual void KeepChargingAttack2(float chargeTime) {}
-    protected virtual void EndChargingAttack2(float chargeTime) {}
-    protected void CancelChargingAttack2() {
-        inputManager.InvalidateControl(Control.Attack2);
-        attack2IsCharging = false;
-    }
-
-    protected virtual void BeginChargingSpecialAttack() {}
-    protected virtual void KeepChargingSpecialAttack(float chargeTime) {}
-    protected virtual void EndChargingSpecialAttack(float chargeTime) {}
-    protected virtual void CancelChargingSpecialAttack() {
-        inputManager.InvalidateControl(Control.SpecialAttack);
-        specialAttackIsCharging = false;
-    }
-
-    [Server]
-    protected void SpawnProjectile(
-        NetworkInstanceId netId,
-        NetworkInstanceId extraNetId,
-        GameObject prefab,
-        Vector2 position,
-        Vector2 force,
-        float torque)
-    {
-        var projectile = Instantiate(prefab, position, Quaternion.identity);
-        projectile.GetComponent<Projectile>().spawnedBy = netId;
-        projectile.GetComponent<Projectile>().spawnedByExtra = extraNetId;
-        var projectileRb = projectile.GetComponent<Rigidbody2D>();
-        projectileRb.AddForce(force);
-        projectileRb.AddTorque(torque);
-        NetworkServer.Spawn(projectile);
-    }
-
     [ClientRpc]
     public void RpcRespawn(Vector3 position) {
         if (!hasAuthority) {
@@ -417,9 +340,4 @@ public abstract class Player : NetworkBehaviour {
         }
         rb.AddForce(force, ForceMode2D.Impulse);
     }
-
-    // These methods are called only for attacks that don't charge.
-    // For charging attacks, use the Begin/End versions above.
-    protected virtual void Attack1() {}
-    protected virtual void Attack2() {}
 }

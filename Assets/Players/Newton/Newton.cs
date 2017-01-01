@@ -1,28 +1,21 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
-using Random = UnityEngine.Random;
 
 public class Newton : Player {
     public GameObject apple;
     public GameObject calc1;
     public GameObject calc2;
     public GameObject calc3;
-    private GameObject chargingCalcBook;
-    private int calcBookPower = 0;
 
     private Animator animator;
     private bool walkAnimationPlaying;
 
-    // Physics parameters
-    const float appleHorizontalForce = 20f;
-    const float appleVerticalForce = 50f;
-    // Torque is random from (-appleTorqueRange, appleTorqueRange).
-    const float appleTorqueRange = 5f;
-
     void Start() {
         BaseStart();
 
-        attack2CanCharge = true;
+        attack1 = new AppleAttack(this, apple);
+        attack2 = new CalcBookAttack(this, new [] { calc1, calc2, calc3 });
+        specialAttack = attack1;
         //animator = GetComponent<Animator>();
     }
 
@@ -74,64 +67,5 @@ public class Newton : Player {
             var child = gameObject.transform.GetChild(i);
             child.localPosition = new Vector3(-child.localPosition.x, child.localPosition.y, child.localPosition.z);
         }
-    }
-
-    [Command]
-    void CmdSpawnApple(NetworkInstanceId netId, NetworkInstanceId itemNetId, bool down) {
-        var force = transform.up * appleVerticalForce;
-        if (down) {
-            force = -transform.up * appleHorizontalForce;
-        } else {
-            if (direction == Direction.Left) {
-                force += -transform.right * appleHorizontalForce;
-            } else {
-                force += transform.right * appleHorizontalForce;
-            }
-        }
-        var torque = Random.Range(-appleTorqueRange, appleTorqueRange);
-        GameController.Instance.CmdSpawnProjectile(
-            apple,
-            netId,
-            itemNetId,
-            gameObject.transform.position,
-            Quaternion.identity,
-            force,
-            torque
-        );
-    }
-
-    protected override void Attack1() {
-        var itemNetId = item == null ? NetworkInstanceId.Invalid : item.GetComponent<Item>().netId;
-        CmdSpawnApple(netId, itemNetId, inputManager.IsControlActive(Control.Down));
-    }
-
-    void SpawnChargingCalcBook(GameObject book) {
-        var offset = direction == Direction.Left ? new Vector3(-1f, .5f) : new Vector3(1f, .5f);
-        chargingCalcBook = Instantiate(book, gameObject.transform.position + offset, Quaternion.Euler(0f, 0f, 20f));
-        chargingCalcBook.transform.parent = gameObject.transform;
-        var behavior = chargingCalcBook.GetComponent<CalcBook>();
-        behavior.spawnedBy = gameObject;
-        behavior.finishAttack = () => Destroy(chargingCalcBook);
-    }
-
-    protected override void BeginChargingAttack2() {
-        calcBookPower = 0;
-        SpawnChargingCalcBook(calc1);
-    }
-
-    protected override void KeepChargingAttack2(float chargeTime) {
-        if (chargeTime > .7f && calcBookPower == 0) {
-            ++calcBookPower;
-            Destroy(chargingCalcBook);
-            SpawnChargingCalcBook(calc2);
-        } else if (chargeTime > 1.4f && calcBookPower == 1) {
-            ++calcBookPower;
-            Destroy(chargingCalcBook);
-            SpawnChargingCalcBook(calc3);
-        }
-    }
-
-    protected override void EndChargingAttack2(float chargeTime) {
-        Destroy(chargingCalcBook);
     }
 }
