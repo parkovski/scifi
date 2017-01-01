@@ -23,11 +23,11 @@ public class Bomb : Item {
         }
     }
 
-    protected override bool ShouldThrow() {
+    public override bool ShouldThrow() {
         return true;
     }
 
-    protected override bool ShouldCharge() {
+    public override bool ShouldCharge() {
         return false;
     }
 }

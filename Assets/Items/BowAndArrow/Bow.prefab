@@ -63,7 +63,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!61 &61974262026076420
 BoxCollider2D:
   m_ObjectHideFlags: 1
@@ -90,6 +90,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isBeingThrown: 0
+  normalArrow: {fileID: 1446669325398844, guid: ff2ef8e5d075f46f6ba33bb57c2ba490,
+    type: 2}
+  fireArrow: {fileID: 1468857226336700, guid: 56c12282f22394d9b8c797935b0ff45c, type: 2}
+  rockArrow: {fileID: 1973570358142584, guid: 2b8ab5e7411ae4490bb62fdf19f194e8, type: 2}
+  bombArrow: {fileID: 1695519470493172, guid: ac6ba9ff5c62f45409356a082592198c, type: 2}
 --- !u!114 &114182304134655224
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -112,6 +112,26 @@ public class GameController : NetworkBehaviour {
         player.RpcKnockback(force);
     }
 
+    [Command]
+    public void CmdSpawnProjectile(
+        GameObject prefab,
+        NetworkInstanceId spawnedBy,
+        NetworkInstanceId spawnedByExtra,
+        Vector2 position,
+        Quaternion rotation,
+        Vector2 force,
+        float torque)
+    {
+        var obj = Instantiate(prefab, position, rotation);
+        var projectile = obj.GetComponent<Projectile>();
+        projectile.spawnedBy = spawnedBy;
+        projectile.spawnedByExtra = spawnedByExtra;
+        var rb = obj.GetComponent<Rigidbody2D>();
+        rb.AddForce(force);
+        rb.AddTorque(torque);
+        NetworkServer.Spawn(obj);
+    }
+
     void Awake() {
         Instance = this;
         characters = new Dictionary<string, GameObject>() {
@@ -136,7 +156,7 @@ public class GameController : NetworkBehaviour {
 
     [Server]
     void SpawnItem() {
-        var prefab = Random.Range(0f, 1f) > .5f ? bomb : bow;
+        var prefab = bow;//Random.Range(0f, 1f) > .5f ? bomb : bow;
         var item = Instantiate(prefab, new Vector2(Random.Range(-6f, 6f), 5f), Quaternion.identity);
         NetworkServer.Spawn(item);
     }

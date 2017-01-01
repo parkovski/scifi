@@ -51,7 +51,15 @@ public class Kelvin : Player {
             force += (Vector2)transform.up * iceBallVerticalForce;
         }
         var torque = Random.Range(-iceBallTorqueRange, iceBallTorqueRange);
-        SpawnProjectile(netId, itemNetId, iceBall, gameObject.transform.position, force, torque);
+        GameController.Instance.CmdSpawnProjectile(
+            iceBall,
+            netId,
+            itemNetId,
+            gameObject.transform.position,
+            Quaternion.identity,
+            force,
+            torque
+        );
     }
 
     [Command]
@@ -75,7 +83,15 @@ public class Kelvin : Player {
         } else {
             force *= fireBallHorizontalForce;
         }
-        SpawnProjectile(netId, itemNetId, fireBall, gameObject.transform.position, force, 0f);
+        GameController.Instance.CmdSpawnProjectile(
+            fireBall,
+            netId,
+            itemNetId,
+            gameObject.transform.position,
+            Quaternion.identity,
+            force,
+            0f
+        );
     }
 
     protected override void Attack1() {

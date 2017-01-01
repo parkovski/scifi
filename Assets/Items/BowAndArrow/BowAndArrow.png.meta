@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 696afeaaa2e354ef5b66ecfe884e948d
-timeCreated: 1482977339
+timeCreated: 1483218164
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -76,6 +76,14 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
+  - buildTarget: Android
+    maxTextureSize: 2048
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -83,10 +91,10 @@ TextureImporter:
       name: Arrow
       rect:
         serializedVersion: 2
-        x: 114
-        y: 46
-        width: 60
-        height: 99
+        x: 94
+        y: 74
+        width: 98
+        height: 46
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -96,10 +104,10 @@ TextureImporter:
       name: Bow
       rect:
         serializedVersion: 2
-        x: 16
+        x: 27
         y: 8
-        width: 84
-        height: 170
+        width: 65
+        height: 167
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}

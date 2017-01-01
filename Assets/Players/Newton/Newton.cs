@@ -89,7 +89,15 @@ public class Newton : Player {
             }
         }
         var torque = Random.Range(-appleTorqueRange, appleTorqueRange);
-        SpawnProjectile(netId, itemNetId, apple, gameObject.transform.position, force, torque);
+        GameController.Instance.CmdSpawnProjectile(
+            apple,
+            netId,
+            itemNetId,
+            gameObject.transform.position,
+            Quaternion.identity,
+            force,
+            torque
+        );
     }
 
     protected override void Attack1() {
