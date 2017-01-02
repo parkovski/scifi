@@ -59,11 +59,10 @@ namespace SciFi.Players.Attacks {
         public override void OnEndCharging(float chargeTime, Direction direction) {
             for (var i = 0; i < apples.Length; i++) {
                 var a = apples[i];
-                if (a == null) {
-                    break;
+                if (a != null) {
+                    a.GetComponent<GreenApple>().Explode();
+                    apples[i] = null;
                 }
-                a.GetComponent<GreenApple>().Explode();
-                apples[i] = null;
             }
         }
     }
