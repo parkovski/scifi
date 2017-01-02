@@ -1,9 +1,10 @@
 using UnityEngine;
+using UnityEngine.Networking;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public class OneWayPlatform : MonoBehaviour {
+public class OneWayPlatform : NetworkBehaviour {
     Collider2D edgeCollider;
     // Since objects might have multiple colliders,
     // when an object enters the trigger, we increase
@@ -50,7 +51,13 @@ public class OneWayPlatform : MonoBehaviour {
         }
     }
 
-    public void FallThrough(GameObject go) {
+    [Command]
+    public void CmdFallThrough(GameObject go) {
+        RpcFallThrough(go);
+    }
+
+    [ClientRpc]
+    void RpcFallThrough(GameObject go) {
         Item.IgnoreCollisions(go, edgeCollider);
     }
 }
