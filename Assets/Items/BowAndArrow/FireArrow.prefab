@@ -23,6 +23,7 @@ GameObject:
   - component: {fileID: 114881773065431736}
   - component: {fileID: 50965781876541112}
   - component: {fileID: 61495892403731818}
+  - component: {fileID: 114953056391051912}
   m_Layer: 11
   m_Name: FireArrow
   m_TagString: Untagged
@@ -109,6 +110,17 @@ MonoBehaviour:
     i15: 92
   m_ServerOnly: 0
   m_LocalPlayerAuthority: 0
+--- !u!114 &114953056391051912
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1468857226336700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92ea29e41a511440fba480356b21e412, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!212 &212972411174499174
 SpriteRenderer:
   m_ObjectHideFlags: 1
