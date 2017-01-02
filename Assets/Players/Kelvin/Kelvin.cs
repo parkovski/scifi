@@ -1,37 +1,41 @@
 using UnityEngine;
 
-public class Kelvin : Player {
-    public GameObject iceBall;
-    public GameObject fireBall;
-    public GameObject fireBallInactive;
+using SciFi.Players.Attacks;
 
-    private GameObject chargingFireBall;
+namespace SciFi.Players {
+    public class Kelvin : Player {
+        public GameObject iceBall;
+        public GameObject fireBall;
+        public GameObject fireBallInactive;
 
-    const float iceBallHorizontalForce = 200f;
-    const float iceBallVerticalForce = 100f;
-    const float iceBallTorqueRange = 10f;
+        private GameObject chargingFireBall;
 
-    const float fireBallHorizontalForce = 50f;
+        const float iceBallHorizontalForce = 200f;
+        const float iceBallVerticalForce = 100f;
+        const float iceBallTorqueRange = 10f;
 
-    void Start() {
-        BaseStart();
+        const float fireBallHorizontalForce = 50f;
 
-        attack1 = attack2 = specialAttack = new AppleAttack(this, iceBall);
-    }
+        void Start() {
+            BaseStart();
 
-    void FixedUpdate() {
-        if (!isLocalPlayer) {
-            return;
+            attack1 = attack2 = specialAttack = new AppleAttack(this, iceBall);
         }
 
-        BaseInput();
-    }
+        void FixedUpdate() {
+            if (!isLocalPlayer) {
+                return;
+            }
 
-    void OnCollisionEnter2D(Collision2D collision) {
-        BaseCollisionEnter2D(collision);
-    }
+            BaseInput();
+        }
 
-    void OnCollisionExit2D(Collision2D collision) {
-        BaseCollisionExit2D(collision);
+        void OnCollisionEnter2D(Collision2D collision) {
+            BaseCollisionEnter2D(collision);
+        }
+
+        void OnCollisionExit2D(Collision2D collision) {
+            BaseCollisionExit2D(collision);
+        }
     }
 }

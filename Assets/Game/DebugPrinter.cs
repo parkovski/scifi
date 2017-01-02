@@ -3,61 +3,63 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Text;
 
-public class DebugPrinter : MonoBehaviour {
-    List<string> fields;
-    public Text text;
-    public bool showDebugInfo;
+namespace SciFi.Debug {
+    public class DebugPrinter : MonoBehaviour {
+        List<string> fields;
+        public Text text;
+        public bool showDebugInfo;
 
-    public static DebugPrinter Instance { get; private set; }
+        public static DebugPrinter Instance { get; private set; }
 
-    public DebugPrinter() {
-        Instance = this;
+        public DebugPrinter() {
+            Instance = this;
 
-        fields = new List<string>();
-        fields.Add("Debug:");
-    }
-
-    void Start() {
-        if (!showDebugInfo) {
-            Destroy(text);
-            text = null;
-        }
-    }
-
-    void RefreshText() {
-        if (text == null) {
-            return;
+            fields = new List<string>();
+            fields.Add("Debug:");
         }
 
-        StringBuilder sb = new StringBuilder();
-        foreach (var f in fields) {
-            if (f == null) {
-                continue;
+        void Start() {
+            if (!showDebugInfo) {
+                Destroy(text);
+                text = null;
             }
-            sb.AppendLine(f);
         }
 
-        text.text = sb.ToString();
-    }
+        void RefreshText() {
+            if (text == null) {
+                return;
+            }
 
-    public int NewField() {
-        var index = fields.Count;
-        fields.Add(null);
-        RefreshText();
-        return index;
-    }
+            StringBuilder sb = new StringBuilder();
+            foreach (var f in fields) {
+                if (f == null) {
+                    continue;
+                }
+                sb.AppendLine(f);
+            }
 
-    public void ClearField(int index) {
-        fields[index] = null;
-        RefreshText();
-    }
+            text.text = sb.ToString();
+        }
 
-    public void SetField(int index, string text) {
-        fields[index] = text;
-        RefreshText();
-    }
+        public int NewField() {
+            var index = fields.Count;
+            fields.Add(null);
+            RefreshText();
+            return index;
+        }
 
-    public string GetField(int index) {
-        return fields[index];
+        public void ClearField(int index) {
+            fields[index] = null;
+            RefreshText();
+        }
+
+        public void SetField(int index, string text) {
+            fields[index] = text;
+            RefreshText();
+        }
+
+        public string GetField(int index) {
+            return fields[index];
+        }
     }
 }

@@ -1,12 +1,14 @@
 using UnityEngine;
 
-public class AudioManager : MonoBehaviour {
-    public AudioClip clip;
+namespace SciFi.Audio {
+    public class AudioManager : MonoBehaviour {
+        public AudioClip clip;
 
-    public void Play() {
-        //
-    }
-    public void Stop() {
-        //
+        public void Play() {
+            //
+        }
+        public void Stop() {
+            //
+        }
     }
 }

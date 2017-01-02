@@ -1,62 +1,64 @@
-public abstract class Attack {
-    protected Player player;
-    float cooldown;
-    bool canCharge;
-    bool isCharging;
+namespace SciFi.Players.Attacks {
+    public abstract class Attack {
+        protected Player player;
+        float cooldown;
+        bool canCharge;
+        bool isCharging;
 
-    // Extra parameters for child classes
-    protected bool canFireDown = false;
+        // Extra parameters for child classes
+        protected bool canFireDown = false;
 
-    public Attack(Player player, bool canCharge) {
-        this.player = player;
-        this.canCharge = canCharge;
-    }
-
-    public void UpdateState(InputManager inputManager, int control) {
-        var direction = player.direction;
-        if (canFireDown && inputManager.IsControlActive(Control.Down)) {
-            direction = Direction.Down;
+        public Attack(Player player, bool canCharge) {
+            this.player = player;
+            this.canCharge = canCharge;
         }
-        if (inputManager.IsControlActive(control)) {
-            if (canCharge) {
-                if (isCharging) {
-                    // Charging, continue.
-                    OnKeepCharging(inputManager.GetControlHoldTime(control));
+
+        public void UpdateState(InputManager inputManager, int control) {
+            var direction = player.direction;
+            if (canFireDown && inputManager.IsControlActive(Control.Down)) {
+                direction = Direction.Down;
+            }
+            if (inputManager.IsControlActive(control)) {
+                if (canCharge) {
+                    if (isCharging) {
+                        // Charging, continue.
+                        OnKeepCharging(inputManager.GetControlHoldTime(control));
+                    } else {
+                        // Not charging but button pressed, begin charging.
+                        if (player.FeatureEnabled(PlayerFeature.Attack)) {
+                            isCharging = true;
+                            player.SuspendFeature(PlayerFeature.Attack);
+                            player.SuspendFeature(PlayerFeature.Movement);
+                            OnBeginCharging();
+                        }
+                    }
                 } else {
-                    // Not charging but button pressed, begin charging.
+                    // Attack doesn't charge, fire immediately.
+                    inputManager.InvalidateControl(control);
                     if (player.FeatureEnabled(PlayerFeature.Attack)) {
-                        isCharging = true;
-                        player.SuspendFeature(PlayerFeature.Attack);
-                        player.SuspendFeature(PlayerFeature.Movement);
-                        OnBeginCharging();
+                        OnEndCharging(0f, direction);
                     }
                 }
             } else {
-                // Attack doesn't charge, fire immediately.
-                inputManager.InvalidateControl(control);
-                if (player.FeatureEnabled(PlayerFeature.Attack)) {
-                    OnEndCharging(0f, direction);
+                if (isCharging) {
+                    // Charging but button released, fire the attack.
+                    isCharging = false;
+                    OnEndCharging(inputManager.GetControlHoldTime(control), direction);
+                    player.ResumeFeature(PlayerFeature.Attack);
+                    player.ResumeFeature(PlayerFeature.Movement);
                 }
             }
-        } else {
-            if (isCharging) {
-                // Charging but button released, fire the attack.
-                isCharging = false;
-                OnEndCharging(inputManager.GetControlHoldTime(control), direction);
-                player.ResumeFeature(PlayerFeature.Attack);
-                player.ResumeFeature(PlayerFeature.Movement);
-            }
         }
-    }
 
-    public virtual void OnBeginCharging() {}
-    public virtual void OnKeepCharging(float chargeTime) {}
-    /// For non-charging attacks, this acts as the fire method,
-    /// and the chargeTime parameter can be ignored.
-    public abstract void OnEndCharging(float chargeTime, Direction direction);
-    public void CancelCharging() {
-        isCharging = false;
-        OnCancelCharging();
-    }
-    public virtual void OnCancelCharging() {}
+        public virtual void OnBeginCharging() {}
+        public virtual void OnKeepCharging(float chargeTime) {}
+        /// For non-charging attacks, this acts as the fire method,
+        /// and the chargeTime parameter can be ignored.
+        public abstract void OnEndCharging(float chargeTime, Direction direction);
+        public void CancelCharging() {
+            isCharging = false;
+            OnCancelCharging();
+        }
+        public virtual void OnCancelCharging() {}
+}
 }
