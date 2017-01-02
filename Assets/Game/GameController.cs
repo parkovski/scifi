@@ -7,6 +7,7 @@ using Random = UnityEngine.Random;
 
 using SciFi.Players;
 using SciFi.Items;
+using SciFi.UI;
 
 namespace SciFi {
     public class DamageChangedEventArgs : EventArgs {
@@ -34,6 +35,8 @@ namespace SciFi {
     }
 
     public class GameController : NetworkBehaviour {
+        public Countdown countdown;
+
         // Player characters
         public GameObject newton;
         public GameObject kelvin;
@@ -78,6 +81,9 @@ namespace SciFi {
                 playerId = player.id,
                 newLives = player.lives,
             });
+
+            // TODO: Move to where the game actually starts
+            countdown.StartGame();
         }
 
         [Command]

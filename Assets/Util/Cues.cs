@@ -12,6 +12,7 @@ namespace SciFi.Util {
         List<TimeCueTuple> cues;
         int index;
         float startTime;
+        bool running;
 
         public Cues() {
             cues = new List<TimeCueTuple>();
@@ -22,7 +23,11 @@ namespace SciFi.Util {
         }
 
         void Update() {
+            if (!running) {
+                return;
+            }
             if (index >= cues.Count) {
+                running = false;
                 return;
             }
 
@@ -40,6 +45,15 @@ namespace SciFi.Util {
         public void Reset() {
             index = 0;
             startTime = Time.time;
+            running = false;
+        }
+
+        public void Pause() {
+            running = false;
+        }
+        
+        public void Resume() {
+            running = true;
         }
     }
 }
