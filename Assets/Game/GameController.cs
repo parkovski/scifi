@@ -137,8 +137,10 @@ namespace SciFi {
             projectile.spawnedBy = spawnedBy;
             projectile.spawnedByExtra = spawnedByExtra;
             var rb = obj.GetComponent<Rigidbody2D>();
-            rb.AddForce(force);
-            rb.AddTorque(torque);
+            if (rb != null) {
+                rb.AddForce(force);
+                rb.AddTorque(torque);
+            }
             NetworkServer.Spawn(obj);
         }
 
@@ -166,7 +168,7 @@ namespace SciFi {
 
         [Server]
         void SpawnItem() {
-            var prefab = bow;//Random.Range(0f, 1f) > .5f ? bomb : bow;
+            var prefab = bomb;//Random.Range(0f, 1f) > .5f ? bomb : bow;
             var item = Instantiate(prefab, new Vector2(Random.Range(-6f, 6f), 5f), Quaternion.identity);
             NetworkServer.Spawn(item);
         }

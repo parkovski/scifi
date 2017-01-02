@@ -6,6 +6,7 @@ using SciFi.Players.Attacks;
 namespace SciFi.Players {
     public class Newton : Player {
         public GameObject apple;
+        public GameObject greenApple;
         public GameObject calc1;
         public GameObject calc2;
         public GameObject calc3;
@@ -18,7 +19,7 @@ namespace SciFi.Players {
 
             attack1 = new AppleAttack(this, apple);
             attack2 = new CalcBookAttack(this, new [] { calc1, calc2, calc3 });
-            specialAttack = attack1;
+            specialAttack = new GreenAppleAttack(this, greenApple);
             //animator = GetComponent<Animator>();
         }
 

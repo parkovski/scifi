@@ -22,14 +22,14 @@ namespace SciFi.Players.Attacks {
                 if (canCharge) {
                     if (isCharging) {
                         // Charging, continue.
-                        OnKeepCharging(inputManager.GetControlHoldTime(control));
+                        OnKeepCharging(inputManager.GetControlHoldTime(control), direction);
                     } else {
                         // Not charging but button pressed, begin charging.
                         if (player.FeatureEnabled(PlayerFeature.Attack)) {
                             isCharging = true;
                             player.SuspendFeature(PlayerFeature.Attack);
                             player.SuspendFeature(PlayerFeature.Movement);
-                            OnBeginCharging();
+                            OnBeginCharging(direction);
                         }
                     }
                 } else {
@@ -50,8 +50,8 @@ namespace SciFi.Players.Attacks {
             }
         }
 
-        public virtual void OnBeginCharging() {}
-        public virtual void OnKeepCharging(float chargeTime) {}
+        public virtual void OnBeginCharging(Direction direction) {}
+        public virtual void OnKeepCharging(float chargeTime, Direction direction) {}
         /// For non-charging attacks, this acts as the fire method,
         /// and the chargeTime parameter can be ignored.
         public abstract void OnEndCharging(float chargeTime, Direction direction);

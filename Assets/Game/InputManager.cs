@@ -31,13 +31,14 @@ namespace SciFi {
         public const int Attack1 = 4;
         public const int Attack2 = 5;
         public const int SpecialAttack = 6;
-        public const int Item = 7;
+        public const int SuperAttack = 7;
+        public const int Item = 8;
         /// Not used in game - player may set a mouse button
         /// as one of the other controls - these are used
         /// only in menus.
-        public const int MouseButton1 = 8;
-        public const int MouseButton2 = 9;
-        public const int ArrayLength = 10;
+        public const int MouseButton1 = 9;
+        public const int MouseButton2 = 10;
+        public const int ArrayLength = 11;
     }
 
     class InputState {
@@ -230,6 +231,7 @@ namespace SciFi {
             var vertical = Input.GetAxis("Vertical");
             var attack1 = Input.GetButton("Fire1");
             var attack2 = Input.GetButton("Fire2");
+            var specialAttack = Input.GetButton("Fire3");
             var item = Input.GetKey("return");
             var mouse1 = Input.GetKey("mouse 0");
             var mouse2 = Input.GetKey("mouse 1");
@@ -254,6 +256,7 @@ namespace SciFi {
 
             state.UpdateButton(Control.Attack1, attack1);
             state.UpdateButton(Control.Attack2, attack2);
+            state.UpdateButton(Control.SpecialAttack, specialAttack);
             state.UpdateButton(Control.Item, item);
 
             state.mousePosition = Input.mousePosition;

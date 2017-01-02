@@ -31,12 +31,12 @@ namespace SciFi.Players.Attacks {
             behavior.finishAttack = () => Object.Destroy(chargingBook);
         }
 
-        public override void OnBeginCharging() {
+        public override void OnBeginCharging(Direction direction) {
             power = 0;
             SpawnChargingBook(books[0]);
         }
 
-        public override void OnKeepCharging(float chargeTime) {
+        public override void OnKeepCharging(float chargeTime, Direction direction) {
             if (chargeTime > timeToChangeBooks && power == 0) {
                 ++power;
                 Object.Destroy(chargingBook);

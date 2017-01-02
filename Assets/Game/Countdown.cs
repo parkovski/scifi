@@ -16,7 +16,7 @@ namespace SciFi.UI {
             cues.Add(beat * 12, () => ChangeText("2"));
             cues.Add(beat * 14, () => ChangeText("1"));
             cues.Add(beat * 16, () => ChangeText("Go!"));
-            cues.Add(beat * 20, () => ChangeText(""));
+            cues.Add(beat * 18, () => ChangeText(""));
         }
 
         public void StartGame() {
