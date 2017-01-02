@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.Networking.NetworkSystem;
 
+using SciFi.Scenes;
+
 namespace SciFi.Network {
     public class NetworkController : NetworkManager {
         public Vector3 spawnPosition;
