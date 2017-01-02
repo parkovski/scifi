@@ -121,6 +121,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fce3d882f13741579516a0897ba4fc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  explodingApple: {fileID: 1844964400331752, guid: 2e5da8ecefc6341559bae17575f7ea32,
+    type: 2}
 --- !u!212 &212517705262216796
 SpriteRenderer:
   m_ObjectHideFlags: 1

@@ -83,7 +83,7 @@ namespace SciFi.Items {
             } else {
                 force = new Vector2(20f, 10f);
             }
-            GameController.Instance.CmdSpawnProjectile(
+            GameController.Instance.SpawnProjectile(
                 arrowPrefab,
                 playerNetId,
                 netId,

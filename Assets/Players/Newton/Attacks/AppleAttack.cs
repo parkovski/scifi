@@ -25,7 +25,7 @@ namespace SciFi.Players.Attacks {
             }
 
             var torque = Random.Range(-torqueRange, torqueRange);
-            GameController.Instance.CmdSpawnProjectile(
+            GameController.Instance.SpawnProjectile(
                 apple,
                 player.netId,
                 player.GetItemNetId(),

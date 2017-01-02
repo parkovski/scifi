@@ -1272,9 +1272,11 @@ MonoBehaviour:
   m_OnlineScene: 
   m_SpawnPrefabs:
   - {fileID: 1445736531698702, guid: 6fd8ac635fa114c41a4491e9070621b6, type: 2}
-  - {fileID: 1456088037116718, guid: 97e910a513a1be44394d891d1d560d15, type: 2}
   - {fileID: 1357499644953146, guid: c0cadcf302e68684fbf4486bf3efe53c, type: 2}
   - {fileID: 1067510251126116, guid: 7d6a37a4da9154edc9a116afb28f4920, type: 2}
+  - {fileID: 1317568561140878, guid: d7c7c9616006c497e911f2565c5225f2, type: 2}
+  - {fileID: 1844964400331752, guid: 2e5da8ecefc6341559bae17575f7ea32, type: 2}
+  - {fileID: 1456088037116718, guid: 97e910a513a1be44394d891d1d560d15, type: 2}
   - {fileID: 1029048364040172, guid: 03d7afc17b64a1041b6fd882e9672e95, type: 2}
   - {fileID: 1284917634577738, guid: ab2f5738fa6e25b46bcaf4df5013554a, type: 2}
   - {fileID: 1931044926520130, guid: eee7494577489924eb0396574e70e3cf, type: 2}

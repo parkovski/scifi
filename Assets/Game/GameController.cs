@@ -122,8 +122,7 @@ namespace SciFi {
             player.RpcKnockback(force);
         }
 
-        [Command]
-        public void CmdSpawnProjectile(
+        public GameObject SpawnProjectile(
             GameObject prefab,
             NetworkInstanceId spawnedBy,
             NetworkInstanceId spawnedByExtra,
@@ -133,6 +132,18 @@ namespace SciFi {
             float torque)
         {
             var obj = Instantiate(prefab, position, rotation);
+            CmdSpawnProjectile(obj, spawnedBy, spawnedByExtra, force, torque);
+            return obj;
+        }
+
+        [Command]
+        void CmdSpawnProjectile(
+            GameObject obj,
+            NetworkInstanceId spawnedBy,
+            NetworkInstanceId spawnedByExtra,
+            Vector2 force,
+            float torque)
+        {
             var projectile = obj.GetComponent<Projectile>();
             projectile.spawnedBy = spawnedBy;
             projectile.spawnedByExtra = spawnedByExtra;
