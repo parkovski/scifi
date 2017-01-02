@@ -41,7 +41,7 @@ public class Bow : Item {
         arrow = Instantiate(arrowPrefab, gameObject.transform.position + new Vector3(.13f, 0f, 0f), Quaternion.identity);
         arrow.layer = Layers.items;
         arrow.transform.parent = gameObject.transform;
-        arrow.GetComponent<Rigidbody2D>().isKinematic = true;
+        //arrow.GetComponent<Rigidbody2D>().isKinematic = true;
         NetworkServer.Spawn(arrow);
     }
 
@@ -55,11 +55,13 @@ public class Bow : Item {
 
     public override void OnPickup(Player player) {
         base.OnPickup(player);
-        Destroy(arrow);
+        if (isServer) {
+            Destroy(arrow);
+        }
     }
     public override void OnDiscard(Player player) {
         base.OnDiscard(player);
-        CreateArrow();
+        //CreateArrow();
     }
 
     public override bool ShouldThrow() {

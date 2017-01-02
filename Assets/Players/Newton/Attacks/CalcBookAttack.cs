@@ -28,12 +28,12 @@ public class CalcBookAttack : Attack {
         behavior.finishAttack = () => Object.Destroy(chargingBook);
     }
 
-    public override void BeginCharging() {
+    public override void OnBeginCharging() {
         power = 0;
         SpawnChargingBook(books[0]);
     }
 
-    public override void KeepCharging(float chargeTime) {
+    public override void OnKeepCharging(float chargeTime) {
         if (chargeTime > timeToChangeBooks && power == 0) {
             ++power;
             Object.Destroy(chargingBook);
@@ -45,7 +45,7 @@ public class CalcBookAttack : Attack {
         }
     }
 
-    public override void EndCharging(float chargeTime, Direction direction) {
+    public override void OnEndCharging(float chargeTime, Direction direction) {
         Object.Destroy(chargingBook);
     }
 }

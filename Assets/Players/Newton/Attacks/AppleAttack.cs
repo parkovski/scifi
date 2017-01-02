@@ -10,9 +10,10 @@ public class AppleAttack : Attack {
         : base(player, false)
     {
         this.apple = apple;
+        canFireDown = true;
     }
 
-    public override void EndCharging(float chargeTime, Direction direction) {
+    public override void OnEndCharging(float chargeTime, Direction direction) {
         var force = new Vector2(0f, verticalForce);
         if (direction == Direction.Down) {
             force = new Vector2(0f, -horizontalForce);

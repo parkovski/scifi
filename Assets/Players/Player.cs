@@ -156,7 +156,7 @@ public abstract class Player : NetworkBehaviour {
         }
         if (inputManager.IsControlActive(Control.Down) && FeatureEnabled(PlayerFeature.Movement)) {
             if (currentOneWayPlatform != null) {
-                currentOneWayPlatform.FallThrough(gameObject);
+                currentOneWayPlatform.CmdFallThrough(gameObject);
             }
         }
 
@@ -296,16 +296,6 @@ public abstract class Player : NetworkBehaviour {
     }
 
     void ControlCanceled(ControlCanceledEventArgs args) {
-        //
-    }
-
-    [Command]
-    void CmdFallThrough() {
-        RpcFallThrough();
-    }
-
-    [Server]
-    void RpcFallThrough() {
         //
     }
 
