@@ -15,6 +15,9 @@ namespace SciFi.Util {
 
         public Cues() {
             cues = new List<TimeCueTuple>();
+        }
+
+        void Start() {
             Reset();
         }
 
