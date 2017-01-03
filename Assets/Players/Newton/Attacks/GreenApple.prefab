@@ -23,7 +23,6 @@ GameObject:
   - component: {fileID: 114395256197523816}
   - component: {fileID: 114915459580187180}
   - component: {fileID: 58416363908490026}
-  - component: {fileID: 114342766648999374}
   m_Layer: 0
   m_Name: GreenApple
   m_TagString: Untagged
@@ -58,26 +57,6 @@ CircleCollider2D:
   m_Offset: {x: -0.06, y: -0.2}
   serializedVersion: 2
   m_Radius: 0.32
---- !u!114 &114342766648999374
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1317568561140878}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1768714887, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TransformSyncMode: 1
-  m_SendInterval: 0.1
-  m_SyncRotationAxis: 7
-  m_RotationSyncCompression: 0
-  m_SyncSpin: 0
-  m_MovementTheshold: 0.001
-  m_SnapThreshold: 5
-  m_InterpolateRotation: 1
-  m_InterpolateMovement: 1
 --- !u!114 &114395256197523816
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -123,6 +102,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   explodingApple: {fileID: 1844964400331752, guid: 2e5da8ecefc6341559bae17575f7ea32,
     type: 2}
+  explodeRotation: {x: 0, y: 0, z: 0, w: 0}
 --- !u!212 &212517705262216796
 SpriteRenderer:
   m_ObjectHideFlags: 1

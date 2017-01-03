@@ -4,7 +4,7 @@ using SciFi.Items;
 
 namespace SciFi.Players.Attacks {
     public class GreenAppleAttack : Attack {
-        GameObject apple;
+        int appleIndex;
         float nextSpawnTime;
         int count;
 
@@ -14,7 +14,7 @@ namespace SciFi.Players.Attacks {
         public GreenAppleAttack(Player player, GameObject apple)
             : base(player, true)
         {
-            this.apple = apple;
+            this.appleIndex = GameController.PrefabToIndex(apple);
             this.apples = new GameObject[maxApples];
         }
 
@@ -31,8 +31,8 @@ namespace SciFi.Players.Attacks {
                 r += Mathf.PI;
             }
 
-            apples[n] = GameController.Instance.SpawnProjectile(
-                apple,
+            player.CmdSpawnProjectile(
+                appleIndex,
                 player.netId,
                 player.GetItemNetId(),
                 player.gameObject.transform.position + new Vector3(x, y),
@@ -40,7 +40,7 @@ namespace SciFi.Players.Attacks {
                 Vector2.zero,
                 0f
             );
-            apples[n].GetComponent<GreenApple>().explodeRotation = Quaternion.Euler(0f, 0f, r * Mathf.Rad2Deg);
+            //apples[n].GetComponent<GreenApple>().explodeRotation = Quaternion.Euler(0f, 0f, r * Mathf.Rad2Deg);
         }
 
         public override void OnBeginCharging(Direction direction) {

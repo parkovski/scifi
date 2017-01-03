@@ -17,7 +17,10 @@ namespace SciFi.Items {
         /// to give more powerful arrows less often.
         GameObject[] arrowsArray;
         /// The type of arrow chosen for this bow
+        [SyncVar]
         GameObject arrowPrefab;
+        [SyncVar]
+        int arrowPrefabIndex;
         /// The arrow shown with this bow. When the bow is spawned,
         /// an arrow is created. When it is picked up, the arrow
         /// disappears until the player starts to shoot.
@@ -35,11 +38,16 @@ namespace SciFi.Items {
                 };
             }
 
+        }
+
+        public override void OnStartServer() {
             arrowPrefab = arrowsArray[Random.Range(0, arrowsArray.Length)];
+            arrowPrefabIndex = GameController.PrefabToIndex(arrowPrefab);
 
             CreateArrow();
         }
 
+        [Server]
         void CreateArrow() {
             arrow = Instantiate(arrowPrefab, gameObject.transform.position + new Vector3(.13f, 0f, 0f), Quaternion.identity);
             arrow.layer = Layers.items;
@@ -56,15 +64,15 @@ namespace SciFi.Items {
             BaseCollisionEnter2D(collision);
         }
 
-        public override void OnPickup(Player player) {
-            base.OnPickup(player);
+        public override void OnPickup() {
             if (isServer) {
                 Destroy(arrow);
             }
         }
-        public override void OnDiscard(Player player) {
-            base.OnDiscard(player);
-            //CreateArrow();
+        public override void OnDiscard() {
+            if (isServer) {
+                CreateArrow();
+            }
         }
 
         public override bool ShouldThrow() {
@@ -83,8 +91,9 @@ namespace SciFi.Items {
             } else {
                 force = new Vector2(20f, 10f);
             }
-            GameController.Instance.SpawnProjectile(
-                arrowPrefab,
+
+            owner.CmdSpawnProjectile(
+                arrowPrefabIndex,
                 playerNetId,
                 netId,
                 gameObject.transform.position,

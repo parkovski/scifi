@@ -11,7 +11,8 @@ namespace SciFi.Items {
         [SyncVar]
         Vector3 ownerOffset;
 
-        void Start() {
+        public override void OnStartClient() {
+            base.OnStartClient();
             owner = ClientScene.FindLocalObject(spawnedBy);
             this.ownerOffset = gameObject.transform.position - owner.transform.position;
         }

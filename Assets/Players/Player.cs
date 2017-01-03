@@ -45,6 +45,7 @@ namespace SciFi.Players {
         private int groundCollisions;
         protected bool canJump;
         protected bool canDoubleJump;
+        [SyncVar]
         protected GameObject item;
         private OneWayPlatform currentOneWayPlatform;
         private int[] featureLockout;
@@ -179,6 +180,28 @@ namespace SciFi.Players {
             specialAttack.UpdateState(inputManager, Control.SpecialAttack);
         }
 
+        [Command]
+        public void CmdSpawnProjectile(
+            int prefabIndex,
+            NetworkInstanceId spawnedBy,
+            NetworkInstanceId spawnedByExtra,
+            Vector2 position,
+            Quaternion rotation,
+            Vector2 force,
+            float torque)
+        {
+            var obj = Instantiate(GameController.IndexToPrefab(prefabIndex), position, rotation);
+            var projectile = obj.GetComponent<Projectile>();
+            projectile.spawnedBy = spawnedBy;
+            projectile.spawnedByExtra = spawnedByExtra;
+            var rb = obj.GetComponent<Rigidbody2D>();
+            if (rb != null) {
+                rb.AddForce(force);
+                rb.AddTorque(torque);
+            }
+            NetworkServer.Spawn(obj);
+        }
+
         public NetworkInstanceId GetItemNetId() {
             return item == null ? NetworkInstanceId.Invalid : item.GetComponent<Item>().netId;
         }
@@ -186,74 +209,67 @@ namespace SciFi.Players {
         void UseItem() {
             var i = item.GetComponent<Item>();
             if (i.ShouldThrow()) {
-                CmdThrowItem(item);
+                CmdLoseOwnershipOfItem();
                 item = null;
             } else if (i.ShouldCharge()) {
                 // TODO: begin charging item
+                // TODO: run this on server
                 i.Use(direction, netId);
             } else {
                 i.Use(direction, netId);
             }
-        }
-
-        [Command]
-        void CmdThrowItem(GameObject item) {
-            RpcItemDiscard(item);
-            item.layer = Layers.projectiles;
-
-            Vector2 force;
-            if (direction == Direction.Left) {
-                force = new Vector2(-200f, 150f);
-            } else {
-                force = new Vector2(200f, 150f);
-            }
-            item.GetComponent<Rigidbody2D>().AddForce(force);
         }
 
         void PickUpItem(GameObject item = null) {
-            this.item = CircleCastForItem(item);
-            if (this.item != null) {
-                CmdTakeOwnershipOfItem(this.item);
+            item = CircleCastForItem(item);
+            if (item != null) {
+                CmdTakeOwnershipOfItem(item);
             }
         }
 
         [Command]
         void CmdTakeOwnershipOfItem(GameObject item) {
-            var position = gameObject.transform.position;
-            if (direction == Direction.Left) {
-                position.x -= 1f;
-            } else {
-                position.x += 1f;
+            var itemComponent = item.GetComponent<Item>();
+            if (!itemComponent.SetOwner(gameObject)) {
+                return;
             }
-            item.transform.position = position;
-            RpcItemPickup(item);
+            this.item = item;
+
+            if (direction == Direction.Left) {
+                itemComponent.SetOwnerOffset(-1f, 0f);
+            } else {
+                itemComponent.SetOwnerOffset(1f, 0f);
+            }
+            item.GetComponent<NetworkTransform>().enabled = false;
+
+            //var itemNetworkIdentity = item.GetComponent<NetworkIdentity>();
+            //itemNetworkIdentity.AssignClientAuthority(connectionToClient);
         }
 
-        [ClientRpc]
-        void RpcItemPickup(GameObject item) {
-            var i = item.GetComponent<Item>();
-            i.EnablePhysics(false);
-            i.SetOwner(gameObject);
-            i.OnPickup(this);
-        }
+        [Command]
+        void CmdLoseOwnershipOfItem() {
+            var item = this.item;
+            this.item = null;
 
-        [ClientRpc]
-        void RpcItemDiscard(GameObject item) {
-            var i = item.GetComponent<Item>();
-            i.SetOwner(null);
-            i.EnablePhysics(true);
-            i.OnDiscard(this);
+            //item.GetComponent<NetworkIdentity>().RemoveClientAuthority(connectionToClient);
+
+            var itemComponent = item.GetComponent<Item>();
+            itemComponent.SetOwner(null);
+            //itemComponent.Throw(direction);
+
+            var networkTransform = item.GetComponent<NetworkTransform>();
+            networkTransform.enabled = true;
         }
 
         [Server]
-        void MoveItemForChangeDirection(GameObject item, Direction direction) {
-            float dx;
+        void MoveItemForChangeDirection(Direction direction) {
+            float x;
             if (direction == Direction.Left) {
-                dx = -2f;
+                x = -1f;
             } else {
-                dx = 2f;
+                x = 1f;
             }
-            item.GetComponent<Item>().UpdateOwnerOffset(dx, 0f);
+            item.GetComponent<Item>().SetOwnerOffset(x, 0f);
         }
 
         /// If an item is passed, this function will return it
@@ -317,7 +333,7 @@ namespace SciFi.Players {
         void CmdChangeDirection(Direction direction) {
             this.direction = direction;
             if (item != null) {
-                MoveItemForChangeDirection(item, direction);
+                MoveItemForChangeDirection(direction);
             }
             RpcChangeDirection(direction);
         }
@@ -335,5 +351,5 @@ namespace SciFi.Players {
             }
             rb.AddForce(force, ForceMode2D.Impulse);
         }
-}
+    }
 }

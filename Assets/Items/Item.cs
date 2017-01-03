@@ -8,13 +8,11 @@ namespace SciFi.Items {
         public bool isBeingThrown = false;
 
         /// The item's owner, if any, that it will follow.
-        private GameObject owner;
-        private Player playerOwner;
-        [SyncVar]
-        private Vector3 ownerOffset;
+        protected GameObject ownerGo;
+        protected Player owner;
+        protected Vector3 ownerOffset;
 
         private float aliveTime;
-        [SyncVar]
         private float destroyTime;
         /// Items won't destroy when they are owned, but
         /// if they are discarded, they will only stick around
@@ -27,15 +25,21 @@ namespace SciFi.Items {
         }
 
         protected void BaseUpdate() {
+            // If there is an owner, all copies update their position independently
+            // based on the owner's position.
+            if (ownerGo != null) {
+                gameObject.transform.position = ownerGo.transform.position + ownerOffset;
+            }
+
             if (!isServer) {
                 return;
             }
-            if (owner != null) {
-                gameObject.transform.position = owner.transform.position + ownerOffset;
-            }
 
+            // An unowned item will self-destruct after a certain time.
+            // An owned item whose timer expires will just reset it to a shorter
+            // timer which starts after it is discarded.
             if (this.destroyTime < Time.time) {
-                if (owner == null) {
+                if (ownerGo == null) {
                     Destroy(gameObject);
                 } else {
                     aliveTime = aliveTimeAfterPickup;
@@ -44,18 +48,25 @@ namespace SciFi.Items {
         }
 
         protected void BaseCollisionEnter2D(Collision2D collision) {
+            if (!isServer) {
+                return;
+            }
+
             if (collision.gameObject.tag == "Ground") {
-                gameObject.layer = LayerMask.NameToLayer("Items");
+                RpcSetToItemsLayer();
             }
         }
 
-        public virtual void OnPickup(Player player) {
-            playerOwner = player;
+        [ClientRpc]
+        void RpcSetToItemsLayer() {
+            gameObject.layer = Layers.items;
         }
 
-        public virtual void OnDiscard(Player player) {
-            playerOwner = null;
-        }
+        // Called on all clients when the object is picked up.
+        public virtual void OnPickup() {}
+
+        // Called on all clients when the object is discarded.
+        public virtual void OnDiscard() {}
 
         /// True if the player should throw the item, false if he should call
         /// EndCharging/Use instead.
@@ -87,27 +98,59 @@ namespace SciFi.Items {
             }
         }
 
-        /// An item with an owner will not self destruct,
-        /// and it will follow the owner around the screen.
-        public void SetOwner(GameObject owner) {
-            this.owner = owner;
-            if (owner == null) {
-                destroyTime = Time.time + aliveTime;
-                return;
+        /// Returns true if the owner was set,
+        /// false if there was already a different owner.
+        [Server]
+        public bool SetOwner(GameObject owner) {
+            if (this.ownerGo != null && owner != null) {
+                return false;
             }
-            this.ownerOffset = gameObject.transform.position - owner.transform.position;
+            this.ownerGo = owner;
+            if (owner != null) {
+                this.owner = owner.GetComponent<Player>();
+                EnablePhysics(false);
+                RpcNotifyPickup(owner);
+            } else {
+                this.owner = null;
+                EnablePhysics(true);
+                destroyTime = Time.time + aliveTime;
+                RpcNotifyDiscard();
+            }
+            return true;
+        }
+
+        [ClientRpc]
+        void RpcNotifyPickup(GameObject newOwner) {
+            this.ownerGo = newOwner;
+            this.owner = newOwner.GetComponent<Player>();
+            EnablePhysics(false);
+            OnPickup();
+        }
+
+        [ClientRpc]
+        void RpcNotifyDiscard() {
+            this.ownerGo = null;
+            this.owner = null;
+            EnablePhysics(true);
+            OnDiscard();
         }
 
         /// When the player changes direction, the item needs
         /// to switch to the opposite side.
         [Server]
-        public void UpdateOwnerOffset(float dx, float dy) {
-            this.ownerOffset.x += dx;
-            this.ownerOffset.y += dy;
+        public void SetOwnerOffset(float x, float y) {
+            this.ownerOffset.x = x;
+            this.ownerOffset.y = y;
+            RpcUpdateOwnerOffset(this.ownerOffset);
+        }
+
+        [ClientRpc]
+        void RpcUpdateOwnerOffset(Vector3 offset) {
+            this.ownerOffset = offset;
         }
 
         /// An item held by a player should not be affected by physics.
-        public void EnablePhysics(bool enable) {
+        void EnablePhysics(bool enable) {
             GetComponent<Rigidbody2D>().isKinematic = !enable;
         }
     }

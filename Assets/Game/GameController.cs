@@ -86,6 +86,14 @@ namespace SciFi {
             countdown.StartGame();
         }
 
+        public static int PrefabToIndex(GameObject prefab) {
+            return NetworkManager.singleton.spawnPrefabs.IndexOf(prefab);
+        }
+
+        public static GameObject IndexToPrefab(int index) {
+            return NetworkManager.singleton.spawnPrefabs[index];
+        }
+
         [Command]
         public void CmdDie(GameObject playerObject) {
             var player = playerObject.GetComponent<Player>();
@@ -120,39 +128,6 @@ namespace SciFi {
             }
             force += transform.right * amount;
             player.RpcKnockback(force);
-        }
-
-        public GameObject SpawnProjectile(
-            GameObject prefab,
-            NetworkInstanceId spawnedBy,
-            NetworkInstanceId spawnedByExtra,
-            Vector2 position,
-            Quaternion rotation,
-            Vector2 force,
-            float torque)
-        {
-            var obj = Instantiate(prefab, position, rotation);
-            CmdSpawnProjectile(obj, spawnedBy, spawnedByExtra, force, torque);
-            return obj;
-        }
-
-        [Command]
-        void CmdSpawnProjectile(
-            GameObject obj,
-            NetworkInstanceId spawnedBy,
-            NetworkInstanceId spawnedByExtra,
-            Vector2 force,
-            float torque)
-        {
-            var projectile = obj.GetComponent<Projectile>();
-            projectile.spawnedBy = spawnedBy;
-            projectile.spawnedByExtra = spawnedByExtra;
-            var rb = obj.GetComponent<Rigidbody2D>();
-            if (rb != null) {
-                rb.AddForce(force);
-                rb.AddTorque(torque);
-            }
-            NetworkServer.Spawn(obj);
         }
 
         void Awake() {
