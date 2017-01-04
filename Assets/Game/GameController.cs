@@ -45,6 +45,7 @@ namespace SciFi {
         Dictionary<string, GameObject> characters;
 
         // Items
+        public List<GameObject> items;
         public GameObject bomb;
         public GameObject bow;
         public GameObject arrow;
@@ -66,25 +67,24 @@ namespace SciFi {
         public static GameController Instance { get; private set; }
 
         [Server]
-        public void RegisterNewPlayer(NetworkConnection conn, short controllerId, string name) {
-            var playerObject = newton;
-            characters.TryGetValue(name, out playerObject);
-            playerObject = Instantiate(playerObject, Vector2.zero, Quaternion.identity);
-            var player = playerObject.GetComponent<Player>();
-            player.id = activePlayers.Length;
-            player.lives = 5;
-            NetworkServer.AddPlayerForConnection(conn, playerObject, controllerId);
-
+        public void RegisterNewPlayer(GameObject playerObject) {
             activePlayersGo = activePlayersGo.Concat(new[] { playerObject }).ToArray();
-            activePlayers = activePlayersGo.Select(p => p.GetComponent<Player>()).ToArray();
-            EventLifeChanged(new LifeChangedEventArgs {
-                playerId = player.id,
-                newLives = player.lives,
-            });
         }
 
         [Server]
         public void StartGame() {
+            activePlayers = activePlayersGo.Select(p => p.GetComponent<Player>()).ToArray();
+
+            for (var i = 0; i < activePlayersGo.Length; i++) {
+                var player = activePlayersGo[i].GetComponent<Player>();
+                player.id = i + 1;
+                player.lives = 5;
+                EventLifeChanged(new LifeChangedEventArgs {
+                    playerId = player.id,
+                    newLives = player.lives,
+                });
+            }
+
             RpcStartGame();
         }
 
@@ -145,6 +145,8 @@ namespace SciFi {
             };
             activePlayersGo = new GameObject[0];
             Layers.Init();
+
+            DontDestroyOnLoad(gameObject);
         }
 
         float nextItemTime;
