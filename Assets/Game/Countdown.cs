@@ -11,11 +11,17 @@ namespace SciFi.UI {
         /// The battle song is 112bpm - sync the text changes to the beat.
         const float beat = 0.5357f;
 
+        public delegate void OnFinishedHandler(object sender);
+        public event OnFinishedHandler OnFinished;
+
         void Start() {
             cues.Add(beat * 10, () => ChangeText("3"));
             cues.Add(beat * 12, () => ChangeText("2"));
             cues.Add(beat * 14, () => ChangeText("1"));
-            cues.Add(beat * 16, () => ChangeText("Go!"));
+            cues.Add(beat * 16, () => {
+                ChangeText("Go!");
+                OnFinished(this);
+            });
             cues.Add(beat * 18, () => ChangeText(""));
         }
 

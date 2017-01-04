@@ -35,6 +35,8 @@ namespace SciFi {
     }
 
     public class GameController : NetworkBehaviour {
+        private bool isPlaying;
+
         public Countdown countdown;
 
         // Player characters
@@ -88,9 +90,24 @@ namespace SciFi {
             RpcStartGame();
         }
 
+        [Server]
+        public void EndGame() {
+            RpcEndGame();
+        }
+
+        public bool IsPlaying() {
+            return isPlaying;
+        }
+
         [ClientRpc]
         void RpcStartGame() {
             countdown.StartGame();
+            countdown.OnFinished += _ => this.isPlaying = true;
+        }
+
+        [ClientRpc]
+        void RpcEndGame() {
+            isPlaying = false;
         }
 
         public static int PrefabToIndex(GameObject prefab) {
@@ -152,6 +169,10 @@ namespace SciFi {
         float nextItemTime;
         void Update() {
             if (!isServer) {
+                return;
+            }
+
+            if (!isPlaying) {
                 return;
             }
 
