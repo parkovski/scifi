@@ -70,19 +70,26 @@ namespace SciFi {
             var playerObject = newton;
             characters.TryGetValue(name, out playerObject);
             playerObject = Instantiate(playerObject, Vector2.zero, Quaternion.identity);
+            var player = playerObject.GetComponent<Player>();
+            player.id = activePlayers.Length;
+            player.lives = 5;
             NetworkServer.AddPlayerForConnection(conn, playerObject, controllerId);
 
             activePlayersGo = activePlayersGo.Concat(new[] { playerObject }).ToArray();
             activePlayers = activePlayersGo.Select(p => p.GetComponent<Player>()).ToArray();
-            var player = activePlayers[activePlayers.Length - 1];
-            player.id = activePlayers.Length - 1;
-            player.lives = 5;
             EventLifeChanged(new LifeChangedEventArgs {
                 playerId = player.id,
                 newLives = player.lives,
             });
+        }
 
-            // TODO: Move to where the game actually starts
+        [Server]
+        public void StartGame() {
+            RpcStartGame();
+        }
+
+        [ClientRpc]
+        void RpcStartGame() {
             countdown.StartGame();
         }
 

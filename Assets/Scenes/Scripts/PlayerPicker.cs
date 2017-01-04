@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 
-namespace SciFi.Scenes.PlayerPicker {
+namespace SciFi.Scenes {
     public class PlayerPicker : MonoBehaviour {
         InputManager inputManager;
 
@@ -39,7 +39,12 @@ namespace SciFi.Scenes.PlayerPicker {
 
         void GoClicked() {
             TransitionParams.playerName = selected.name;
-            SceneManager.LoadScene("MainGame");
+
+            if (TransitionParams.gameType == GameType.Single) {
+                SceneManager.LoadScene("MainGame");
+            } else {
+                SceneManager.LoadScene("Lobby");
+            }
         }
     }
 }
