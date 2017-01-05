@@ -51,5 +51,5 @@ namespace SciFi.Players.Attacks {
         public override void OnEndCharging(float chargeTime, Direction direction) {
             Object.Destroy(chargingBook);
         }
-}
+    }
 }

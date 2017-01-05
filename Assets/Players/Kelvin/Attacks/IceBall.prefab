@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 58203540000438844}
   - component: {fileID: 114581121180703790}
   - component: {fileID: 114156858324216832}
-  - component: {fileID: 114775866377360198}
+  - component: {fileID: 114790896274836606}
   m_Layer: 10
   m_Name: IceBall
   m_TagString: Untagged
@@ -131,7 +131,7 @@ MonoBehaviour:
     i15: 74
   m_ServerOnly: 0
   m_LocalPlayerAuthority: 0
---- !u!114 &114775866377360198
+--- !u!114 &114790896274836606
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -139,11 +139,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1284917634577738}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 261669bf00bc28a42bf52db26d04f2f9, type: 3}
+  m_Script: {fileID: 11500000, guid: c24a8f1af03a3034f9f248fe708fb463, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  explodingApple: {fileID: 1067510251126116, guid: 7d6a37a4da9154edc9a116afb28f4920,
-    type: 2}
 --- !u!212 &212512660845092946
 SpriteRenderer:
   m_ObjectHideFlags: 1

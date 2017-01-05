@@ -19,7 +19,9 @@ namespace SciFi.Players {
         void Start() {
             BaseStart();
 
-            attack1 = attack2 = specialAttack = new AppleAttack(this, iceBall);
+            attack1 = new IceBallAttack(this, iceBall);
+            attack2 = new FireBallAttack(this, fireBall);
+            specialAttack = attack1;
         }
 
         void FixedUpdate() {
