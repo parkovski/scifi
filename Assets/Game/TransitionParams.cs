@@ -6,7 +6,7 @@ namespace SciFi.Scenes {
 
     public static class TransitionParams {
         #region Title screen -> Player picker
-        public static GameType gameType = GameType.Single;
+        public static GameType gameType = GameType.Multi;
         #endregion
 
         #region Player picker -> Lobby

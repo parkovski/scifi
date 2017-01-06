@@ -2,10 +2,7 @@
 
 using UnityEngine;
 using UnityEngine.Networking;
-using UnityEngine.Networking.NetworkSystem;
 using System.Collections.Generic;
-
-using SciFi.Scenes;
 
 namespace SciFi.Network {
     public class NetworkController : NetworkLobbyManager {
@@ -16,7 +13,7 @@ namespace SciFi.Network {
         }
 
         public override GameObject OnLobbyServerCreateGamePlayer(NetworkConnection conn, short playerControllerId) {
-            var playerName = "Newton";
+            var playerName = "Kelvin";
             var prefab = spawnPrefabs.Find(p => p.name == playerName);
             var obj = Instantiate(prefab, Vector3.zero, Quaternion.identity);
             GameController.Instance.RegisterNewPlayer(obj);

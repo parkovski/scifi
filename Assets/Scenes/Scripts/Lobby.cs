@@ -9,6 +9,10 @@ namespace SciFi.Scenes {
         public InputField hostName;
         public InputField nickname;
 
+        void Start() {
+            //
+        }
+
         public void Host() {
             lobbyManager.StartHost();
         }
