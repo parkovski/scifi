@@ -11,6 +11,10 @@ namespace SciFi.Util {
     /// the lobby would do.
     public class SinglePlayerHack : MonoBehaviour {
         void Start() {
+            #if UNITY_EDITOR
+            GetComponent<NetworkController>().minPlayers = 1;
+            #endif
+
             if (TransitionParams.gameType != GameType.Single) {
                 return;
             }
