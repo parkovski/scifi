@@ -11,6 +11,9 @@ namespace SciFi.Util {
     /// the lobby would do.
     public class SinglePlayerHack : MonoBehaviour {
         void Start() {
+            // The game defaults to multiplayer if the title screen
+            // is skipped, so for testing let it run with just one
+            // player.
             #if UNITY_EDITOR
             GetComponent<NetworkController>().minPlayers = 1;
             #endif
