@@ -1,3 +1,6 @@
+using UnityEngine.Networking;
+using System.Collections.Generic;
+
 namespace SciFi.Scenes {
     public enum GameType {
         Single,
@@ -11,6 +14,11 @@ namespace SciFi.Scenes {
 
         #region Player picker -> Lobby
         public static string playerName = "Newton";
+        public static Dictionary<NetworkConnection, string> players;
         #endregion
+
+        static TransitionParams() {
+            players = new Dictionary<NetworkConnection, string>();
+        }
     }
 }

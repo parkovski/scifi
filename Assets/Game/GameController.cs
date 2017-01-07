@@ -6,7 +6,6 @@ using System.Linq;
 using Random = UnityEngine.Random;
 
 using SciFi.Players;
-using SciFi.Items;
 using SciFi.UI;
 
 namespace SciFi {
