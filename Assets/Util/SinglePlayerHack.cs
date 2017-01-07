@@ -10,6 +10,8 @@ namespace SciFi.Util {
     /// GameController and creates player instances like
     /// the lobby would do.
     public class SinglePlayerHack : MonoBehaviour {
+        NetworkController networkController;
+
         void Start() {
             // The game defaults to multiplayer if the title screen
             // is skipped, so for testing let it run with just one
@@ -22,12 +24,20 @@ namespace SciFi.Util {
                 return;
             }
 
-            var nc = GetComponent<NetworkController>();
-            nc.minPlayers = 1;
+            networkController = GetComponent<NetworkController>();
+            networkController.minPlayers = 1;
 
-            nc.StartHost();
-            nc.TryToAddPlayer();
-            nc.lobbySlots[0].SendReadyToBeginMessage();
+            networkController.StartHost();
+        }
+
+        bool done = false;
+        void LateUpdate() {
+            if (done) {
+                return;
+            }
+            networkController.TryToAddPlayer();
+            networkController.lobbySlots[0].SendReadyToBeginMessage();
+            done = true;
         }
     }
 }

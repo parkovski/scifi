@@ -1,6 +1,10 @@
 using UnityEngine;
 
 namespace SciFi.Players.Attacks {
+    // The fire ball grows bigger while charging,
+    // when released flys in a straight horizontal line,
+    // and latches onto the player it hits, doing between
+    // 3-5 rounds of damage.
     public class FireBallAttack : Attack {
         const float horizontalForce = 20f;
         GameObject fireBall;
