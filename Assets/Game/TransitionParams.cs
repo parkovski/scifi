@@ -14,11 +14,27 @@ namespace SciFi.Scenes {
 
         #region Player picker -> Lobby
         public static string playerName = "Newton";
-        public static Dictionary<NetworkConnection, string> players;
+        private static Dictionary<NetworkConnection, string> players;
+        private static object playersLock;
         #endregion
 
         static TransitionParams() {
             players = new Dictionary<NetworkConnection, string>();
+            playersLock = new object();
+        }
+
+        public static void AddPlayer(NetworkConnection conn, string name) {
+            lock(playersLock) {
+                players.Add(conn, name);
+            }
+        }
+
+        public static string GetPlayerName(NetworkConnection conn) {
+            lock(playersLock) {
+                string name = null;
+                players.TryGetValue(conn, out name);
+                return name;
+            }
         }
     }
 }

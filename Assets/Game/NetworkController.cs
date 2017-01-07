@@ -30,13 +30,12 @@ namespace SciFi.Network {
         }
 
         void SetPlayerName(NetworkMessage msg) {
-            TransitionParams.players.Add(msg.conn, msg.reader.ReadString());
+            TransitionParams.AddPlayer(msg.conn, msg.reader.ReadString());
         }
 
         public override GameObject OnLobbyServerCreateGamePlayer(NetworkConnection conn, short playerControllerId) {
             string playerName;
-            print(TransitionParams.players.Count);
-            if (!TransitionParams.players.TryGetValue(conn, out playerName)) {
+            if ((playerName = TransitionParams.GetPlayerName(conn)) == null) {
                 playerName = "Newton";
             }
             var prefab = spawnPrefabs.Find(p => p.name == playerName);
