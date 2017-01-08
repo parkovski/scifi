@@ -109,10 +109,26 @@ namespace SciFi.Players {
             ++featureLockout[(int)feature];
         }
 
-        public void ResumeFeature(PlayerFeature feature) {
-            if (featureLockout[(int)feature] > 0) {
+        public void ResumeFeature(PlayerFeature feature, bool force = false) {
+            if (force) {
+                featureLockout[(int)feature] = 0;
+            } else if (featureLockout[(int)feature] > 0) {
                 --featureLockout[(int)feature];
             }
+        }
+
+        public void SuspendAllFeatures() {
+            SuspendFeature(PlayerFeature.Attack);
+            SuspendFeature(PlayerFeature.Damage);
+            SuspendFeature(PlayerFeature.Knockback);
+            SuspendFeature(PlayerFeature.Movement);
+        }
+
+        public void ResumeAllFeatures(bool force = false) {
+            ResumeFeature(PlayerFeature.Attack, force);
+            ResumeFeature(PlayerFeature.Damage, force);
+            ResumeFeature(PlayerFeature.Knockback, force);
+            ResumeFeature(PlayerFeature.Movement, force);
         }
 
         public bool FeatureEnabled(PlayerFeature feature) {

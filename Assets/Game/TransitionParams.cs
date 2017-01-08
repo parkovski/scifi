@@ -18,6 +18,7 @@ namespace SciFi.Scenes {
         private static object playersLock;
         #endregion
 
+        #region Accessors for private fields
         static TransitionParams() {
             players = new Dictionary<NetworkConnection, string>();
             playersLock = new object();
@@ -36,5 +37,6 @@ namespace SciFi.Scenes {
                 return name;
             }
         }
+        #endregion
     }
 }

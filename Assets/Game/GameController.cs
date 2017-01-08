@@ -38,13 +38,6 @@ namespace SciFi {
 
         public Countdown countdown;
 
-        // Player characters
-        public GameObject newton;
-        public GameObject kelvin;
-
-        // Map from character names to the properties set via the editor.
-        Dictionary<string, GameObject> characters;
-
         // Items
         public List<GameObject> items;
         public GameObject bomb;
@@ -56,8 +49,8 @@ namespace SciFi {
 
         // Active players, even if dead. Null if no game is running,
         // guaranteed not null if a game is running.
-        GameObject[] activePlayersGo;
         Player[] activePlayers;
+        GameObject[] activePlayersGo;
 
         [SyncEvent]
         public event DamageChangedHandler EventDamageChanged;
@@ -80,6 +73,7 @@ namespace SciFi {
                 var player = activePlayersGo[i].GetComponent<Player>();
                 player.id = i + 1;
                 player.lives = 5;
+                //player.SuspendAllFeatures();
                 EventLifeChanged(new LifeChangedEventArgs {
                     playerId = player.id,
                     newLives = player.lives,
@@ -87,6 +81,17 @@ namespace SciFi {
             }
 
             RpcStartGame();
+            countdown.StartGame();
+            countdown.OnFinished += _ => {
+                this.isPlaying = true;
+                foreach (var p in activePlayers) {
+                    // TODO: this needs to be run on both server and client
+                    // including the SuspendAllFeatures call above.
+                    // Attack and Movement are handled on the client,
+                    // while Damage and Knockback are handled on the server.
+                    p.ResumeAllFeatures(true);
+                }
+            };
         }
 
         [Server]
@@ -132,6 +137,9 @@ namespace SciFi {
         [Server]
         public void TakeDamage(GameObject playerObject, int amount) {
             var player = playerObject.GetComponent<Player>();
+            if (!player.FeatureEnabled(PlayerFeature.Damage)) {
+                    return;
+            }
             player.damage += amount;
             var args = new DamageChangedEventArgs {
                 playerId = player.id,
@@ -143,6 +151,9 @@ namespace SciFi {
         [Server]
         public void Knockback(GameObject attackingObject, GameObject playerObject, float amount) {
             var player = playerObject.GetComponent<Player>();
+            if (!player.FeatureEnabled(PlayerFeature.Knockback)) {
+                return;
+            }
             amount *= player.damage;
             var vector = playerObject.transform.position - attackingObject.transform.position;
             var force = transform.up * amount;
@@ -155,10 +166,6 @@ namespace SciFi {
 
         void Awake() {
             Instance = this;
-            characters = new Dictionary<string, GameObject>() {
-                { "Newton", newton },
-                { "Kelvin", kelvin },
-            };
             activePlayersGo = new GameObject[0];
             Layers.Init();
 
