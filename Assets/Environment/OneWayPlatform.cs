@@ -8,12 +8,12 @@ using SciFi.Items;
 
 namespace SciFi.Environment {
     public class OneWayPlatform : NetworkBehaviour {
-        Collider2D edgeCollider;
+        Collider2D lGroundCollider;
         // Since objects might have multiple colliders,
         // when an object enters the trigger, we increase
         // the collider count, and only stop ignoring
         // collisions when the count reaches 0.
-        Dictionary<GameObject, int> colliderCount;
+        Dictionary<GameObject, int> lColliderCount;
 
         void Start() {
             var colliders = GetComponents<Collider2D>();
@@ -21,47 +21,48 @@ namespace SciFi.Environment {
                 throw new InvalidOperationException("OneWayPlatform is only valid " +
                     "on objects with one trigger Collider2D and one non-trigger Collider2D");
             }
-            edgeCollider = colliders.First(c => !c.isTrigger);
+            lGroundCollider = colliders.First(c => !c.isTrigger);
 
-            colliderCount = new Dictionary<GameObject, int>();
+            lColliderCount = new Dictionary<GameObject, int>();
         }
 
         void OnTriggerEnter2D(Collider2D otherCollider) {
             var go = otherCollider.gameObject;
             int count;
-            if (colliderCount.TryGetValue(go, out count)) {
-                colliderCount[go] = count + 1;
+            if (lColliderCount.TryGetValue(go, out count)) {
+                lColliderCount[go] = count + 1;
                 if (count > 0) {
                     return;
                 }
             } else {
-                colliderCount[go] = 1;
+                lColliderCount[go] = 1;
             }
-            Item.IgnoreCollisions(go, edgeCollider);
+            Item.IgnoreCollisions(go, lGroundCollider);
         }
 
         void OnTriggerExit2D(Collider2D otherCollider) {
             var go = otherCollider.gameObject;
             int count;
-            if (!colliderCount.TryGetValue(go, out count)) {
+            if (!lColliderCount.TryGetValue(go, out count)) {
                 return;
             }
             if (count <= 1) {
-                colliderCount[go] = 0;
-                Item.IgnoreCollisions(go, edgeCollider, false);
+                lColliderCount[go] = 0;
+                Item.IgnoreCollisions(go, lGroundCollider, false);
             } else {
-                colliderCount[go] = count - 1;
+                lColliderCount[go] = count - 1;
             }
         }
 
         [Command]
         public void CmdFallThrough(GameObject go) {
+            Item.IgnoreCollisions(go, lGroundCollider);
             RpcFallThrough(go);
         }
 
         [ClientRpc]
         void RpcFallThrough(GameObject go) {
-            Item.IgnoreCollisions(go, edgeCollider);
+            Item.IgnoreCollisions(go, lGroundCollider);
         }
     }
 }

@@ -5,30 +5,30 @@ using SciFi.Players;
 
 namespace SciFi.Items {
     public abstract class Item : NetworkBehaviour {
-        public bool isBeingThrown = false;
+        bool pIsCharging = false;
 
         /// The item's owner, if any, that it will follow.
-        protected GameObject ownerGo;
-        protected Player owner;
-        protected Vector3 ownerOffset;
+        protected GameObject eOwnerGo;
+        protected Player eOwner;
+        protected Vector3 eOwnerOffset;
 
-        private float aliveTime;
-        private float destroyTime;
+        private float sAliveTime;
+        private float sDestroyTime;
         /// Items won't destroy when they are owned, but
         /// if they are discarded, they will only stick around
         /// for this much time if their original lifetime has expired already.
         const float aliveTimeAfterPickup = 3.5f;
 
         protected void BaseStart(float aliveTime = 5f) {
-            this.aliveTime = aliveTime;
-            this.destroyTime = Time.time + aliveTime;
+            this.sAliveTime = aliveTime;
+            this.sDestroyTime = Time.time + aliveTime;
         }
 
         protected void BaseUpdate() {
             // If there is an owner, all copies update their position independently
             // based on the owner's position.
-            if (ownerGo != null) {
-                gameObject.transform.position = ownerGo.transform.position + ownerOffset;
+            if (eOwnerGo != null) {
+                gameObject.transform.position = eOwnerGo.transform.position + eOwnerOffset;
             }
 
             if (!isServer) {
@@ -38,11 +38,11 @@ namespace SciFi.Items {
             // An unowned item will self-destruct after a certain time.
             // An owned item whose timer expires will just reset it to a shorter
             // timer which starts after it is discarded.
-            if (this.destroyTime < Time.time) {
-                if (ownerGo == null) {
+            if (this.sDestroyTime < Time.time) {
+                if (eOwnerGo == null) {
                     Destroy(gameObject);
                 } else {
-                    aliveTime = aliveTimeAfterPickup;
+                    sAliveTime = aliveTimeAfterPickup;
                 }
             }
         }
@@ -74,11 +74,28 @@ namespace SciFi.Items {
         /// True if the attack should charge and fire when the button is released,
         /// false to fire immediately.
         public abstract bool ShouldCharge();
-        /// Called when the player is done charging the item and it should fire.
-        public virtual void EndCharging(float chargeTime, Direction direction, NetworkInstanceId playerNetId) {}
+        /// Only valid on the client w/ local authority over the owner.
+        public bool IsCharging() {
+            return pIsCharging;
+        }
+        public virtual void BeginCharging(Direction direction) {
+            pIsCharging = true;
+        }
+        public virtual void KeepCharging(float chargeTime, Direction direction) {}
+        /// Called on the client when the player is done charging the item and it should fire.
+        public virtual void EndCharging(float chargeTime, Direction direction) {
+            pIsCharging = false;
+        }
         /// For convenience, just calls EndCharging with chargeTime == 0f.
-        public void Use(Direction direction, NetworkInstanceId playerNetId) {
-            EndCharging(0f, direction, playerNetId);
+        public void Use(Direction direction) {
+            EndCharging(0f, direction);
+        }
+
+        public void Throw(Direction direction) {
+            var rb = GetComponent<Rigidbody2D>();
+            var x = direction == Direction.Left ? -150f : 150f;
+            rb.AddForce(new Vector2(x, 100f));
+            gameObject.layer = Layers.projectiles;
         }
 
         public static void IgnoreCollisions(GameObject obj1, GameObject obj2, bool ignore = true) {
@@ -102,18 +119,18 @@ namespace SciFi.Items {
         /// false if there was already a different owner.
         [Server]
         public bool SetOwner(GameObject owner) {
-            if (this.ownerGo != null && owner != null) {
+            if (this.eOwnerGo != null && owner != null) {
                 return false;
             }
-            this.ownerGo = owner;
+            this.eOwnerGo = owner;
             if (owner != null) {
-                this.owner = owner.GetComponent<Player>();
+                this.eOwner = owner.GetComponent<Player>();
                 EnablePhysics(false);
                 RpcNotifyPickup(owner);
             } else {
-                this.owner = null;
+                this.eOwner = null;
                 EnablePhysics(true);
-                destroyTime = Time.time + aliveTime;
+                sDestroyTime = Time.time + sAliveTime;
                 RpcNotifyDiscard();
             }
             return true;
@@ -121,16 +138,16 @@ namespace SciFi.Items {
 
         [ClientRpc]
         void RpcNotifyPickup(GameObject newOwner) {
-            this.ownerGo = newOwner;
-            this.owner = newOwner.GetComponent<Player>();
+            this.eOwnerGo = newOwner;
+            this.eOwner = newOwner.GetComponent<Player>();
             EnablePhysics(false);
             OnPickup();
         }
 
         [ClientRpc]
         void RpcNotifyDiscard() {
-            this.ownerGo = null;
-            this.owner = null;
+            this.eOwnerGo = null;
+            this.eOwner = null;
             EnablePhysics(true);
             OnDiscard();
         }
@@ -139,14 +156,14 @@ namespace SciFi.Items {
         /// to switch to the opposite side.
         [Server]
         public void SetOwnerOffset(float x, float y) {
-            this.ownerOffset.x = x;
-            this.ownerOffset.y = y;
-            RpcUpdateOwnerOffset(this.ownerOffset);
+            this.eOwnerOffset.x = x;
+            this.eOwnerOffset.y = y;
+            RpcUpdateOwnerOffset(this.eOwnerOffset);
         }
 
         [ClientRpc]
         void RpcUpdateOwnerOffset(Vector3 offset) {
-            this.ownerOffset = offset;
+            this.eOwnerOffset = offset;
         }
 
         /// An item held by a player should not be affected by physics.

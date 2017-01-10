@@ -25,27 +25,38 @@ namespace SciFi {
         public static int projectiles;
         public static int items;
         public static int players;
+        public static int displayOnly;
+        public static int heldAttacks;
 
         public static void Init() {
             projectiles = LayerMask.NameToLayer("Projectiles");
             items = LayerMask.NameToLayer("Items");
             players = LayerMask.NameToLayer("Players");
+            displayOnly = LayerMask.NameToLayer("Display Only");
+            heldAttacks = LayerMask.NameToLayer("Held Attacks");
         }
+    }
+
+    public enum ItemFrequency {
+        None,
+        VeryLow,
+        Low,
+        Normal,
+        High,
+        VeryHigh,
     }
 
     public class GameController : NetworkBehaviour {
         private bool isPlaying;
 
+        /// Set on scene change to the countdown in the main game scene.
+        [HideInInspector]
         public Countdown countdown;
 
         // Items
+        public ItemFrequency itemFrequency;
         public List<GameObject> items;
-        public GameObject bomb;
-        public GameObject bow;
-        public GameObject arrow;
-        public GameObject fireArrow;
-        public GameObject bombArrow;
-        public GameObject rockArrow;
+        float nextItemTime;
 
         // Active players, even if dead. Null if no game is running,
         // guaranteed not null if a game is running.
@@ -80,6 +91,7 @@ namespace SciFi {
                 });
             }
 
+            countdown = GameObject.Find("Canvas").GetComponent<Countdown>();
             RpcStartGame();
             countdown.StartGame();
             countdown.OnFinished += _ => {
@@ -105,6 +117,7 @@ namespace SciFi {
 
         [ClientRpc]
         void RpcStartGame() {
+            countdown = GameObject.Find("Canvas").GetComponent<Countdown>();
             countdown.StartGame();
             countdown.OnFinished += _ => this.isPlaying = true;
         }
@@ -172,7 +185,6 @@ namespace SciFi {
             DontDestroyOnLoad(gameObject);
         }
 
-        float nextItemTime;
         void Update() {
             if (!isServer) {
                 return;
@@ -182,15 +194,45 @@ namespace SciFi {
                 return;
             }
 
-            if (Time.time > nextItemTime) {
-                nextItemTime = Time.time + Random.Range(7f, 15f);
+            if (itemFrequency != ItemFrequency.None && Time.time > nextItemTime) {
+                nextItemTime = Time.time + GetNextItemSpawnTime();
                 SpawnItem();
             }
         }
 
+        float GetNextItemSpawnTime() {
+            float min = 0f, max = 0f;
+            switch (itemFrequency) {
+            case ItemFrequency.None:
+                return 0f;
+            case ItemFrequency.VeryLow:
+                min = 20f;
+                max = 30f;
+                break;
+            case ItemFrequency.Low:
+                min = 15f;
+                max = 23f;
+                break;
+            case ItemFrequency.Normal:
+                min = 10f;
+                max = 16f;
+                break;
+            case ItemFrequency.High:
+                min = 7f;
+                max = 12f;
+                break;
+            case ItemFrequency.VeryHigh:
+                min = 5f;
+                max = 9f;
+                break;
+            }
+
+            return Random.Range(min, max);
+        }
+
         [Server]
         void SpawnItem() {
-            var prefab = bomb;//Random.Range(0f, 1f) > .5f ? bomb : bow;
+            var prefab = items[Random.Range(0, items.Count)];
             var item = Instantiate(prefab, new Vector2(Random.Range(-6f, 6f), 5f), Quaternion.identity);
             NetworkServer.Spawn(item);
         }

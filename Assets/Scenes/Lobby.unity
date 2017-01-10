@@ -132,15 +132,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   countdown: {fileID: 0}
-  newton: {fileID: 0}
-  kelvin: {fileID: 0}
-  items: []
-  bomb: {fileID: 1677562881235206, guid: 72b7e942859852943b7fa7160b47c974, type: 2}
-  bow: {fileID: 0}
-  arrow: {fileID: 0}
-  fireArrow: {fileID: 0}
-  bombArrow: {fileID: 0}
-  rockArrow: {fileID: 0}
+  itemFrequency: 5
+  items:
+  - {fileID: 1677562881235206, guid: 72b7e942859852943b7fa7160b47c974, type: 2}
+  - {fileID: 1787082464910702, guid: 4c1d83ebc6e024263bcaa49e29d1633f, type: 2}
 --- !u!114 &4243706
 MonoBehaviour:
   m_ObjectHideFlags: 0

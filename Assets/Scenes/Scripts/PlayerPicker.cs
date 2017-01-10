@@ -1,32 +1,20 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using System.Collections.Generic;
 
 namespace SciFi.Scenes {
     public class PlayerPicker : MonoBehaviour {
         InputManager inputManager;
 
-        Dictionary<string, GameObject> characters;
         GameObject selected;
 
         public Button goButton;
-
-        static readonly string[] characterNames = new string[] {
-            "Newton",
-            "Kelvin",
-        };
 
         void Start() {
             inputManager = GetComponent<InputManager>();
             inputManager.ObjectSelected += ObjectSelected;
 
-            characters = new Dictionary<string, GameObject>();
-            foreach (var n in characterNames) {
-                characters.Add(n, GameObject.Find(n));
-            }
-
-            selected = characters["Newton"];
+            selected = GameObject.Find("Newton");
 
             goButton.onClick.AddListener(GoClicked);
         }

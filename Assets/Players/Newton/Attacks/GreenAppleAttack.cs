@@ -33,8 +33,6 @@ namespace SciFi.Players.Attacks {
 
             player.CmdSpawnProjectile(
                 appleIndex,
-                player.netId,
-                player.GetItemNetId(),
                 player.gameObject.transform.position + new Vector3(x, y),
                 Quaternion.identity,
                 Vector2.zero,

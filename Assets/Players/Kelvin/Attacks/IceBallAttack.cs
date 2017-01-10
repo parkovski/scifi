@@ -27,8 +27,6 @@ namespace SciFi.Players.Attacks {
             var torque = Random.Range(-torqueRange, torqueRange);
             player.CmdSpawnProjectile(
                 iceBallPrefabIndex,
-                player.netId,
-                player.GetItemNetId(),
                 player.gameObject.transform.position,
                 Quaternion.identity,
                 force,

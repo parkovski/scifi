@@ -50,8 +50,6 @@ namespace SciFi.Players.Attacks {
 
             player.CmdSpawnProjectile(
                 fireBallPrefabIndex,
-                player.netId,
-                player.GetItemNetId(),
                 position,
                 Quaternion.identity,
                 force,

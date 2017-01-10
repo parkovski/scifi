@@ -6,7 +6,7 @@ using SciFi.Players;
 
 namespace SciFi.Items {
     public class Bow : Item {
-        int arrows = 5;
+        int cArrows = 5;
 
         public GameObject normalArrow;
         public GameObject fireArrow;
@@ -15,45 +15,60 @@ namespace SciFi.Items {
 
         /// This array contains duplicates, because it is weighted
         /// to give more powerful arrows less often.
-        GameObject[] arrowsArray;
+        GameObject[] eArrowsArray;
         /// The type of arrow chosen for this bow
         [SyncVar]
-        GameObject arrowPrefab;
-        [SyncVar]
-        int arrowPrefabIndex;
+        int eArrowPrefabIndex;
         /// The arrow shown with this bow. When the bow is spawned,
         /// an arrow is created. When it is picked up, the arrow
         /// disappears until the player starts to shoot.
-        GameObject arrow;
+        GameObject lDisplayArrow;
+        readonly Vector3 arrowOffset = new Vector3(.13f, 0f);
 
         void Start() {
             BaseStart(aliveTime: 10f);
+            InitArrowsArray();
+        }
 
-            if (arrowsArray == null) {
-                arrowsArray = new [] {
+        public override void OnStartServer() {
+            InitArrowsArray();
+        }
+
+        public override void OnStartClient() {
+            CreateDisplayArrow();
+        }
+
+        void InitArrowsArray() {
+            if (eArrowsArray == null) {
+                eArrowsArray = new [] {
                     normalArrow, normalArrow, normalArrow, normalArrow,
                     rockArrow, rockArrow,
                     bombArrow,
                     fireArrow,
                 };
+
+                if (isServer) {
+                    eArrowPrefabIndex = GameController.PrefabToIndex(eArrowsArray[Random.Range(0, eArrowsArray.Length)]);
+                }
             }
-
         }
 
-        public override void OnStartServer() {
-            arrowPrefab = arrowsArray[Random.Range(0, arrowsArray.Length)];
-            arrowPrefabIndex = GameController.PrefabToIndex(arrowPrefab);
-
-            CreateArrow();
+        [ClientRpc]
+        void RpcCreateDisplayArrow() {
+            CreateDisplayArrow();
         }
 
-        [Server]
-        void CreateArrow() {
-            arrow = Instantiate(arrowPrefab, gameObject.transform.position + new Vector3(.13f, 0f, 0f), Quaternion.identity);
-            arrow.layer = Layers.items;
-            arrow.transform.parent = gameObject.transform;
-            //arrow.GetComponent<Rigidbody2D>().isKinematic = true;
-            NetworkServer.Spawn(arrow);
+        void CreateDisplayArrow() {
+            var prefab = GameController.IndexToPrefab(eArrowPrefabIndex);
+            lDisplayArrow = Instantiate(prefab, gameObject.transform.position + arrowOffset, Quaternion.identity);
+            lDisplayArrow.layer = Layers.displayOnly;
+            lDisplayArrow.GetComponent<Rigidbody2D>().isKinematic = true;
+            lDisplayArrow.transform.parent = gameObject.transform;
+        }
+
+        [ClientRpc]
+        void RpcDestroyDisplayArrow() {
+            Destroy(lDisplayArrow);
         }
 
         void Update() {
@@ -66,36 +81,54 @@ namespace SciFi.Items {
 
         public override void OnPickup() {
             if (isServer) {
-                Destroy(arrow);
+                //Destroy(lDisplayArrow);
+                //RpcDestroyDisplayArrow();
             }
         }
         public override void OnDiscard() {
             if (isServer) {
-                CreateArrow();
+                //RpcCreateDisplayArrow();
             }
         }
 
         public override bool ShouldThrow() {
-            return arrows == 0;
+            return cArrows == 0;
         }
 
         public override bool ShouldCharge() {
-            return arrows > 0;
+            return cArrows > 0;
         }
 
-        public override void EndCharging(float chargeTime, Direction direction, NetworkInstanceId playerNetId) {
-            --arrows;
+        public override void BeginCharging(Direction direction) {
+            base.BeginCharging(direction);
+        }
+
+        public override void KeepCharging(float chargeTime, Direction direction) {
+            float xOffset = 0;
+            chargeTime = Mathf.Clamp(chargeTime, 0f, 2f);
+            if (direction == Direction.Left) {
+                xOffset = chargeTime / 10;
+            } else {
+                xOffset = -chargeTime / 10;
+            }
+            lDisplayArrow.transform.localPosition = new Vector3(xOffset + arrowOffset.x, 0, 0);
+        }
+
+        public override void EndCharging(float chargeTime, Direction direction) {
+            base.EndCharging(chargeTime, direction);
+
+            lDisplayArrow.transform.localPosition = arrowOffset;
+
+            --cArrows;
             Vector2 force;
             if (direction == Direction.Left) {
-                force = new Vector2(-20f, 10f);
+                force = new Vector2(-200f, 10f);
             } else {
-                force = new Vector2(20f, 10f);
+                force = new Vector2(200f, 10f);
             }
 
-            owner.CmdSpawnProjectile(
-                arrowPrefabIndex,
-                playerNetId,
-                netId,
+            eOwner.CmdSpawnProjectile(
+                eArrowPrefabIndex,
                 gameObject.transform.position,
                 Quaternion.identity,
                 force,

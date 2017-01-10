@@ -29,15 +29,16 @@ namespace SciFi.Players {
     }
 
     public abstract class Player : NetworkBehaviour {
-        [SyncVar]
+        // Gameplay data
+        [SyncVar, HideInInspector]
         public int id;
-        [SyncVar]
+        [SyncVar, HideInInspector]
         public string displayName;
-        [SyncVar]
+        [SyncVar, HideInInspector]
         public int lives;
-        [SyncVar]
+        [SyncVar, HideInInspector]
         public int damage;
-        [SyncVar]
+        [SyncVar, HideInInspector]
         public Direction direction;
 
         protected Rigidbody2D rb;
@@ -182,13 +183,8 @@ namespace SciFi.Players {
                 }
             }
 
-            if (inputManager.IsControlActive(Control.Item) && FeatureEnabled(PlayerFeature.Attack)) {
-                inputManager.InvalidateControl(Control.Item);
-                if (item != null) {
-                    UseItem();
-                } else {
-                    PickUpItem();
-                }
+            if (FeatureEnabled(PlayerFeature.Attack)) {
+                UpdateItemControl(inputManager.IsControlActive(Control.Item));
             }
 
             attack1.UpdateState(inputManager, Control.Attack1);
@@ -199,8 +195,6 @@ namespace SciFi.Players {
         [Command]
         public void CmdSpawnProjectile(
             int prefabIndex,
-            NetworkInstanceId spawnedBy,
-            NetworkInstanceId spawnedByExtra,
             Vector2 position,
             Quaternion rotation,
             Vector2 force,
@@ -208,8 +202,8 @@ namespace SciFi.Players {
         {
             var obj = Instantiate(GameController.IndexToPrefab(prefabIndex), position, rotation);
             var projectile = obj.GetComponent<Projectile>();
-            projectile.spawnedBy = spawnedBy;
-            projectile.spawnedByExtra = spawnedByExtra;
+            projectile.spawnedBy = netId;
+            projectile.spawnedByExtra = GetItemNetId();
             var rb = obj.GetComponent<Rigidbody2D>();
             if (rb != null) {
                 rb.AddForce(force);
@@ -222,6 +216,36 @@ namespace SciFi.Players {
             return item == null ? NetworkInstanceId.Invalid : item.GetComponent<Item>().netId;
         }
 
+        void UpdateItemControl(bool active) {
+            if (item == null) {
+                if (active) {
+                    inputManager.InvalidateControl(Control.Item);
+                    PickUpItem();
+                }
+                return;
+            }
+
+            var i = item.GetComponent<Item>();
+            if (i.IsCharging()) {
+                if (active) {
+                    i.KeepCharging(inputManager.GetControlHoldTime(Control.Item), direction);
+                } else {
+                    i.EndCharging(inputManager.GetControlHoldTime(Control.Item), direction);
+                }
+            } else if (active) {
+                if (i.ShouldCharge()) {
+                    i.BeginCharging(direction);
+                } else if (i.ShouldThrow()) {
+                    inputManager.InvalidateControl(Control.Item);
+                    CmdLoseOwnershipOfItem();
+                    item = null;
+                } else {
+                    inputManager.InvalidateControl(Control.Item);
+                    i.Use(direction);
+                }
+            }
+        }
+
         void UseItem() {
             var i = item.GetComponent<Item>();
             if (i.ShouldThrow()) {
@@ -230,9 +254,10 @@ namespace SciFi.Players {
             } else if (i.ShouldCharge()) {
                 // TODO: begin charging item
                 // TODO: run this on server
-                i.Use(direction, netId);
+                i.BeginCharging(direction);
+                i.Use(direction);
             } else {
-                i.Use(direction, netId);
+                i.Use(direction);
             }
         }
 
@@ -271,7 +296,7 @@ namespace SciFi.Players {
 
             var itemComponent = item.GetComponent<Item>();
             itemComponent.SetOwner(null);
-            //itemComponent.Throw(direction);
+            itemComponent.Throw(direction);
 
             var networkTransform = item.GetComponent<NetworkTransform>();
             networkTransform.enabled = true;
