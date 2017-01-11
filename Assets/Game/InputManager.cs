@@ -212,9 +212,10 @@ namespace SciFi {
         public event ObjectSelectedHandler ObjectSelected;
 
         void Start() {
+            // The Layers class is not initialized yet
             layerMask
-                = 1 << Layers.touchControls
-                | 1 << Layers.items;
+                = 1 << LayerMask.NameToLayer("Touch Controls")
+                | 1 << LayerMask.NameToLayer("Items");
             activeTouches = new Dictionary<int, int>();
 
             if (!Input.touchSupported) {
