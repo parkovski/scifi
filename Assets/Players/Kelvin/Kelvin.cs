@@ -7,6 +7,7 @@ namespace SciFi.Players {
         public GameObject iceBall;
         public GameObject fireBall;
         public GameObject fireBallInactive;
+        public GameObject telegraph;
 
         private GameObject chargingFireBall;
 
@@ -21,7 +22,7 @@ namespace SciFi.Players {
 
             eAttack1 = new IceBallAttack(this, iceBall);
             eAttack2 = new FireBallAttack(this, fireBall);
-            eSpecialAttack = eAttack1;
+            eSpecialAttack = new TelegraphAttack(this, telegraph);
         }
 
         void FixedUpdate() {

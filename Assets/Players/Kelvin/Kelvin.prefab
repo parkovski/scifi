@@ -321,21 +321,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6035bd11af45293428eec909f8c66a34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 0
-  displayName: 
-  lives: 0
-  damage: 0
-  direction: 0
+  eId: 0
+  eDisplayName: 
+  eLives: 0
+  eDamage: 0
+  eDirection: 0
   defaultDirection: 0
   maxSpeed: 5.5
   walkForce: 1300
   jumpForce: 500
   minDoubleJumpVelocity: 2
-  attackCooldown: 0.6
   iceBall: {fileID: 1284917634577738, guid: ab2f5738fa6e25b46bcaf4df5013554a, type: 2}
   fireBall: {fileID: 1029048364040172, guid: 03d7afc17b64a1041b6fd882e9672e95, type: 2}
   fireBallInactive: {fileID: 1931044926520130, guid: eee7494577489924eb0396574e70e3cf,
     type: 2}
+  telegraph: {fileID: 1889390672998682, guid: 31ca5d793d12ac944bf38b57280d8174, type: 2}
 --- !u!212 &212041284011937294
 SpriteRenderer:
   m_ObjectHideFlags: 1
