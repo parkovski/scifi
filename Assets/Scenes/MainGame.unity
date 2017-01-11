@@ -832,6 +832,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 453661399f578b54d8e1e2919ef84382, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  newtonPrefab: {fileID: 1445736531698702, guid: 6fd8ac635fa114c41a4491e9070621b6,
+    type: 2}
+  kelvinPrefab: {fileID: 1456088037116718, guid: 97e910a513a1be44394d891d1d560d15,
+    type: 2}
 --- !u!4 &752821539
 Transform:
   m_ObjectHideFlags: 0

@@ -19,7 +19,7 @@ namespace SciFi.Players.Attacks {
         }
 
         public override void OnBeginCharging(Direction direction) {
-            var offset = player.direction == Direction.Left
+            var offset = player.eDirection == Direction.Left
                 ? new Vector3(-1f, .5f)
                 : new Vector3(1f, .5f);
             chargingFireBall = Object.Instantiate(

@@ -17,7 +17,7 @@ namespace SciFi.Players.Attacks {
         }
 
         void SpawnChargingBook(GameObject book) {
-            var offset = player.direction == Direction.Left
+            var offset = player.eDirection == Direction.Left
                 ? new Vector3(-1f, .5f)
                 : new Vector3(1f, .5f);
             chargingBook = Object.Instantiate(

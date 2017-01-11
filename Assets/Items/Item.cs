@@ -6,6 +6,7 @@ using SciFi.Players;
 namespace SciFi.Items {
     public abstract class Item : NetworkBehaviour {
         bool pIsCharging = false;
+        Direction eDirection;
 
         /// The item's owner, if any, that it will follow.
         protected GameObject eOwnerGo;
@@ -75,22 +76,33 @@ namespace SciFi.Items {
         /// false to fire immediately.
         public abstract bool ShouldCharge();
         /// Only valid on the client w/ local authority over the owner.
+        [Client]
         public bool IsCharging() {
             return pIsCharging;
         }
+        [Client]
         public virtual void BeginCharging(Direction direction) {
             pIsCharging = true;
         }
+        [Client]
         public virtual void KeepCharging(float chargeTime, Direction direction) {}
         /// Called on the client when the player is done charging the item and it should fire.
+        [Client]
         public virtual void EndCharging(float chargeTime, Direction direction) {
             pIsCharging = false;
         }
         /// For convenience, just calls EndCharging with chargeTime == 0f.
+        [Client]
         public void Use(Direction direction) {
             EndCharging(0f, direction);
         }
 
+        [Server]
+        public virtual void ChangeDirection(Direction direction) {
+            eDirection = direction;
+        }
+
+        [Server]
         public void Throw(Direction direction) {
             var rb = GetComponent<Rigidbody2D>();
             var x = direction == Direction.Left ? -150f : 150f;

@@ -27,6 +27,7 @@ namespace SciFi {
         public static int players;
         public static int displayOnly;
         public static int heldAttacks;
+        public static int touchControls;
 
         public static void Init() {
             projectiles = LayerMask.NameToLayer("Projectiles");
@@ -34,6 +35,7 @@ namespace SciFi {
             players = LayerMask.NameToLayer("Players");
             displayOnly = LayerMask.NameToLayer("Display Only");
             heldAttacks = LayerMask.NameToLayer("Held Attacks");
+            touchControls = LayerMask.NameToLayer("Touch Controls");
         }
     }
 
@@ -77,33 +79,39 @@ namespace SciFi {
         }
 
         [Server]
-        public void StartGame() {
+        public void StartGame(bool countdown = true) {
             activePlayers = activePlayersGo.Select(p => p.GetComponent<Player>()).ToArray();
 
             for (var i = 0; i < activePlayersGo.Length; i++) {
                 var player = activePlayersGo[i].GetComponent<Player>();
-                player.id = i + 1;
-                player.lives = 5;
-                //player.SuspendAllFeatures();
+                player.eId = i + 1;
+                player.eLives = 5;
+                if (countdown) {
+                    player.SuspendAllFeatures();
+                }
                 EventLifeChanged(new LifeChangedEventArgs {
-                    playerId = player.id,
-                    newLives = player.lives,
+                    playerId = player.eId,
+                    newLives = player.eLives,
                 });
             }
 
-            countdown = GameObject.Find("Canvas").GetComponent<Countdown>();
-            RpcStartGame();
-            countdown.StartGame();
-            countdown.OnFinished += _ => {
+            this.countdown = GameObject.Find("Canvas").GetComponent<Countdown>();
+            RpcStartGame(countdown);
+            if (countdown) {
+                this.countdown.StartGame();
+                this.countdown.OnFinished += _ => {
+                    this.isPlaying = true;
+                    foreach (var p in activePlayers) {
+                        // TODO: this needs to be run on both server and client
+                        // including the SuspendAllFeatures call above.
+                        // Attack and Movement are handled on the client,
+                        // while Damage and Knockback are handled on the server.
+                        p.ResumeAllFeatures(true);
+                    }
+                };
+            } else {
                 this.isPlaying = true;
-                foreach (var p in activePlayers) {
-                    // TODO: this needs to be run on both server and client
-                    // including the SuspendAllFeatures call above.
-                    // Attack and Movement are handled on the client,
-                    // while Damage and Knockback are handled on the server.
-                    p.ResumeAllFeatures(true);
-                }
-            };
+            }
         }
 
         [Server]
@@ -116,10 +124,13 @@ namespace SciFi {
         }
 
         [ClientRpc]
-        void RpcStartGame() {
-            countdown = GameObject.Find("Canvas").GetComponent<Countdown>();
-            countdown.StartGame();
-            countdown.OnFinished += _ => this.isPlaying = true;
+        void RpcStartGame(bool countdown) {
+            if (!countdown) {
+                return;
+            }
+            this.countdown = GameObject.Find("Canvas").GetComponent<Countdown>();
+            this.countdown.StartGame();
+            this.countdown.OnFinished += _ => this.isPlaying = true;
         }
 
         [ClientRpc]
@@ -138,12 +149,12 @@ namespace SciFi {
         [Command]
         public void CmdDie(GameObject playerObject) {
             var player = playerObject.GetComponent<Player>();
-            --player.lives;
-            player.damage = 0;
+            --player.eLives;
+            player.eDamage = 0;
             player.RpcRespawn(new Vector3(0f, 7f));
             EventLifeChanged(new LifeChangedEventArgs {
-                playerId = player.id,
-                newLives = player.lives,
+                playerId = player.eId,
+                newLives = player.eLives,
             });
         }
 
@@ -153,10 +164,10 @@ namespace SciFi {
             if (!player.FeatureEnabled(PlayerFeature.Damage)) {
                     return;
             }
-            player.damage += amount;
+            player.eDamage += amount;
             var args = new DamageChangedEventArgs {
-                playerId = player.id,
-                newDamage = player.damage,
+                playerId = player.eId,
+                newDamage = player.eDamage,
             };
             EventDamageChanged(args);
         }
@@ -167,7 +178,7 @@ namespace SciFi {
             if (!player.FeatureEnabled(PlayerFeature.Knockback)) {
                 return;
             }
-            amount *= player.damage;
+            amount *= player.eDamage;
             var vector = playerObject.transform.position - attackingObject.transform.position;
             var force = transform.up * amount;
             if (vector.x < 0) {

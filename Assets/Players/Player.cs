@@ -31,24 +31,24 @@ namespace SciFi.Players {
     public abstract class Player : NetworkBehaviour {
         // Gameplay data
         [SyncVar, HideInInspector]
-        public int id;
+        public int eId;
         [SyncVar, HideInInspector]
-        public string displayName;
+        public string eDisplayName;
         [SyncVar, HideInInspector]
-        public int lives;
+        public int eLives;
         [SyncVar, HideInInspector]
-        public int damage;
+        public int eDamage;
         [SyncVar, HideInInspector]
-        public Direction direction;
+        public Direction eDirection;
 
-        protected Rigidbody2D rb;
-        protected InputManager inputManager;
-        private int groundCollisions;
-        protected bool canJump;
-        protected bool canDoubleJump;
+        protected Rigidbody2D lRb;
+        protected InputManager pInputManager;
+        private int pGroundCollisions;
+        protected bool pCanJump;
+        protected bool pCanDoubleJump;
         [SyncVar]
-        protected GameObject item;
-        private OneWayPlatform currentOneWayPlatform;
+        protected GameObject eItem;
+        private OneWayPlatform pCurrentOneWayPlatform;
         private int[] featureLockout;
 
         // Unity editor parameters
@@ -59,21 +59,21 @@ namespace SciFi.Players {
         public float minDoubleJumpVelocity;
 
         // Parameters for child classes to change behavior
-        protected Attack attack1;
-        protected Attack attack2;
-        protected Attack specialAttack;
-        //protected Attack superAttack;
+        protected Attack eAttack1;
+        protected Attack eAttack2;
+        protected Attack eSpecialAttack;
+        //protected Attack eSuperAttack;
 
         protected void BaseStart() {
-            rb = GetComponent<Rigidbody2D>();
-            direction = Direction.Right;
-            lives = 3;
+            lRb = GetComponent<Rigidbody2D>();
+            eDirection = Direction.Right;
+            eLives = 3;
             var gameControllerGo = GameObject.Find("GameController");
-            inputManager = gameControllerGo.GetComponent<InputManager>();
+            pInputManager = gameControllerGo.GetComponent<InputManager>();
 
             if (isLocalPlayer) {
-                inputManager.ObjectSelected += ObjectSelected;
-                inputManager.ControlCanceled += ControlCanceled;
+                pInputManager.ObjectSelected += ObjectSelected;
+                pInputManager.ControlCanceled += ControlCanceled;
             }
 
             featureLockout = new int[Enum.GetNames(typeof(PlayerFeature)).Length];
@@ -81,27 +81,27 @@ namespace SciFi.Players {
 
         protected void BaseCollisionEnter2D(Collision2D collision) {
             if (collision.gameObject.tag == "Ground") {
-                ++groundCollisions;
-                canJump = true;
-                canDoubleJump = false;
+                ++pGroundCollisions;
+                pCanJump = true;
+                pCanDoubleJump = false;
 
                 var oneWay = collision.gameObject.GetComponent<OneWayPlatform>();
                 if (oneWay != null) {
-                    currentOneWayPlatform = oneWay;
+                    pCurrentOneWayPlatform = oneWay;
                 }
             }
         }
 
         protected void BaseCollisionExit2D(Collision2D collision) {
             if (collision.gameObject.tag == "Ground") {
-                if (--groundCollisions == 0) {
-                    canJump = false;
-                    canDoubleJump = true;
+                if (--pGroundCollisions == 0) {
+                    pCanJump = false;
+                    pCanDoubleJump = true;
                 }
 
                 var oneWay = collision.gameObject.GetComponent<OneWayPlatform>();
                 if (oneWay != null) {
-                    currentOneWayPlatform = null;
+                    pCurrentOneWayPlatform = null;
                 }
             }
         }
@@ -140,21 +140,21 @@ namespace SciFi.Players {
             bool canSpeedUp;
             Vector3 force;
             if (backwards) {
-                canSpeedUp = rb.velocity.x > -maxSpeed;
+                canSpeedUp = lRb.velocity.x > -maxSpeed;
                 force = transform.right * -walkForce;
             } else {
-                canSpeedUp = rb.velocity.x < maxSpeed;
+                canSpeedUp = lRb.velocity.x < maxSpeed;
                 force = transform.right * walkForce;
             }
 
-            if (inputManager.IsControlActive(control) && FeatureEnabled(PlayerFeature.Movement)) {
+            if (pInputManager.IsControlActive(control) && FeatureEnabled(PlayerFeature.Movement)) {
                 if (canSpeedUp) {
-                    rb.AddForce(force);
+                    lRb.AddForce(force);
                 }
                 // Without the cached parameter, this will get triggered
                 // multiple times until the direction has had a chance to sync.
-                if (this.direction != direction) {
-                    this.direction = direction;
+                if (this.eDirection != direction) {
+                    this.eDirection = direction;
                     CmdChangeDirection(direction);
                 }
             }
@@ -163,35 +163,37 @@ namespace SciFi.Players {
         protected void BaseInput() {
             HandleLeftRightInput(Control.Left, Direction.Left, true);
             HandleLeftRightInput(Control.Right, Direction.Right, false);
-            if (inputManager.IsControlActive(Control.Up) && FeatureEnabled(PlayerFeature.Movement)) {
-                inputManager.InvalidateControl(Control.Up);
-                if (canJump) {
-                    canJump = false;
-                    canDoubleJump = true;
-                    rb.AddForce(transform.up * jumpForce, ForceMode2D.Impulse);
-                } else if (canDoubleJump) {
-                    canDoubleJump = false;
-                    if (rb.velocity.y < minDoubleJumpVelocity) {
-                        rb.velocity = new Vector2(rb.velocity.x, minDoubleJumpVelocity);
+            if (pInputManager.IsControlActive(Control.Up) && FeatureEnabled(PlayerFeature.Movement)) {
+                pInputManager.InvalidateControl(Control.Up);
+                if (pCanJump) {
+                    pCanJump = false;
+                    pCanDoubleJump = true;
+                    lRb.AddForce(transform.up * jumpForce, ForceMode2D.Impulse);
+                } else if (pCanDoubleJump) {
+                    pCanDoubleJump = false;
+                    if (lRb.velocity.y < minDoubleJumpVelocity) {
+                        lRb.velocity = new Vector2(lRb.velocity.x, minDoubleJumpVelocity);
                     }
-                    rb.AddForce(transform.up * jumpForce / 2, ForceMode2D.Impulse);
+                    lRb.AddForce(transform.up * jumpForce / 2, ForceMode2D.Impulse);
                 }
             }
-            if (inputManager.IsControlActive(Control.Down) && FeatureEnabled(PlayerFeature.Movement)) {
-                if (currentOneWayPlatform != null) {
-                    currentOneWayPlatform.CmdFallThrough(gameObject);
+            if (pInputManager.IsControlActive(Control.Down) && FeatureEnabled(PlayerFeature.Movement)) {
+                if (pCurrentOneWayPlatform != null) {
+                    pCurrentOneWayPlatform.CmdFallThrough(gameObject);
                 }
             }
 
             if (FeatureEnabled(PlayerFeature.Attack)) {
-                UpdateItemControl(inputManager.IsControlActive(Control.Item));
+                UpdateItemControl(pInputManager.IsControlActive(Control.Item));
             }
 
-            attack1.UpdateState(inputManager, Control.Attack1);
-            attack2.UpdateState(inputManager, Control.Attack2);
-            specialAttack.UpdateState(inputManager, Control.SpecialAttack);
+            eAttack1.UpdateState(pInputManager, Control.Attack1);
+            eAttack2.UpdateState(pInputManager, Control.Attack2);
+            eSpecialAttack.UpdateState(pInputManager, Control.SpecialAttack);
         }
 
+        /// Spawns a projectile, ignoring collisions
+        /// with the player and his/her item.
         [Command]
         public void CmdSpawnProjectile(
             int prefabIndex,
@@ -212,52 +214,71 @@ namespace SciFi.Players {
             NetworkServer.Spawn(obj);
         }
 
+        /// Spawns a projectile for a pre-instantiated object
+        /// so it can be customized beforehand.
+        [Command]
+        public void CmdSpawnCustomProjectile(
+            GameObject projectile,
+            Vector2 force,
+            float torque)
+        {
+            var projectileComponent = projectile.GetComponent<Projectile>();
+            projectileComponent.spawnedBy = netId;
+            projectileComponent.spawnedByExtra = GetItemNetId();
+            var rb = projectile.GetComponent<Rigidbody2D>();
+            if (rb != null) {
+                rb.AddForce(force);
+                rb.AddTorque(torque);
+            }
+            NetworkServer.Spawn(projectile);
+        }
+
         public NetworkInstanceId GetItemNetId() {
-            return item == null ? NetworkInstanceId.Invalid : item.GetComponent<Item>().netId;
+            return eItem == null ? NetworkInstanceId.Invalid : eItem.GetComponent<Item>().netId;
         }
 
         void UpdateItemControl(bool active) {
-            if (item == null) {
+            if (eItem == null) {
                 if (active) {
-                    inputManager.InvalidateControl(Control.Item);
+                    pInputManager.InvalidateControl(Control.Item);
                     PickUpItem();
                 }
                 return;
             }
 
-            var i = item.GetComponent<Item>();
+            var i = eItem.GetComponent<Item>();
             if (i.IsCharging()) {
                 if (active) {
-                    i.KeepCharging(inputManager.GetControlHoldTime(Control.Item), direction);
+                    i.KeepCharging(pInputManager.GetControlHoldTime(Control.Item), eDirection);
                 } else {
-                    i.EndCharging(inputManager.GetControlHoldTime(Control.Item), direction);
+                    i.EndCharging(pInputManager.GetControlHoldTime(Control.Item), eDirection);
                 }
             } else if (active) {
                 if (i.ShouldCharge()) {
-                    i.BeginCharging(direction);
+                    i.BeginCharging(eDirection);
                 } else if (i.ShouldThrow()) {
-                    inputManager.InvalidateControl(Control.Item);
+                    pInputManager.InvalidateControl(Control.Item);
                     CmdLoseOwnershipOfItem();
-                    item = null;
+                    eItem = null;
                 } else {
-                    inputManager.InvalidateControl(Control.Item);
-                    i.Use(direction);
+                    pInputManager.InvalidateControl(Control.Item);
+                    i.Use(eDirection);
                 }
             }
         }
 
         void UseItem() {
-            var i = item.GetComponent<Item>();
+            var i = eItem.GetComponent<Item>();
             if (i.ShouldThrow()) {
                 CmdLoseOwnershipOfItem();
-                item = null;
+                eItem = null;
             } else if (i.ShouldCharge()) {
                 // TODO: begin charging item
                 // TODO: run this on server
-                i.BeginCharging(direction);
-                i.Use(direction);
+                i.BeginCharging(eDirection);
+                i.Use(eDirection);
             } else {
-                i.Use(direction);
+                i.Use(eDirection);
             }
         }
 
@@ -274,13 +295,14 @@ namespace SciFi.Players {
             if (!itemComponent.SetOwner(gameObject)) {
                 return;
             }
-            this.item = item;
+            this.eItem = item;
 
-            if (direction == Direction.Left) {
+            if (eDirection == Direction.Left) {
                 itemComponent.SetOwnerOffset(-1f, 0f);
             } else {
                 itemComponent.SetOwnerOffset(1f, 0f);
             }
+            itemComponent.ChangeDirection(eDirection);
             item.GetComponent<NetworkTransform>().enabled = false;
 
             //var itemNetworkIdentity = item.GetComponent<NetworkIdentity>();
@@ -289,14 +311,14 @@ namespace SciFi.Players {
 
         [Command]
         void CmdLoseOwnershipOfItem() {
-            var item = this.item;
-            this.item = null;
+            var item = this.eItem;
+            this.eItem = null;
 
             //item.GetComponent<NetworkIdentity>().RemoveClientAuthority(connectionToClient);
 
             var itemComponent = item.GetComponent<Item>();
             itemComponent.SetOwner(null);
-            itemComponent.Throw(direction);
+            itemComponent.Throw(eDirection);
 
             var networkTransform = item.GetComponent<NetworkTransform>();
             networkTransform.enabled = true;
@@ -310,7 +332,9 @@ namespace SciFi.Players {
             } else {
                 x = 1f;
             }
-            item.GetComponent<Item>().SetOwnerOffset(x, 0f);
+            var item = eItem.GetComponent<Item>();
+            item.SetOwnerOffset(x, 0f);
+            item.ChangeDirection(direction);
         }
 
         /// If an item is passed, this function will return it
@@ -341,13 +365,13 @@ namespace SciFi.Players {
         }
 
         void ObjectSelected(ObjectSelectedEventArgs args) {
-            if (args.gameObject == this.item) {
+            if (args.gameObject == this.eItem) {
                 UseItem();
                 return;
             }
 
             // We can only hold one item at a time.
-            if (item != null) {
+            if (eItem != null) {
                 return;
             }
             if (args.gameObject.layer == Layers.items) {
@@ -367,20 +391,28 @@ namespace SciFi.Players {
                 return;
             }
             transform.position = position;
-            rb.velocity = new Vector2(0f, 0f);
+            lRb.velocity = new Vector2(0f, 0f);
         }
 
         [Command]
         void CmdChangeDirection(Direction direction) {
-            this.direction = direction;
-            if (item != null) {
+            this.eDirection = direction;
+            if (eItem != null) {
                 MoveItemForChangeDirection(direction);
+                RpcChangeItemDirection(direction);
             }
             RpcChangeDirection(direction);
         }
 
         [ClientRpc]
         protected virtual void RpcChangeDirection(Direction direction) {}
+
+        [ClientRpc]
+        void RpcChangeItemDirection(Direction direction) {
+            if (eItem != null) {
+                eItem.GetComponent<Item>().ChangeDirection(direction);
+            }
+        }
 
         [ClientRpc]
         public void RpcKnockback(Vector2 force) {
@@ -390,7 +422,7 @@ namespace SciFi.Players {
             if (!FeatureEnabled(PlayerFeature.Knockback)) {
                 return;
             }
-            rb.AddForce(force, ForceMode2D.Impulse);
+            lRb.AddForce(force, ForceMode2D.Impulse);
         }
     }
 }

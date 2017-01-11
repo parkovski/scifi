@@ -14,7 +14,7 @@ namespace SciFi.Players.Attacks {
         }
 
         public void UpdateState(InputManager inputManager, int control) {
-            var direction = player.direction;
+            var direction = player.eDirection;
             if (canFireDown && inputManager.IsControlActive(Control.Down)) {
                 direction = Direction.Down;
             }

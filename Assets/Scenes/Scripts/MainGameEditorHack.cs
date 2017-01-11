@@ -3,6 +3,9 @@ using UnityEngine.Networking;
 
 namespace SciFi.Scenes {
     public class MainGameEditorHack : MonoBehaviour {
+        public GameObject newtonPrefab;
+        public GameObject kelvinPrefab;
+
         #if UNITY_EDITOR
         void Start() {
             GameObject.Find("Audio").GetComponent<AudioSource>().enabled = false;
@@ -11,10 +14,9 @@ namespace SciFi.Scenes {
             if (gameController == null) {
                 var go = new GameObject("GameController");
                 go.AddComponent<NetworkIdentity>();
-                var gc = go.AddComponent<GameController>();
+                gameController = go.AddComponent<GameController>();
                 go.AddComponent<InputManager>();
-
-                gc.StartGame();
+                gameController.StartGame(false);
             }
         }
         #endif

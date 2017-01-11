@@ -47,7 +47,11 @@ namespace SciFi.Network {
 
         public override void OnLobbyServerSceneChanged(string sceneName) {
             if (sceneName == "MainGame") {
-                GameController.Instance.StartGame();
+                GameController.Instance.StartGame(
+                    #if UNITY_EDITOR
+                    false
+                    #endif
+                );
             }
         }
     }

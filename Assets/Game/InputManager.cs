@@ -213,8 +213,8 @@ namespace SciFi {
 
         void Start() {
             layerMask
-                = 1 << LayerMask.NameToLayer("Touch Controls")
-                | 1 << LayerMask.NameToLayer("Items");
+                = 1 << Layers.touchControls
+                | 1 << Layers.items;
             activeTouches = new Dictionary<int, int>();
 
             if (!Input.touchSupported) {
@@ -279,7 +279,7 @@ namespace SciFi {
 
         GameObject GetObjectAtPosition(Vector2 position) {
             var ray = Camera.main.ScreenToWorldPoint(position);
-            var hit = Physics2D.Raycast(ray, Vector2.zero, Mathf.Infinity, layerMask);
+            var hit = Physics2D.CircleCast(ray, .5f, Vector2.zero, Mathf.Infinity, layerMask);
             if (!hit) {
                 return null;
             }
