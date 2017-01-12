@@ -390,6 +390,10 @@ namespace SciFi.Players {
             if (!hasAuthority) {
                 return;
             }
+            if (eItem != null) {
+                Destroy(eItem);
+                eItem = null;
+            }
             transform.position = position;
             lRb.velocity = new Vector2(0f, 0f);
         }
