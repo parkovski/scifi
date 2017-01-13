@@ -47,6 +47,7 @@ namespace SciFi.Environment {
                 var player = players[i];
                 var pos = player.transform.position;
                 pos.y += 1f;
+                pos.y += Mathf.Sin(Time.time * 10f) / 50f;
                 panels[i].position = pos;
                 labels[i].rectTransform.position = pos;
             }
