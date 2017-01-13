@@ -10,6 +10,7 @@ namespace SciFi.Players {
         public GameObject calc1;
         public GameObject calc2;
         public GameObject calc3;
+        public GameObject gravityWell;
 
         private Animator animator;
         private bool walkAnimationPlaying;
@@ -19,7 +20,7 @@ namespace SciFi.Players {
 
             eAttack1 = new AppleAttack(this, apple);
             eAttack2 = new CalcBookAttack(this, new [] { calc1, calc2, calc3 });
-            eSpecialAttack = new GreenAppleAttack(this, greenApple);
+            eSpecialAttack = new GravityWellAttack(this, gravityWell);
             //animator = GetComponent<Animator>();
         }
 

@@ -447,11 +447,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b3f1be30081ea742b04c7079fcaf5c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 0
-  displayName: 
-  lives: 0
-  damage: 0
-  direction: 0
+  eId: 0
+  eDisplayName: 
+  eLives: 0
+  eDamage: 0
+  eDirection: 0
   defaultDirection: 1
   maxSpeed: 6.5
   walkForce: 1500
@@ -462,6 +462,8 @@ MonoBehaviour:
   calc1: {fileID: 1583965280471450, guid: 81029c4f4e2844b1f9d1864b78d68789, type: 2}
   calc2: {fileID: 1177451361045738, guid: 1bbe4c23a18514eb1a2e7f1c618e84f2, type: 2}
   calc3: {fileID: 1214470367260520, guid: e3ac8cf483c0848bfa910e7cb48ce11e, type: 2}
+  gravityWell: {fileID: 1647321388344430, guid: 9a4dd0a39592e0e4cabe85a6287f93f7,
+    type: 2}
 --- !u!114 &114846927447625442
 MonoBehaviour:
   m_ObjectHideFlags: 1
