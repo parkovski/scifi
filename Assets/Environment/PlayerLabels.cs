@@ -33,7 +33,7 @@ namespace SciFi.Environment {
 
             for (var i = 0; i < panels.Length; i++) {
                 panels[i] = transform.Find("P" + (i+1) + "LabelPanel").GetComponent<RectTransform>();
-                labels[i] = panels[i].transform.Find("P" + (i+1) + "Label").GetComponent<Text>();
+                labels[i] = transform.Find("P" + (i+1) + "Label").GetComponent<Text>();
             }
         }
 
