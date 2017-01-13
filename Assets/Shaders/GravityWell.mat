@@ -6,7 +6,7 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: CircleMaterial
+  m_Name: GravityWell
   m_Shader: {fileID: 4800000, guid: 7900a2d2809623d4e96e04bf4b680414, type: 3}
   m_ShaderKeywords: _EMISSION
   m_LightmapFlags: 1
@@ -114,7 +114,7 @@ Material:
       second: 0.02
     - first:
         name: _Radius
-      second: 0.2
+      second: 0.5
     - first:
         name: _SmoothnessTextureChannel
       second: 0
