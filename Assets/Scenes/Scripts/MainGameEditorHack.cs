@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 
 namespace SciFi.Scenes {
     public class MainGameEditorHack : MonoBehaviour {
@@ -10,13 +10,9 @@ namespace SciFi.Scenes {
         void Start() {
             GameObject.Find("Audio").GetComponent<AudioSource>().enabled = false;
 
-            var gameController = FindObjectOfType<GameController>();
-            if (gameController == null) {
-                var go = new GameObject("GameController");
-                go.AddComponent<NetworkIdentity>();
-                gameController = go.AddComponent<GameController>();
-                go.AddComponent<InputManager>();
-                gameController.StartGame(false);
+            if (FindObjectOfType<GameController>() == null) {
+                TransitionParams.gameType = GameType.Single;
+                SceneManager.LoadScene("Lobby");
             }
         }
         #endif

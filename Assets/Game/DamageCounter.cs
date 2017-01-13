@@ -13,6 +13,16 @@ namespace SciFi.UI {
             text = GetComponent<Text>();
             GameController.Instance.EventLifeChanged += PlayerLifeChanged;
             GameController.Instance.EventDamageChanged += PlayerDamageChanged;
+
+            GameController.Instance.PlayersInitialized += players => {
+                if (player >= players.Length) {
+                    return;
+                }
+                var p = players[player];
+                lives = p.eLives;
+                damage = p.eDamage;
+                UpdateInfo();
+            };
         }
 
         void PlayerDamageChanged(DamageChangedEventArgs args) {

@@ -21,6 +21,10 @@ namespace SciFi {
     }
     public delegate void LifeChangedHandler(LifeChangedEventArgs args);
 
+    public delegate void StartGameHandler();
+
+    public delegate void PlayersInitializedHandler(Player[] players);
+
     public static class Layers {
         public static int projectiles;
         public static int items;
@@ -52,8 +56,7 @@ namespace SciFi {
         private bool isPlaying;
 
         /// Set on scene change to the countdown in the main game scene.
-        [HideInInspector]
-        public Countdown countdown;
+        private Countdown countdown;
 
         // Items
         public ItemFrequency itemFrequency;
@@ -71,6 +74,34 @@ namespace SciFi {
         [SyncEvent]
         public event LifeChangedHandler EventLifeChanged;
 
+        private event StartGameHandler _GameStarted;
+        public event StartGameHandler GameStarted {
+            add {
+                if (isPlaying) {
+                    value();
+                } else {
+                    _GameStarted += value;
+                }
+            }
+            remove {
+                _GameStarted -= value;
+            }
+        }
+
+        private event PlayersInitializedHandler _PlayersInitialized;
+        public event PlayersInitializedHandler PlayersInitialized {
+            add {
+                if (activePlayers != null) {
+                    value(activePlayers);
+                } else {
+                    _PlayersInitialized += value;
+                }
+            }
+            remove {
+                _PlayersInitialized -= value;
+            }
+        }
+
         public static GameController Instance { get; private set; }
 
         [Server]
@@ -81,10 +112,11 @@ namespace SciFi {
         [Server]
         public void StartGame(bool countdown = true) {
             activePlayers = activePlayersGo.Select(p => p.GetComponent<Player>()).ToArray();
+            _PlayersInitialized(activePlayers);
 
             for (var i = 0; i < activePlayersGo.Length; i++) {
                 var player = activePlayersGo[i].GetComponent<Player>();
-                player.eId = i + 1;
+                player.eId = i;
                 player.eLives = 5;
                 if (countdown) {
                     player.SuspendAllFeatures();
@@ -94,6 +126,8 @@ namespace SciFi {
                     newLives = player.eLives,
                 });
             }
+
+            RpcCreateCharacterList(activePlayers.Select(p => p.netId).ToArray());
 
             this.countdown = GameObject.Find("Canvas").GetComponent<Countdown>();
             RpcStartGame(countdown);
@@ -108,10 +142,33 @@ namespace SciFi {
                         // while Damage and Knockback are handled on the server.
                         p.ResumeAllFeatures(true);
                     }
+                    if (_GameStarted != null) {
+                        _GameStarted();
+                    }
                 };
             } else {
                 this.isPlaying = true;
+                if (_GameStarted != null) {
+                    _GameStarted();
+                }
             }
+        }
+
+        [ClientRpc]
+        void RpcCreateCharacterList(NetworkInstanceId[] ids) {
+            activePlayersGo = ids.Select(id => ClientScene.FindLocalObject(id)).ToArray();
+            activePlayers = activePlayersGo.Select(p => p.GetComponent<Player>()).ToArray();
+            if (_PlayersInitialized != null) {
+                _PlayersInitialized(activePlayers);
+            }
+        }
+
+        public Player GetPlayer(int id) {
+            if (id >= activePlayers.Length) {
+                return null;
+            }
+
+            return activePlayers[id];
         }
 
         [Server]
@@ -126,11 +183,16 @@ namespace SciFi {
         [ClientRpc]
         void RpcStartGame(bool countdown) {
             if (!countdown) {
+                this.isPlaying = true;
+                StartGame();
                 return;
             }
             this.countdown = GameObject.Find("Canvas").GetComponent<Countdown>();
             this.countdown.StartGame();
-            this.countdown.OnFinished += _ => this.isPlaying = true;
+            this.countdown.OnFinished += _ => {
+                this.isPlaying = true;
+                StartGame();
+            };
         }
 
         [ClientRpc]
