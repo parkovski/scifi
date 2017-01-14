@@ -1,5 +1,7 @@
 using UnityEngine;
 
+using SciFi.Environment;
+
 namespace SciFi.Items {
     public class CalcBook : MonoBehaviour {
         public GameObject spawnedBy;
@@ -21,6 +23,7 @@ namespace SciFi.Items {
                 Item.IgnoreCollisions(gameObject, collider.gameObject);
                 GameController.Instance.TakeDamage(collider.gameObject, power * 2);
                 GameController.Instance.Knockback(spawnedBy, collider.gameObject, power);
+                Effects.Star(collider.bounds.ClosestPoint(transform.position));
             }
         }
     }
