@@ -65,7 +65,9 @@ namespace SciFi.Items {
         void CreateDisplayArrow() {
             var prefab = GameController.IndexToPrefab(eArrowPrefabIndex);
             var offset = eFlipArrow ? flippedArrowOffset : arrowOffset;
-            lDisplayArrow = Instantiate(prefab, gameObject.transform.position + offset, Quaternion.identity);
+            lPower = 0;
+            var angle = GetArrowAngle(GetArrowForce(eFlipArrow ? Direction.Left : Direction.Right));
+            lDisplayArrow = Instantiate(prefab, gameObject.transform.position + offset, Quaternion.Euler(0f, 0f, angle));
             Destroy(lDisplayArrow.GetComponent<Arrow>());
             lDisplayArrow.GetComponent<SpriteRenderer>().flipX = eFlipArrow;
             lDisplayArrow.layer = Layers.displayOnly;
@@ -103,6 +105,7 @@ namespace SciFi.Items {
             if (lDisplayArrow != null) {
                 lDisplayArrow.GetComponent<SpriteRenderer>().flipX = eFlipArrow;
                 lDisplayArrow.transform.localPosition = eFlipArrow ? flippedArrowOffset : arrowOffset;
+                lDisplayArrow.transform.rotation = Quaternion.Euler(0f, 0f, GetArrowAngle(GetArrowForce(direction)));
             }
         }
 
@@ -128,6 +131,7 @@ namespace SciFi.Items {
             }
             lPower = (int)(chargeTime * 5);
             lDisplayArrow.transform.localPosition = new Vector3(xOffset, 0, 0);
+            lDisplayArrow.transform.rotation = Quaternion.Euler(0f, 0f, GetArrowAngle(GetArrowForce(direction)));
         }
 
         public override void EndCharging(float chargeTime, Direction direction) {
@@ -142,18 +146,29 @@ namespace SciFi.Items {
                 StartCoroutine(TemporarilyDestroyDisplayArrow());
             }
 
-            Vector2 force;
-            if (direction == Direction.Left) {
-                force = new Vector2(-250f - lPower * 25, 100f);
-            } else {
-                force = new Vector2(250f + lPower * 25, 100f);
-            }
+            var force = GetArrowForce(direction);
 
             var arrow = Instantiate(GameController.IndexToPrefab(eArrowPrefabIndex), gameObject.transform.position, Quaternion.identity);
             if (eFlipArrow) {
                 arrow.GetComponent<SpriteRenderer>().flipX = true;
             }
             eOwner.CmdSpawnCustomProjectile(arrow, force, 0f);
+        }
+
+        Vector2 GetArrowForce(Direction direction) {
+            if (direction == Direction.Left) {
+                return new Vector2(-250f - lPower * 25, 50f + lPower * 5f);
+            } else {
+                return new Vector2(250f + lPower * 25, 50f + lPower * 5f);
+            }
+        }
+
+        float GetArrowAngle(Vector2 force) {
+            if (force.x < 0) {
+                return -Mathf.Atan2(force.y, -force.x) * Mathf.Rad2Deg;
+            } else {
+                return Mathf.Atan2(force.y, force.x) * Mathf.Rad2Deg;
+            }
         }
 
         IEnumerator TemporarilyDestroyDisplayArrow() {
