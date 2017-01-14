@@ -254,7 +254,12 @@ namespace SciFi.Players {
                     i.EndCharging(pInputManager.GetControlHoldTime(Control.Item), eDirection);
                 }
             } else if (active) {
-                if (i.ShouldCharge()) {
+                if (pInputManager.IsControlActive(Control.Down)) {
+                    pInputManager.InvalidateControl(Control.Item);
+                    pInputManager.InvalidateControl(Control.Down);
+                    CmdLoseOwnershipOfItem();
+                    eItem = null;
+                } else if (i.ShouldCharge()) {
                     i.BeginCharging(eDirection);
                 } else if (i.ShouldThrow()) {
                     pInputManager.InvalidateControl(Control.Item);
