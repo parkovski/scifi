@@ -265,10 +265,13 @@ namespace SciFi.Players {
                     pInputManager.InvalidateControl(Control.Item);
                     CmdLoseOwnershipOfItem();
                     eItem = null;
-                } else {
+                } else if (!i.CanCharge()) {
                     pInputManager.InvalidateControl(Control.Item);
                     i.Use(eDirection);
                 }
+                // If none of the above conditions were true, the item
+                // is chargeable, but it can't charge right now (in cooldown)
+                // so we just do nothing.
             }
         }
 

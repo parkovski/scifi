@@ -6,6 +6,7 @@ using SciFi.Players;
 namespace SciFi.Items {
     public abstract class Item : NetworkBehaviour {
         bool pIsCharging = false;
+        bool eCanCharge;
         Direction eDirection;
 
         /// The item's owner, if any, that it will follow.
@@ -20,9 +21,10 @@ namespace SciFi.Items {
         /// for this much time if their original lifetime has expired already.
         const float aliveTimeAfterPickup = 3.5f;
 
-        protected void BaseStart(float aliveTime = 5f) {
+        protected void BaseStart(bool canCharge, float aliveTime = 5f) {
             this.sAliveTime = aliveTime;
             this.sDestroyTime = Time.time + aliveTime;
+            this.eCanCharge = canCharge;
         }
 
         protected void BaseUpdate() {
@@ -75,6 +77,9 @@ namespace SciFi.Items {
         /// True if the attack should charge and fire when the button is released,
         /// false to fire immediately.
         public abstract bool ShouldCharge();
+        public bool CanCharge() {
+            return eCanCharge;
+        }
         /// Only valid on the client w/ local authority over the owner.
         [Client]
         public bool IsCharging() {

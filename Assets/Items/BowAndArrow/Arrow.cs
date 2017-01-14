@@ -6,6 +6,15 @@ namespace SciFi.Items {
             BaseStart();
         }
 
+        void Update() {
+            var velocity = GetComponent<Rigidbody2D>().velocity;
+            if (velocity.x > 0) {
+                transform.rotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg);
+            } else {
+                transform.rotation = Quaternion.Euler(0f, 0f, -Mathf.Atan2(velocity.y, -velocity.x) * Mathf.Rad2Deg);
+            }
+        }
+
         void OnCollisionEnter2D(Collision2D collision) {
             if (!isServer) {
                 return;

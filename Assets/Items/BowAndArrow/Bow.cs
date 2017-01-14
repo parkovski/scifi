@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Networking;
 using Random = UnityEngine.Random;
+using System.Collections;
 
 using SciFi.Players;
 
@@ -29,7 +30,7 @@ namespace SciFi.Items {
         readonly Vector3 flippedArrowOffset = new Vector3(-.13f, 0f);
 
         void Start() {
-            BaseStart(aliveTime: 10f);
+            BaseStart(true, aliveTime: 10f);
             InitArrowsArray();
         }
 
@@ -65,6 +66,7 @@ namespace SciFi.Items {
             var prefab = GameController.IndexToPrefab(eArrowPrefabIndex);
             var offset = eFlipArrow ? flippedArrowOffset : arrowOffset;
             lDisplayArrow = Instantiate(prefab, gameObject.transform.position + offset, Quaternion.identity);
+            Destroy(lDisplayArrow.GetComponent<Arrow>());
             lDisplayArrow.GetComponent<SpriteRenderer>().flipX = eFlipArrow;
             lDisplayArrow.layer = Layers.displayOnly;
             lDisplayArrow.GetComponent<Rigidbody2D>().isKinematic = true;
@@ -109,7 +111,7 @@ namespace SciFi.Items {
         }
 
         public override bool ShouldCharge() {
-            return cArrows > 0;
+            return cArrows > 0 && lDisplayArrow != null;
         }
 
         public override void BeginCharging(Direction direction) {
@@ -136,6 +138,8 @@ namespace SciFi.Items {
             --cArrows;
             if (cArrows == 0) {
                 Destroy(lDisplayArrow);
+            } else {
+                StartCoroutine(TemporarilyDestroyDisplayArrow());
             }
 
             Vector2 force;
@@ -150,6 +154,13 @@ namespace SciFi.Items {
                 arrow.GetComponent<SpriteRenderer>().flipX = true;
             }
             eOwner.CmdSpawnCustomProjectile(arrow, force, 0f);
+        }
+
+        IEnumerator TemporarilyDestroyDisplayArrow() {
+            Destroy(lDisplayArrow);
+            lDisplayArrow = null;
+            yield return new WaitForSeconds(.5f);
+            CreateDisplayArrow();
         }
     }
 }

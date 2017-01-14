@@ -3,7 +3,7 @@ using UnityEngine;
 namespace SciFi.Items {
     public class Bomb : Item {
         void Start() {
-            BaseStart(aliveTime: 10f);
+            BaseStart(false, aliveTime: 10f);
         }
 
         void Update() {
