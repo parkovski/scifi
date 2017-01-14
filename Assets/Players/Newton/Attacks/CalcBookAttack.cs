@@ -20,15 +20,18 @@ namespace SciFi.Players.Attacks {
             var offset = player.eDirection == Direction.Left
                 ? new Vector3(-1f, .5f)
                 : new Vector3(1f, .5f);
+            var rotation = player.eDirection == Direction.Left
+                ? Quaternion.Euler(0f, 0f, -20f)
+                : Quaternion.Euler(0f, 0f, 20f);
+
             chargingBook = Object.Instantiate(
                 book,
                 player.gameObject.transform.position + offset,
-                Quaternion.Euler(0f, 0f, 20f)
+                rotation,
+                player.gameObject.transform
             );
-            chargingBook.transform.parent = player.gameObject.transform;
             var behavior = chargingBook.GetComponent<CalcBook>();
             behavior.spawnedBy = player.gameObject;
-            behavior.finishAttack = () => Object.Destroy(chargingBook);
         }
 
         public override void OnBeginCharging(Direction direction) {
@@ -49,7 +52,11 @@ namespace SciFi.Players.Attacks {
         }
 
         public override void OnEndCharging(float chargeTime, Direction direction) {
-            Object.Destroy(chargingBook);
+            if (direction == Direction.Left) {
+                chargingBook.GetComponent<Animator>().SetTrigger("SwingBackwards");
+            } else {
+                chargingBook.GetComponent<Animator>().SetTrigger("Swing");
+            }
         }
     }
 }

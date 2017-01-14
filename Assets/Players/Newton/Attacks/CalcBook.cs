@@ -1,21 +1,27 @@
 using UnityEngine;
-using System;
 
 namespace SciFi.Items {
     public class CalcBook : MonoBehaviour {
         public GameObject spawnedBy;
         public int power;
-        public Action finishAttack;
+        /// OnCollisionEnter2D can get called before Start -
+        /// this seems like a bug :(.
+        bool initialized = false;
 
         void Start() {
             Item.IgnoreCollisions(gameObject, spawnedBy);
+
+            initialized = true;
         }
 
-        void OnCollisionEnter2D(Collision2D collision) {
-            if (collision.gameObject.tag == "Player") {
-                GameController.Instance.TakeDamage(collision.gameObject, power * 2);
-                GameController.Instance.Knockback(gameObject, collision.gameObject, 1f * power);
-                finishAttack();
+        void OnTriggerEnter2D(Collider2D collider) {
+            if (!initialized) {
+                return;
+            }
+
+            if (collider.gameObject.tag == "Player") {
+                GameController.Instance.TakeDamage(collider.gameObject, power * 2);
+                GameController.Instance.Knockback(gameObject, collider.gameObject, power);
             }
         }
     }
