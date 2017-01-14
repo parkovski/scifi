@@ -10,20 +10,34 @@ namespace SciFi.Network {
         public override void OnStartServer() {
             base.OnStartServer();
             NetworkServer.RegisterHandler(NetworkMessages.SetPlayerName, SetPlayerName);
+            NetworkServer.RegisterHandler(NetworkMessages.SetPlayerDisplayName, SetPlayerDisplayName);
         }
 
         public override void OnClientConnect(NetworkConnection conn) {
             base.OnClientConnect(conn);
 
+            // Set the character
             var writer = new NetworkWriter();
             writer.StartMessage(NetworkMessages.SetPlayerName);
             writer.Write(TransitionParams.playerName);
             writer.FinishMessage();
             conn.SendWriter(writer, 0);
+
+            // Set the display name
+            if (TransitionParams.displayName != null) {
+                writer.StartMessage(NetworkMessages.SetPlayerDisplayName);
+                writer.Write(TransitionParams.displayName);
+                writer.FinishMessage();
+                conn.SendWriter(writer, 0);
+            }
         }
 
         void SetPlayerName(NetworkMessage msg) {
             TransitionParams.AddPlayer(msg.conn, msg.reader.ReadString());
+        }
+
+        void SetPlayerDisplayName(NetworkMessage msg) {
+            TransitionParams.AddDisplayName(msg.conn, msg.reader.ReadString());
         }
 
         public override GameObject OnLobbyServerCreateGamePlayer(NetworkConnection conn, short playerControllerId) {
@@ -33,7 +47,7 @@ namespace SciFi.Network {
             }
             var prefab = spawnPrefabs.Find(p => p.name == playerName);
             var obj = Instantiate(prefab, Vector3.zero, Quaternion.identity);
-            GameController.Instance.RegisterNewPlayer(obj);
+            GameController.Instance.RegisterNewPlayer(obj, TransitionParams.GetDisplayName(conn));
             return obj;
         }
 
@@ -44,7 +58,7 @@ namespace SciFi.Network {
                     var newtonPrefab = spawnPrefabs.Find(p => p.name == "Newton");
                     var obj = Instantiate(newtonPrefab, Vector3.zero, Quaternion.identity);
                     obj.GetComponent<NetworkIdentity>().localPlayerAuthority = false;
-                    GameController.Instance.RegisterNewPlayer(obj);
+                    GameController.Instance.RegisterNewPlayer(obj, TransitionParams.displayName);
                     NetworkServer.Spawn(obj);
                 }
                 GameController.Instance.StartGame(

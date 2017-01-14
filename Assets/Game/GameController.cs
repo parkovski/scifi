@@ -67,6 +67,7 @@ namespace SciFi {
         // guaranteed not null if a game is running.
         Player[] activePlayers;
         GameObject[] activePlayersGo;
+        string[] displayNames;
 
         [SyncEvent]
         public event DamageChangedHandler EventDamageChanged;
@@ -105,18 +106,23 @@ namespace SciFi {
         public static GameController Instance { get; private set; }
 
         [Server]
-        public void RegisterNewPlayer(GameObject playerObject) {
+        public void RegisterNewPlayer(GameObject playerObject, string displayName) {
             activePlayersGo = activePlayersGo.Concat(new[] { playerObject }).ToArray();
+            displayNames = displayNames.Concat(new[] { displayName }).ToArray();
         }
 
         [Server]
         public void StartGame(bool countdown = true) {
             activePlayers = activePlayersGo.Select(p => p.GetComponent<Player>()).ToArray();
-            _PlayersInitialized(activePlayers);
 
             for (var i = 0; i < activePlayersGo.Length; i++) {
                 var player = activePlayersGo[i].GetComponent<Player>();
                 player.eId = i;
+                if (string.IsNullOrEmpty(displayNames[i])) {
+                    player.eDisplayName = "P" + (i + 1);
+                } else {
+                    player.eDisplayName = displayNames[i];
+                }
                 player.eLives = 5;
                 if (countdown) {
                     player.SuspendAllFeatures();
@@ -126,6 +132,10 @@ namespace SciFi {
                     newLives = player.eLives,
                 });
             }
+
+            _PlayersInitialized(activePlayers);
+
+            displayNames = null;
 
             RpcCreateCharacterList(activePlayers.Select(p => p.netId).ToArray());
 
@@ -253,6 +263,7 @@ namespace SciFi {
         void Awake() {
             Instance = this;
             activePlayersGo = new GameObject[0];
+            displayNames = new string[0];
             Layers.Init();
 
             DontDestroyOnLoad(gameObject);

@@ -10,7 +10,13 @@ namespace SciFi.Scenes {
         public InputField nickname;
 
         void Start() {
-            //
+            nickname.onValueChanged.AddListener(n => {
+                if (string.IsNullOrEmpty(n)) {
+                    TransitionParams.displayName = null;
+                } else {
+                    TransitionParams.displayName = n;
+                }
+            });
         }
 
         public void Host() {

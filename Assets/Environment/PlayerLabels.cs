@@ -11,7 +11,11 @@ namespace SciFi.Environment {
 
         void Init(Player[] players) {
             this.players = players;
-            var i = players.Length;
+            var i = 0;
+            while (i < players.Length) {
+                labels[i].text = players[i].eDisplayName;
+                i++;
+            }
             while (i < panels.Length) {
                 Destroy(panels[i].gameObject);
                 Destroy(labels[i].gameObject);
