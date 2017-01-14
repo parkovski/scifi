@@ -6,11 +6,14 @@ namespace SciFi.Players.Attacks {
         const float horizontalForce = 20f;
         const float torqueRange = 5f;
         int applePrefabIndex;
+        int greenApplePrefabIndex;
+        const int chanceOfGreenApple = 10;
 
-        public AppleAttack(Player player, GameObject apple)
+        public AppleAttack(Player player, GameObject apple, GameObject greenApple)
             : base(player, false)
         {
             this.applePrefabIndex = GameController.PrefabToIndex(apple);
+            this.greenApplePrefabIndex = GameController.PrefabToIndex(greenApple);
             canFireDown = true;
         }
 
@@ -25,8 +28,9 @@ namespace SciFi.Players.Attacks {
             }
 
             var torque = Random.Range(-torqueRange, torqueRange);
+            var prefabIndex = Random.Range(0, chanceOfGreenApple) == 1 ? greenApplePrefabIndex : applePrefabIndex;
             player.CmdSpawnProjectile(
-                applePrefabIndex,
+                prefabIndex,
                 player.gameObject.transform.position,
                 Quaternion.identity,
                 force,

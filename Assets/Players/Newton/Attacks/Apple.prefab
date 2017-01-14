@@ -144,6 +144,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   explodingApple: {fileID: 1067510251126116, guid: 7d6a37a4da9154edc9a116afb28f4920,
     type: 2}
+  damage: 5
+  knockback: 3
+  postGroundDamage: 1
+  postGroundKnockback: 1
 --- !u!212 &212658536644460594
 SpriteRenderer:
   m_ObjectHideFlags: 1

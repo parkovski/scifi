@@ -18,7 +18,7 @@ namespace SciFi.Players {
         void Start() {
             BaseStart();
 
-            eAttack1 = new AppleAttack(this, apple);
+            eAttack1 = new AppleAttack(this, apple, greenApple);
             eAttack2 = new CalcBookAttack(this, new [] { calc1, calc2, calc3 });
             eSpecialAttack = new GravityWellAttack(this, gravityWell);
             //animator = GetComponent<Animator>();
