@@ -19,7 +19,7 @@ namespace SciFi.Items {
 
             if (collision.gameObject.tag == "Player") {
                 GameController.Instance.TakeDamage(collision.gameObject, 15);
-                GameController.Instance.Knockback(gameObject, collision.gameObject, 10f);
+                GameController.Instance.Knockback(gameObject, collision.gameObject, 7.5f);
                 Destroy(gameObject);
             }
         }
