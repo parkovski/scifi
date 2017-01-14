@@ -4,24 +4,23 @@ namespace SciFi.Items {
     public class CalcBook : MonoBehaviour {
         public GameObject spawnedBy;
         public int power;
-        /// OnCollisionEnter2D can get called before Start -
-        /// this seems like a bug :(.
-        bool initialized = false;
+        public bool attacking = false;
 
         void Start() {
             Item.IgnoreCollisions(gameObject, spawnedBy);
-
-            initialized = true;
         }
 
+        /// This can get called before Start -
+        /// this seems like a bug :(.
         void OnTriggerEnter2D(Collider2D collider) {
-            if (!initialized) {
+            if (!attacking) {
                 return;
             }
 
             if (collider.gameObject.tag == "Player") {
+                Item.IgnoreCollisions(gameObject, collider.gameObject);
                 GameController.Instance.TakeDamage(collider.gameObject, power * 2);
-                GameController.Instance.Knockback(gameObject, collider.gameObject, power);
+                GameController.Instance.Knockback(spawnedBy, collider.gameObject, power);
             }
         }
     }
