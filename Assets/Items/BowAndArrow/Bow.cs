@@ -134,6 +134,10 @@ namespace SciFi.Items {
             lDisplayArrow.transform.localPosition = direction == Direction.Left ? flippedArrowOffset : arrowOffset;
 
             --cArrows;
+            if (cArrows == 0) {
+                Destroy(lDisplayArrow);
+            }
+
             Vector2 force;
             if (direction == Direction.Left) {
                 force = new Vector2(-250f - lPower * 25, 100f);
