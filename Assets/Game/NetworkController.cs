@@ -54,5 +54,10 @@ namespace SciFi.Network {
                 );
             }
         }
+
+        public override bool OnLobbyServerSceneLoadedForPlayer(GameObject lobbyPlayer, GameObject gamePlayer) {
+            Destroy(lobbyPlayer);
+            return true;
+        }
     }
 }
