@@ -11,7 +11,7 @@ Shader "SciFi/Players/Attacks/GravityWell" {
             Blend SrcAlpha OneMinusSrcAlpha // Alpha blending
             AlphaToMask On
             Tags {"Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent"}
-            LOD 200
+            LOD 1
             CGPROGRAM
 
             #pragma vertex vert
