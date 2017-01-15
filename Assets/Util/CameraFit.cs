@@ -34,7 +34,13 @@ namespace SciFi.Util {
         public float UnitsSize = 1; // size of your scene in unity units
         public Constraint constraint = Constraint.Portrait;
         public static CameraFit Instance;
+        // Unity can't decide whether this hides
+        // a member from MonoBehaviour and sometimes
+        // shows a warning. Spoiler alert: it actually
+        // does hide one.
+#pragma warning disable 0109
         public new Camera camera;
+#pragma warning restore 0109
 
         private float _width;
         private float _height;

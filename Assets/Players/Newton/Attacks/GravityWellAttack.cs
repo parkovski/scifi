@@ -11,17 +11,10 @@ namespace SciFi.Players.Attacks {
         const float minChargeTime = 0.001f;
         const float maxChargeTime = 1.5f;
 
-        float pixelsPerUnit;
-
         public GravityWellAttack(Player player, GameObject gravityWell)
             : base(player, true)
         {
             gravityWellPrefab = gravityWell;
-            // Number of pixels in one Unity unit. The shader draws in pixels,
-            // but collision detection is in world units.
-            pixelsPerUnit
-                = Camera.main.WorldToScreenPoint(new Vector3(1, 0, 0)).x
-                - Camera.main.WorldToScreenPoint(new Vector3(0, 0, 0)).x;
         }
 
         public override void OnBeginCharging(Direction direction) {

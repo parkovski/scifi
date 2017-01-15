@@ -7,7 +7,7 @@ namespace SciFi.Items {
     public abstract class Item : NetworkBehaviour {
         bool pIsCharging = false;
         bool eCanCharge;
-        Direction eDirection;
+        protected Direction eDirection;
 
         /// The item's owner, if any, that it will follow.
         protected GameObject eOwnerGo;
