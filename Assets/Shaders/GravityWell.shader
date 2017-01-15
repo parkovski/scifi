@@ -4,18 +4,24 @@ Shader "SciFi/Players/Attacks/GravityWell" {
     Properties {
         _Color ("Color", Color) = (1,0,0,0)
         _Radius("Radius", Range(0.0, 0.5)) = 0.5
-        _MainTex("Base (RGB)", 2D) = "white" { }
+        _MainTex("Base (RGB), Alpha (A)", 2D) = "white" { }
     }
     SubShader {
+        Tags {
+            "Queue" = "Transparent"
+            "IgnoreProjector" = "True"
+            "RenderType" = "Transparent"
+        }
         Pass {
             Blend SrcAlpha OneMinusSrcAlpha // Alpha blending
-            AlphaToMask On
-            Tags {"Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent"}
+            Cull Off
+            ZWrite On
             LOD 1
             CGPROGRAM
 
             #pragma vertex vert
             #pragma fragment frag
+            #pragma target 3.0
             #include "UnityCG.cginc"
 
             fixed4 _Color; // low precision type is usually enough for colors
@@ -24,12 +30,11 @@ Shader "SciFi/Players/Attacks/GravityWell" {
             float _Dropoff;
             
             struct fragmentInput {
-                float4 pos : SV_POSITION;
-                float2 uv : TEXTCOORD0;
+                float4 pos : POSITION;
+                float2 uv : TEXCOORD0;
             };
 
-            fragmentInput vert(appdata_base v)
-            {
+            fragmentInput vert(appdata_base v) {
                 fragmentInput o;
 
                 o.pos = mul(UNITY_MATRIX_MVP, v.vertex);
@@ -41,6 +46,11 @@ Shader "SciFi/Players/Attacks/GravityWell" {
             // r = radius
             // d = distance
             float antialias(float r, float d) {
+                // Draw a ring around the outside of the circle
+                // so you can see the attack range
+                if (r < d+.05 && r > d) {
+                    return .5 - abs(10*(r-.025-d));
+                }
                 if (d > r) {
                     return 0;
                 }
