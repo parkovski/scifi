@@ -64,6 +64,10 @@ namespace SciFi.Players {
         protected Attack eSpecialAttack;
         //protected Attack eSuperAttack;
 
+        void Awake() {
+            featureLockout = new int[Enum.GetNames(typeof(PlayerFeature)).Length];
+        }
+
         protected void BaseStart() {
             lRb = GetComponent<Rigidbody2D>();
             eDirection = Direction.Right;
@@ -75,8 +79,6 @@ namespace SciFi.Players {
                 pInputManager.ObjectSelected += ObjectSelected;
                 pInputManager.ControlCanceled += ControlCanceled;
             }
-
-            featureLockout = new int[Enum.GetNames(typeof(PlayerFeature)).Length];
         }
 
         protected void BaseCollisionEnter2D(Collision2D collision) {

@@ -11,9 +11,7 @@ namespace SciFi.Util {
     /// the lobby would do.
     public class SinglePlayerHack : MonoBehaviour {
         NetworkController networkController;
-        #if UNITY_EDITOR
         bool autoAddPlayer = false;
-        #endif
 
         void Start() {
             // The game defaults to multiplayer if the title screen
@@ -27,9 +25,7 @@ namespace SciFi.Util {
                 return;
             }
 
-            #if UNITY_EDITOR
             autoAddPlayer = true;
-            #endif
 
             networkController = GetComponent<NetworkController>();
             networkController.minPlayers = 1;
@@ -37,7 +33,6 @@ namespace SciFi.Util {
             networkController.StartHost();
         }
 
-        #if UNITY_EDITOR
         bool done = false;
         void LateUpdate() {
             if (done || !autoAddPlayer) {
@@ -47,6 +42,5 @@ namespace SciFi.Util {
             networkController.lobbySlots[0].SendReadyToBeginMessage();
             done = true;
         }
-        #endif
     }
 }
