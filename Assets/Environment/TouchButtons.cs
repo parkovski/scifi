@@ -14,11 +14,11 @@ namespace SciFi.UI {
             Add("LeftButton");
             Add("RightButton");
             Add("UpButton");
-            Add("DownButton1");
+            Add("UpButton2");
+            Add("DownButton");
             Add("AttackButton1");
             Add("AttackButton2");
             Add("ItemButton");
-            Add("DownButton2");
 
             var gc = GameObject.Find("GameController");
             if (gc != null) {

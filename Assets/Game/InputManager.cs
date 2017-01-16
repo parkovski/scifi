@@ -38,8 +38,9 @@ namespace SciFi {
         /// only in menus.
         public const int MouseButton1 = 9;
         public const int MouseButton2 = 10;
-        public const int ThrowItem = 11;
-        public const int ArrayLength = 12;
+        public const int DodgeLeft = 11;
+        public const int DodgeRight = 12;
+        public const int ArrayLength = 13;
     }
 
     class InputState {
@@ -228,8 +229,8 @@ namespace SciFi {
                 Destroy(GameObject.Find("LeftButton"));
                 Destroy(GameObject.Find("RightButton"));
                 Destroy(GameObject.Find("UpButton"));
-                Destroy(GameObject.Find("DownButton1"));
-                Destroy(GameObject.Find("DownButton2"));
+                Destroy(GameObject.Find("UpButton2"));
+                Destroy(GameObject.Find("DownButton"));
                 Destroy(GameObject.Find("AttackButton1"));
                 Destroy(GameObject.Find("AttackButton2"));
                 Destroy(GameObject.Find("ItemButton"));
@@ -303,9 +304,9 @@ namespace SciFi {
             case "RightButton":
                 return Control.Right;
             case "UpButton":
+            case "UpButton2":
                 return Control.Up;
-            case "DownButton1":
-            case "DownButton2":
+            case "DownButton":
                 return Control.Down;
             case "AttackButton1":
                 return Control.Attack1;
@@ -313,8 +314,10 @@ namespace SciFi {
                 return Control.Attack2;
             case "SpecialAttackButton": // Fake button for combo
                 return Control.SpecialAttack;
-            case "ThrowItemButton":
-                return Control.ThrowItem;
+            case "DodgeLeftButton":
+                return Control.DodgeLeft;
+            case "DodgeRightButton":
+                return Control.DodgeRight;
             case "ItemButton":
                 return Control.Item;
             default:
@@ -348,8 +351,11 @@ namespace SciFi {
             case Control.SpecialAttack:
                 state.TouchUpdateButton(Control.SpecialAttack, true);
                 break;
-            case Control.ThrowItem:
-                state.TouchUpdateButton(Control.ThrowItem, true);
+            case Control.DodgeLeft:
+                state.TouchUpdateButton(Control.DodgeLeft, true);
+                break;
+            case Control.DodgeRight:
+                state.TouchUpdateButton(Control.DodgeRight, true);
                 break;
             }
         }
@@ -378,8 +384,11 @@ namespace SciFi {
             case Control.SpecialAttack:
                 state.TouchReset(Control.SpecialAttack);
                 break;
-            case Control.ThrowItem:
-                state.TouchReset(Control.ThrowItem);
+            case Control.DodgeLeft:
+                state.TouchReset(Control.DodgeLeft);
+                break;
+            case Control.DodgeRight:
+                state.TouchReset(Control.DodgeRight);
                 break;
             }
         }
@@ -395,8 +404,11 @@ namespace SciFi {
                 second = tmp;
             }
 
-            if (first == Control.Down && second == Control.Item) {
-                return Control.ThrowItem;
+            if (first == Control.Left && second == Control.Down) {
+                return Control.DodgeLeft;
+            }
+            if (first == Control.Right && second == Control.Down) {
+                return Control.DodgeRight;
             }
             if (first == Control.Attack1 && second == Control.Attack2) {
                 return Control.SpecialAttack;
@@ -405,8 +417,11 @@ namespace SciFi {
         }
 
         string GetComboName(int combo) {
-            if (combo == Control.ThrowItem) {
-                return "ThrowItemButton";
+            if (combo == Control.DodgeLeft) {
+                return "DodgeLeftButton";
+            }
+            if (combo == Control.DodgeRight) {
+                return "DodgeRightButton";
             }
             if (combo == Control.SpecialAttack) {
                 return "SpecialAttackButton";
@@ -415,7 +430,10 @@ namespace SciFi {
         }
 
         bool IsCombo(int control) {
-            if (control == Control.ThrowItem) {
+            if (control == Control.DodgeLeft) {
+                return true;
+            }
+            if (control == Control.DodgeRight) {
                 return true;
             }
             if (control == Control.SpecialAttack) {
@@ -447,6 +465,9 @@ namespace SciFi {
                         TouchControlStateChanged(controlName, true);
                     }
                 } else if (touch.phase == TouchPhase.Moved) {
+                    var currentControlName = activeTouches[touch.fingerId];
+                    var currentControl = GetTouchControl(currentControlName);
+                    UpdateTouchTime(currentControl);
                     var newObj = GetObjectAtPosition(touch.position);
                     var newControlName = newObj == null ? null : newObj.name;
                     if (newControlName == null) {
@@ -456,8 +477,6 @@ namespace SciFi {
                     if (newControl == -1) {
                         continue;
                     }
-                    var currentControlName = activeTouches[touch.fingerId];
-                    var currentControl = GetTouchControl(currentControlName);
                     var combo = GetTouchCombo(currentControl, newControl);
                     if (combo != -1) {
                         InvalidateControl(currentControl);
