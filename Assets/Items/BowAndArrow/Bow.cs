@@ -100,7 +100,7 @@ namespace SciFi.Items {
             }
         }
 
-        public override void ChangeDirection(Direction direction) {
+        protected override void OnChangeDirection(Direction direction) {
             GetComponent<SpriteRenderer>().flipX = eFlipArrow = direction == Direction.Left;
             if (lDisplayArrow != null) {
                 lDisplayArrow.GetComponent<SpriteRenderer>().flipX = eFlipArrow;

@@ -110,8 +110,12 @@ namespace SciFi.Items {
         }
 
         [Server]
-        public virtual void ChangeDirection(Direction direction) {
+        protected virtual void OnChangeDirection(Direction direction) { }
+
+        [Server]
+        public void ChangeDirection(Direction direction) {
             eDirection = direction;
+            OnChangeDirection(direction);
         }
 
         [Server]
