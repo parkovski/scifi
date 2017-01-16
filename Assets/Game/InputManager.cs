@@ -290,7 +290,7 @@ namespace SciFi {
 
         GameObject GetObjectAtPosition(Vector2 position) {
             var ray = Camera.main.ScreenToWorldPoint(position);
-            var hit = Physics2D.CircleCast(ray, .5f, Vector2.zero, Mathf.Infinity, layerMask);
+            var hit = Physics2D.Raycast(ray, Vector2.zero, Mathf.Infinity, layerMask);
             if (!hit) {
                 return null;
             }
@@ -465,7 +465,10 @@ namespace SciFi {
                         TouchControlStateChanged(controlName, true);
                     }
                 } else if (touch.phase == TouchPhase.Moved) {
-                    var currentControlName = activeTouches[touch.fingerId];
+                    string currentControlName;
+                    if (!activeTouches.TryGetValue(touch.fingerId, out currentControlName)) {
+                        continue;
+                    }
                     var currentControl = GetTouchControl(currentControlName);
                     UpdateTouchTime(currentControl);
                     var newObj = GetObjectAtPosition(touch.position);
