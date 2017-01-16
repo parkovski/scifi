@@ -38,7 +38,8 @@ namespace SciFi {
         /// only in menus.
         public const int MouseButton1 = 9;
         public const int MouseButton2 = 10;
-        public const int ArrayLength = 11;
+        public const int ThrowItem = 11;
+        public const int ArrayLength = 12;
     }
 
     class InputState {
@@ -188,6 +189,8 @@ namespace SciFi {
         InputState state = new InputState();
         // Maps from finger ID to Control.
         Dictionary<int, string> activeTouches;
+        string firstComboButton;
+        string secondComboButton;
 
         public bool IsControlActive(int control) {
             var s = state.states;
@@ -308,6 +311,10 @@ namespace SciFi {
                 return Control.Attack1;
             case "AttackButton2":
                 return Control.Attack2;
+            case "SpecialAttackButton": // Fake button for combo
+                return Control.SpecialAttack;
+            case "ThrowItemButton":
+                return Control.ThrowItem;
             case "ItemButton":
                 return Control.Item;
             default:
@@ -338,6 +345,12 @@ namespace SciFi {
             case Control.Item:
                 state.TouchUpdateButton(Control.Item, true);
                 break;
+            case Control.SpecialAttack:
+                state.TouchUpdateButton(Control.SpecialAttack, true);
+                break;
+            case Control.ThrowItem:
+                state.TouchUpdateButton(Control.ThrowItem, true);
+                break;
             }
         }
 
@@ -362,6 +375,12 @@ namespace SciFi {
             case Control.Item:
                 state.TouchReset(Control.Item);
                 break;
+            case Control.SpecialAttack:
+                state.TouchReset(Control.SpecialAttack);
+                break;
+            case Control.ThrowItem:
+                state.TouchReset(Control.ThrowItem);
+                break;
             }
         }
 
@@ -370,7 +389,39 @@ namespace SciFi {
         }
 
         int GetTouchCombo(int first, int second) {
+            if (first > second) {
+                var tmp = first;
+                first = second;
+                second = tmp;
+            }
+
+            if (first == Control.Down && second == Control.Item) {
+                return Control.ThrowItem;
+            }
+            if (first == Control.Attack1 && second == Control.Attack2) {
+                return Control.SpecialAttack;
+            }
             return -1;
+        }
+
+        string GetComboName(int combo) {
+            if (combo == Control.ThrowItem) {
+                return "ThrowItemButton";
+            }
+            if (combo == Control.SpecialAttack) {
+                return "SpecialAttackButton";
+            }
+            return "";
+        }
+
+        bool IsCombo(int control) {
+            if (control == Control.ThrowItem) {
+                return true;
+            }
+            if (control == Control.SpecialAttack) {
+                return true;
+            }
+            return false;
         }
 
         void CheckTouchInput() {
@@ -401,18 +452,25 @@ namespace SciFi {
                     if (newControlName == null) {
                         continue;
                     }
-                    /*var newControl = GetTouchControl(newControlName);
+                    var newControl = GetTouchControl(newControlName);
                     if (newControl == -1) {
                         continue;
                     }
-                    var currentControl = GetTouchControl(activeTouches[touch.fingerId]);
+                    var currentControlName = activeTouches[touch.fingerId];
+                    var currentControl = GetTouchControl(currentControlName);
                     var combo = GetTouchCombo(currentControl, newControl);
                     if (combo != -1) {
                         InvalidateControl(currentControl);
+                        EndTouch(currentControl);
                         ControlCanceled(new ControlCanceledEventArgs(currentControl));
-                        activeTouches[touch.fingerId] = combo;
+                        firstComboButton = currentControlName;
+                        secondComboButton = newControlName;
+                        activeTouches[touch.fingerId] = GetComboName(combo);
                         BeginTouch(combo);
-                    }*/
+                        if (TouchControlStateChanged != null) {
+                            TouchControlStateChanged(newControlName, true);
+                        }
+                    }
                 } else if (touch.phase == TouchPhase.Stationary) {
                     string control;
                     if (activeTouches.TryGetValue(touch.fingerId, out control)) {
@@ -421,10 +479,16 @@ namespace SciFi {
                 } else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled) {
                     string control;
                     if (activeTouches.TryGetValue(touch.fingerId, out control)) {
-                        EndTouch(GetTouchControl(activeTouches[touch.fingerId]));
+                        var controlValue = GetTouchControl(control);
+                        EndTouch(controlValue);
                         activeTouches.Remove(touch.fingerId);
                         if (TouchControlStateChanged != null) {
-                            TouchControlStateChanged(control, false);
+                            if (IsCombo(controlValue)) {
+                                TouchControlStateChanged(firstComboButton, false);
+                                TouchControlStateChanged(secondComboButton, false);
+                            } else {
+                                TouchControlStateChanged(control, false);
+                            }
                         }
                     }
                 }

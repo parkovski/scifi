@@ -10,7 +10,6 @@ namespace SciFi.UI {
         Dictionary<string, SpriteRenderer> buttons;
 
         void Start() {
-            inputManager = GameObject.Find("GameController").GetComponent<InputManager>();
             buttons = new Dictionary<string, SpriteRenderer>();
             Add("LeftButton");
             Add("RightButton");
@@ -21,7 +20,11 @@ namespace SciFi.UI {
             Add("ItemButton");
             Add("DownButton2");
 
-            inputManager.TouchControlStateChanged += StateChanged;
+            var gc = GameObject.Find("GameController");
+            if (gc != null) {
+                inputManager = gc.GetComponent<InputManager>();
+                inputManager.TouchControlStateChanged += StateChanged;
+            }
         }
 
         void Add(string name) {
