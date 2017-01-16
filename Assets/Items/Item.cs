@@ -7,7 +7,7 @@ namespace SciFi.Items {
     public abstract class Item : NetworkBehaviour {
         bool pIsCharging = false;
         bool eCanCharge;
-        protected Direction eDirection;
+        protected Direction eDirection = Direction.Right;
 
         /// The item's owner, if any, that it will follow.
         protected GameObject eOwnerGo;
@@ -85,21 +85,28 @@ namespace SciFi.Items {
         public bool IsCharging() {
             return pIsCharging;
         }
-        [Client]
-        public virtual void BeginCharging(Direction direction) {
+        public void BeginCharging() {
             pIsCharging = true;
+            OnBeginCharging();
+        }
+        public void KeepCharging(float chargeTime) {
+            OnKeepCharging(chargeTime);
+        }
+        public void EndCharging(float chargeTime) {
+            pIsCharging = false;
+            OnEndCharging(chargeTime);
         }
         [Client]
-        public virtual void KeepCharging(float chargeTime, Direction direction) {}
+        protected virtual void OnBeginCharging() {}
+        [Client]
+        protected virtual void OnKeepCharging(float chargeTime) {}
         /// Called on the client when the player is done charging the item and it should fire.
         [Client]
-        public virtual void EndCharging(float chargeTime, Direction direction) {
-            pIsCharging = false;
-        }
+        protected virtual void OnEndCharging(float chargeTime) {}
         /// For convenience, just calls EndCharging with chargeTime == 0f.
         [Client]
-        public void Use(Direction direction) {
-            EndCharging(0f, direction);
+        public void Use() {
+            OnEndCharging(0f);
         }
 
         [Server]

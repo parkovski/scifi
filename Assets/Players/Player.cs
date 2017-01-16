@@ -251,9 +251,11 @@ namespace SciFi.Players {
             var i = eItem.GetComponent<Item>();
             if (i.IsCharging()) {
                 if (active) {
-                    i.KeepCharging(pInputManager.GetControlHoldTime(Control.Item), eDirection);
+                    i.KeepCharging(pInputManager.GetControlHoldTime(Control.Item));
                 } else {
-                    i.EndCharging(pInputManager.GetControlHoldTime(Control.Item), eDirection);
+                    i.EndCharging(pInputManager.GetControlHoldTime(Control.Item));
+                    ResumeFeature(PlayerFeature.Attack);
+                    ResumeFeature(PlayerFeature.Movement);
                 }
             } else if (active) {
                 if (pInputManager.IsControlActive(Control.Down)) {
@@ -261,15 +263,17 @@ namespace SciFi.Players {
                     pInputManager.InvalidateControl(Control.Down);
                     CmdLoseOwnershipOfItem();
                     eItem = null;
-                } else if (i.ShouldCharge()) {
-                    i.BeginCharging(eDirection);
-                } else if (i.ShouldThrow()) {
+                } else if (i.ShouldCharge() && FeatureEnabled(PlayerFeature.Attack)) {
+                    SuspendFeature(PlayerFeature.Attack);
+                    SuspendFeature(PlayerFeature.Movement);
+                    i.BeginCharging();
+                } else if (i.ShouldThrow() && FeatureEnabled(PlayerFeature.Attack)) {
                     pInputManager.InvalidateControl(Control.Item);
                     CmdLoseOwnershipOfItem();
                     eItem = null;
-                } else if (!i.CanCharge()) {
+                } else if (!i.CanCharge() && FeatureEnabled(PlayerFeature.Attack)) {
                     pInputManager.InvalidateControl(Control.Item);
-                    i.Use(eDirection);
+                    i.Use();
                 }
                 // If none of the above conditions were true, the item
                 // is chargeable, but it can't charge right now (in cooldown)
@@ -285,10 +289,10 @@ namespace SciFi.Players {
             } else if (i.ShouldCharge()) {
                 // TODO: begin charging item
                 // TODO: run this on server
-                i.BeginCharging(eDirection);
-                i.Use(eDirection);
+                i.BeginCharging();
+                i.Use();
             } else {
-                i.Use(eDirection);
+                i.Use();
             }
         }
 

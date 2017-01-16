@@ -60,5 +60,5 @@ namespace SciFi.Players.Attacks {
             OnCancelCharging();
         }
         public virtual void OnCancelCharging() {}
-}
+    }
 }
