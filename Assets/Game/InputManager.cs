@@ -219,11 +219,14 @@ namespace SciFi {
             activeTouches = new Dictionary<int, int>();
 
             if (!Input.touchSupported) {
-                Destroy(GameObject.Find("left-button"));
-                Destroy(GameObject.Find("right-button"));
-                Destroy(GameObject.Find("fire-button"));
-                Destroy(GameObject.Find("jump-button"));
-                Destroy(GameObject.Find("block-button"));
+                Destroy(GameObject.Find("LeftButton"));
+                Destroy(GameObject.Find("RightButton"));
+                Destroy(GameObject.Find("UpButton"));
+                Destroy(GameObject.Find("DownButton1"));
+                Destroy(GameObject.Find("DownButton2"));
+                Destroy(GameObject.Find("AttackButton1"));
+                Destroy(GameObject.Find("AttackButton2"));
+                Destroy(GameObject.Find("ItemButton"));
             }
         }
 
@@ -289,16 +292,21 @@ namespace SciFi {
 
         int GetTouchControl(string controlName) {
             switch (controlName) {
-            case "left-button":
+            case "LeftButton":
                 return Control.Left;
-            case "right-button":
+            case "RightButton":
                 return Control.Right;
-            case "jump-button":
+            case "UpButton":
                 return Control.Up;
-            case "block-button":
+            case "DownButton1":
+            case "DownButton2":
                 return Control.Down;
-            case "fire-button":
+            case "AttackButton1":
                 return Control.Attack1;
+            case "AttackButton2":
+                return Control.Attack2;
+            case "ItemButton":
+                return Control.Item;
             default:
                 return -1;
             }
@@ -321,6 +329,12 @@ namespace SciFi {
             case Control.Attack1:
                 state.TouchUpdateButton(Control.Attack1, true);
                 break;
+            case Control.Attack2:
+                state.TouchUpdateButton(Control.Attack2, true);
+                break;
+            case Control.Item:
+                state.TouchUpdateButton(Control.Item, true);
+                break;
             }
         }
 
@@ -338,6 +352,12 @@ namespace SciFi {
                 break;
             case Control.Attack1:
                 state.TouchReset(Control.Attack1);
+                break;
+            case Control.Attack2:
+                state.TouchReset(Control.Attack2);
+                break;
+            case Control.Item:
+                state.TouchReset(Control.Item);
                 break;
             }
         }
@@ -388,10 +408,16 @@ namespace SciFi {
                         BeginTouch(combo);
                     }
                 } else if (touch.phase == TouchPhase.Stationary) {
-                    UpdateTouchTime(activeTouches[touch.fingerId]);
+                    int control;
+                    if (activeTouches.TryGetValue(touch.fingerId, out control)) {
+                        UpdateTouchTime(control);
+                    }
                 } else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled) {
-                    EndTouch(activeTouches[touch.fingerId]);
-                    activeTouches.Remove(touch.fingerId);
+                    int control;
+                    if (activeTouches.TryGetValue(touch.fingerId, out control)) {
+                        EndTouch(activeTouches[touch.fingerId]);
+                        activeTouches.Remove(touch.fingerId);
+                    }
                 }
             }
         }
