@@ -185,9 +185,7 @@ namespace SciFi.Players {
                 }
             }
 
-            if (FeatureEnabled(PlayerFeature.Attack)) {
-                UpdateItemControl(pInputManager.IsControlActive(Control.Item));
-            }
+            UpdateItemControl(pInputManager.IsControlActive(Control.Item));
 
             eAttack1.UpdateState(pInputManager, Control.Attack1);
             eAttack2.UpdateState(pInputManager, Control.Attack2);
@@ -258,7 +256,7 @@ namespace SciFi.Players {
                     ResumeFeature(PlayerFeature.Movement);
                 }
             } else if (active) {
-                if (pInputManager.IsControlActive(Control.Down)) {
+                if (pInputManager.IsControlActive(Control.Down) && FeatureEnabled(PlayerFeature.Attack)) {
                     pInputManager.InvalidateControl(Control.Item);
                     pInputManager.InvalidateControl(Control.Down);
                     CmdLoseOwnershipOfItem();
