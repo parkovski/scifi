@@ -179,13 +179,15 @@ namespace SciFi {
     }
     public delegate void ObjectSelectedHandler(ObjectSelectedEventArgs args);
 
+    public delegate void TouchControlStateChangedHandler(string control, bool active);
+
     public class InputManager : MonoBehaviour {
         int touchControlLayerId;
         // Layers that we want to be able to select with touch/click.
         int layerMask;
         InputState state = new InputState();
         // Maps from finger ID to Control.
-        Dictionary<int, int> activeTouches;
+        Dictionary<int, string> activeTouches;
 
         public bool IsControlActive(int control) {
             var s = state.states;
@@ -210,13 +212,14 @@ namespace SciFi {
 
         public event ControlCanceledHandler ControlCanceled;
         public event ObjectSelectedHandler ObjectSelected;
+        public event TouchControlStateChangedHandler TouchControlStateChanged;
 
         void Start() {
             // The Layers class is not initialized yet
             layerMask
                 = 1 << LayerMask.NameToLayer("Touch Controls")
                 | 1 << LayerMask.NameToLayer("Items");
-            activeTouches = new Dictionary<int, int>();
+            activeTouches = new Dictionary<int, string>();
 
             if (!Input.touchSupported) {
                 Destroy(GameObject.Find("LeftButton"));
@@ -388,35 +391,41 @@ namespace SciFi {
                         continue;
                     }
                     BeginTouch(control);
-                    activeTouches.Add(touch.fingerId, control);
+                    activeTouches.Add(touch.fingerId, controlName);
+                    if (TouchControlStateChanged != null) {
+                        TouchControlStateChanged(controlName, true);
+                    }
                 } else if (touch.phase == TouchPhase.Moved) {
                     var newObj = GetObjectAtPosition(touch.position);
                     var newControlName = newObj == null ? null : newObj.name;
                     if (newControlName == null) {
                         continue;
                     }
-                    var newControl = GetTouchControl(newControlName);
+                    /*var newControl = GetTouchControl(newControlName);
                     if (newControl == -1) {
                         continue;
                     }
-                    var currentControl = activeTouches[touch.fingerId];
-                    var combo = GetTouchCombo(activeTouches[touch.fingerId], newControl);
+                    var currentControl = GetTouchControl(activeTouches[touch.fingerId]);
+                    var combo = GetTouchCombo(currentControl, newControl);
                     if (combo != -1) {
                         InvalidateControl(currentControl);
                         ControlCanceled(new ControlCanceledEventArgs(currentControl));
                         activeTouches[touch.fingerId] = combo;
                         BeginTouch(combo);
-                    }
+                    }*/
                 } else if (touch.phase == TouchPhase.Stationary) {
-                    int control;
+                    string control;
                     if (activeTouches.TryGetValue(touch.fingerId, out control)) {
-                        UpdateTouchTime(control);
+                        UpdateTouchTime(GetTouchControl(control));
                     }
                 } else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled) {
-                    int control;
+                    string control;
                     if (activeTouches.TryGetValue(touch.fingerId, out control)) {
-                        EndTouch(activeTouches[touch.fingerId]);
+                        EndTouch(GetTouchControl(activeTouches[touch.fingerId]));
                         activeTouches.Remove(touch.fingerId);
+                        if (TouchControlStateChanged != null) {
+                            TouchControlStateChanged(control, false);
+                        }
                     }
                 }
             }

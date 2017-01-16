@@ -1258,6 +1258,7 @@ GameObject:
   - component: {fileID: 826351786}
   - component: {fileID: 826351788}
   - component: {fileID: 826351789}
+  - component: {fileID: 826351790}
   m_Layer: 8
   m_Name: LeftButton
   m_TagString: Untagged
@@ -1341,6 +1342,20 @@ BoxCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Size: {x: 1.5, y: 1}
+--- !u!114 &826351790
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 826351785}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9582e8e175ed6e8449c1a8180236266c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inputManager: {fileID: 0}
+  buttonInactive: {fileID: 21300000, guid: 3a2ceaa7f6072ba47b836143b4f6ff9b, type: 3}
+  buttonActive: {fileID: 21300000, guid: f386dc60f5c0b1a4fbaec4ba4df7aece, type: 3}
 --- !u!1 &897942738
 GameObject:
   m_ObjectHideFlags: 0
