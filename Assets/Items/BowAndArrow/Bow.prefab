@@ -25,7 +25,7 @@ GameObject:
   - component: {fileID: 61974262026076420}
   - component: {fileID: 114096556471172114}
   - component: {fileID: 114254265413853362}
-  m_Layer: 10
+  m_Layer: 14
   m_Name: Bow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -90,7 +90,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5d44801a397d4904bf6f4174c292bbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isBeingThrown: 0
   normalArrow: {fileID: 1446669325398844, guid: ff2ef8e5d075f46f6ba33bb57c2ba490,
     type: 2}
   fireArrow: {fileID: 1468857226336700, guid: 56c12282f22394d9b8c797935b0ff45c, type: 2}

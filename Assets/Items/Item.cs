@@ -8,6 +8,7 @@ namespace SciFi.Items {
         bool pIsCharging = false;
         bool eCanCharge;
         protected Direction eDirection = Direction.Right;
+        int eInitialLayer;
 
         /// The item's owner, if any, that it will follow.
         protected GameObject eOwnerGo;
@@ -25,6 +26,7 @@ namespace SciFi.Items {
             this.sAliveTime = aliveTime;
             this.sDestroyTime = Time.time + aliveTime;
             this.eCanCharge = canCharge;
+            this.eInitialLayer = gameObject.layer;
         }
 
         protected void BaseUpdate() {
@@ -62,7 +64,7 @@ namespace SciFi.Items {
 
         [ClientRpc]
         void RpcSetToItemsLayer() {
-            gameObject.layer = Layers.items;
+            gameObject.layer = eInitialLayer;
         }
 
         // Called on all clients when the object is picked up.

@@ -32,6 +32,7 @@ namespace SciFi {
         public static int displayOnly;
         public static int heldAttacks;
         public static int touchControls;
+        public static int noncollidingItems;
 
         public static void Init() {
             projectiles = LayerMask.NameToLayer("Projectiles");
@@ -40,6 +41,7 @@ namespace SciFi {
             displayOnly = LayerMask.NameToLayer("Display Only");
             heldAttacks = LayerMask.NameToLayer("Held Attacks");
             touchControls = LayerMask.NameToLayer("Touch Controls");
+            noncollidingItems = LayerMask.NameToLayer("Noncolliding Items");
         }
     }
 

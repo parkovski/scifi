@@ -359,7 +359,7 @@ namespace SciFi.Players {
                 1f,
                 Vector2.zero,
                 Mathf.Infinity,
-                1 << Layers.items);
+                1 << Layers.items | 1 << Layers.noncollidingItems);
             if (hits.Length == 0) {
                 return null;
             }
@@ -386,7 +386,7 @@ namespace SciFi.Players {
             if (eItem != null) {
                 return;
             }
-            if (args.gameObject.layer == Layers.items) {
+            if (args.gameObject.layer == Layers.items || args.gameObject.layer == Layers.noncollidingItems) {
                 if (CircleCastForItem(args.gameObject) == args.gameObject) {
                     PickUpItem(args.gameObject);
                 }
