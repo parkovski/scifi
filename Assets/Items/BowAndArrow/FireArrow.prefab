@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 50965781876541112}
   - component: {fileID: 61495892403731818}
   - component: {fileID: 114953056391051912}
-  m_Layer: 11
+  m_Layer: 13
   m_Name: FireArrow
   m_TagString: Untagged
   m_Icon: {fileID: 0}

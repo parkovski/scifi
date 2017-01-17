@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 50214079179414210}
   - component: {fileID: 61230087670726976}
   - component: {fileID: 114082590741088990}
-  m_Layer: 11
+  m_Layer: 13
   m_Name: RockArrow
   m_TagString: Untagged
   m_Icon: {fileID: 0}

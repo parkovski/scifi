@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 50056284619633478}
   - component: {fileID: 61717534730334186}
   - component: {fileID: 114146017085784670}
-  m_Layer: 11
+  m_Layer: 13
   m_Name: BombArrow
   m_TagString: Untagged
   m_Icon: {fileID: 0}

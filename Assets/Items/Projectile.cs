@@ -9,15 +9,18 @@ namespace SciFi.Items {
         public NetworkInstanceId spawnedByExtra = NetworkInstanceId.Invalid;
 
         protected void BaseStart() {
-        }
-
-        public override void OnStartClient() {
             // Don't let this object hit the player that created it.
             Item.IgnoreCollisions(gameObject, ClientScene.FindLocalObject(spawnedBy));
 
             if (spawnedByExtra != NetworkInstanceId.Invalid) {
                 Item.IgnoreCollisions(gameObject, ClientScene.FindLocalObject(spawnedByExtra));
             }
+
+            // Due to what seems to be a bug in Unity,
+            // collisions can be detected before Start is called,
+            // so we initialize stuff on a non-colliding layer and
+            // change it here.
+            gameObject.layer = Layers.projectiles;
         }
     }
 }
