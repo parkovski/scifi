@@ -1417,9 +1417,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9582e8e175ed6e8449c1a8180236266c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inputManager: {fileID: 0}
   buttonInactive: {fileID: 21300000, guid: 3a2ceaa7f6072ba47b836143b4f6ff9b, type: 3}
   buttonActive: {fileID: 21300000, guid: f386dc60f5c0b1a4fbaec4ba4df7aece, type: 3}
+  leftButton: {fileID: 21300000, guid: 72d60149177a9b84b8101814c5fe2588, type: 3}
+  rightButton: {fileID: 21300000, guid: 71eb9b54de09df848a73ae24d3c8d8b0, type: 3}
+  downButton: {fileID: 21300000, guid: 83909938c899d364091f3a1ae428d5bf, type: 3}
+  dodgeLeftButton: {fileID: 21300000, guid: 1e9c7f626dcd0f54b8f645603117fd82, type: 3}
+  dodgeRightButton: {fileID: 21300000, guid: f99b95a3c00410d47a26a2feeef26eb8, type: 3}
+  attackButton1: {fileID: 21300000, guid: 0dde6956a61094c4b90f2856f902b41d, type: 3}
+  attackButton2: {fileID: 21300000, guid: 8259c26ee6bb8324cb7fdbafe4e3fbe3, type: 3}
+  specialAttackButton: {fileID: 21300000, guid: 762e98eb658f4b84b8bfb9d928f7d0a4,
+    type: 3}
+  itemButton: {fileID: 21300000, guid: 53cbea97fe533654cb046d42e4cd69c8, type: 3}
+  throwItemButton: {fileID: 21300000, guid: e6138a2e4d1fcf246ac30050fc94ce66, type: 3}
 --- !u!1 &897942738
 GameObject:
   m_ObjectHideFlags: 0
