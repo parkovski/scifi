@@ -6,6 +6,7 @@ using System.Linq;
 using Random = UnityEngine.Random;
 
 using SciFi.Players;
+using SciFi.Items;
 using SciFi.UI;
 
 namespace SciFi {
@@ -233,10 +234,22 @@ namespace SciFi {
         }
 
         [Server]
-        public void TakeDamage(GameObject playerObject, int amount) {
-            var player = playerObject.GetComponent<Player>();
+        public void TakeDamage(GameObject obj, int amount) {
+            var player = obj.GetComponent<Player>();
+            if (player == null) {
+                var item = obj.GetComponent<Item>();
+                if (item != null) {
+                    ItemTakeDamage(item, amount);
+                }
+            } else {
+                PlayerTakeDamage(player, amount);
+            }
+        }
+
+        [Server]
+        void PlayerTakeDamage(Player player, int amount) {
             if (!player.FeatureEnabled(PlayerFeature.Damage)) {
-                    return;
+                return;
             }
             player.eDamage += amount;
             var args = new DamageChangedEventArgs {
@@ -247,8 +260,16 @@ namespace SciFi {
         }
 
         [Server]
+        void ItemTakeDamage(Item item, int amount) {
+            item.TakeDamage(amount);
+        }
+
+        [Server]
         public void Knockback(GameObject attackingObject, GameObject playerObject, float amount) {
             var player = playerObject.GetComponent<Player>();
+            if (player == null) {
+                return;
+            }
             if (!player.FeatureEnabled(PlayerFeature.Knockback)) {
                 return;
             }

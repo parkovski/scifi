@@ -111,6 +111,8 @@ namespace SciFi.Items {
             OnEndCharging(0f);
         }
 
+        public virtual void TakeDamage(int amount) {}
+
         [Server]
         protected virtual void OnChangeDirection(Direction direction) { }
 

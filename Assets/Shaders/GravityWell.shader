@@ -1,6 +1,6 @@
 // http://answers.unity3d.com/questions/521984/how-do-you-draw-2d-circles-and-primitives.html
 
-Shader "SciFi/Players/Attacks/GravityWell" {
+Shader "SciFi/Attacks/GravityWell" {
     Properties {
         _Color ("Color", Color) = (1,0,0,0)
         _Radius("Radius", Range(0.0, 0.5)) = 0.5
