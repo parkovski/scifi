@@ -31,7 +31,7 @@ namespace SciFi.Items {
                 time = stopTime;
             }
 
-            var scale = (time - startTime) * 4000;
+            var scale = (time - startTime) * 2000;
             transform.localScale = new Vector3(scale, transform.localScale.y, 1f);
             transform.position = magnifyingGlassGo.transform.position + offset;
 
