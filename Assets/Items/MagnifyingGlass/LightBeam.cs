@@ -35,12 +35,13 @@ namespace SciFi.Items {
             transform.localScale = new Vector3(scale, transform.localScale.y, 1f);
             transform.position = magnifyingGlassGo.transform.position + offset;
 
+            // Use Time.time here, because time is locked at first hit.
             if (nextHitTime < Time.time) {
                 var distance = Mathf.Sqrt(Mathf.Pow(spriteRenderer.bounds.extents.x, 2f) + Mathf.Pow(spriteRenderer.bounds.extents.y, 2f));
                 var zRot = transform.rotation.eulerAngles.z * Mathf.Deg2Rad;
                 Vector2 angle;
                 if (backwards) {
-                    angle = new Vector2(-Mathf.Cos(-zRot), Mathf.Sin(zRot));
+                    angle = new Vector2(-Mathf.Cos(zRot), Mathf.Sin(zRot));
                 } else {
                     angle = new Vector2(Mathf.Cos(zRot), Mathf.Sin(zRot));
                 }

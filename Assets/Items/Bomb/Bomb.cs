@@ -17,7 +17,10 @@ namespace SciFi.Items {
 
             BaseCollisionEnter2D(collision);
 
-            if (collision.gameObject.tag == "Player") {
+            var layer = collision.gameObject.layer;
+            if (layer == Layers.projectiles) {
+                Destroy(gameObject);
+            } else if (layer == Layers.players || layer == Layers.items) {
                 GameController.Instance.TakeDamage(collision.gameObject, 15);
                 GameController.Instance.Knockback(gameObject, collision.gameObject, 7.5f);
                 Destroy(gameObject);

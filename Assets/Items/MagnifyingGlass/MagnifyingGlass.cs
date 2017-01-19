@@ -21,7 +21,7 @@ namespace SciFi.Items {
         }
 
         public override bool ShouldThrow() {
-            return false;
+            return uses >= maxUses;
         }
 
         public override bool ShouldCharge() {
@@ -29,9 +29,7 @@ namespace SciFi.Items {
         }
 
         protected override void OnEndCharging(float chargeTime) {
-            if (++uses >= maxUses) {
-                return;
-            }
+            ++uses;
 
             var offset = eDirection == Direction.Left ? new Vector3(-.1f, .15f) : new Vector3(.2f, .2f);
             var y = eDirection == Direction.Left ? 180f : 0f;
