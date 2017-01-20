@@ -9,6 +9,7 @@ namespace SciFi.Items {
         bool eCanCharge;
         protected Direction eDirection = Direction.Right;
         int eInitialLayer;
+        bool pShouldCancel = false;
 
         /// The item's owner, if any, that it will follow.
         protected GameObject eOwnerGo;
@@ -98,6 +99,22 @@ namespace SciFi.Items {
             pIsCharging = false;
             OnEndCharging(chargeTime);
         }
+        /// This should only be called when control feature flags
+        /// are being reset, otherwise call RequestCancel.
+        public void Cancel() {
+            pShouldCancel = false;
+            OnCancel();
+            pIsCharging = false;
+        }
+
+        public void RequestCancel() {
+            pShouldCancel = true;
+        }
+
+        public bool ShouldCancel() {
+            return pShouldCancel;
+        }
+
         [Client]
         protected virtual void OnBeginCharging() {}
         [Client]
@@ -106,6 +123,7 @@ namespace SciFi.Items {
         [Client]
         protected virtual void OnEndCharging(float chargeTime) {}
         /// For convenience, just calls EndCharging with chargeTime == 0f.
+        protected virtual void OnCancel() {}
         [Client]
         public void Use() {
             OnEndCharging(0f);

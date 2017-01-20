@@ -12,6 +12,7 @@ namespace SciFi.Items {
         const float boostTimeout = .25f;
         float boostForce;
         float totalBoostTime;
+        float lastTotalBoostTime;
         const float maxBoostTime = 5f;
 
         void Start() {
@@ -46,7 +47,9 @@ namespace SciFi.Items {
         }
 
         protected override void OnKeepCharging(float chargeTime) {
-            if (totalBoostTime + chargeTime >= maxBoostTime) {
+            totalBoostTime = lastTotalBoostTime + chargeTime;
+            if (totalBoostTime >= maxBoostTime) {
+                RequestCancel();
                 return;
             }
 
@@ -58,11 +61,19 @@ namespace SciFi.Items {
 
         protected override void OnEndCharging(float chargeTime) {
             Destroy(fire);
-            totalBoostTime += chargeTime;
+            lastTotalBoostTime = totalBoostTime;
 
             // Return feature flags to their previous state
             eOwner.SuspendFeature(PlayerFeature.Movement);
             eOwner.ResumeFeature(PlayerFeature.Jump);
+        }
+
+        protected override void OnCancel() {
+            if (IsCharging()) {
+                Destroy(fire);
+                eOwner.SuspendFeature(PlayerFeature.Movement);
+                eOwner.ResumeFeature(PlayerFeature.Jump);
+            }
         }
     }
 }

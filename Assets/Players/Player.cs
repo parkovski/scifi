@@ -250,7 +250,14 @@ namespace SciFi.Players {
             var i = eItem.GetComponent<Item>();
             if (i.IsCharging()) {
                 if (active) {
-                    i.KeepCharging(pInputManager.GetControlHoldTime(Control.Item));
+                    if (i.ShouldCancel()) {
+                        pInputManager.InvalidateControl(Control.Item);
+                        i.Cancel();
+                        ResumeFeature(PlayerFeature.Attack);
+                        ResumeFeature(PlayerFeature.Movement);
+                    } else {
+                        i.KeepCharging(pInputManager.GetControlHoldTime(Control.Item));
+                    }
                 } else {
                     i.EndCharging(pInputManager.GetControlHoldTime(Control.Item));
                     ResumeFeature(PlayerFeature.Attack);
