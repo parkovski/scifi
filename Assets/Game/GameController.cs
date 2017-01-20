@@ -72,6 +72,8 @@ namespace SciFi {
         Player[] activePlayers;
         GameObject[] activePlayersGo;
         string[] displayNames;
+        bool cIsWinner;
+        int cPlayerId;
 
         [SyncEvent]
         public event DamageChangedHandler EventDamageChanged;
@@ -172,6 +174,7 @@ namespace SciFi {
         void RpcCreateCharacterList(NetworkInstanceId[] ids) {
             activePlayersGo = ids.Select(id => ClientScene.FindLocalObject(id)).ToArray();
             activePlayers = activePlayersGo.Select(p => p.GetComponent<Player>()).ToArray();
+            cPlayerId = activePlayers.First(p => p.hasAuthority).eId;
             if (_PlayersInitialized != null) {
                 _PlayersInitialized(activePlayers);
             }
@@ -185,9 +188,21 @@ namespace SciFi {
             return activePlayers[id];
         }
 
+        void FindWinner() {
+            var winner = activePlayers.Single(p => p.eLives != 0);
+            RpcSetWinner(winner.eId);
+        }
+
+        [ClientRpc]
+        void RpcSetWinner(int winnerId) {
+            if (winnerId == cPlayerId) {
+                cIsWinner = true;
+            }
+        }
+
         [Client]
         public bool IsWinner() {
-            return true;
+            return cIsWinner;
         }
 
         [Server]
@@ -205,6 +220,7 @@ namespace SciFi {
 
         [ClientRpc]
         void RpcStartGame(bool countdown) {
+            cIsWinner = false;
             if (!countdown) {
                 this.isPlaying = true;
                 StartGame();
@@ -239,6 +255,8 @@ namespace SciFi {
             var player = playerObject.GetComponent<Player>();
             --player.eLives;
             if (activePlayers.Count(p => p.eLives != 0) == 1) {
+                FindWinner();
+
                 foreach (var go in activePlayersGo) {
                     Destroy(go);
                 }
@@ -246,6 +264,7 @@ namespace SciFi {
                 EndGame();
                 return;
             }
+
             player.eDamage = 0;
             player.RpcRespawn(new Vector3(0f, 7f));
             EventLifeChanged(new LifeChangedEventArgs {
