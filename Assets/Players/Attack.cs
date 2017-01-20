@@ -4,6 +4,7 @@ namespace SciFi.Players.Attacks {
         float cooldown;
         bool canCharge;
         bool isCharging;
+        bool shouldCancel;
 
         // Extra parameters for child classes
         protected bool canFireDown = false;
@@ -22,11 +23,19 @@ namespace SciFi.Players.Attacks {
                 if (canCharge) {
                     if (isCharging) {
                         // Charging, continue.
+                        if (shouldCancel) {
+                            inputManager.InvalidateControl(control);
+                            shouldCancel = false;
+                            Cancel();
+                            player.ResumeFeature(PlayerFeature.Attack);
+                            player.ResumeFeature(PlayerFeature.Movement);
+                        }
                         OnKeepCharging(inputManager.GetControlHoldTime(control), direction);
                     } else {
                         // Not charging but button pressed, begin charging.
                         if (player.FeatureEnabled(PlayerFeature.Attack)) {
                             isCharging = true;
+                            shouldCancel = false;
                             player.SuspendFeature(PlayerFeature.Attack);
                             player.SuspendFeature(PlayerFeature.Movement);
                             OnBeginCharging(direction);
@@ -55,10 +64,17 @@ namespace SciFi.Players.Attacks {
         /// For non-charging attacks, this acts as the fire method,
         /// and the chargeTime parameter can be ignored.
         public abstract void OnEndCharging(float chargeTime, Direction direction);
-        public void CancelCharging() {
+
+        public virtual void OnCancel() {}
+
+        private void Cancel() {
+            shouldCancel = false;
+            OnCancel();
             isCharging = false;
-            OnCancelCharging();
         }
-        public virtual void OnCancelCharging() {}
+
+        public void RequestCancel() {
+            shouldCancel = true;
+        }
     }
 }

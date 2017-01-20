@@ -90,6 +90,7 @@ namespace SciFi.Items {
         }
         public void BeginCharging() {
             pIsCharging = true;
+            pShouldCancel = false;
             OnBeginCharging();
         }
         public void KeepCharging(float chargeTime) {
