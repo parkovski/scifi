@@ -19,6 +19,7 @@ namespace SciFi.Players {
         Attack,
         Damage,
         Knockback,
+        Jump,
     }
 
     public enum PlayerAttack {
