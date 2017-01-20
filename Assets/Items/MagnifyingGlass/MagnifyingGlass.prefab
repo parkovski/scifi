@@ -110,6 +110,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65fb29bb13672ce4c9c45ab6dfa2bf92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  litSprite: {fileID: 21300000, guid: 7e47a1240ffd7454696bba49bcaff28c, type: 3}
+  unlitSprite: {fileID: 21300000, guid: 3363cc897d421aa448cbd49b5763ed5c, type: 3}
   lightBeam: {fileID: 1128246335146808, guid: 8d0323bb479050b46884181d5e934948, type: 2}
 --- !u!114 &114993165301438342
 MonoBehaviour:
@@ -174,7 +176,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 7e47a1240ffd7454696bba49bcaff28c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 3363cc897d421aa448cbd49b5763ed5c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
