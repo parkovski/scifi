@@ -1,9 +1,13 @@
 using UnityEngine;
+using System.Collections;
 
 using SciFi.Players;
 
 namespace SciFi.Items {
     public class MagnifyingGlass : Item {
+        public Sprite litSprite;
+        public Sprite unlitSprite;
+
         public GameObject lightBeam;
         int uses;
         const int maxUses = 7;
@@ -37,6 +41,14 @@ namespace SciFi.Items {
             var lb = lbObj.GetComponent<LightBeam>();
             lb.magnifyingGlassGo = gameObject;
             lb.backwards = eDirection == Direction.Left;
+            StartCoroutine(LightUp());
+        }
+
+        IEnumerator LightUp() {
+            var sr = GetComponent<SpriteRenderer>();
+            sr.sprite = litSprite;
+            yield return new WaitForSeconds(0.5f);
+            sr.sprite = unlitSprite;
         }
 
         public void Hit(GameObject obj) {
