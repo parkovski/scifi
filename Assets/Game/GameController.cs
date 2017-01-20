@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -184,8 +185,17 @@ namespace SciFi {
             return activePlayers[id];
         }
 
+        [Client]
+        public bool IsWinner() {
+            return true;
+        }
+
         [Server]
         public void EndGame() {
+            activePlayers = new Player[0];
+            activePlayersGo = new GameObject[0];
+
+            SceneManager.LoadScene("GameOver");
             RpcEndGame();
         }
 
@@ -211,6 +221,9 @@ namespace SciFi {
         [ClientRpc]
         void RpcEndGame() {
             isPlaying = false;
+            activePlayersGo = new GameObject[0];
+            activePlayers = new Player[0];
+            SceneManager.LoadScene("GameOver");
         }
 
         public static int PrefabToIndex(GameObject prefab) {
@@ -225,6 +238,14 @@ namespace SciFi {
         public void CmdDie(GameObject playerObject) {
             var player = playerObject.GetComponent<Player>();
             --player.eLives;
+            if (activePlayers.Count(p => p.eLives != 0) == 1) {
+                foreach (var go in activePlayersGo) {
+                    Destroy(go);
+                }
+
+                EndGame();
+                return;
+            }
             player.eDamage = 0;
             player.RpcRespawn(new Vector3(0f, 7f));
             EventLifeChanged(new LifeChangedEventArgs {
