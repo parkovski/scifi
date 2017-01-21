@@ -30,6 +30,8 @@ namespace SciFi.Players {
     }
 
     public abstract class Player : NetworkBehaviour {
+        public GameObject shieldPrefab;
+
         // Gameplay data
         [SyncVar, HideInInspector]
         public int eId;
@@ -59,11 +61,15 @@ namespace SciFi.Players {
         public float jumpForce;
         public float minDoubleJumpVelocity;
 
+        MultiPressControl leftControl;
+        MultiPressControl rightControl;
+
         // Parameters for child classes to change behavior
         protected Attack eAttack1;
         protected Attack eAttack2;
         protected Attack eSpecialAttack;
         //protected Attack eSuperAttack;
+        protected Shield eShield;
 
         void Awake() {
             featureLockout = new int[Enum.GetNames(typeof(PlayerFeature)).Length];
@@ -75,11 +81,16 @@ namespace SciFi.Players {
             eLives = 3;
             var gameControllerGo = GameObject.Find("GameController");
             pInputManager = gameControllerGo.GetComponent<InputManager>();
+            leftControl = new MultiPressControl(pInputManager, Control.Left, .4f);
+            rightControl = new MultiPressControl(pInputManager, Control.Right, .4f);
 
             if (isLocalPlayer) {
                 pInputManager.ObjectSelected += ObjectSelected;
                 pInputManager.ControlCanceled += ControlCanceled;
             }
+
+            var shieldObj = Instantiate(shieldPrefab, transform.position + new Vector3(.6f, 0f), Quaternion.identity, transform);
+            eShield = shieldObj.GetComponent<Shield>();
         }
 
         protected void BaseCollisionEnter2D(Collision2D collision) {
@@ -139,18 +150,26 @@ namespace SciFi.Players {
             return featureLockout[(int)feature] == 0;
         }
 
-        void HandleLeftRightInput(int control, Direction direction, bool backwards) {
+        void HandleLeftRightInput(MultiPressControl control, Direction direction, bool backwards) {
             bool canSpeedUp;
             Vector3 force;
-            if (backwards) {
-                canSpeedUp = lRb.velocity.x > -maxSpeed;
-                force = transform.right * -walkForce;
-            } else {
-                canSpeedUp = lRb.velocity.x < maxSpeed;
-                force = transform.right * walkForce;
+            bool halfForce = control.GetPresses() == 1;
+            float localMaxSpeed = maxSpeed;
+            float localWalkForce = walkForce;
+            if (halfForce) {
+                localMaxSpeed /= 2f;
+                localWalkForce /= 2f;
             }
 
-            if (pInputManager.IsControlActive(control) && FeatureEnabled(PlayerFeature.Movement)) {
+            if (backwards) {
+                canSpeedUp = lRb.velocity.x > -localMaxSpeed;
+                force = transform.right * -localWalkForce;
+            } else {
+                canSpeedUp = lRb.velocity.x < localMaxSpeed;
+                force = transform.right * localWalkForce;
+            }
+
+            if (control.IsActive() && FeatureEnabled(PlayerFeature.Movement)) {
                 if (canSpeedUp) {
                     lRb.AddForce(force);
                 }
@@ -163,9 +182,31 @@ namespace SciFi.Players {
             }
         }
 
+        void AddDampingForce() {
+            if (lRb.velocity.x < .3f && lRb.velocity.x > -.3f) {
+                lRb.velocity = new Vector2(0f, lRb.velocity.y);
+                return;
+            }
+
+            float force;
+            if (lRb.velocity.x < 0) {
+                force = walkForce;
+            } else {
+                force = -walkForce;
+            }
+            lRb.AddForce(new Vector3(force, 0f));
+        }
+
         protected void BaseInput() {
-            HandleLeftRightInput(Control.Left, Direction.Left, true);
-            HandleLeftRightInput(Control.Right, Direction.Right, false);
+            leftControl.Update();
+            rightControl.Update();
+
+            HandleLeftRightInput(leftControl, Direction.Left, true);
+            HandleLeftRightInput(rightControl, Direction.Right, false);
+            if (!leftControl.IsActive() && !rightControl.IsActive()) {
+                AddDampingForce();
+            }
+
             if (pInputManager.IsControlActive(Control.Up) && FeatureEnabled(PlayerFeature.Movement)) {
                 pInputManager.InvalidateControl(Control.Up);
                 if (pCanJump) {
@@ -180,9 +221,18 @@ namespace SciFi.Players {
                     lRb.AddForce(transform.up * jumpForce / 2, ForceMode2D.Impulse);
                 }
             }
+
             if (pInputManager.IsControlActive(Control.Down) && FeatureEnabled(PlayerFeature.Movement)) {
                 if (pCurrentOneWayPlatform != null) {
                     pCurrentOneWayPlatform.CmdFallThrough(gameObject);
+                } else {
+                    if (!eShield.IsActive()) {
+                        eShield.Activate();
+                    }
+                }
+            } else {
+                if (eShield.IsActive()) {
+                    eShield.Deactivate();
                 }
             }
 

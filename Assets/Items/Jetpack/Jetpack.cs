@@ -9,11 +9,11 @@ namespace SciFi.Items {
         GameObject fire;
 
         float nextBoostTime;
-        const float boostTimeout = .25f;
+        const float boostTimeout = .125f;
         float boostForce;
         float totalBoostTime;
         float lastTotalBoostTime;
-        const float maxBoostTime = 5f;
+        const float maxBoostTime = 8f;
 
         void Start() {
             BaseStart(canCharge: true);
@@ -39,7 +39,7 @@ namespace SciFi.Items {
             var offset = new Vector3(-0.171f, -0.316f);
             fire = Instantiate(firePrefab, transform.position + offset, Quaternion.identity, transform);
             nextBoostTime = 0f;
-            boostForce = eOwner.jumpForce * 20;
+            boostForce = eOwner.jumpForce * 10;
 
             // Turn movement back on while the jetpack is active
             eOwner.ResumeFeature(PlayerFeature.Movement);

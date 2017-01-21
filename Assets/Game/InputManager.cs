@@ -524,4 +524,44 @@ namespace SciFi {
             }
         }
     }
+
+    public class MultiPressControl {
+        InputManager inputManager;
+        int control;
+        float timeout;
+        float lastPressTime;
+        bool active;
+        int presses;
+
+        public MultiPressControl(InputManager inputManager, int control, float timeout) {
+            this.inputManager = inputManager;
+            this.control = control;
+            this.timeout = timeout;
+        }
+
+        public void Update() {
+            if (inputManager.IsControlActive(control)) {
+                if (!active) {
+                    active = true;
+                    lastPressTime = Time.realtimeSinceStartup;
+                    if (Time.realtimeSinceStartup < lastPressTime + timeout) {
+                        ++presses;
+                    }
+                }
+            } else {
+                active = false;
+                if (Time.realtimeSinceStartup > lastPressTime + timeout) {
+                    presses = 0;
+                }
+            }
+        }
+
+        public bool IsActive() {
+            return active;
+        }
+
+        public int GetPresses() {
+            return presses;
+        }
+    }
 }
