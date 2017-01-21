@@ -5,6 +5,7 @@ using System;
 using SciFi.Environment;
 using SciFi.Players.Attacks;
 using SciFi.Items;
+using SciFi.UI;
 
 namespace SciFi.Players {
     public enum Direction {
@@ -61,8 +62,9 @@ namespace SciFi.Players {
         public float jumpForce;
         public float minDoubleJumpVelocity;
 
-        MultiPressControl leftControl;
-        MultiPressControl rightControl;
+        MultiPressControl pLeftControl;
+        MultiPressControl pRightControl;
+        TouchButtons pTouchButtons;
 
         // Parameters for child classes to change behavior
         protected Attack eAttack1;
@@ -81,12 +83,16 @@ namespace SciFi.Players {
             eLives = 3;
             var gameControllerGo = GameObject.Find("GameController");
             pInputManager = gameControllerGo.GetComponent<InputManager>();
-            leftControl = new MultiPressControl(pInputManager, Control.Left, .4f);
-            rightControl = new MultiPressControl(pInputManager, Control.Right, .4f);
+            pLeftControl = new MultiPressControl(pInputManager, Control.Left, .4f);
+            pRightControl = new MultiPressControl(pInputManager, Control.Right, .4f);
 
             if (isLocalPlayer) {
                 pInputManager.ObjectSelected += ObjectSelected;
                 pInputManager.ControlCanceled += ControlCanceled;
+                var leftButton = GameObject.Find("LeftButton");
+                if (leftButton != null) {
+                    pTouchButtons = leftButton.GetComponent<TouchButtons>();
+                }
             }
 
             var shieldObj = Instantiate(shieldPrefab, transform.position + new Vector3(.6f, 0f), Quaternion.identity, transform);
@@ -198,12 +204,12 @@ namespace SciFi.Players {
         }
 
         protected void BaseInput() {
-            leftControl.Update();
-            rightControl.Update();
+            pLeftControl.Update();
+            pRightControl.Update();
 
-            HandleLeftRightInput(leftControl, Direction.Left, true);
-            HandleLeftRightInput(rightControl, Direction.Right, false);
-            if (!leftControl.IsActive() && !rightControl.IsActive()) {
+            HandleLeftRightInput(pLeftControl, Direction.Left, true);
+            HandleLeftRightInput(pRightControl, Direction.Right, false);
+            if (!pLeftControl.IsActive() && !pRightControl.IsActive()) {
                 AddDampingForce();
             }
 
@@ -303,6 +309,7 @@ namespace SciFi.Players {
                     if (i.ShouldCancel()) {
                         pInputManager.InvalidateControl(Control.Item);
                         i.Cancel();
+                        UpdateItemControlGraphic();
                         ResumeFeature(PlayerFeature.Attack);
                         ResumeFeature(PlayerFeature.Movement);
                     } else {
@@ -310,6 +317,7 @@ namespace SciFi.Players {
                     }
                 } else {
                     i.EndCharging(pInputManager.GetControlHoldTime(Control.Item));
+                    UpdateItemControlGraphic();
                     ResumeFeature(PlayerFeature.Attack);
                     ResumeFeature(PlayerFeature.Movement);
                 }
@@ -330,6 +338,7 @@ namespace SciFi.Players {
                 } else if (!i.CanCharge() && FeatureEnabled(PlayerFeature.Attack)) {
                     pInputManager.InvalidateControl(Control.Item);
                     i.Use();
+                    UpdateItemControlGraphic();
                 }
                 // If none of the above conditions were true, the item
                 // is chargeable, but it can't charge right now (in cooldown)
@@ -359,6 +368,29 @@ namespace SciFi.Players {
             }
         }
 
+        [ClientRpc]
+        void RpcUpdateItemControlGraphic() {
+            UpdateItemControlGraphic();
+        }
+
+        void UpdateItemControlGraphic() {
+            if (!hasAuthority) {
+                return;
+            }
+
+            if (pTouchButtons == null) {
+                return;
+            }
+
+            if (eItem == null) {
+                pTouchButtons.SetItemButtonToItemGraphic();
+            } else if (eItem.GetComponent<Item>().ShouldThrow()) {
+                pTouchButtons.SetItemButtonToDiscardGraphic();
+            } else {
+                pTouchButtons.SetItemButtonGraphic(eItem.GetComponent<SpriteRenderer>().sprite);
+            }
+        }
+
         [Command]
         void CmdTakeOwnershipOfItem(GameObject item) {
             var itemComponent = item.GetComponent<Item>();
@@ -366,6 +398,7 @@ namespace SciFi.Players {
                 return;
             }
             this.eItem = item;
+            RpcUpdateItemControlGraphic();
 
             if (eDirection == Direction.Left) {
                 itemComponent.SetOwnerOffset(-1f, 0f);
@@ -389,6 +422,8 @@ namespace SciFi.Players {
             var itemComponent = item.GetComponent<Item>();
             itemComponent.SetOwner(null);
             itemComponent.Throw(eDirection);
+
+            RpcUpdateItemControlGraphic();
 
             var networkTransform = item.GetComponent<NetworkTransform>();
             networkTransform.enabled = true;
