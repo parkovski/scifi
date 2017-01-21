@@ -164,7 +164,7 @@ Transform:
   m_GameObject: {fileID: 14418316}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.8, y: 1.8, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
@@ -230,7 +230,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 6.666665
+  orthographic size: 3.749999
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -270,5 +270,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   wireColor: {r: 1, g: 1, b: 1, a: 1}
   UnitsSize: 13.33333
-  constraint: 1
+  constraint: 0
   camera: {fileID: 1984450156}
