@@ -183,16 +183,16 @@ namespace SciFi.Players {
         }
 
         void AddDampingForce() {
-            if (lRb.velocity.x < .3f && lRb.velocity.x > -.3f) {
+            if (lRb.velocity.x < .1f && lRb.velocity.x > -.1f) {
                 lRb.velocity = new Vector2(0f, lRb.velocity.y);
                 return;
             }
 
             float force;
             if (lRb.velocity.x < 0) {
-                force = walkForce;
+                force = walkForce / 2;
             } else {
-                force = -walkForce;
+                force = -walkForce / 2;
             }
             lRb.AddForce(new Vector3(force, 0f));
         }
