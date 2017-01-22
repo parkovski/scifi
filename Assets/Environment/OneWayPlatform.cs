@@ -5,8 +5,14 @@ using System.Collections.Generic;
 using System.Linq;
 
 using SciFi.Items;
+using SciFi.Players;
 
 namespace SciFi.Environment {
+    /// This script should be applied to an object with
+    /// a regular collider and a larger trigger collider.
+    /// It enables objects to pass through the collider from
+    /// below, and for players, from above when holding the
+    /// down button.
     public class OneWayPlatform : NetworkBehaviour {
         Collider2D lGroundCollider;
         // Since objects might have multiple colliders,
@@ -14,6 +20,16 @@ namespace SciFi.Environment {
         // the collider count, and only stop ignoring
         // collisions when the count reaches 0.
         Dictionary<GameObject, int> lColliderCount;
+
+        int GetColliderCount(GameObject obj) {
+            int count = 0;
+            lColliderCount.TryGetValue(obj, out count);
+            return count;
+        }
+
+        void SetColliderCount(GameObject obj, int count) {
+            lColliderCount[obj] = count;
+        }
 
         void Start() {
             var colliders = GetComponents<Collider2D>();
@@ -26,34 +42,39 @@ namespace SciFi.Environment {
             lColliderCount = new Dictionary<GameObject, int>();
         }
 
+        void IgnoreCollisions(GameObject obj) {
+            var player = obj.GetComponent<Player>();
+            var shouldFall = false;
+            if (player != null) {
+                shouldFall = player.eShouldFallThroughOneWayPlatform;
+            }
+            if (obj.transform.position.y < lGroundCollider.bounds.center.y || shouldFall) {
+                Item.IgnoreCollisions(obj, lGroundCollider);
+            }
+        }
+
         void OnTriggerEnter2D(Collider2D otherCollider) {
             var go = otherCollider.gameObject;
-            int count;
-            if (lColliderCount.TryGetValue(go, out count)) {
-                lColliderCount[go] = count + 1;
-                if (count > 0) {
-                    return;
-                }
-            } else {
-                lColliderCount[go] = 1;
-            }
-            Item.IgnoreCollisions(go, lGroundCollider);
+            SetColliderCount(go, GetColliderCount(go) + 1);
+            IgnoreCollisions(go);
         }
 
         void OnTriggerExit2D(Collider2D otherCollider) {
             var go = otherCollider.gameObject;
-            int count;
-            if (!lColliderCount.TryGetValue(go, out count)) {
-                return;
-            }
+            var count = GetColliderCount(go);
             if (count <= 1) {
-                lColliderCount[go] = 0;
+                SetColliderCount(go, 0);
                 Item.IgnoreCollisions(go, lGroundCollider, false);
             } else {
-                lColliderCount[go] = count - 1;
+                SetColliderCount(go, count - 1);
             }
         }
 
+        /// This should be called when the player presses down
+        /// when standing on the platform to force a fall through.
+        /// If down is pressed when the player enters the trigger
+        /// area, fall through will happen automatically without
+        /// calling this.
         [Command]
         public void CmdFallThrough(GameObject go) {
             Item.IgnoreCollisions(go, lGroundCollider);

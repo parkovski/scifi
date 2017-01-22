@@ -44,6 +44,8 @@ namespace SciFi.Players {
         public int eDamage;
         [SyncVar, HideInInspector]
         public Direction eDirection;
+        [SyncVar, HideInInspector]
+        public bool eShouldFallThroughOneWayPlatform;
 
         protected Rigidbody2D lRb;
         protected InputManager pInputManager;
@@ -229,14 +231,18 @@ namespace SciFi.Players {
             }
 
             if (pInputManager.IsControlActive(Control.Down) && FeatureEnabled(PlayerFeature.Movement)) {
+                eShouldFallThroughOneWayPlatform = true;
                 if (pCurrentOneWayPlatform != null) {
                     pCurrentOneWayPlatform.CmdFallThrough(gameObject);
+                    // Forget the platform so we don't keep sending messages.
+                    pCurrentOneWayPlatform = null;
                 } else {
                     if (!eShield.IsActive()) {
                         eShield.Activate();
                     }
                 }
             } else {
+                eShouldFallThroughOneWayPlatform = false;
                 if (eShield.IsActive()) {
                     eShield.Deactivate();
                 }
