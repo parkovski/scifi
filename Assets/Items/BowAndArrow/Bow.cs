@@ -30,7 +30,7 @@ namespace SciFi.Items {
         readonly Vector3 flippedArrowOffset = new Vector3(-.13f, 0f);
 
         void Start() {
-            BaseStart(true, aliveTime: 10f);
+            BaseStart(true);
             InitArrowsArray();
         }
 

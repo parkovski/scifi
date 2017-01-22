@@ -23,7 +23,7 @@ namespace SciFi.Items {
         /// for this much time if their original lifetime has expired already.
         const float aliveTimeAfterPickup = 3.5f;
 
-        protected void BaseStart(bool canCharge, float aliveTime = 5f) {
+        protected void BaseStart(bool canCharge, float aliveTime = 10f) {
             this.sAliveTime = aliveTime;
             this.sDestroyTime = Time.time + aliveTime;
             this.eCanCharge = canCharge;
@@ -143,9 +143,24 @@ namespace SciFi.Items {
 
         [Server]
         public void Throw(Direction direction) {
-            var rb = GetComponent<Rigidbody2D>();
-            var x = direction == Direction.Left ? -150f : 150f;
-            rb.AddForce(new Vector2(x, 100f));
+            Vector2 force;
+            switch (direction) {
+            case Direction.Up:
+                force = new Vector2(0f, 300f);
+                break;
+            case Direction.Down:
+                force = new Vector2(0f, -300f);
+                break;
+            case Direction.Left:
+                force = new Vector2(-300f, 100f);
+                break;
+            case Direction.Right:
+                force = new Vector2(300f, 100f);
+                break;
+            default:
+                return;
+            }
+            GetComponent<Rigidbody2D>().AddForce(force);
             gameObject.layer = Layers.projectiles;
         }
 

@@ -13,6 +13,7 @@ namespace SciFi.Players {
         Right,
         Up,
         Down,
+        Invalid,
     }
 
     public enum PlayerFeature {
@@ -63,6 +64,9 @@ namespace SciFi.Players {
         public float walkForce;
         public float jumpForce;
         public float minDoubleJumpVelocity;
+        /// Max time that a direction can be held before pressing
+        /// item to throw it, so you can use an item while moving.
+        const float throwItemHoldTime = .15f;
 
         MultiPressControl pLeftControl;
         MultiPressControl pRightControl;
@@ -300,6 +304,46 @@ namespace SciFi.Players {
             return eItem == null ? NetworkInstanceId.Invalid : eItem.GetComponent<Item>().netId;
         }
 
+        Direction GetControlDirection() {
+            if (pInputManager.IsControlActive(Control.Down)) {
+                return Direction.Down;
+            }
+            if (pInputManager.IsControlActive(Control.Up)) {
+                return Direction.Up;
+            }
+            if (pInputManager.IsControlActive(Control.Left)) {
+                return Direction.Left;
+            }
+            if (pInputManager.IsControlActive(Control.Right)) {
+                return Direction.Right;
+            }
+            return Direction.Invalid;
+        }
+
+        float GetDirectionHoldTime(Direction direction) {
+            var control = GetDirectionControl(direction);
+            if (control == -1) {
+                return 0f;
+            }
+
+            return pInputManager.GetControlHoldTime(control);
+        }
+
+        int GetDirectionControl(Direction direction) {
+            switch (direction) {
+            case Direction.Left:
+                return Control.Left;
+            case Direction.Right:
+                return Control.Right;
+            case Direction.Up:
+                return Control.Up;
+            case Direction.Down:
+                return Control.Down;
+            default:
+                return -1;
+            }
+        }
+
         void UpdateItemControl(bool active) {
             if (eItem == null) {
                 if (active) {
@@ -328,10 +372,13 @@ namespace SciFi.Players {
                     ResumeFeature(PlayerFeature.Movement);
                 }
             } else if (active) {
-                if (pInputManager.IsControlActive(Control.Down) && FeatureEnabled(PlayerFeature.Attack)) {
+                var direction = GetControlDirection();
+                var control = GetDirectionControl(direction);
+                var holdTime = GetDirectionHoldTime(direction);
+                if (direction != Direction.Invalid && holdTime < throwItemHoldTime && FeatureEnabled(PlayerFeature.Attack)) {
                     pInputManager.InvalidateControl(Control.Item);
-                    pInputManager.InvalidateControl(Control.Down);
-                    CmdLoseOwnershipOfItem();
+                    pInputManager.InvalidateControl(control);
+                    CmdLoseOwnershipOfItem(direction);
                     eItem = null;
                 } else if (i.ShouldCharge() && FeatureEnabled(PlayerFeature.Attack)) {
                     SuspendFeature(PlayerFeature.Attack);
@@ -339,7 +386,7 @@ namespace SciFi.Players {
                     i.BeginCharging();
                 } else if (i.ShouldThrow() && FeatureEnabled(PlayerFeature.Attack)) {
                     pInputManager.InvalidateControl(Control.Item);
-                    CmdLoseOwnershipOfItem();
+                    CmdLoseOwnershipOfItem(eDirection);
                     eItem = null;
                 } else if (!i.CanCharge() && FeatureEnabled(PlayerFeature.Attack)) {
                     pInputManager.InvalidateControl(Control.Item);
@@ -355,7 +402,7 @@ namespace SciFi.Players {
         void UseItem() {
             var i = eItem.GetComponent<Item>();
             if (i.ShouldThrow()) {
-                CmdLoseOwnershipOfItem();
+                CmdLoseOwnershipOfItem(eDirection);
                 eItem = null;
             } else if (i.ShouldCharge()) {
                 // TODO: begin charging item
@@ -413,21 +460,16 @@ namespace SciFi.Players {
             }
             itemComponent.ChangeDirection(eDirection);
             item.GetComponent<NetworkTransform>().enabled = false;
-
-            //var itemNetworkIdentity = item.GetComponent<NetworkIdentity>();
-            //itemNetworkIdentity.AssignClientAuthority(connectionToClient);
         }
 
         [Command]
-        void CmdLoseOwnershipOfItem() {
+        void CmdLoseOwnershipOfItem(Direction direction) {
             var item = this.eItem;
             this.eItem = null;
 
-            //item.GetComponent<NetworkIdentity>().RemoveClientAuthority(connectionToClient);
-
             var itemComponent = item.GetComponent<Item>();
             itemComponent.SetOwner(null);
-            itemComponent.Throw(eDirection);
+            itemComponent.Throw(direction);
 
             RpcUpdateItemControlGraphic();
 
