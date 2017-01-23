@@ -26,19 +26,19 @@ AnimationClip:
         tangentMode: 0
       - serializedVersion: 2
         time: 0.05
-        value: {x: 60, y: 60, z: 1}
-        inSlope: {x: 950, y: 950, z: 0}
-        outSlope: {x: 950, y: 950, z: 0}
+        value: {x: 80, y: 80, z: 1}
+        inSlope: {x: 1450, y: 1450, z: 0}
+        outSlope: {x: 1450, y: 1450, z: 0}
         tangentMode: 0
       - serializedVersion: 2
         time: 0.1
-        value: {x: 100, y: 100, z: 1}
-        inSlope: {x: 700, y: 700, z: 0}
-        outSlope: {x: 700, y: 700, z: 0}
+        value: {x: 150, y: 150, z: 1}
+        inSlope: {x: 1466.6666, y: 1466.6666, z: 0}
+        outSlope: {x: 1466.6666, y: 1466.6666, z: 0}
         tangentMode: 0
       - serializedVersion: 2
-        time: 0.25
-        value: {x: 200, y: 200, z: 1}
+        time: 0.2
+        value: {x: 300, y: 300, z: 1}
         inSlope: {x: 0, y: 0, z: 0}
         outSlope: {x: 0, y: 0, z: 0}
         tangentMode: 0
@@ -67,7 +67,7 @@ AnimationClip:
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 0.25
+    m_StopTime: 0.2
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
@@ -94,19 +94,19 @@ AnimationClip:
         tangentMode: 136
       - serializedVersion: 2
         time: 0.05
-        value: 60
-        inSlope: 950
-        outSlope: 950
+        value: 80
+        inSlope: 1450
+        outSlope: 1450
         tangentMode: 136
       - serializedVersion: 2
         time: 0.1
-        value: 100
-        inSlope: 700
-        outSlope: 700
+        value: 150
+        inSlope: 1466.6666
+        outSlope: 1466.6666
         tangentMode: 136
       - serializedVersion: 2
-        time: 0.25
-        value: 200
+        time: 0.2
+        value: 300
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -128,19 +128,19 @@ AnimationClip:
         tangentMode: 136
       - serializedVersion: 2
         time: 0.05
-        value: 60
-        inSlope: 950
-        outSlope: 950
+        value: 80
+        inSlope: 1450
+        outSlope: 1450
         tangentMode: 136
       - serializedVersion: 2
         time: 0.1
-        value: 100
-        inSlope: 700
-        outSlope: 700
+        value: 150
+        inSlope: 1466.6666
+        outSlope: 1466.6666
         tangentMode: 136
       - serializedVersion: 2
-        time: 0.25
-        value: 200
+        time: 0.2
+        value: 300
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -173,7 +173,7 @@ AnimationClip:
         outSlope: 0
         tangentMode: 136
       - serializedVersion: 2
-        time: 0.25
+        time: 0.2
         value: 1
         inSlope: 0
         outSlope: 0
@@ -191,7 +191,7 @@ AnimationClip:
   m_GenerateMotionCurves: 0
   m_IsEmpty: 0
   m_Events:
-  - time: 0.25
+  - time: 0.2
     functionName: DestroyObject
     data: 
     objectReferenceParameter: {fileID: 0}
