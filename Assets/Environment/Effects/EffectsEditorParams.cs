@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace SciFi.Environment {
+namespace SciFi.Environment.Effects {
     public class EffectsEditorParams : MonoBehaviour {
         public static EffectsEditorParams Instance;
 

@@ -2,6 +2,8 @@ using UnityEngine;
 
 namespace SciFi.Items {
     public class Bomb : Item {
+        public GameObject explosionPrefab;
+
         void Start() {
             BaseStart(false);
         }
@@ -24,6 +26,7 @@ namespace SciFi.Items {
                 GameController.Instance.TakeDamage(collision.gameObject, 15);
                 GameController.Instance.Knockback(gameObject, collision.gameObject, 7.5f);
                 Destroy(gameObject);
+                Instantiate(explosionPrefab, transform.position, Quaternion.identity);
             }
         }
 

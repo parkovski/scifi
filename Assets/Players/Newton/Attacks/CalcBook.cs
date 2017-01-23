@@ -1,6 +1,6 @@
 using UnityEngine;
 
-using SciFi.Environment;
+using SciFi.Environment.Effects;
 
 namespace SciFi.Items {
     public class CalcBook : MonoBehaviour {

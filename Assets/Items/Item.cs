@@ -21,9 +21,9 @@ namespace SciFi.Items {
         /// Items won't destroy when they are owned, but
         /// if they are discarded, they will only stick around
         /// for this much time if their original lifetime has expired already.
-        const float aliveTimeAfterPickup = 3.5f;
+        const float aliveTimeAfterPickup = 5f;
 
-        protected void BaseStart(bool canCharge, float aliveTime = 10f) {
+        protected void BaseStart(bool canCharge, float aliveTime = 15f) {
             this.sAliveTime = aliveTime;
             this.sDestroyTime = Time.time + aliveTime;
             this.eCanCharge = canCharge;
