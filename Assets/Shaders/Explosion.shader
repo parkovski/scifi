@@ -37,8 +37,8 @@ Shader "SciFi/Effects/Explosion" {
                 return o;
             }
 
-            float4 blend(float4 c1, float4 c2) {
-                return float4(
+            fixed4 blend(fixed4 c1, fixed4 c2) {
+                return fixed4(
                     (c1.r * c1.a + c2.r * c2.a) / 1,
                     (c1.g * c1.a + c2.g * c2.a) / 1,
                     (c1.b * c1.a + c2.b * c2.a) / 1,
@@ -50,7 +50,7 @@ Shader "SciFi/Effects/Explosion" {
                 float2 pt,
                 float2 center,
                 float radius,
-                float4 prevColor
+                fixed4 prevColor
             ) {
                 float x = abs(center.x) - abs(pt.x);
                 float y = abs(center.y) - abs(pt.y);
@@ -77,8 +77,8 @@ Shader "SciFi/Effects/Explosion" {
             }
 
             fixed4 frag(v2f IN) : SV_Target {
-                float4 color;
-                color = circle(IN.uv, float2(0, 0), .5, float4(0, 0, 0, 0));
+                fixed4 color;
+                color = circle(IN.uv, float2(0, 0), .5, fixed4(0, 0, 0, 0));
 
                 return color;
             }
