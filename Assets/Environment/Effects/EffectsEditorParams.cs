@@ -5,6 +5,7 @@ namespace SciFi.Environment.Effects {
         public static EffectsEditorParams Instance;
 
         public GameObject star;
+        public GameObject explosion;
 
         void Awake() {
             Instance = this;

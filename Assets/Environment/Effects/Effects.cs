@@ -7,5 +7,9 @@ namespace SciFi.Environment.Effects {
             var star = Object.Instantiate(EffectsEditorParams.Instance.star, position, Quaternion.identity);
             NetworkServer.Spawn(star);
         }
+
+        public static void Explosion(Vector3 position) {
+            var explosion = Object.Instantiate(EffectsEditorParams.Instance.explosion, position, Quaternion.identity);
+        }
     }
 }
