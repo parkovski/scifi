@@ -75,6 +75,7 @@ GameObject:
   - component: {fileID: 60544207634570406}
   - component: {fileID: 58309631591817466}
   - component: {fileID: 58767711717038062}
+  - component: {fileID: 95872986989503038}
   m_Layer: 9
   m_Name: Newton
   m_TagString: Player
@@ -404,6 +405,23 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
+--- !u!95 &95872986989503038
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1445736531698702}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 2c6c9e8ff4d074520bb87619c18a71d2, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
 --- !u!114 &114472960648013564
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -454,6 +472,7 @@ MonoBehaviour:
   eLives: 0
   eDamage: 0
   eDirection: 0
+  eShouldFallThroughOneWayPlatform: 0
   defaultDirection: 1
   maxSpeed: 6.5
   walkForce: 1500
