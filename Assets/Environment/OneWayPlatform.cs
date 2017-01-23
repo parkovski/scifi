@@ -48,7 +48,10 @@ namespace SciFi.Environment {
             if (player != null) {
                 shouldFall = player.eShouldFallThroughOneWayPlatform;
             }
-            if (obj.transform.position.y < lGroundCollider.bounds.center.y || shouldFall) {
+            bool isLeftOfBox = obj.transform.position.x < lGroundCollider.bounds.center.x - lGroundCollider.bounds.extents.x;
+            bool isRightOfBox = obj.transform.position.x > lGroundCollider.bounds.center.x + lGroundCollider.bounds.extents.x;
+            bool isBelowBox = obj.transform.position.y < lGroundCollider.bounds.center.y;
+            if (isLeftOfBox || isRightOfBox || isBelowBox || shouldFall) {
                 Item.IgnoreCollisions(obj, lGroundCollider);
             }
         }
