@@ -84,6 +84,14 @@ namespace SciFi.Items {
             BaseUpdate();
         }
 
+        protected override void OnBlink(float alpha) {
+            if (lDisplayArrow == null) {
+                return;
+            }
+            var sr = lDisplayArrow.GetComponent<SpriteRenderer>();
+            sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, alpha);
+        }
+
         void OnCollisionEnter2D(Collision2D collision) {
             BaseCollisionEnter2D(collision);
         }
@@ -136,6 +144,7 @@ namespace SciFi.Items {
             --cArrows;
             if (cArrows == 0) {
                 Destroy(lDisplayArrow);
+                lDisplayArrow = null;
             } else {
                 StartCoroutine(TemporarilyDestroyDisplayArrow());
             }

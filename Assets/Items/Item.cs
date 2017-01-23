@@ -23,11 +23,16 @@ namespace SciFi.Items {
         /// for this much time if their original lifetime has expired already.
         const float aliveTimeAfterPickup = 5f;
 
+        const float blinkTime = 3f;
+        float firstBlinkTime = 0f;
+        protected SpriteRenderer spriteRenderer;
+
         protected void BaseStart(bool canCharge, float aliveTime = 15f) {
             this.sAliveTime = aliveTime;
             this.sDestroyTime = Time.time + aliveTime;
             this.eCanCharge = canCharge;
             this.eInitialLayer = gameObject.layer;
+            this.spriteRenderer = GetComponent<SpriteRenderer>();
         }
 
         protected void BaseUpdate() {
@@ -50,8 +55,29 @@ namespace SciFi.Items {
                 } else {
                     sAliveTime = aliveTimeAfterPickup;
                 }
+            } else if (this.sDestroyTime < Time.time + blinkTime && eOwnerGo == null) {
+                if (firstBlinkTime == 0f) {
+                    firstBlinkTime = Time.time;
+                }
+                Blink();
             }
         }
+
+        void Blink() {
+            var alpha = .5f + Mathf.Abs(Mathf.Cos((Time.time - firstBlinkTime) * 6 * Mathf.PI / 3)) / 2;
+            spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, alpha);
+            OnBlink(alpha);
+        }
+
+        void RestoreAlpha() {
+            spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 1f);
+            OnBlink(1f);
+        }
+
+        /// This can be used to apply the alpha to a child sprite
+        /// when the item is blinking, indicating it is about to
+        /// be destroyed.
+        protected virtual void OnBlink(float alpha) {}
 
         protected void BaseCollisionEnter2D(Collision2D collision) {
             if (!isServer) {
@@ -207,6 +233,7 @@ namespace SciFi.Items {
             this.eOwnerGo = newOwner;
             this.eOwner = newOwner.GetComponent<Player>();
             EnablePhysics(false);
+            RestoreAlpha();
             OnPickup();
         }
 

@@ -8,12 +8,10 @@ namespace SciFi.Items {
 
         bool used = false;
         Animator animator;
-        SpriteRenderer spriteRenderer;
 
         void Start() {
             BaseStart(false);
             animator = GetComponent<Animator>();
-            spriteRenderer = GetComponent<SpriteRenderer>();
         }
 
         void Update() {
