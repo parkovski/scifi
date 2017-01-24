@@ -1,9 +1,11 @@
 using UnityEngine;
+using UnityEngine.Networking;
 
 using SciFi.Players;
 
 namespace SciFi.Items {
     public class Potion : Item {
+        public GameObject juicePrefab;
         public GameObject brokenPotionPrefab;
 
         bool used = false;
@@ -44,10 +46,12 @@ namespace SciFi.Items {
             BaseCollisionEnter2D(collision);
             var otherLayer = collision.gameObject.layer;
             if (otherLayer == Layers.projectiles || otherLayer == Layers.players || otherLayer == Layers.items) {
-                Instantiate(brokenPotionPrefab, transform.position, Quaternion.identity);
                 if (!used) {
                     SpillJuice();
                 }
+                GameController.Instance.TakeDamage(collision.gameObject, 5);
+                GameController.Instance.Knockback(gameObject, collision.gameObject, 3f);
+                Instantiate(brokenPotionPrefab, transform.position, Quaternion.identity);
                 Destroy(gameObject);
             }
         }
@@ -57,7 +61,13 @@ namespace SciFi.Items {
         }
 
         public void SpillJuice() {
-            //
+            var juice = Instantiate(juicePrefab, transform.position, Quaternion.identity);
+            var pj = juice.GetComponent<PotionJuice>();
+            pj.spawnedBy = netId;
+            if (eOwner != null) {
+                pj.spawnedByExtra = eOwner.netId;
+            }
+            NetworkServer.Spawn(juice);
         }
     }
 }

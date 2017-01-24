@@ -143,6 +143,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbbde8bc9f7945a4e83bbebe13f2a728, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  juicePrefab: {fileID: 1639080595370010, guid: 53d57cf41b90fe34587ff657317b1d6e,
+    type: 2}
   brokenPotionPrefab: {fileID: 1064301103715158, guid: 864d8f9f02e6d4d428d039e76df6ae90,
     type: 2}
 --- !u!114 &114614523061198806
