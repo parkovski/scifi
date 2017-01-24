@@ -4,6 +4,9 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace SciFi.Scenes {
+    /// <brief>Multiplayer lobby.</brief>
+    /// Handles host/join controls and
+    /// setting a nickname.
     public class Lobby : MonoBehaviour {
         public NetworkLobbyManager lobbyManager;
         public InputField hostName;
@@ -19,18 +22,20 @@ namespace SciFi.Scenes {
             });
         }
 
+        /// Set this client as the game host.
         public void Host() {
             lobbyManager.StartHost();
         }
 
+        /// Try to join another game.
         public void Join() {
             lobbyManager.networkAddress = hostName.text;
             lobbyManager.StartClient();
         }
 
+        /// Go back to the player picker.
         public void Back() {
-            // TODO: This will not work, because the client is already connected
-            // so the new player will never be sent.
+            lobbyManager.StopClient();
             SceneManager.LoadScene("PlayerPicker");
         }
     }

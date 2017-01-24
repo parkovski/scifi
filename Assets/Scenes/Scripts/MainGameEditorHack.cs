@@ -2,15 +2,15 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace SciFi.Scenes {
+    /// Disable audio and load the lobby scene.
+    /// For editor testing when the main game scene
+    /// is started.
     public class MainGameEditorHack : MonoBehaviour {
         public bool playAudioInEditor;
-        const float beat = 0.5357f;
 
         void Start() {
-            var audioSource = GameObject.Find("Audio").GetComponent<AudioSource>();
-            audioSource.time = beat * 12;
 #if UNITY_EDITOR
-            audioSource.enabled = playAudioInEditor;
+            GameObject.Find("Audio").GetComponent<AudioSource>().enabled = playAudioInEditor;
 #endif
 
             if (FindObjectOfType<GameController>() == null) {

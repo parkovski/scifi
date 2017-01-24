@@ -5,11 +5,8 @@ using SciFi.Scenes;
 using SciFi.Network;
 
 namespace SciFi.Util {
-    /// The GameController and NetworkManager are created
-    /// in the multiplayer lobby, which never gets loaded
-    /// in single player mode, so this class creates the
-    /// GameController and creates player instances like
-    /// the lobby would do.
+    /// Hack to start a single player game through the multiplayer lobby.
+    /// Sets minPlayers to 1 and adds a player automatically.
     public class SinglePlayerHack : MonoBehaviour {
         void Start() {
             var networkController = GetComponent<NetworkController>();
@@ -23,8 +20,6 @@ namespace SciFi.Util {
             if (TransitionParams.gameType != GameType.Single) {
                 return;
             }
-
-            networkController.minPlayers = 1;
 
             networkController.StartHost();
 

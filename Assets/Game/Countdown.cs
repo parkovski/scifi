@@ -5,6 +5,7 @@ using SciFi.Util;
 
 namespace SciFi.UI {
     /// Displays the 3, 2, 1, Go! countdown before the game.
+    /// Also fast-forwards the song to line up with the countdown.
     public class Countdown : MonoBehaviour {
         public Cues cues;
         public Text text;
@@ -16,6 +17,7 @@ namespace SciFi.UI {
         public event OnFinishedHandler OnFinished;
 
         void Start() {
+            GameObject.Find("Audio").GetComponent<AudioSource>().time = beat * 12;
             cues.Add(beat,     () => ChangeText("3"));
             cues.Add(beat * 2, () => ChangeText("2"));
             cues.Add(beat * 3, () => ChangeText("1"));
