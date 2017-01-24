@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace SciFi.Items {
+using SciFi.Items;
+
+namespace SciFi.Players.Attacks {
     public class Telegraph : MonoBehaviour {
         public GameObject spawnedBy;
 

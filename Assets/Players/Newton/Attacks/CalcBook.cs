@@ -1,8 +1,9 @@
 using UnityEngine;
 
+using SciFi.Items;
 using SciFi.Environment.Effects;
 
-namespace SciFi.Items {
+namespace SciFi.Players.Attacks {
     public class CalcBook : MonoBehaviour {
         public GameObject spawnedBy;
         public int power;

@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 using SciFi.Players;
 
-namespace SciFi.Environment {
+namespace SciFi.UI {
     /// A label above the player, by default showing "P1", etc. but
     /// may be overridden by setting a nickname.
     public class PlayerLabels : MonoBehaviour {

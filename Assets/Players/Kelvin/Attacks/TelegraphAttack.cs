@@ -1,7 +1,5 @@
 using UnityEngine;
 
-using SciFi.Items;
-
 namespace SciFi.Players.Attacks {
     public class TelegraphAttack : Attack {
         GameObject telegraphPrefab;

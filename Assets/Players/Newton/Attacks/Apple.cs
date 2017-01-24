@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
 
-namespace SciFi.Items {
+using SciFi.Items;
+
+namespace SciFi.Players.Attacks {
     public class Apple : Projectile {
         public GameObject explodingApple;
         public int damage;

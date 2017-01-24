@@ -1,9 +1,9 @@
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-using SciFi.Players;
+using SciFi.Items;
 
-namespace SciFi.Items {
+namespace SciFi.Players.Attacks {
     public class FireBall : Projectile {
         /// How many times the player gets hit by this attack
         int rounds;
