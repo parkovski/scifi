@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
+using UnityEngine.EventSystems;
 using System;
 using System.Linq;
 
@@ -28,6 +29,7 @@ namespace SciFi.Util {
             }
             spawnButton.onClick.AddListener(() => {
                 SpawnItem(dropdown.options[dropdown.value].text);
+                EventSystem.current.SetSelectedGameObject(null);
             });
 #else
             Destroy(dropdown);
