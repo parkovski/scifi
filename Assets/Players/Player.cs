@@ -452,11 +452,6 @@ namespace SciFi.Players {
             this.eItem = item;
             RpcUpdateItemControlGraphic();
 
-            if (eDirection == Direction.Left) {
-                itemComponent.SetOwnerOffset(-1f, 0f);
-            } else {
-                itemComponent.SetOwnerOffset(1f, 0f);
-            }
             itemComponent.ChangeDirection(eDirection);
             item.GetComponent<NetworkTransform>().enabled = false;
         }
@@ -478,14 +473,7 @@ namespace SciFi.Players {
 
         [Server]
         void MoveItemForChangeDirection(Direction direction) {
-            float x;
-            if (direction == Direction.Left) {
-                x = -1f;
-            } else {
-                x = 1f;
-            }
             var item = eItem.GetComponent<Item>();
-            item.SetOwnerOffset(x, 0f);
             item.ChangeDirection(direction);
         }
 

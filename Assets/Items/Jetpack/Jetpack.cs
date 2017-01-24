@@ -27,6 +27,29 @@ namespace SciFi.Items {
             BaseCollisionEnter2D(collision);
         }
 
+        protected override Vector3 GetOwnerOffset(Direction direction) {
+            if (direction == Direction.Left) {
+                return new Vector3(.6f, 0f);
+            } else {
+                return new Vector3(-.6f, 0f);
+            }
+        }
+
+        Vector3 GetFireOffset() {
+            if (eDirection == Direction.Left) {
+                return new Vector3(0.171f, -0.316f);
+            } else {
+                return new Vector3(-0.171f, -0.316f);
+            }
+        }
+
+        protected override void OnChangeDirection(Direction direction) {
+            spriteRenderer.flipX = direction == Direction.Left;
+            if (fire != null) {
+                fire.transform.localPosition = GetFireOffset();
+            }
+        }
+
         public override bool ShouldCharge() {
             return totalBoostTime < maxBoostTime;
         }
@@ -36,8 +59,7 @@ namespace SciFi.Items {
         }
 
         protected override void OnBeginCharging() {
-            var offset = new Vector3(-0.171f, -0.316f);
-            fire = Instantiate(firePrefab, transform.position + offset, Quaternion.identity, transform);
+            fire = Instantiate(firePrefab, transform.position + GetFireOffset(), Quaternion.identity, transform);
             nextBoostTime = 0f;
             boostForce = eOwner.jumpForce * 10;
 
@@ -61,6 +83,7 @@ namespace SciFi.Items {
 
         protected override void OnEndCharging(float chargeTime) {
             Destroy(fire);
+            fire = null;
             lastTotalBoostTime = totalBoostTime;
 
             // Return feature flags to their previous state
@@ -71,6 +94,7 @@ namespace SciFi.Items {
         protected override void OnCancel() {
             if (IsCharging()) {
                 Destroy(fire);
+                fire = null;
                 eOwner.SuspendFeature(PlayerFeature.Movement);
                 eOwner.ResumeFeature(PlayerFeature.Jump);
             }
