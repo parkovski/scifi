@@ -8,8 +8,12 @@ using System.Linq;
 using SciFi.Network;
 
 namespace SciFi.Util {
+    /// When running in the editor, you can select from a list of
+    /// items to spawn for testing.
     public class DebugItemSpawn : MonoBehaviour {
+        /// The list of items, generated in <see cref="Start()" />.
         public Dropdown dropdown;
+        /// Spawn the currently selected item.
         public Button spawnButton;
 
         void Start() {

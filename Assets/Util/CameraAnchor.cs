@@ -1,12 +1,5 @@
 // https://gist.github.com/fadookie/256947788c364400abe1
 
-/***
- * This script will anchor a GameObject to a relative screen position.
- * This script is intended to be used with CameraFit.cs by Marcel Căşvan, available here: http://gamedev.stackexchange.com/a/89973/50623
- * 
- * Note: For performance reasons it's currently assumed that the game resolution will not change after the game starts.
- * You could not make this assumption by periodically calling UpdateAnchor() in the Update() function or a coroutine, but is left as an exercise to the reader.
- */
 /* The MIT License (MIT)
 
 Copyright (c) 2015, Eliot Lash
@@ -32,8 +25,16 @@ using UnityEngine;
 using System.Collections;
 
 namespace SciFi.Util {
-	[ExecuteInEditMode]
+    /***
+    * This script will anchor a GameObject to a relative screen position.
+    * This script is intended to be used with CameraFit.cs by Marcel Căşvan, available here: http://gamedev.stackexchange.com/a/89973/50623
+    * 
+    * Note: For performance reasons it's currently assumed that the game resolution will not change after the game starts.
+    * You could not make this assumption by periodically calling UpdateAnchor() in the Update() function or a coroutine, but is left as an exercise to the reader.
+    */
+    [ExecuteInEditMode]
     public class CameraAnchor : MonoBehaviour {
+        /// Where in the camera's view field to anchor the object.
         public enum AnchorType {
             BottomLeft,
             BottomCenter,
@@ -111,7 +112,7 @@ namespace SciFi.Util {
             }
         }
 
-    #if UNITY_EDITOR
+#if UNITY_EDITOR
         // Update is called once per frame
         void Update () {
             if (updateAnchorRoutine == null) {
@@ -119,6 +120,6 @@ namespace SciFi.Util {
                 StartCoroutine(updateAnchorRoutine);
             }
         }
-    #endif
+#endif
     }
 }

@@ -25,6 +25,7 @@ THE SOFTWARE. */
 using UnityEngine;
 
 namespace SciFi.Util {
+    /// Fix the screen to a specific size based on the camera.
     [ExecuteInEditMode]
     [RequireComponent (typeof (Camera))]
     public class CameraFit : MonoBehaviour
@@ -162,12 +163,12 @@ namespace SciFi.Util {
             _tr = new Vector3(rightX, topY, 0);           
         }
 
-    #if UNITY_EDITOR
+#if UNITY_EDITOR
         private void Update()
         {
             ComputeResolution();
         }
-    #endif
+#endif
 
         void OnDrawGizmos() {
             Gizmos.color = wireColor;

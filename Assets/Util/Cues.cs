@@ -3,11 +3,13 @@ using System;
 using System.Collections.Generic;
 
 namespace SciFi.Util {
+    /// No System.Tuple in this old version of Mono :(.
     struct TimeCueTuple {
         public float time;
         public Action action;
     }
 
+    /// A list of actions to be executed at certain times.
     public class Cues : MonoBehaviour {
         List<TimeCueTuple> cues;
         int index;
@@ -42,16 +44,19 @@ namespace SciFi.Util {
             cues.Add(new TimeCueTuple { time = time, action = action });
         }
 
+        /// Reset the timer and cue index.
         public void Reset() {
             index = 0;
             startTime = Time.time;
             running = false;
         }
 
+        /// Stop executing cues.
         public void Pause() {
             running = false;
         }
-        
+
+        /// Start executing cues.
         public void Resume() {
             running = true;
         }
