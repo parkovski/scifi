@@ -1,33 +1,50 @@
 using UnityEngine;
 using UnityEngine.Networking;
+using System.Collections.Generic;
 
 using SciFi.Players;
 
 namespace SciFi.Items {
+    /// An item that spawns randomly and can be picked up and used by the player.
     public abstract class Item : NetworkBehaviour {
         bool pIsCharging = false;
         bool eCanCharge;
         protected Direction eDirection = Direction.Right;
+        /// The layer the item should be on when it is not acting as a projectile.
         int eInitialLayer;
+        /// Records whether a cancellation was requested.
         bool pShouldCancel = false;
 
         /// The item's owner, if any, that it will follow.
         protected GameObject eOwnerGo;
+        /// The item's owner - null if the item is not owned.
         protected Player eOwner;
         [SyncVar]
+        /// The offset from the owner that the item will follow,
+        /// if the owner is set.
         protected Vector3 eOwnerOffset;
 
+        /// How long the item will stay active on the screen.
         private float sAliveTime;
+        /// The time that the item will be destroyed.
         private float sDestroyTime;
         /// Items won't destroy when they are owned, but
         /// if they are discarded, they will only stick around
         /// for this much time if their original lifetime has expired already.
         const float aliveTimeAfterPickup = 5f;
 
+        /// How long before <see cref="sDestroyTime" /> the item will
+        /// start blinking, indicating it is about to be destroyed.
         const float blinkTime = 3f;
+        /// The time the item started blinking.
         float firstBlinkTime = 0f;
         protected SpriteRenderer spriteRenderer;
 
+        /// A set of objects that the item has hit to make sure
+        /// the item only hits once.
+        private HashSet<GameObject> hitObjects;
+
+        /// Initializes common item state.
         protected void BaseStart(bool canCharge, float aliveTime = 15f) {
             this.sAliveTime = aliveTime;
             this.sDestroyTime = Time.time + aliveTime;
@@ -36,6 +53,9 @@ namespace SciFi.Items {
             this.spriteRenderer = GetComponent<SpriteRenderer>();
         }
 
+        /// Handles common item behaviour, including following the owner,
+        /// destroying after a certain time, and blinking when the destroy
+        /// time is close.
         protected void BaseUpdate() {
             // If there is an owner, all copies update their position independently
             // based on the owner's position.
@@ -64,12 +84,15 @@ namespace SciFi.Items {
             }
         }
 
+        /// Make the item flash between opaque and semi-transparent when it is about
+        /// to be destroyed.
         void Blink() {
             var alpha = .5f + Mathf.Abs(Mathf.Cos((Time.time - firstBlinkTime) * 6 * Mathf.PI / 3)) / 2;
             spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, alpha);
             OnBlink(alpha);
         }
 
+        /// When the player grabs a blinking item, it should be made fully opaque.
         void RestoreAlpha() {
             spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 1f);
             OnBlink(1f);
@@ -80,6 +103,8 @@ namespace SciFi.Items {
         /// be destroyed.
         protected virtual void OnBlink(float alpha) {}
 
+        /// Corrects the item's layer when it hits the ground if it was
+        /// acting as a projectile.
         protected void BaseCollisionEnter2D(Collision2D collision) {
             if (!isServer) {
                 return;
@@ -115,53 +140,72 @@ namespace SciFi.Items {
         public bool IsCharging() {
             return pIsCharging;
         }
+        /// Begins charging the attack. Calls <see cref="OnBeginCharging" />.
         public void BeginCharging() {
             pIsCharging = true;
             pShouldCancel = false;
             OnBeginCharging();
         }
+        /// Continues charging the attack on each frame. Calls <see cref="OnKeepCharging" />.
         public void KeepCharging(float chargeTime) {
             OnKeepCharging(chargeTime);
         }
+        /// Ends charging the attack. Calls <see cref="OnEndCharging" />.
         public void EndCharging(float chargeTime) {
             pIsCharging = false;
             OnEndCharging(chargeTime);
         }
         /// This should only be called when control feature flags
-        /// are being reset, otherwise call RequestCancel.
+        /// are being reset, otherwise call <see cref="RequestCancel" />.
         public void Cancel() {
             pShouldCancel = false;
             OnCancel();
             pIsCharging = false;
         }
 
+        /// Requests a cancellation. Since attacks and movement are
+        /// suspended while the item is charging, this should be used
+        /// in most cases so that the player features will be restored.
         public void RequestCancel() {
             pShouldCancel = true;
         }
 
+        /// Returns true if a cancellation was requested.
         public bool ShouldCancel() {
             return pShouldCancel;
         }
 
+        /// Called when the item button is first pressed if
+        /// <see cref="ShouldCharge" /> returned true.
         [Client]
         protected virtual void OnBeginCharging() {}
+        /// Called for each frame that the item button is held
+        /// if <see cref="ShouldCharge" /> returned true.
         [Client]
         protected virtual void OnKeepCharging(float chargeTime) {}
         /// Called on the client when the player is done charging the item and it should fire.
+        /// If the item does not charge, this is called when the item button is first pressed.
         [Client]
         protected virtual void OnEndCharging(float chargeTime) {}
-        /// For convenience, just calls EndCharging with chargeTime == 0f.
+        /// Called when the attack was canceled, either because the attack was hit
+        /// by one with higher precedence or the command was canceled.
         protected virtual void OnCancel() {}
+        /// For convenience, just calls EndCharging with chargeTime == 0f.
         [Client]
         public void Use() {
             OnEndCharging(0f);
         }
 
+        /// Called when this item is attacked.
         public virtual void TakeDamage(int amount) {}
 
+        /// Handles specific direction change behaviour, for example
+        /// flipping and translating a child object.
         [Server]
         protected virtual void OnChangeDirection(Direction direction) { }
 
+        /// Moves and flips an item to be on the appropriate side
+        /// of the player when they change direction.
         [Server]
         public void ChangeDirection(Direction direction) {
             eDirection = direction;
@@ -169,6 +213,8 @@ namespace SciFi.Items {
             OnChangeDirection(direction);
         }
 
+        /// Adds a force to this item and sets it to the projectiles layer.
+        /// <param name="direction">The direction to throw - up, down, left or right.</param>
         [Server]
         public void Throw(Direction direction) {
             Vector2 force;
@@ -192,6 +238,18 @@ namespace SciFi.Items {
             gameObject.layer = Layers.projectiles;
         }
 
+        /// Remember an object hit to avoid hitting it twice
+        protected void LogHit(GameObject obj) {
+            hitObjects.Add(obj);
+        }
+
+        /// Check if a hit was recorded with <see cref="LogHit" />
+        protected bool DidHit(GameObject obj) {
+            return hitObjects.Contains(obj);
+        }
+
+        /// Ignore collisions from all colliders on <c>obj1</c> and <c>obj2</c>.
+        /// <param name="ignore">If true, ignore collisions. If false, detect collisions.</param>
         public static void IgnoreCollisions(GameObject obj1, GameObject obj2, bool ignore = true) {
             var colls1 = obj1.GetComponents<Collider2D>();
             var colls2 = obj2.GetComponents<Collider2D>();
@@ -202,6 +260,8 @@ namespace SciFi.Items {
             }
         }
 
+        /// Ignore collisions from <c>coll</c> and all colliders on <c>obj</c>.
+        /// <param name="ignore">If true, ignore collisions. If false, detect collisions.</param>
         public static void IgnoreCollisions(GameObject obj, Collider2D coll, bool ignore = true) {
             var colls = obj.GetComponents<Collider2D>();
             foreach (var c in colls) {
@@ -247,6 +307,8 @@ namespace SciFi.Items {
             OnDiscard();
         }
 
+        /// Returns the offset relative to the owner that this item
+        /// should appear when picked up.
         protected virtual Vector3 GetOwnerOffset(Direction direction) {
             if (direction == Direction.Left) {
                 return new Vector3(-1, 0);

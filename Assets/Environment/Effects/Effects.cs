@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 namespace SciFi.Environment.Effects {
+    /// Visual effects that are self-managing.
     public static class Effects {
         public static void Star(Vector3 position) {
             var star = Object.Instantiate(EffectsEditorParams.Instance.star, position, Quaternion.identity);

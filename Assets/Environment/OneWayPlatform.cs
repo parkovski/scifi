@@ -14,11 +14,12 @@ namespace SciFi.Environment {
     /// below, and for players, from above when holding the
     /// down button.
     public class OneWayPlatform : NetworkBehaviour {
+        /// The solid ground collider that forms the actual platform.
         Collider2D lGroundCollider;
-        // Since objects might have multiple colliders,
-        // when an object enters the trigger, we increase
-        // the collider count, and only stop ignoring
-        // collisions when the count reaches 0.
+        /// Since objects might have multiple colliders,
+        /// when an object enters the trigger, we increase
+        /// the collider count, and only stop ignoring
+        /// collisions when the count reaches 0.
         Dictionary<GameObject, int> lColliderCount;
 
         int GetColliderCount(GameObject obj) {

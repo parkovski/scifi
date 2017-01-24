@@ -2,7 +2,10 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace SciFi.UI {
+    /// Displays each player's lives and damage on the screen.
     public class DamageCounter : MonoBehaviour {
+        /// The ID of the player that this counter is tracking.
+        /// <seealso cref="SciFi.Players.Player.eId" />
         public int player;
         int lives;
         int damage;

@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using SciFi.Util;
 
 namespace SciFi.UI {
+    /// Displays the 3, 2, 1, Go! countdown before the game.
     public class Countdown : MonoBehaviour {
         public Cues cues;
         public Text text;
@@ -25,6 +26,7 @@ namespace SciFi.UI {
             cues.Add(beat * 6, () => ChangeText(""));
         }
 
+        /// Begins the countdown.
         public void StartGame() {
             cues.Reset();
             cues.Resume();

@@ -6,13 +6,16 @@ using UnityEngine.Networking;
 using SciFi.Scenes;
 
 namespace SciFi.Network {
+    /// Handle the multiplayer lobby.
     public class NetworkController : NetworkLobbyManager {
+        /// Set up message handlers.
         public override void OnStartServer() {
             base.OnStartServer();
             NetworkServer.RegisterHandler(NetworkMessages.SetPlayerName, SetPlayerName);
             NetworkServer.RegisterHandler(NetworkMessages.SetPlayerDisplayName, SetPlayerDisplayName);
         }
 
+        /// Send the server a message indicating which player the client has chosen.
         public override void OnClientConnect(NetworkConnection conn) {
             base.OnClientConnect(conn);
 
@@ -32,14 +35,17 @@ namespace SciFi.Network {
             }
         }
 
+        /// Receive a player selection message from the client.
         void SetPlayerName(NetworkMessage msg) {
             TransitionParams.AddPlayer(msg.conn, msg.reader.ReadString());
         }
 
+        /// Receive a display name set message from the client.
         void SetPlayerDisplayName(NetworkMessage msg) {
             TransitionParams.AddDisplayName(msg.conn, msg.reader.ReadString());
         }
 
+        /// Create the player for <c>conn</c> and register it with <see cref="GameController" />.
         public override GameObject OnLobbyServerCreateGamePlayer(NetworkConnection conn, short playerControllerId) {
             string playerName;
             if ((playerName = TransitionParams.GetPlayerName(conn)) == null) {
@@ -51,6 +57,7 @@ namespace SciFi.Network {
             return obj;
         }
 
+        /// Start the game when the scene changes to MainGame.
         public override void OnLobbyServerSceneChanged(string sceneName) {
             if (sceneName == "MainGame") {
                 // Temporary hack until you can add computer players to a single player game
@@ -69,6 +76,7 @@ namespace SciFi.Network {
             }
         }
 
+        /// Destroy the lobby player.
         public override bool OnLobbyServerSceneLoadedForPlayer(GameObject lobbyPlayer, GameObject gamePlayer) {
             Destroy(lobbyPlayer);
             return true;

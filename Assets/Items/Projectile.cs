@@ -1,7 +1,12 @@
 using UnityEngine.Networking;
 
 namespace SciFi.Items {
+    /// A projectile, spawned by either a player or an item,
+    /// which cannot be held but otherwise interacts with players
+    /// and other items.
     public class Projectile : NetworkBehaviour {
+        /// The player or other object that spawned the projectile.
+        /// Projectiles won't collide with objects that spawned them.
         [SyncVar]
         public NetworkInstanceId spawnedBy;
         /// If the player is holding an item, set this so the projectile doesn't hit it.

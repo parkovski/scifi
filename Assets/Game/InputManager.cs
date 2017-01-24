@@ -15,6 +15,7 @@ using System.Collections.Generic;
 // we should not reset this button.
 
 namespace SciFi {
+    /// States for each control, including touch and keyboard input.
     struct ButtonState {
         public bool isPressed;
         public bool isTouched;
@@ -23,6 +24,7 @@ namespace SciFi {
         public float timeHeld;
     }
 
+    /// Control IDs.
     public static class Control {
         public const int Left = 0;
         public const int Right = 1;
@@ -37,12 +39,17 @@ namespace SciFi {
         /// as one of the other controls - these are used
         /// only in menus.
         public const int MouseButton1 = 9;
+        /// Not used in game - player may set a mouse button
+        /// as one of the other controls - these are used
+        /// only in menus.
         public const int MouseButton2 = 10;
         public const int DodgeLeft = 11;
         public const int DodgeRight = 12;
+        /// The total number of controls.
         public const int ArrayLength = 13;
     }
 
+    /// Updates state based on input events.
     class InputState {
         public ButtonState[] states;
         public Vector2 mousePosition;
@@ -55,6 +62,7 @@ namespace SciFi {
             }
         }
 
+        /// Marks the control as invalidated and not active.
         public void Invalidate(int button) {
             // Only invalidate controls that are active.
             if (!states[button].isPressed & !states[button].isTouched) {
@@ -66,6 +74,7 @@ namespace SciFi {
             states[button].axisAmount = 0f;
         }
 
+        /// Reset all state for a control.
         public void ForceReset(int button) {
             states[button].axisAmount = 0f;
             states[button].isPressed = false;
@@ -73,6 +82,7 @@ namespace SciFi {
             states[button].isInvalidated = false;
         }
 
+        /// Reset keyboard state for a control.
         public void Reset(int button) {
             states[button].isPressed = false;
             if (states[button].isTouched) {
@@ -82,6 +92,7 @@ namespace SciFi {
             states[button].isInvalidated = false;
         }
 
+        /// Reset touch state for a control.
         public void TouchReset(int button) {
             states[button].isTouched = false;
             if (states[button].isPressed) {
@@ -91,14 +102,17 @@ namespace SciFi {
             states[button].isInvalidated = false;
         }
 
+        /// Set/update the button's press state.
         public void ButtonPress(int button, float amount) {
             PressOrTouch(button, amount, true);
         }
 
+        /// Set/update the button's touch state.
         public void ButtonTouch(int button, float amount) {
             PressOrTouch(button, amount, false);
         }
 
+        /// Update the button's press or touch state and set it to active.
         public void PressOrTouch(int button, float amount, bool press) {
             if (states[button].isPressed || states[button].isTouched) {
                 states[button].timeHeld += Time.deltaTime;
@@ -113,11 +127,13 @@ namespace SciFi {
             states[button].axisAmount = amount;
         }
 
+        /// Update keyboard state for <c>activeAxis</c>, setting <c>inactiveAxis</c> to 0.
         public void UpdateAxis(int activeAxis, int inactiveAxis, float amount) {
             UpdateButton(activeAxis, true, amount);
             ForceReset(inactiveAxis);
         }
 
+        /// Update keyboard state for <c>button</c> with axis value <c>amount</c>.
         public void UpdateButton(int button, bool active, float amount) {
             if (active) {
                 if (states[button].isInvalidated) {
@@ -130,10 +146,12 @@ namespace SciFi {
             }
         }
 
+        /// Update keyboard state for <c>button</c> with full axis value.
         public void UpdateButton(int button, bool active) {
             UpdateButton(button, active, 1f);
         }
 
+        /// Update touch state for <c>activeAxis</c>, setting <c>inactiveAxis</c> to 0.
         public void TouchUpdateAxis(int activeAxis, int inactiveAxis, float amount) {
             // On touch, you can press both buttons at the same time, unlike with Input.GetAxis.
             // If the opposite axis is already active, do what Unity does and ignore the most recent one.
@@ -146,6 +164,7 @@ namespace SciFi {
             ForceReset(inactiveAxis);
         }
 
+        /// Update touch state for <c>button</c>.
         public void TouchUpdateButton(int button, bool active, float amount) {
             if (active) {
                 if (states[button].isInvalidated) {
@@ -158,6 +177,7 @@ namespace SciFi {
             }
         }
 
+        /// Update touch state for <c>button</c> with full axis value.
         public void TouchUpdateButton(int button, bool active) {
             TouchUpdateButton(button, active, 1f);
         }
@@ -170,6 +190,7 @@ namespace SciFi {
             this.Control = control;
         }
     }
+    /// Event listener for a control canceled event.
     public delegate void ControlCanceledHandler(ControlCanceledEventArgs args);
 
     public class ObjectSelectedEventArgs : EventArgs {
@@ -179,37 +200,55 @@ namespace SciFi {
             this.gameObject = gameObject;
         }
     }
+    /// Event listener for an object selected event, fired when the user
+    /// touches or clicks an object on the screen.
     public delegate void ObjectSelectedHandler(ObjectSelectedEventArgs args);
 
+    /// Event listener for a touch control state change event -
+    /// press or release. For more in depth handling, poll from <see cref="InputManager" />.
     public delegate void TouchControlStateChangedHandler(string control, bool active);
 
+    /// Intermediate layer between Unity's input and game handling.
+    /// This merges touch and keyboard/mouse input and provides
+    /// input invalidation.
     public class InputManager : MonoBehaviour {
+        /// Touch control layer - <see cref="SciFi.Layers" /> may not be initialized yet.
         int touchControlLayerId;
-        // Layers that we want to be able to select with touch/click.
+        /// Layers that we want to be able to select with touch/click.
         int layerMask;
+        /// Underlying state for controls.
         InputState state = new InputState();
-        // Maps from finger ID to Control.
+        /// Maps from finger ID to control name.
         Dictionary<int, string> activeTouches;
+        /// The first button in a combo, if a combo is active.
         string firstComboButton;
+        /// The second button in a combo, if a combo is active.
         string secondComboButton;
 
+        /// Is <c>control</c> currently pressed or touched?
         public bool IsControlActive(int control) {
             var s = state.states;
             return s[control].isPressed || s[control].isTouched;
         }
 
+        /// How long has <c>control</c> been active?
         public float GetControlHoldTime(int control) {
             return state.states[control].timeHeld;
         }
 
+        /// What is <c>control</c>'s axis value?
         public float GetControlAmount(int control) {
             return state.states[control].axisAmount;
         }
 
+        /// Mark the control as invalidated. After this is called,
+        /// it will be reported as inactive until it is released
+        /// and pressed again.
         public void InvalidateControl(int control) {
             state.Invalidate(control);
         }
 
+        /// Where is the mouse on the screen?
         public Vector2 GetMousePosition() {
             return state.mousePosition;
         }
@@ -218,6 +257,8 @@ namespace SciFi {
         public event ObjectSelectedHandler ObjectSelected;
         public event TouchControlStateChangedHandler TouchControlStateChanged;
 
+        /// Initialize state.
+        /// If touch is not supported, destroy the touch controls.
         void Start() {
             // The Layers class is not initialized yet
             layerMask
@@ -237,6 +278,7 @@ namespace SciFi {
             }
         }
 
+        /// Update keyboard and mouse state.
         void CheckUnityInput() {
             var horizontal = Input.GetAxis("Horizontal");
             var vertical = Input.GetAxis("Vertical");
@@ -275,6 +317,8 @@ namespace SciFi {
             UpdateMouse(Control.MouseButton2, mouse2);
         }
 
+        /// Update mouse button state, and if an object was selected
+        /// fire the ObjectSelected event.
         void UpdateMouse(int control, bool active) {
             // If the mouse button was just pressed,
             // we may need to fire an object selected message.
@@ -288,6 +332,8 @@ namespace SciFi {
             }
         }
 
+        /// Get the GameObject at the given position, or null if there is none.
+        /// Only objects in <see cref="InputManager.layerMask" /> will be detected.
         GameObject GetObjectAtPosition(Vector2 position) {
             var ray = Camera.main.ScreenToWorldPoint(position);
             var hit = Physics2D.Raycast(ray, Vector2.zero, Mathf.Infinity, layerMask);
@@ -297,6 +343,8 @@ namespace SciFi {
             return hit.collider.gameObject;
         }
 
+        /// Convert a touch control name to an ID from the
+        /// <see cref="Control" /> class.
         int GetTouchControl(string controlName) {
             switch (controlName) {
             case "LeftButton":
@@ -325,6 +373,7 @@ namespace SciFi {
             }
         }
 
+        /// Update <c>control</c> setting its touch value to true.
         void BeginTouch(int control) {
             switch (control) {
             case Control.Left:
@@ -360,6 +409,7 @@ namespace SciFi {
             }
         }
 
+        /// Update <c>control</c> setting its touch value to false.
         void EndTouch(int control) {
             switch (control) {
             case Control.Left:
@@ -393,10 +443,13 @@ namespace SciFi {
             }
         }
 
+        /// Update the time the control has been held.
         void UpdateTouchTime(int control) {
             state.states[control].timeHeld += Time.deltaTime;
         }
 
+        /// Returns the pseudo control represented by
+        /// the combination of pressing <c>first</c> and <c>second</c>.
         int GetTouchCombo(int first, int second) {
             if (first > second) {
                 var tmp = first;
@@ -416,6 +469,8 @@ namespace SciFi {
             return -1;
         }
 
+        /// Convert a combo pseudo control to a name -
+        /// the name does not identify an object on the screen.
         string GetComboName(int combo) {
             if (combo == Control.DodgeLeft) {
                 return "DodgeLeftButton";
@@ -429,6 +484,7 @@ namespace SciFi {
             return "";
         }
 
+        /// Is <c>control</c> a combo? (Not a screen control).
         bool IsCombo(int control) {
             if (control == Control.DodgeLeft) {
                 return true;
@@ -442,6 +498,7 @@ namespace SciFi {
             return false;
         }
 
+        /// Handle touch input and update state.
         void CheckTouchInput() {
             if (Input.touchCount == 0) {
                 return;
@@ -517,6 +574,7 @@ namespace SciFi {
             }
         }
 
+        /// Update input state.
         void Update() {
             CheckUnityInput();
             if (Input.touchSupported) {
@@ -525,6 +583,8 @@ namespace SciFi {
         }
     }
 
+    /// Tracks a control that can be pressed multiple times 
+    /// in a small amount of time.
     public class MultiPressControl {
         InputManager inputManager;
         int control;
@@ -533,12 +593,16 @@ namespace SciFi {
         bool active;
         int presses;
 
+        /// <param name="inputManager">The InputManager to poll for control values</param>
+        /// <param name="control">The control to track</param>
+        /// <param name="timeout">How long to wait for another press</param>
         public MultiPressControl(InputManager inputManager, int control, float timeout) {
             this.inputManager = inputManager;
             this.control = control;
             this.timeout = timeout;
         }
 
+        /// Update multi-press state.
         public void Update() {
             if (inputManager.IsControlActive(control)) {
                 if (!active) {
@@ -556,10 +620,15 @@ namespace SciFi {
             }
         }
 
+        /// Is the control currently down?
+        /// This may be false even though a multi-press is in progress.
         public bool IsActive() {
             return active;
         }
 
+        /// How many times was this control pressed?
+        /// If this is positive, the control may not be currently pressed,
+        /// but the timeout hasn't elapsed yet.
         public int GetPresses() {
             return presses;
         }

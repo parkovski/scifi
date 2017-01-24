@@ -27,6 +27,8 @@ namespace SciFi {
 
     public delegate void PlayersInitializedHandler(Player[] players);
 
+    /// Commonly used layers. This is initialized by the <see cref="GameController" />
+    /// so if you need a layer before it is created, use <c>LayerMask.NameToLayer(string)</c>.
     public static class Layers {
         public static int projectiles;
         public static int items;
@@ -36,6 +38,7 @@ namespace SciFi {
         public static int touchControls;
         public static int noncollidingItems;
 
+        /// Initialize the layer IDs. To be called by <see cref="GameController" />.
         public static void Init() {
             projectiles = LayerMask.NameToLayer("Projectiles");
             items = LayerMask.NameToLayer("Items");
@@ -47,6 +50,7 @@ namespace SciFi {
         }
     }
 
+    /// How often will items appear on the screen?
     public enum ItemFrequency {
         None,
         VeryLow,
@@ -56,7 +60,10 @@ namespace SciFi {
         VeryHigh,
     }
 
+    /// Handles "bookkeeping" for the game - which players are active,
+    /// when is the game over, who won, when should an item spawn, etc.
     public class GameController : NetworkBehaviour {
+        /// Is the game currently active?
         private bool isPlaying;
 
         /// Set on scene change to the countdown in the main game scene.
@@ -64,30 +71,44 @@ namespace SciFi {
 
         // Items
         public ItemFrequency itemFrequency;
+        /// A list set in the Unity editor of all the items that can
+        /// be spawned during the game.
         public List<GameObject> items;
+        /// When will the next item appear?
         float nextItemTime;
 
-        // Active players, even if dead. Null if no game is running,
-        // guaranteed not null if a game is running.
+        /// Active players, even if dead. Null if no game is running,
+        /// guaranteed not null if a game is running.
         Player[] activePlayers;
+        /// GameObjects for active players.
         GameObject[] activePlayersGo;
+        /// Each player's nickname, only valid before the game starts.
+        /// To access these during the game, use <see cref="SciFi.Players.Player.eDisplayName" />.
         string[] displayNames;
+        /// Is this client the winner? This is always false if the game
+        /// is not over yet.
         bool cIsWinner;
+        /// The ID of the player controlled by this client.
+        /// <seealso cref="SciFi.Players.Player.eId" />
         int cPlayerId;
 
+        /// Event emitted when a player's damage changes.
         [SyncEvent]
         public event DamageChangedHandler EventDamageChanged;
+        /// Event emitted when a player's lives change.
         /// Implies damage is set to 0.
         [SyncEvent]
         public event LifeChangedHandler EventLifeChanged;
 
         private event StartGameHandler _GameStarted;
+        /// Event emitted when the game starts. If the game is already
+        /// in progress when you subscribe to this event, the callback
+        /// will be called immediately.
         public event StartGameHandler GameStarted {
             add {
+                _GameStarted += value;
                 if (isPlaying) {
                     value();
-                } else {
-                    _GameStarted += value;
                 }
             }
             remove {
@@ -96,12 +117,14 @@ namespace SciFi {
         }
 
         private event PlayersInitializedHandler _PlayersInitialized;
+        /// Event emitted when players are initialized. If they are already
+        /// initialized when you subscribe to this event, the callback will
+        /// be called immediately.
         public event PlayersInitializedHandler PlayersInitialized {
             add {
+                _PlayersInitialized += value;
                 if (activePlayers != null) {
                     value(activePlayers);
-                } else {
-                    _PlayersInitialized += value;
                 }
             }
             remove {
@@ -109,14 +132,21 @@ namespace SciFi {
             }
         }
 
+        /// One GameController to rule them all, one GameController to find them...
         public static GameController Instance { get; private set; }
 
+        /// Add a new player to the game, only before the game has started.
+        /// <param name="playerObject">A pre-spawned player object.</param>
+        /// <param name="displayName">May be null to get the default display name ("P1", etc.).</param>
         [Server]
         public void RegisterNewPlayer(GameObject playerObject, string displayName) {
             activePlayersGo = activePlayersGo.Concat(new[] { playerObject }).ToArray();
             displayNames = displayNames.Concat(new[] { displayName }).ToArray();
         }
 
+        /// Start the game.
+        /// <param name="countdown">Show the countdown and delay
+        ///   the game from starting until it is done.</param>
         [Server]
         public void StartGame(bool countdown = true) {
             activePlayers = activePlayersGo.Select(p => p.GetComponent<Player>()).ToArray();
@@ -170,6 +200,7 @@ namespace SciFi {
             }
         }
 
+        /// Initialize the list of players on the client.
         [ClientRpc]
         void RpcCreateCharacterList(NetworkInstanceId[] ids) {
             activePlayersGo = ids.Select(id => ClientScene.FindLocalObject(id)).ToArray();
@@ -180,6 +211,7 @@ namespace SciFi {
             }
         }
 
+        /// Find the active player with ID <c>id</c>.
         public Player GetPlayer(int id) {
             if (id >= activePlayers.Length) {
                 return null;
@@ -188,11 +220,19 @@ namespace SciFi {
             return activePlayers[id];
         }
 
+        /// Find the winner and report it to the clients.
         void FindWinner() {
-            var winner = activePlayers.Single(p => p.eLives != 0);
+            Player winner;
+            try {
+                winner = activePlayers.Single(p => p.eLives != 0);
+            } catch {
+                return;
+            }
             RpcSetWinner(winner.eId);
         }
 
+        /// Set the winner on the client.
+        /// <seealso cref="SciFi.Players.Player.eId" />.
         [ClientRpc]
         void RpcSetWinner(int winnerId) {
             if (winnerId == cPlayerId) {
@@ -200,13 +240,17 @@ namespace SciFi {
             }
         }
 
+        /// Is this client the winner? Always false
+        /// if the game is still in progress.
         [Client]
         public bool IsWinner() {
             return cIsWinner;
         }
 
+        /// End the game and load the game over scene.
         [Server]
         public void EndGame() {
+            isPlaying = false;
             activePlayers = new Player[0];
             activePlayersGo = new GameObject[0];
 
@@ -214,10 +258,12 @@ namespace SciFi {
             RpcEndGame();
         }
 
+        /// Is the game currently in progress?
         public bool IsPlaying() {
             return isPlaying;
         }
 
+        /// Start the game on the client.
         [ClientRpc]
         void RpcStartGame(bool countdown) {
             cIsWinner = false;
@@ -234,6 +280,7 @@ namespace SciFi {
             };
         }
 
+        /// End the game on the client and load the game over scene.
         [ClientRpc]
         void RpcEndGame() {
             isPlaying = false;
@@ -242,14 +289,18 @@ namespace SciFi {
             SceneManager.LoadScene("GameOver");
         }
 
+        /// Convert a prefab object to its index in the spawnable prefabs list.
         public static int PrefabToIndex(GameObject prefab) {
             return NetworkManager.singleton.spawnPrefabs.IndexOf(prefab);
         }
 
+        /// Convert an index in the spawnable prefabs list to a prefab object.
         public static GameObject IndexToPrefab(int index) {
             return NetworkManager.singleton.spawnPrefabs[index];
         }
 
+        /// Deduct a life from the player, respawn, and
+        /// check if the game is over.
         [Command]
         public void CmdDie(GameObject playerObject) {
             var player = playerObject.GetComponent<Player>();
@@ -273,6 +324,7 @@ namespace SciFi {
             });
         }
 
+        /// Inflict damage on a player or item.
         [Server]
         public void TakeDamage(GameObject obj, int amount) {
             var player = obj.GetComponent<Player>();
@@ -286,6 +338,7 @@ namespace SciFi {
             }
         }
 
+        /// Inflict damage on a player.
         [Server]
         void PlayerTakeDamage(Player player, int amount) {
             if (!player.FeatureEnabled(PlayerFeature.Damage)) {
@@ -299,11 +352,13 @@ namespace SciFi {
             EventDamageChanged(args);
         }
 
+        /// Inflict damage on an item.
         [Server]
         void ItemTakeDamage(Item item, int amount) {
             item.TakeDamage(amount);
         }
 
+        /// Inflict knockback on a player.
         [Server]
         public void Knockback(GameObject attackingObject, GameObject playerObject, float amount) {
             var player = playerObject.GetComponent<Player>();
@@ -323,6 +378,7 @@ namespace SciFi {
             player.RpcKnockback(force);
         }
 
+        /// Initialize fields that other objects depend on.
         void Awake() {
             Instance = this;
             activePlayersGo = new GameObject[0];
@@ -332,6 +388,7 @@ namespace SciFi {
             DontDestroyOnLoad(gameObject);
         }
 
+        /// Spawn items when they are due.
         void Update() {
             if (!isServer) {
                 return;
@@ -347,6 +404,9 @@ namespace SciFi {
             }
         }
 
+        /// Convert from <see cref="ItemFrequency" /> to time.
+        /// The times returned from this are randomly generated
+        /// from a range based on the current item frequency.
         float GetNextItemSpawnTime() {
             float min = 0f, max = 0f;
             switch (itemFrequency) {

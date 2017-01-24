@@ -4,11 +4,14 @@ using UnityEngine.UI;
 using SciFi.Players;
 
 namespace SciFi.Environment {
+    /// A label above the player, by default showing "P1", etc. but
+    /// may be overridden by setting a nickname.
     public class PlayerLabels : MonoBehaviour {
         RectTransform[] panels;
         Text[] labels;
         Player[] players;
 
+        /// Callback when the game is started and player display names are set.
         void Init(Player[] players) {
             this.players = players;
             var i = 0;
