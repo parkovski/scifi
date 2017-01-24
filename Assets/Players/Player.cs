@@ -86,7 +86,6 @@ namespace SciFi.Players {
         protected void BaseStart() {
             lRb = GetComponent<Rigidbody2D>();
             eDirection = Direction.Right;
-            eLives = 3;
             var gameControllerGo = GameObject.Find("GameController");
             pInputManager = gameControllerGo.GetComponent<InputManager>();
             pLeftControl = new MultiPressControl(pInputManager, Control.Left, .4f);
