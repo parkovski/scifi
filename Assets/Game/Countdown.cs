@@ -15,14 +15,14 @@ namespace SciFi.UI {
         public event OnFinishedHandler OnFinished;
 
         void Start() {
-            cues.Add(beat * 10, () => ChangeText("3"));
-            cues.Add(beat * 12, () => ChangeText("2"));
-            cues.Add(beat * 14, () => ChangeText("1"));
-            cues.Add(beat * 16, () => {
+            cues.Add(beat,     () => ChangeText("3"));
+            cues.Add(beat * 2, () => ChangeText("2"));
+            cues.Add(beat * 3, () => ChangeText("1"));
+            cues.Add(beat * 4, () => {
                 ChangeText("Go!");
                 OnFinished(this);
             });
-            cues.Add(beat * 18, () => ChangeText(""));
+            cues.Add(beat * 6, () => ChangeText(""));
         }
 
         public void StartGame() {
