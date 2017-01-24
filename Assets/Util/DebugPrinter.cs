@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SciFi.Debug {
+namespace SciFi.Util {
     /// A crude debug field on the screen. This is useful for showing values
     /// that update often, since you can request a field and update it,
     /// instead of spewing messages to the console.
