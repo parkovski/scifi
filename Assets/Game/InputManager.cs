@@ -183,26 +183,12 @@ namespace SciFi {
         }
     }
 
-    public class ControlCanceledEventArgs : EventArgs {
-        public int Control { get; private set; }
-
-        public ControlCanceledEventArgs(int control) {
-            this.Control = control;
-        }
-    }
     /// Event listener for a control canceled event.
-    public delegate void ControlCanceledHandler(ControlCanceledEventArgs args);
+    public delegate void ControlCanceledHandler(int control);
 
-    public class ObjectSelectedEventArgs : EventArgs {
-        public GameObject gameObject;
-
-        public ObjectSelectedEventArgs(GameObject gameObject) {
-            this.gameObject = gameObject;
-        }
-    }
     /// Event listener for an object selected event, fired when the user
     /// touches or clicks an object on the screen.
-    public delegate void ObjectSelectedHandler(ObjectSelectedEventArgs args);
+    public delegate void ObjectSelectedHandler(GameObject gameObject);
 
     /// Event listener for a touch control state change event -
     /// press or release. For more in depth handling, poll from <see cref="InputManager" />.
@@ -328,7 +314,7 @@ namespace SciFi {
             }
             state.UpdateButton(control, active);
             if (selectedObject != null) {
-                ObjectSelected(new ObjectSelectedEventArgs(selectedObject));
+                ObjectSelected(selectedObject);
             }
         }
 
@@ -513,7 +499,7 @@ namespace SciFi {
                     }
                     var control = GetTouchControl(controlName);
                     if (control == -1) {
-                        ObjectSelected(new ObjectSelectedEventArgs(obj));
+                        ObjectSelected(obj);
                         continue;
                     }
                     BeginTouch(control);
@@ -541,7 +527,7 @@ namespace SciFi {
                     if (combo != -1) {
                         InvalidateControl(currentControl);
                         EndTouch(currentControl);
-                        ControlCanceled(new ControlCanceledEventArgs(currentControl));
+                        ControlCanceled(currentControl);
                         firstComboButton = currentControlName;
                         secondComboButton = newControlName;
                         activeTouches[touch.fingerId] = GetComboName(combo);

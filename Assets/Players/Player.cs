@@ -504,8 +504,8 @@ namespace SciFi.Players {
             return null;
         }
 
-        void ObjectSelected(ObjectSelectedEventArgs args) {
-            if (args.gameObject == this.eItem) {
+        void ObjectSelected(GameObject gameObject) {
+            if (gameObject == this.eItem) {
                 UseItem();
                 return;
             }
@@ -514,14 +514,14 @@ namespace SciFi.Players {
             if (eItem != null) {
                 return;
             }
-            if (args.gameObject.layer == Layers.items || args.gameObject.layer == Layers.noncollidingItems) {
-                if (CircleCastForItem(args.gameObject) == args.gameObject) {
-                    PickUpItem(args.gameObject);
+            if (gameObject.layer == Layers.items || gameObject.layer == Layers.noncollidingItems) {
+                if (CircleCastForItem(gameObject) == gameObject) {
+                    PickUpItem(gameObject);
                 }
             }
         }
 
-        void ControlCanceled(ControlCanceledEventArgs args) {
+        void ControlCanceled(int control) {
             //
         }
 

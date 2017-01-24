@@ -19,10 +19,10 @@ namespace SciFi.Scenes {
             goButton.onClick.AddListener(GoClicked);
         }
 
-        void ObjectSelected(ObjectSelectedEventArgs args) {
+        void ObjectSelected(GameObject gameObject) {
             ((Behaviour)selected.GetComponent("Halo")).enabled = false;
-            ((Behaviour)args.gameObject.GetComponent("Halo")).enabled = true;
-            selected = args.gameObject;
+            ((Behaviour)gameObject.GetComponent("Halo")).enabled = true;
+            selected = gameObject;
         }
 
         void GoClicked() {

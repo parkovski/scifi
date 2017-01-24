@@ -28,19 +28,19 @@ namespace SciFi.UI {
             };
         }
 
-        void PlayerDamageChanged(DamageChangedEventArgs args) {
-            if (args.playerId != player) {
+        void PlayerDamageChanged(int playerId, int newDamage) {
+            if (playerId != player) {
                 return;
             }
-            damage = args.newDamage;
+            damage = newDamage;
             UpdateInfo();
         }
 
-        void PlayerLifeChanged(LifeChangedEventArgs args) {
-            if (args.playerId != player) {
+        void PlayerLifeChanged(int playerId, int newLives) {
+            if (playerId != player) {
                 return;
             }
-            lives = args.newLives;
+            lives = newLives;
             damage = 0;
             UpdateInfo();
         }

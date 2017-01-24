@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Random = UnityEngine.Random;
@@ -11,20 +10,9 @@ using SciFi.Items;
 using SciFi.UI;
 
 namespace SciFi {
-    public class DamageChangedEventArgs : EventArgs {
-        public int playerId;
-        public int newDamage;
-    }
-    public delegate void DamageChangedHandler(DamageChangedEventArgs args);
-
-    public class LifeChangedEventArgs : EventArgs {
-        public int playerId;
-        public int newLives;
-    }
-    public delegate void LifeChangedHandler(LifeChangedEventArgs args);
-
+    public delegate void DamageChangedHandler(int playerId, int newDamage);
+    public delegate void LifeChangedHandler(int playerId, int newLives);
     public delegate void StartGameHandler();
-
     public delegate void PlayersInitializedHandler(Player[] players);
 
     /// Commonly used layers. This is initialized by the <see cref="GameController" />
@@ -163,10 +151,7 @@ namespace SciFi {
                 if (countdown) {
                     player.SuspendAllFeatures();
                 }
-                EventLifeChanged(new LifeChangedEventArgs {
-                    playerId = player.eId,
-                    newLives = player.eLives,
-                });
+                EventLifeChanged(player.eId, player.eLives);
             }
 
             _PlayersInitialized(activePlayers);
@@ -318,10 +303,7 @@ namespace SciFi {
 
             player.eDamage = 0;
             player.RpcRespawn(new Vector3(0f, 7f));
-            EventLifeChanged(new LifeChangedEventArgs {
-                playerId = player.eId,
-                newLives = player.eLives,
-            });
+            EventLifeChanged(player.eId, player.eLives);
         }
 
         /// Inflict damage on a player or item.
@@ -345,11 +327,7 @@ namespace SciFi {
                 return;
             }
             player.eDamage += amount;
-            var args = new DamageChangedEventArgs {
-                playerId = player.eId,
-                newDamage = player.eDamage,
-            };
-            EventDamageChanged(args);
+            EventDamageChanged(player.eId, player.eDamage);
         }
 
         /// Inflict damage on an item.
