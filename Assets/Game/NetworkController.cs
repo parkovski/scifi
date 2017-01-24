@@ -62,9 +62,9 @@ namespace SciFi.Network {
                     NetworkServer.Spawn(obj);
                 }
                 GameController.Instance.StartGame(
-                    #if UNITY_EDITOR
+#if UNITY_EDITOR
                     false
-                    #endif
+#endif
                 );
             }
         }

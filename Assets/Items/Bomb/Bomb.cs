@@ -4,11 +4,8 @@ using SciFi.Environment.Effects;
 
 namespace SciFi.Items {
     public class Bomb : Item {
-        AudioSource audioSource;
-
         void Start() {
             BaseStart(false);
-            audioSource = GetComponent<AudioSource>();
         }
 
         void Update() {
@@ -25,13 +22,11 @@ namespace SciFi.Items {
             var layer = collision.gameObject.layer;
             if (layer == Layers.projectiles) {
                 Effects.Explosion(transform.position);
-                audioSource.Play();
                 Destroy(gameObject);
             } else if (layer == Layers.players || layer == Layers.items) {
                 GameController.Instance.TakeDamage(collision.gameObject, 15);
                 GameController.Instance.Knockback(gameObject, collision.gameObject, 7.5f);
                 Effects.Explosion(transform.position);
-                audioSource.Play();
                 Destroy(gameObject);
             }
         }

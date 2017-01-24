@@ -14,6 +14,7 @@ namespace SciFi.Items {
         /// The item's owner, if any, that it will follow.
         protected GameObject eOwnerGo;
         protected Player eOwner;
+        [SyncVar]
         protected Vector3 eOwnerOffset;
 
         private float sAliveTime;
@@ -164,6 +165,7 @@ namespace SciFi.Items {
         [Server]
         public void ChangeDirection(Direction direction) {
             eDirection = direction;
+            eOwnerOffset = GetOwnerOffset(direction);
             OnChangeDirection(direction);
         }
 
@@ -245,18 +247,12 @@ namespace SciFi.Items {
             OnDiscard();
         }
 
-        /// When the player changes direction, the item needs
-        /// to switch to the opposite side.
-        [Server]
-        public void SetOwnerOffset(float x, float y) {
-            this.eOwnerOffset.x = x;
-            this.eOwnerOffset.y = y;
-            RpcUpdateOwnerOffset(this.eOwnerOffset);
-        }
-
-        [ClientRpc]
-        void RpcUpdateOwnerOffset(Vector3 offset) {
-            this.eOwnerOffset = offset;
+        protected virtual Vector3 GetOwnerOffset(Direction direction) {
+            if (direction == Direction.Left) {
+                return new Vector3(-1, 0);
+            } else {
+                return new Vector3(1, 0);
+            }
         }
 
         /// An item held by a player should not be affected by physics.
