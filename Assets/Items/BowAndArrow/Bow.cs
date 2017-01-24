@@ -29,9 +29,12 @@ namespace SciFi.Items {
         readonly Vector3 arrowOffset = new Vector3(.13f, 0f);
         readonly Vector3 flippedArrowOffset = new Vector3(-.13f, 0f);
 
+        AudioSource audioSource;
+
         void Start() {
             BaseStart(true);
             InitArrowsArray();
+            audioSource = GetComponent<AudioSource>();
         }
 
         public override void OnStartServer() {
@@ -152,6 +155,7 @@ namespace SciFi.Items {
             var force = GetArrowForce();
 
             var arrow = Instantiate(GameController.IndexToPrefab(eArrowPrefabIndex), gameObject.transform.position, Quaternion.identity);
+            audioSource.Play();
             if (eFlipArrow) {
                 arrow.GetComponent<SpriteRenderer>().flipX = true;
             }
