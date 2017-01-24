@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 using SciFi.Scenes;
 using SciFi.Network;
@@ -31,16 +32,14 @@ namespace SciFi.Util {
             networkController.minPlayers = 1;
 
             networkController.StartHost();
+
+            StartCoroutine(AddPlayer());
         }
 
-        bool done = false;
-        void LateUpdate() {
-            if (done || !autoAddPlayer) {
-                return;
-            }
+        IEnumerator AddPlayer() {
+            yield return new WaitForEndOfFrame();
             networkController.TryToAddPlayer();
             networkController.lobbySlots[0].SendReadyToBeginMessage();
-            done = true;
         }
     }
 }
