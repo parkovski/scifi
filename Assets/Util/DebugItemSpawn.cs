@@ -13,7 +13,7 @@ namespace SciFi.Util {
         void Start() {
             dropdown.AddOptions(
                 NetworkController.singleton.spawnPrefabs
-                    .Where(p => p.layer != Layers.players)
+                    .Where(p => p.layer != Layers.players && p.layer != Layers.displayOnly)
                     .Select(p => p.name)
                     .ToList()
             );
