@@ -36,8 +36,8 @@ namespace SciFi.Util {
                 EventSystem.current.SetSelectedGameObject(null);
             });
 #else
-            Destroy(dropdown);
-            Destroy(spawnButton);
+            Destroy(dropdown.gameObject);
+            Destroy(spawnButton.gameObject);
 #endif
         }
 
