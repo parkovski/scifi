@@ -6,11 +6,11 @@ namespace SciFi.Scenes {
     /// For editor testing when the main game scene
     /// is started.
     public class MainGameEditorHack : MonoBehaviour {
-        public bool playAudioInEditor;
+        public bool playMusicInEditor;
 
         void Start() {
 #if UNITY_EDITOR
-            GameObject.Find("Music").GetComponent<AudioSource>().enabled = playAudioInEditor;
+            GameObject.Find("Music").GetComponent<AudioSource>().enabled = playMusicInEditor;
 #endif
 
             if (FindObjectOfType<GameController>() == null) {
