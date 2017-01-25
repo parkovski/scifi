@@ -25,6 +25,7 @@
 ## Tools used to create this game
 All of these except FL Studio are free. For a free alternative
 to FL Studio, I've heard Reaper is good.
+
 - Unity3D
 - Visual Studio Code
 - FL Studio
@@ -37,5 +38,3 @@ to FL Studio, I've heard Reaper is good.
 - BitBucket
 - Doxygen
 - Vim
-
-Bitbucket doesn't like lists at the end of markdown files :(.
