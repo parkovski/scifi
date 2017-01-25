@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 using SciFi.Items;
 using SciFi.Environment.Effects;
@@ -9,8 +10,11 @@ namespace SciFi.Players.Attacks {
         public int power;
         public bool attacking = false;
 
+        HashSet<GameObject> hitObjects;
+
         void Start() {
             Item.IgnoreCollisions(gameObject, spawnedBy);
+            hitObjects = new HashSet<GameObject>();
         }
 
         /// This can get called before Start -
@@ -20,8 +24,8 @@ namespace SciFi.Players.Attacks {
                 return;
             }
 
-            if (collider.gameObject.tag == "Player") {
-                Item.IgnoreCollisions(gameObject, collider.gameObject);
+            if (collider.gameObject.tag == "Player" && !hitObjects.Contains(collider.gameObject)) {
+                hitObjects.Add(collider.gameObject);
                 GameController.Instance.TakeDamage(collider.gameObject, power * 2);
                 GameController.Instance.Knockback(spawnedBy, collider.gameObject, power);
                 Effects.Star(collider.bounds.ClosestPoint(transform.position));

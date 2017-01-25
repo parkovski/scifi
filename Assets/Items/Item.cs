@@ -248,6 +248,11 @@ namespace SciFi.Items {
             return hitObjects.Contains(obj);
         }
 
+        /// Forget all objects saved with <see cref="LogHit" />
+        protected void ClearHits() {
+            hitObjects.Clear();
+        }
+
         /// Ignore collisions from all colliders on <c>obj1</c> and <c>obj2</c>.
         /// <param name="ignore">If true, ignore collisions. If false, detect collisions.</param>
         public static void IgnoreCollisions(GameObject obj1, GameObject obj2, bool ignore = true) {
