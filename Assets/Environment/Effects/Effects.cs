@@ -11,6 +11,7 @@ namespace SciFi.Environment.Effects {
 
         public static void Explosion(Vector3 position) {
             var explosion = Object.Instantiate(EffectsEditorParams.Instance.explosion, position, Quaternion.identity);
+            NetworkServer.Spawn(explosion);
         }
     }
 }
