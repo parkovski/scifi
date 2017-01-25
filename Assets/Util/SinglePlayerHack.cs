@@ -14,12 +14,18 @@ namespace SciFi.Util {
             // is skipped, so for testing let it run with just one
             // player.
 #if UNITY_EDITOR
+            // This runs in the editor in multiplayer mode
+            // to allow testing that with just one player
+            // although I'm not sure why that's necessary.
             GetComponent<NetworkController>().minPlayers = 1;
 #endif
 
             if (TransitionParams.gameType != GameType.Single) {
                 return;
             }
+
+            // This runs on every build in single player mode.
+            GetComponent<NetworkController>().minPlayers = 1;
 
             networkController.StartHost();
 
