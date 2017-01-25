@@ -270,7 +270,7 @@ namespace SciFi {
             var attack1 = Input.GetButton("Fire1");
             var attack2 = Input.GetButton("Fire2");
             var specialAttack = Input.GetButton("Fire3");
-            var item = Input.GetKey("return");
+            var item = Input.GetButton("Item");
             var mouse1 = Input.GetKey("mouse 0");
             var mouse2 = Input.GetKey("mouse 1");
 
