@@ -37,3 +37,5 @@ to FL Studio, I've heard Reaper is good.
 - BitBucket
 - Doxygen
 - Vim
+
+Bitbucket doesn't like lists at the end of markdown files :(.
