@@ -18,6 +18,9 @@ namespace SciFi.Util {
 
         void Start() {
 #if UNITY_EDITOR
+            // The dropdown is unusable without this,
+            // but it puts the UI behind attacks and players.
+            GetComponent<Canvas>().sortingLayerID = SortingLayer.NameToID("Default");
             try {
                 dropdown.AddOptions(
                     NetworkController.singleton.spawnPrefabs
