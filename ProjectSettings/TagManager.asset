@@ -43,3 +43,18 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Players
+    uniqueID: 3816487201
+    locked: 0
+  - name: Items and Attacks
+    uniqueID: 349233485
+    locked: 0
+  - name: Effects
+    uniqueID: 1888780985
+    locked: 0
+  - name: UI
+    uniqueID: 3817645435
+    locked: 0
+  - name: Overlay
+    uniqueID: 1594979869
+    locked: 0

@@ -10,7 +10,7 @@ namespace SciFi.Scenes {
 
         void Start() {
 #if UNITY_EDITOR
-            GameObject.Find("Audio").GetComponent<AudioSource>().enabled = playAudioInEditor;
+            GameObject.Find("Music").GetComponent<AudioSource>().enabled = playAudioInEditor;
 #endif
 
             if (FindObjectOfType<GameController>() == null) {

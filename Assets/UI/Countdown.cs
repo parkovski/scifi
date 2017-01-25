@@ -17,7 +17,7 @@ namespace SciFi.UI {
         public event OnFinishedHandler OnFinished;
 
         void Start() {
-            GameObject.Find("Audio").GetComponent<AudioSource>().time = beat * 12;
+            GameObject.Find("Music").GetComponent<AudioSource>().time = beat * 12;
             cues.Add(beat,     () => ChangeText("3"));
             cues.Add(beat * 2, () => ChangeText("2"));
             cues.Add(beat * 3, () => ChangeText("1"));

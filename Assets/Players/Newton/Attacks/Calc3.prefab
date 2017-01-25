@@ -99,6 +99,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spawnedBy: {fileID: 0}
   power: 10
+  attacking: 0
 --- !u!212 &212281693312968900
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -128,7 +129,7 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
+  m_SortingLayerID: 349233485
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: bff36091ab3dc43d1a8b762801ed6ed7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
