@@ -2,12 +2,14 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using Random = UnityEngine.Random;
 
 using SciFi.Players;
 using SciFi.Items;
 using SciFi.UI;
+using SciFi.Environment.Effects;
 
 namespace SciFi {
     public delegate void DamageChangedHandler(int playerId, int newDamage);
@@ -235,11 +237,7 @@ namespace SciFi {
         /// End the game and load the game over scene.
         [Server]
         public void EndGame() {
-            isPlaying = false;
-            activePlayers = new Player[0];
-            activePlayersGo = new GameObject[0];
-
-            SceneManager.LoadScene("GameOver");
+            StartCoroutine(TransitionToGameOver());
             RpcEndGame();
         }
 
@@ -268,7 +266,13 @@ namespace SciFi {
         /// End the game on the client and load the game over scene.
         [ClientRpc]
         void RpcEndGame() {
+            StartCoroutine(TransitionToGameOver());
+        }
+
+        IEnumerator TransitionToGameOver() {
             isPlaying = false;
+            Effects.FadeOut();
+            yield return new WaitForSeconds(1f);
             activePlayersGo = new GameObject[0];
             activePlayers = new Player[0];
             SceneManager.LoadScene("GameOver");
