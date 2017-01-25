@@ -7,6 +7,7 @@ namespace SciFi.Environment.Effects {
 
         public GameObject star;
         public GameObject explosion;
+        public GameObject fadeOverlay;
 
         void Awake() {
             Instance = this;

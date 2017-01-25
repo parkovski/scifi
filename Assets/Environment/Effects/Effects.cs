@@ -13,5 +13,15 @@ namespace SciFi.Environment.Effects {
             var explosion = Object.Instantiate(EffectsEditorParams.Instance.explosion, position, Quaternion.identity);
             NetworkServer.Spawn(explosion);
         }
+
+        public static void FadeIn() {
+            var fade = Object.Instantiate(EffectsEditorParams.Instance.fadeOverlay, Vector3.zero, Quaternion.identity);
+            fade.GetComponent<Animator>().SetTrigger("FadeIn");
+        }
+
+        public static void FadeOut() {
+            var fade = Object.Instantiate(EffectsEditorParams.Instance.fadeOverlay, Vector3.zero, Quaternion.identity);
+            fade.GetComponent<Animator>().SetTrigger("FadeOut");
+        }
     }
 }
