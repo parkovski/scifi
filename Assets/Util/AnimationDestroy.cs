@@ -8,5 +8,15 @@ namespace SciFi.Util {
         public void DestroyObject() {
             Destroy(gameObject);
         }
+
+        public void HideObject() {
+            GetComponent<SpriteRenderer>().enabled = false;
+        }
+
+        public void HideChildren() {
+            for (var i = 0; i < transform.childCount; i++) {
+                transform.GetChild(i).GetComponent<SpriteRenderer>().enabled = false;
+            }
+        }
     }
 }
