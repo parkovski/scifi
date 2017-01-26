@@ -270,24 +270,14 @@ namespace SciFi {
         }
 
         IEnumerator TransitionToGameOver() {
+            var music = GameObject.Find("Music").GetComponent<AudioSource>();
             isPlaying = false;
             Effects.FadeOut();
-            StartCoroutine(FadeOutMusic());
+            Effects.FadeOutAudio(music, .9f, 20);
             yield return new WaitForSeconds(1f);
             activePlayersGo = new GameObject[0];
             activePlayers = new Player[0];
             SceneManager.LoadScene("GameOver");
-        }
-
-        IEnumerator FadeOutMusic() {
-            var volume = 20;
-            var music = GameObject.Find("Music").GetComponent<AudioSource>();
-            while (volume > 0) {
-                --volume;
-                music.volume = ((float)volume) / 20f;
-                // Finish before the fade out, since that destroys the audio source.
-                yield return new WaitForSeconds(.04f);
-            }
         }
 
         /// Convert a prefab object to its index in the spawnable prefabs list.

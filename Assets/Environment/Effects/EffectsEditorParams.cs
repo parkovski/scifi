@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 namespace SciFi.Environment.Effects {
     /// Parameters for effects set via the Unity editor (e.g. prefabs).
@@ -11,6 +12,10 @@ namespace SciFi.Environment.Effects {
 
         void Awake() {
             Instance = this;
+        }
+
+        public static void RunCoroutine(IEnumerator coro) {
+            Instance.StartCoroutine(coro);
         }
     }
 }

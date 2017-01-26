@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Networking;
+using System.Collections;
 
 namespace SciFi.Environment.Effects {
     /// Visual effects that are self-managing.
@@ -22,6 +23,37 @@ namespace SciFi.Environment.Effects {
         public static void FadeOut() {
             var fade = Object.Instantiate(EffectsEditorParams.Instance.fadeOverlay, Vector3.zero, Quaternion.identity);
             fade.GetComponent<Animator>().SetTrigger("FadeOut");
+        }
+
+        private static IEnumerator FadeAudioCoroutine(
+            AudioSource audioSource,
+            float time,
+            float from,
+            float to,
+            int steps,
+            float waitAmount
+        ) {
+            float deltaVolume = (to - from) / steps;
+            for (int i = 0; i < steps; i++) {
+                audioSource.volume += deltaVolume;
+                yield return new WaitForSeconds(waitAmount);
+            }
+        }
+
+        public static void FadeOutAudio(
+            AudioSource audioSource,
+            float time,
+            int steps
+        ) {
+            EffectsEditorParams.RunCoroutine(FadeAudioCoroutine(audioSource, time, 1f, 0f, steps, time / steps));
+        }
+
+        public static void FadeInAudio(
+            AudioSource audioSource,
+            float time,
+            int steps
+        ) {
+            EffectsEditorParams.RunCoroutine(FadeAudioCoroutine(audioSource, time, 0f, 1f, steps, time / steps));
         }
     }
 }
