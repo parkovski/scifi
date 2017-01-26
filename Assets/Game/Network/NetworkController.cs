@@ -54,7 +54,6 @@ namespace SciFi.Network {
             var prefab = spawnPrefabs.Find(p => p.name == playerName);
             var obj = Instantiate(prefab, Vector3.zero, Quaternion.identity);
             GameController.Instance.RegisterNewPlayer(obj, TransitionParams.GetDisplayName(conn));
-            NetworkServer.Spawn(obj);
             return obj;
         }
 
