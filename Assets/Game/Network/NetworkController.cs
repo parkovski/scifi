@@ -53,8 +53,8 @@ namespace SciFi.Network {
             }
             var prefab = spawnPrefabs.Find(p => p.name == playerName);
             var obj = Instantiate(prefab, Vector3.zero, Quaternion.identity);
-            NetworkServer.AddPlayerForConnection(conn, obj, playerControllerId);
             GameController.Instance.RegisterNewPlayer(obj, TransitionParams.GetDisplayName(conn));
+            NetworkServer.Spawn(obj);
             return obj;
         }
 
@@ -67,6 +67,7 @@ namespace SciFi.Network {
                     var obj = Instantiate(newtonPrefab, Vector3.zero, Quaternion.identity);
                     obj.GetComponent<NetworkIdentity>().localPlayerAuthority = false;
                     GameController.Instance.RegisterNewPlayer(obj, TransitionParams.displayName);
+                    NetworkServer.Spawn(obj);
                 }
                 GameController.Instance.StartGame(
 #if UNITY_EDITOR
