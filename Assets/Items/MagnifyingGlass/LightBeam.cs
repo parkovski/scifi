@@ -4,6 +4,7 @@ namespace SciFi.Items {
     public class LightBeam : MonoBehaviour {
         float startTime;
         float stopTime;
+        bool hasSetStopTime = false;
         float nextHitTime;
         const float hitTimeout = .1f;
         public GameObject magnifyingGlassGo;
@@ -54,7 +55,10 @@ namespace SciFi.Items {
                 );
 
                 if (hit) {
-                    stopTime = time;
+                    if (!hasSetStopTime) {
+                        hasSetStopTime = true;
+                        stopTime = time + .02f;
+                    }
                     nextHitTime = Time.time + hitTimeout;
                     magnifyingGlass.Hit(hit.collider.gameObject);
                 }
