@@ -7,66 +7,14 @@ AnimationClip:
     fileID: 0
   m_PrefabInternal:
     fileID: 0
-  m_Name: CalcBookBackwards
+  m_Name: NewtonStandLeft
   serializedVersion: 6
   m_Legacy: 0
   m_Compressed: 0
   m_UseHighQualityCurve: 1
   m_RotationCurves: []
   m_CompressedRotationCurves: []
-  m_EulerCurves:
-    - curve:
-        serializedVersion: 2
-        m_Curve:
-          - serializedVersion: 2
-            time: 0
-            value:
-              x: 0
-              y: 0
-              z: -20
-            inSlope:
-              x: 0
-              y: 0
-              z: 0
-            outSlope:
-              x: 0
-              y: 0
-              z: 0
-            tangentMode: 0
-          - serializedVersion: 2
-            time: 0.083333336
-            value:
-              x: 0
-              y: 0
-              z: 0
-            inSlope:
-              x: 0
-              y: 0
-              z: 240
-            outSlope:
-              x: 0
-              y: 0
-              z: 240
-            tangentMode: 0
-          - serializedVersion: 2
-            time: 0.16666667
-            value:
-              x: 0
-              y: 0
-              z: 20
-            inSlope:
-              x: 0
-              y: 0
-              z: 0
-            outSlope:
-              x: 0
-              y: 0
-              z: 0
-            tangentMode: 0
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-      path: null
+  m_EulerCurves: []
   m_PositionCurves:
     - curve:
         serializedVersion: 2
@@ -74,37 +22,7 @@ AnimationClip:
           - serializedVersion: 2
             time: 0
             value:
-              x: -1
-              y: 0.5
-              z: 0
-            inSlope:
-              x: 0
-              y: 0
-              z: 0
-            outSlope:
-              x: 0
-              y: 0
-              z: 0
-            tangentMode: 0
-          - serializedVersion: 2
-            time: 0.083333336
-            value:
-              x: -1.5
-              y: 0
-              z: 0
-            inSlope:
-              x: 0
-              y: -24
-              z: 0
-            outSlope:
-              x: 0
-              y: -24
-              z: 0
-            tangentMode: 0
-          - serializedVersion: 2
-            time: 0.16666667
-            value:
-              x: -1
+              x: -0.1
               y: -0.5
               z: 0
             inSlope:
@@ -119,7 +37,29 @@ AnimationClip:
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
-      path: null
+      path: Newton_LeftFoot
+    - curve:
+        serializedVersion: 2
+        m_Curve:
+          - serializedVersion: 2
+            time: 0
+            value:
+              x: 0.25
+              y: -0.5
+              z: 0
+            inSlope:
+              x: 0
+              y: 0
+              z: 0
+            outSlope:
+              x: 0
+              y: 0
+              z: 0
+            tangentMode: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      path: Newton_RightFoot
   m_ScaleCurves: []
   m_FloatCurves: []
   m_PPtrCurves: []
@@ -136,19 +76,19 @@ AnimationClip:
       z: 0
   m_ClipBindingConstant:
     genericBindings:
-      - path: 0
+      - path: 2227031679
         attribute: 1
         script:
           fileID: 0
         classID: 4
         customType: 0
         isPPtrCurve: 0
-      - path: 0
-        attribute: 4
+      - path: 192351995
+        attribute: 1
         script:
           fileID: 0
         classID: 4
-        customType: 14
+        customType: 0
         isPPtrCurve: 0
     pptrCurveMapping: []
   m_AnimationClipSettings:
@@ -157,12 +97,12 @@ AnimationClip:
       fileID: 0
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 0.5
+    m_StopTime: 0
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
     m_HasAdditiveReferencePose: 0
-    m_LoopTime: 0
+    m_LoopTime: 1
     m_LoopBlend: 0
     m_LoopBlendOrientation: 0
     m_LoopBlendPositionY: 0
@@ -178,19 +118,7 @@ AnimationClip:
         m_Curve:
           - serializedVersion: 2
             time: 0
-            value: -1
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 136
-          - serializedVersion: 2
-            time: 0.083333336
-            value: -1.5
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 136
-          - serializedVersion: 2
-            time: 0.16666667
-            value: -1
+            value: -0.1
             inSlope: 0
             outSlope: 0
             tangentMode: 136
@@ -198,7 +126,7 @@ AnimationClip:
         m_PostInfinity: 2
         m_RotationOrder: 4
       attribute: m_LocalPosition.x
-      path: null
+      path: Newton_LeftFoot
       classID: 4
       script:
         fileID: 0
@@ -207,18 +135,6 @@ AnimationClip:
         m_Curve:
           - serializedVersion: 2
             time: 0
-            value: 0.5
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 136
-          - serializedVersion: 2
-            time: 0.083333336
-            value: 0
-            inSlope: -24
-            outSlope: -24
-            tangentMode: 136
-          - serializedVersion: 2
-            time: 0.16666667
             value: -0.5
             inSlope: 0
             outSlope: 0
@@ -227,7 +143,7 @@ AnimationClip:
         m_PostInfinity: 2
         m_RotationOrder: 4
       attribute: m_LocalPosition.y
-      path: null
+      path: Newton_LeftFoot
       classID: 4
       script:
         fileID: 0
@@ -236,49 +152,72 @@ AnimationClip:
         m_Curve:
           - serializedVersion: 2
             time: 0
-            value: -20
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 136
-          - serializedVersion: 2
-            time: 0.083333336
             value: 0
-            inSlope: 240
-            outSlope: 240
-            tangentMode: 136
-          - serializedVersion: 2
-            time: 0.16666667
-            value: 20
             inSlope: 0
             outSlope: 0
             tangentMode: 136
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
-      attribute: localEulerAnglesRaw.z
-      path: null
+      attribute: m_LocalPosition.z
+      path: Newton_LeftFoot
+      classID: 4
+      script:
+        fileID: 0
+    - curve:
+        serializedVersion: 2
+        m_Curve:
+          - serializedVersion: 2
+            time: 0
+            value: 0.25
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 136
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      attribute: m_LocalPosition.x
+      path: Newton_RightFoot
+      classID: 4
+      script:
+        fileID: 0
+    - curve:
+        serializedVersion: 2
+        m_Curve:
+          - serializedVersion: 2
+            time: 0
+            value: -0.5
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 136
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      attribute: m_LocalPosition.y
+      path: Newton_RightFoot
+      classID: 4
+      script:
+        fileID: 0
+    - curve:
+        serializedVersion: 2
+        m_Curve:
+          - serializedVersion: 2
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 136
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      attribute: m_LocalPosition.z
+      path: Newton_RightFoot
       classID: 4
       script:
         fileID: 0
   m_EulerEditorCurves: []
-  m_HasGenericRootTransform: 1
+  m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
   m_GenerateMotionCurves: 0
   m_IsEmpty: 0
-  m_Events:
-    - time: 0.16666667
-      functionName: StopAttacking
-      data: null
-      objectReferenceParameter:
-        fileID: 0
-      floatParameter: 0
-      intParameter: 0
-      messageOptions: 0
-    - time: 0.5
-      functionName: DestroyObject
-      data: null
-      objectReferenceParameter:
-        fileID: 0
-      floatParameter: 0
-      intParameter: 0
-      messageOptions: 0
+  m_Events: []
