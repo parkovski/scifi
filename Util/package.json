@@ -1,0 +1,14 @@
+{
+  "name": "scifi-util",
+  "version": "0.1.0",
+  "description": "",
+  "dependencies": {
+    "js-yaml": "^3.7.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "parker",
+  "license": "ISC"
+}

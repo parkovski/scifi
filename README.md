@@ -23,12 +23,13 @@
 - Lord Kelvin
 
 ## Tools used to create this game
-All of these except FL Studio are free. For a free alternative
+Most of these are free. For a free alternative
 to FL Studio, I've heard Reaper is good.
 
 - Unity3D
 - Visual Studio Code
 - FL Studio
+- Akai MPK249 & MPK225
 - Audacity
 - Paint.NET
 - The Gimp
@@ -38,3 +39,4 @@ to FL Studio, I've heard Reaper is good.
 - BitBucket
 - Doxygen
 - Vim
+- ffmpeg
