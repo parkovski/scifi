@@ -51,6 +51,7 @@ namespace SciFi.Items {
             this.eCanCharge = canCharge;
             this.eInitialLayer = gameObject.layer;
             this.spriteRenderer = GetComponent<SpriteRenderer>();
+            this.hitObjects = new HashSet<GameObject>();
         }
 
         /// Handles common item behaviour, including following the owner,
@@ -111,20 +112,15 @@ namespace SciFi.Items {
             }
 
             if (collision.gameObject.tag == "Ground") {
-                RpcSetToItemsLayer();
+                gameObject.layer = eInitialLayer;
             }
         }
 
-        [ClientRpc]
-        void RpcSetToItemsLayer() {
-            gameObject.layer = eInitialLayer;
-        }
-
         // Called on all clients when the object is picked up.
-        public virtual void OnPickup() {}
+        protected virtual void OnPickup() {}
 
         // Called on all clients when the object is discarded.
-        public virtual void OnDiscard() {}
+        protected virtual void OnDiscard() {}
 
         /// True if the player should throw the item, false if he should call
         /// EndCharging/Use instead.
@@ -284,12 +280,12 @@ namespace SciFi.Items {
             this.eOwnerGo = owner;
             if (owner != null) {
                 this.eOwner = owner.GetComponent<Player>();
-                EnablePhysics(false);
+                gameObject.layer = Layers.items;
                 RpcNotifyPickup(owner);
             } else {
                 this.eOwner = null;
-                EnablePhysics(true);
                 sDestroyTime = Time.time + sAliveTime;
+                GetComponent<Rigidbody2D>().velocity = Vector2.zero;
                 RpcNotifyDiscard();
             }
             return true;
@@ -299,7 +295,6 @@ namespace SciFi.Items {
         void RpcNotifyPickup(GameObject newOwner) {
             this.eOwnerGo = newOwner;
             this.eOwner = newOwner.GetComponent<Player>();
-            EnablePhysics(false);
             RestoreAlpha();
             OnPickup();
         }
@@ -308,7 +303,6 @@ namespace SciFi.Items {
         void RpcNotifyDiscard() {
             this.eOwnerGo = null;
             this.eOwner = null;
-            EnablePhysics(true);
             OnDiscard();
         }
 

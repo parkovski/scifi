@@ -13,9 +13,10 @@ namespace SciFi.Items {
 
     public class Sword : Item {
         public SwordType swordType;
-        public bool isAttacking;
 
         Animator animator;
+
+        bool isAttacking;
 
         void Start() {
             BaseStart(false);
@@ -27,19 +28,30 @@ namespace SciFi.Items {
         }
 
         public void StartAttacking() {
+            //gameObject.layer = Layers.noncollidingItems;
             isAttacking = true;
         }
 
         public void StopAttacking() {
+            //gameObject.layer = Layers.displayOnly;
             isAttacking = false;
+            ClearHits();
         }
 
         void OnCollisionEnter2D(Collision2D collision) {
             BaseCollisionEnter2D(collision);
+        }
 
+        void OnCollisionStay2D(Collision2D collision) {
+            print(isAttacking);
             if (!isAttacking) {
                 return;
             }
+
+            if (DidHit(collision.gameObject)) {
+                return;
+            }
+            LogHit(collision.gameObject);
 
             var layer = collision.gameObject.layer;
             if (layer == Layers.projectiles || layer == Layers.players || layer == Layers.items) {
@@ -60,6 +72,14 @@ namespace SciFi.Items {
                 animator.SetTrigger("SwingLeft");
             } else {
                 animator.SetTrigger("SwingRight");
+            }
+        }
+
+        protected override Vector3 GetOwnerOffset(Direction direction) {
+            if (direction == Direction.Left) {
+                return new Vector3(-.7f, 0);
+            } else {
+                return new Vector3(.7f, 0);
             }
         }
     }

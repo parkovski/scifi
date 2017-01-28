@@ -99,13 +99,13 @@ namespace SciFi.Items {
             BaseCollisionEnter2D(collision);
         }
 
-        public override void OnPickup() {
+        protected override void OnPickup() {
             if (isServer) {
                 //Destroy(lDisplayArrow);
                 //RpcDestroyDisplayArrow();
             }
         }
-        public override void OnDiscard() {
+        protected override void OnDiscard() {
             if (isServer) {
                 //RpcCreateDisplayArrow();
             }
