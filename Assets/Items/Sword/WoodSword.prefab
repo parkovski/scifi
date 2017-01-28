@@ -25,6 +25,7 @@ GameObject:
   - component: {fileID: 50392955268048084}
   - component: {fileID: 61799092223769724}
   - component: {fileID: 114018429973357312}
+  - component: {fileID: 95012380890366374}
   m_Layer: 14
   m_Name: WoodSword
   m_TagString: Untagged
@@ -79,6 +80,23 @@ BoxCollider2D:
   m_Offset: {x: 0.045729876, y: 0.009145856}
   serializedVersion: 2
   m_Size: {x: 0.091499984, y: 0.71342635}
+--- !u!95 &95012380890366374
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1321657633538204}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: de41638eac0cf4837aabf24eaeb5e6e7, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
 --- !u!114 &114018429973357312
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -143,7 +161,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   swordType: 1
-  isAttacking: 0
 --- !u!212 &212869926393245098
 SpriteRenderer:
   m_ObjectHideFlags: 1

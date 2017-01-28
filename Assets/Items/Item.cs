@@ -39,6 +39,11 @@ namespace SciFi.Items {
         /// The time the item started blinking.
         float firstBlinkTime = 0f;
         protected SpriteRenderer spriteRenderer;
+        protected Rigidbody2D lRb;
+        /// A trigger item converts its collision boxes to triggers
+        /// when it is picked up so that collisions are detected while
+        /// it is held.
+        protected bool isTriggerItem = false;
 
         /// A set of objects that the item has hit to make sure
         /// the item only hits once.
@@ -51,6 +56,7 @@ namespace SciFi.Items {
             this.eCanCharge = canCharge;
             this.eInitialLayer = gameObject.layer;
             this.spriteRenderer = GetComponent<SpriteRenderer>();
+            this.lRb = GetComponent<Rigidbody2D>();
             this.hitObjects = new HashSet<GameObject>();
         }
 
@@ -61,6 +67,7 @@ namespace SciFi.Items {
             // If there is an owner, all copies update their position independently
             // based on the owner's position.
             if (eOwnerGo != null) {
+                lRb.velocity = Vector2.zero;
                 gameObject.transform.position = eOwnerGo.transform.position + eOwnerOffset;
             }
 
@@ -230,7 +237,7 @@ namespace SciFi.Items {
             default:
                 return;
             }
-            GetComponent<Rigidbody2D>().AddForce(force);
+            lRb.AddForce(force);
             gameObject.layer = Layers.projectiles;
         }
 
@@ -277,32 +284,52 @@ namespace SciFi.Items {
             if (this.eOwnerGo != null && owner != null) {
                 return false;
             }
-            this.eOwnerGo = owner;
             if (owner != null) {
                 this.eOwner = owner.GetComponent<Player>();
-                gameObject.layer = Layers.items;
+                if (isTriggerItem) {
+                    gameObject.layer = Layers.projectiles;
+                }
+                IgnoreCollisions(gameObject, owner);
                 RpcNotifyPickup(owner);
             } else {
+                IgnoreCollisions(gameObject, eOwnerGo, false);
                 this.eOwner = null;
                 sDestroyTime = Time.time + sAliveTime;
-                GetComponent<Rigidbody2D>().velocity = Vector2.zero;
                 RpcNotifyDiscard();
             }
+            this.eOwnerGo = owner;
+            UpdateTriggerItemState();
             return true;
+        }
+
+        void UpdateTriggerItemState() {
+            if (!isTriggerItem) {
+                return;
+            }
+            bool isTrigger = eOwner != null;
+            foreach (var collider in GetComponents<Collider2D>()) {
+                collider.isTrigger = isTrigger;
+            }
         }
 
         [ClientRpc]
         void RpcNotifyPickup(GameObject newOwner) {
             this.eOwnerGo = newOwner;
             this.eOwner = newOwner.GetComponent<Player>();
+            IgnoreCollisions(gameObject, newOwner);
+            UpdateTriggerItemState();
             RestoreAlpha();
             OnPickup();
         }
 
         [ClientRpc]
         void RpcNotifyDiscard() {
+            if (eOwnerGo != null) {
+                IgnoreCollisions(gameObject, eOwnerGo, false);
+            }
             this.eOwnerGo = null;
             this.eOwner = null;
+            UpdateTriggerItemState();
             OnDiscard();
         }
 
@@ -314,11 +341,6 @@ namespace SciFi.Items {
             } else {
                 return new Vector3(1, 0);
             }
-        }
-
-        /// An item held by a player should not be affected by physics.
-        void EnablePhysics(bool enable) {
-            GetComponent<Rigidbody2D>().isKinematic = !enable;
         }
     }
 }

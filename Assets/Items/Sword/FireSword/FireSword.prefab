@@ -42,6 +42,7 @@ GameObject:
   - component: {fileID: 114079696728272318}
   - component: {fileID: 114344308367871636}
   - component: {fileID: 114408356414588900}
+  - component: {fileID: 95624715169196672}
   m_Layer: 10
   m_Name: FireSword
   m_TagString: Untagged
@@ -140,6 +141,23 @@ BoxCollider2D:
   m_Offset: {x: -0.020229995, y: 0.03034532}
   serializedVersion: 2
   m_Size: {x: 0.15230978, y: 1.3324044}
+--- !u!95 &95624715169196672
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1572888743831986}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: de41638eac0cf4837aabf24eaeb5e6e7, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
 --- !u!114 &114079696728272318
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -204,7 +222,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   swordType: 2
-  isAttacking: 0
 --- !u!114 &114422636213708768
 MonoBehaviour:
   m_ObjectHideFlags: 1
