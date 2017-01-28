@@ -7,6 +7,10 @@ using SciFi.Players;
 namespace SciFi.Items {
     /// An item that spawns randomly and can be picked up and used by the player.
     public abstract class Item : NetworkBehaviour {
+        /// The outline graphic to show on the item button
+        /// when a player is holding this item.
+        public Sprite itemButtonGraphic;
+
         bool pIsCharging = false;
         bool eCanCharge;
         protected Direction eDirection = Direction.Right;
@@ -44,6 +48,10 @@ namespace SciFi.Items {
         /// when it is picked up so that collisions are detected while
         /// it is held.
         protected bool isTriggerItem = false;
+        /// When this flag is true, collision detection happens
+        /// in a child object, so the child's layer needs to be
+        /// updated also.
+        protected bool detectsCollisionInChild = false;
 
         /// A set of objects that the item has hit to make sure
         /// the item only hits once.
@@ -96,13 +104,17 @@ namespace SciFi.Items {
         /// to be destroyed.
         void Blink() {
             var alpha = .5f + Mathf.Abs(Mathf.Cos((Time.time - firstBlinkTime) * 6 * Mathf.PI / 3)) / 2;
-            spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, alpha);
+            if (spriteRenderer != null) {
+                spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, alpha);
+            }
             OnBlink(alpha);
         }
 
         /// When the player grabs a blinking item, it should be made fully opaque.
         void RestoreAlpha() {
-            spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 1f);
+            if (spriteRenderer != null) {
+                spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 1f);
+            }
             OnBlink(1f);
         }
 
@@ -120,6 +132,10 @@ namespace SciFi.Items {
 
             if (collision.gameObject.tag == "Ground") {
                 gameObject.layer = eInitialLayer;
+                if (detectsCollisionInChild) {
+                    // the collider is part of the child object
+                    transform.GetChild(0).gameObject.layer = eInitialLayer;
+                }
             }
         }
 
@@ -239,6 +255,9 @@ namespace SciFi.Items {
             }
             lRb.AddForce(force);
             gameObject.layer = Layers.projectiles;
+            if (detectsCollisionInChild) {
+                transform.GetChild(0).gameObject.layer = Layers.projectiles;
+            }
         }
 
         /// Remember an object hit to avoid hitting it twice
@@ -259,8 +278,8 @@ namespace SciFi.Items {
         /// Ignore collisions from all colliders on <c>obj1</c> and <c>obj2</c>.
         /// <param name="ignore">If true, ignore collisions. If false, detect collisions.</param>
         public static void IgnoreCollisions(GameObject obj1, GameObject obj2, bool ignore = true) {
-            var colls1 = obj1.GetComponents<Collider2D>();
-            var colls2 = obj2.GetComponents<Collider2D>();
+            var colls1 = obj1.GetComponentsInChildren<Collider2D>();
+            var colls2 = obj2.GetComponentsInChildren<Collider2D>();
             foreach (var c1 in colls1) {
                 foreach (var c2 in colls2) {
                     Physics2D.IgnoreCollision(c1, c2, ignore);
@@ -271,7 +290,7 @@ namespace SciFi.Items {
         /// Ignore collisions from <c>coll</c> and all colliders on <c>obj</c>.
         /// <param name="ignore">If true, ignore collisions. If false, detect collisions.</param>
         public static void IgnoreCollisions(GameObject obj, Collider2D coll, bool ignore = true) {
-            var colls = obj.GetComponents<Collider2D>();
+            var colls = obj.GetComponentsInChildren<Collider2D>();
             foreach (var c in colls) {
                 Physics2D.IgnoreCollision(c, coll, ignore);
             }
@@ -288,6 +307,9 @@ namespace SciFi.Items {
                 this.eOwner = owner.GetComponent<Player>();
                 if (isTriggerItem) {
                     gameObject.layer = Layers.projectiles;
+                    if (detectsCollisionInChild) {
+                        transform.GetChild(0).gameObject.layer = Layers.projectiles;
+                    }
                 }
                 IgnoreCollisions(gameObject, owner);
                 RpcNotifyPickup(owner);
@@ -307,7 +329,7 @@ namespace SciFi.Items {
                 return;
             }
             bool isTrigger = eOwner != null;
-            foreach (var collider in GetComponents<Collider2D>()) {
+            foreach (var collider in GetComponentsInChildren<Collider2D>()) {
                 collider.isTrigger = isTrigger;
             }
         }

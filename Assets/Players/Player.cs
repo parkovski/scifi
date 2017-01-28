@@ -53,8 +53,8 @@ namespace SciFi.Players {
         private int pGroundCollisions;
         protected bool pCanJump;
         protected bool pCanDoubleJump;
-        [SyncVar]
-        protected GameObject eItem;
+        protected GameObject eItemGo;
+        protected Item eItem;
         private OneWayPlatform pCurrentOneWayPlatform;
         private int[] featureLockout;
 
@@ -300,7 +300,7 @@ namespace SciFi.Players {
         }
 
         public NetworkInstanceId GetItemNetId() {
-            return eItem == null ? NetworkInstanceId.Invalid : eItem.GetComponent<Item>().netId;
+            return eItem == null ? NetworkInstanceId.Invalid : eItem.netId;
         }
 
         Direction GetControlDirection() {
@@ -344,7 +344,7 @@ namespace SciFi.Players {
         }
 
         void UpdateItemControl(bool active) {
-            if (eItem == null) {
+            if (eItemGo == null) {
                 if (active) {
                     pInputManager.InvalidateControl(Control.Item);
                     PickUpItem();
@@ -352,20 +352,19 @@ namespace SciFi.Players {
                 return;
             }
 
-            var i = eItem.GetComponent<Item>();
-            if (i.IsCharging()) {
+            if (eItem.IsCharging()) {
                 if (active) {
-                    if (i.ShouldCancel()) {
+                    if (eItem.ShouldCancel()) {
                         pInputManager.InvalidateControl(Control.Item);
-                        i.Cancel();
+                        eItem.Cancel();
                         UpdateItemControlGraphic();
                         ResumeFeature(PlayerFeature.Attack);
                         ResumeFeature(PlayerFeature.Movement);
                     } else {
-                        i.KeepCharging(pInputManager.GetControlHoldTime(Control.Item));
+                        eItem.KeepCharging(pInputManager.GetControlHoldTime(Control.Item));
                     }
                 } else {
-                    i.EndCharging(pInputManager.GetControlHoldTime(Control.Item));
+                    eItem.EndCharging(pInputManager.GetControlHoldTime(Control.Item));
                     UpdateItemControlGraphic();
                     ResumeFeature(PlayerFeature.Attack);
                     ResumeFeature(PlayerFeature.Movement);
@@ -378,18 +377,18 @@ namespace SciFi.Players {
                     pInputManager.InvalidateControl(Control.Item);
                     pInputManager.InvalidateControl(control);
                     CmdLoseOwnershipOfItem(direction);
-                    eItem = null;
-                } else if (i.ShouldCharge() && FeatureEnabled(PlayerFeature.Attack)) {
+                    eItemGo = null;
+                } else if (eItem.ShouldCharge() && FeatureEnabled(PlayerFeature.Attack)) {
                     SuspendFeature(PlayerFeature.Attack);
                     SuspendFeature(PlayerFeature.Movement);
-                    i.BeginCharging();
-                } else if (i.ShouldThrow() && FeatureEnabled(PlayerFeature.Attack)) {
+                    eItem.BeginCharging();
+                } else if (eItem.ShouldThrow() && FeatureEnabled(PlayerFeature.Attack)) {
                     pInputManager.InvalidateControl(Control.Item);
                     CmdLoseOwnershipOfItem(eDirection);
-                    eItem = null;
-                } else if (!i.CanCharge() && FeatureEnabled(PlayerFeature.Attack)) {
+                    eItemGo = null;
+                } else if (!eItem.CanCharge() && FeatureEnabled(PlayerFeature.Attack)) {
                     pInputManager.InvalidateControl(Control.Item);
-                    i.Use();
+                    eItem.Use();
                     UpdateItemControlGraphic();
                 }
                 // If none of the above conditions were true, the item
@@ -399,23 +398,25 @@ namespace SciFi.Players {
         }
 
         void UseItem() {
-            var i = eItem.GetComponent<Item>();
-            if (i.ShouldThrow()) {
+            if (eItem.ShouldThrow()) {
                 CmdLoseOwnershipOfItem(eDirection);
-                eItem = null;
-            } else if (i.ShouldCharge()) {
+                eItemGo = null;
+            } else if (eItem.ShouldCharge()) {
                 // TODO: begin charging item
                 // TODO: run this on server
-                i.BeginCharging();
-                i.Use();
+                eItem.BeginCharging();
+                eItem.Use();
             } else {
-                i.Use();
+                eItem.Use();
             }
         }
 
         void PickUpItem(GameObject item = null) {
             item = CircleCastForItem(item);
             if (item != null) {
+                if (item.GetComponent<Item>() == null) {
+                    item = item.transform.parent.gameObject;
+                }
                 CmdTakeOwnershipOfItem(item);
             }
         }
@@ -434,53 +435,71 @@ namespace SciFi.Players {
                 return;
             }
 
-            if (eItem == null) {
+            if (eItemGo == null) {
                 pTouchButtons.SetItemButtonToItemGraphic();
-            } else if (eItem.GetComponent<Item>().ShouldThrow()) {
+            } else if (eItem.ShouldThrow()) {
                 pTouchButtons.SetItemButtonToDiscardGraphic();
             } else {
-                pTouchButtons.SetItemButtonGraphic(eItem.GetComponent<SpriteRenderer>().sprite);
+                var graphic = eItem.itemButtonGraphic;
+                if (graphic != null) {
+                    pTouchButtons.SetItemButtonGraphic(graphic);
+                }
             }
         }
 
         [Command]
-        void CmdTakeOwnershipOfItem(GameObject item) {
-            var itemComponent = item.GetComponent<Item>();
-            if (!itemComponent.SetOwner(gameObject)) {
+        void CmdTakeOwnershipOfItem(GameObject itemGo) {
+            var item = itemGo.GetComponent<Item>();
+            if (!item.SetOwner(gameObject)) {
                 return;
             }
+            this.eItemGo = itemGo;
             this.eItem = item;
+            RpcSetItem(itemGo);
             RpcUpdateItemControlGraphic();
 
-            itemComponent.ChangeDirection(eDirection);
-            item.GetComponent<NetworkTransform>().enabled = false;
+            item.ChangeDirection(eDirection);
+            itemGo.GetComponent<NetworkTransform>().enabled = false;
         }
 
         [Command]
         void CmdLoseOwnershipOfItem(Direction direction) {
+            var itemGo = this.eItemGo;
             var item = this.eItem;
+            this.eItemGo = null;
             this.eItem = null;
+            RpcSetItem(null);
 
-            var itemComponent = item.GetComponent<Item>();
-            itemComponent.SetOwner(null);
-            itemComponent.Throw(direction);
+            item.SetOwner(null);
+            item.Throw(direction);
 
             RpcUpdateItemControlGraphic();
 
-            var networkTransform = item.GetComponent<NetworkTransform>();
+            var networkTransform = itemGo.GetComponent<NetworkTransform>();
             networkTransform.enabled = true;
+        }
+
+        [ClientRpc]
+        void RpcSetItem(GameObject itemGo) {
+            this.eItemGo = itemGo;
+            if (itemGo == null) {
+                this.eItem = null;
+            } else {
+                this.eItem = itemGo.GetComponent<Item>();
+            }
         }
 
         [Server]
         void MoveItemForChangeDirection(Direction direction) {
-            var item = eItem.GetComponent<Item>();
-            item.ChangeDirection(direction);
+            eItem.ChangeDirection(direction);
         }
 
         /// If an item is passed, this function will return it
         /// only if it falls in the circle cast.
         /// If no item was passed, it will return the first item
         /// hit by the circle cast.
+        /// For some items this may return a child GameObject.
+        /// The caller is expected to check this.
         GameObject CircleCastForItem(GameObject item) {
             var hits = Physics2D.CircleCastAll(
                 gameObject.transform.position,
@@ -505,13 +524,13 @@ namespace SciFi.Players {
         }
 
         void ObjectSelected(GameObject gameObject) {
-            if (gameObject == this.eItem) {
+            if (gameObject == this.eItemGo) {
                 UseItem();
                 return;
             }
 
             // We can only hold one item at a time.
-            if (eItem != null) {
+            if (eItemGo != null) {
                 return;
             }
             if (gameObject.layer == Layers.items || gameObject.layer == Layers.noncollidingItems) {
@@ -530,9 +549,9 @@ namespace SciFi.Players {
             if (!hasAuthority) {
                 return;
             }
-            if (eItem != null) {
-                Destroy(eItem);
-                eItem = null;
+            if (eItemGo != null) {
+                Destroy(eItemGo);
+                eItemGo = null;
             }
             transform.position = position;
             lRb.velocity = new Vector2(0f, 0f);
@@ -541,7 +560,7 @@ namespace SciFi.Players {
         [Command]
         void CmdChangeDirection(Direction direction) {
             this.eDirection = direction;
-            if (eItem != null) {
+            if (eItemGo != null) {
                 MoveItemForChangeDirection(direction);
                 RpcChangeItemDirection(direction);
             }
@@ -554,7 +573,7 @@ namespace SciFi.Players {
         [ClientRpc]
         void RpcChangeItemDirection(Direction direction) {
             if (eItem != null) {
-                eItem.GetComponent<Item>().ChangeDirection(direction);
+                eItem.ChangeDirection(direction);
             }
         }
 

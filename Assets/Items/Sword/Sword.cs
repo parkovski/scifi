@@ -20,8 +20,9 @@ namespace SciFi.Items {
 
         void Start() {
             BaseStart(false);
-            animator = GetComponent<Animator>();
+            animator = GetComponentInChildren<Animator>();
             isTriggerItem = true;
+            detectsCollisionInChild = true;
         }
 
         void Update() {
@@ -42,11 +43,11 @@ namespace SciFi.Items {
             ClearHits();
         }
 
-        void OnCollisionEnter2D(Collision2D collision) {
+        public void OnCollisionEnter2D(Collision2D collision) {
             BaseCollisionEnter2D(collision);
         }
 
-        void OnTriggerStay2D(Collider2D collider) {
+        public void OnTriggerStay2D(Collider2D collider) {
             if (!isAttacking) {
                 return;
             }
