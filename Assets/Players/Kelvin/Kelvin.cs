@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Networking;
 
 using SciFi.Players.Attacks;
 
@@ -8,14 +9,6 @@ namespace SciFi.Players {
         public GameObject fireBall;
         public GameObject fireBallInactive;
         public GameObject telegraph;
-
-        private GameObject chargingFireBall;
-
-        const float iceBallHorizontalForce = 200f;
-        const float iceBallVerticalForce = 100f;
-        const float iceBallTorqueRange = 10f;
-
-        const float fireBallHorizontalForce = 50f;
 
         void Start() {
             BaseStart();
@@ -39,6 +32,17 @@ namespace SciFi.Players {
 
         void OnCollisionExit2D(Collision2D collision) {
             BaseCollisionExit2D(collision);
+        }
+
+        [ClientRpc]
+        protected override void RpcChangeDirection(Direction direction) {
+            foreach (var sr in gameObject.GetComponentsInChildren<SpriteRenderer>()) {
+                sr.flipX = !sr.flipX;
+            }
+            for (var i = 0; i < transform.childCount; i++) {
+                var child = transform.GetChild(i);
+                child.localPosition = new Vector3(-child.localPosition.x, child.localPosition.y, child.localPosition.z);
+            }
         }
     }
 }

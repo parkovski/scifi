@@ -15,11 +15,6 @@ namespace SciFi.Players {
         private Animator animator;
         private bool walkAnimationPlaying;
 
-        static readonly Vector2 leftFootFacingLeft = new Vector2(-0.04871837f, -0.5f);
-        static readonly Vector2 rightFootFacingLeft = new Vector2(0.25f, -0.5f);
-        static readonly Vector2 leftFootFacingRight = new Vector2(-0.2783461f, -0.5f);
-        static readonly Vector2 rightFootFacingRight = new Vector2(0.04f, -0.5f);
-
         void Start() {
             BaseStart();
 
