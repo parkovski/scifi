@@ -100,7 +100,7 @@ namespace SciFi.Players {
                 }
             }
 
-            var shieldObj = Instantiate(shieldPrefab, transform.position + new Vector3(.6f, 0f), Quaternion.identity, transform);
+            var shieldObj = Instantiate(shieldPrefab, transform.position + new Vector3(.6f, .1f), Quaternion.identity, transform);
             eShield = shieldObj.GetComponent<Shield>();
         }
 

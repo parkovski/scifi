@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Linq;
 
+using SciFi.Players.Attacks;
+
 namespace SciFi.Players.Attacks {
     public class GravityWellAttack : Attack {
         GameObject gravityWellPrefab;
@@ -46,7 +48,7 @@ namespace SciFi.Players.Attacks {
                 radius: radius,
                 direction: Vector2.zero,
                 distance: Mathf.Infinity,
-                layerMask: 1 << Layers.players | 1 << Layers.items
+                layerMask: Attack.LayerMask
             ).Select(h => h.rigidbody.gameObject)
              .Where(go => go.transform.parent == null)
              .Distinct();

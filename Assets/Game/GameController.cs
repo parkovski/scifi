@@ -27,6 +27,7 @@ namespace SciFi {
         public static int heldAttacks;
         public static int touchControls;
         public static int noncollidingItems;
+        public static int shield;
 
         /// Initialize the layer IDs. To be called by <see cref="GameController" />.
         public static void Init() {
@@ -37,6 +38,7 @@ namespace SciFi {
             heldAttacks = LayerMask.NameToLayer("Held Attacks");
             touchControls = LayerMask.NameToLayer("Touch Controls");
             noncollidingItems = LayerMask.NameToLayer("Noncolliding Items");
+            shield = LayerMask.NameToLayer("Shield");
         }
     }
 

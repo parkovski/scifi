@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 using SciFi.Players;
+using SciFi.Players.Attacks;
 
 namespace SciFi.Items {
     public class Potion : Item {
@@ -44,13 +45,15 @@ namespace SciFi.Items {
 
         void OnCollisionEnter2D(Collision2D collision) {
             BaseCollisionEnter2D(collision);
-            var otherLayer = collision.gameObject.layer;
-            if (otherLayer == Layers.projectiles || otherLayer == Layers.players || otherLayer == Layers.items) {
+            var hit = Attack.GetAttackHit(collision.gameObject.layer);
+            if (hit != AttackHit.None) {
                 if (!used) {
                     SpillJuice();
                 }
-                GameController.Instance.TakeDamage(collision.gameObject, 5);
-                GameController.Instance.Knockback(gameObject, collision.gameObject, 3f);
+                if (hit == AttackHit.HitAndDamage) {
+                    GameController.Instance.TakeDamage(collision.gameObject, 5);
+                    GameController.Instance.Knockback(gameObject, collision.gameObject, 3f);
+                }
                 Instantiate(brokenPotionPrefab, transform.position, Quaternion.identity);
                 Destroy(gameObject);
             }

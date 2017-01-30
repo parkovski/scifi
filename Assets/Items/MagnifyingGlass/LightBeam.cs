@@ -1,5 +1,7 @@
 using UnityEngine;
 
+using SciFi.Players.Attacks;
+
 namespace SciFi.Items {
     public class LightBeam : MonoBehaviour {
         float startTime;
@@ -50,7 +52,7 @@ namespace SciFi.Items {
                     transform.position,
                     angle,
                     distance,
-                    1 << Layers.players | 1 << Layers.items,
+                    Attack.LayerMask,
                     0f
                 );
 

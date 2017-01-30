@@ -1,4 +1,10 @@
 namespace SciFi.Players.Attacks {
+    public enum AttackHit {
+        None,
+        HitOnly,
+        HitAndDamage,
+    }
+
     public abstract class Attack {
         protected Player player;
         float cooldown;
@@ -75,6 +81,22 @@ namespace SciFi.Players.Attacks {
 
         public void RequestCancel() {
             shouldCancel = true;
+        }
+
+        public static int LayerMask {
+            get {
+                return 1 << Layers.players | 1 << Layers.items;
+            }
+        }
+
+        public static AttackHit GetAttackHit(int layer) {
+            if (layer == Layers.players || layer == Layers.items || layer == Layers.shield) {
+                return AttackHit.HitAndDamage;
+            }
+            if (layer == Layers.projectiles) {
+                return AttackHit.HitOnly;
+            }
+            return AttackHit.None;
         }
     }
 }

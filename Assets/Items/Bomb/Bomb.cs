@@ -1,6 +1,7 @@
 using UnityEngine;
 
 using SciFi.Environment.Effects;
+using SciFi.Players.Attacks;
 
 namespace SciFi.Items {
     public class Bomb : Item {
@@ -19,11 +20,11 @@ namespace SciFi.Items {
 
             BaseCollisionEnter2D(collision);
 
-            var layer = collision.gameObject.layer;
-            if (layer == Layers.projectiles) {
+            var hit = Attack.GetAttackHit(collision.gameObject.layer);
+            if (hit == AttackHit.HitOnly) {
                 Effects.Explosion(transform.position);
                 Destroy(gameObject);
-            } else if (layer == Layers.players || layer == Layers.items) {
+            } else if (hit == AttackHit.HitAndDamage) {
                 GameController.Instance.TakeDamage(collision.gameObject, 15);
                 GameController.Instance.Knockback(gameObject, collision.gameObject, 7.5f);
                 Effects.Explosion(transform.position);

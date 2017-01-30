@@ -2,6 +2,7 @@ using UnityEngine;
 
 using SciFi.Environment.Effects;
 using SciFi.Players;
+using SciFi.Players.Attacks;
 
 namespace SciFi.Items {
     public enum SwordType {
@@ -30,14 +31,12 @@ namespace SciFi.Items {
         }
 
         public void StartAttacking() {
-            //gameObject.layer = Layers.noncollidingItems;
             isAttacking = true;
             lRb.sleepMode = RigidbodySleepMode2D.NeverSleep;
             lRb.WakeUp();
         }
 
         public void StopAttacking() {
-            //gameObject.layer = Layers.displayOnly;
             isAttacking = false;
             lRb.sleepMode = RigidbodySleepMode2D.StartAwake;
             ClearHits();
@@ -57,8 +56,8 @@ namespace SciFi.Items {
             }
             LogHit(collider.gameObject);
 
-            var layer = collider.gameObject.layer;
-            if (layer == Layers.projectiles || layer == Layers.players || layer == Layers.items) {
+            var hit = Attack.GetAttackHit(collider.gameObject.layer);
+            if (hit == AttackHit.HitAndDamage) {
                 Effects.Star(collider.bounds.ClosestPoint(transform.position));
                 GameController.Instance.TakeDamage(collider.gameObject, 5);
                 GameController.Instance.Knockback(gameObject, collider.gameObject, 2f);
