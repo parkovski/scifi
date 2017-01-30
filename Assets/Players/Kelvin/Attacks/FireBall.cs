@@ -32,7 +32,7 @@ namespace SciFi.Players.Attacks {
 
                 if (Time.time > nextDamageTime) {
                     nextDamageTime = Time.time + nextDamageWait;
-                    Attack();
+                    DoAttack();
                 }
             }
         }
@@ -43,10 +43,10 @@ namespace SciFi.Players.Attacks {
             player.SuspendFeature(PlayerFeature.Movement);
             player.SuspendFeature(PlayerFeature.Attack);
             nextDamageTime = Time.time + nextDamageWait;
-            Attack();
+            DoAttack();
         }
 
-        void Attack() {
+        void DoAttack() {
             if (rounds <= 0) {
                 StopAttacking();
                 return;
@@ -70,7 +70,7 @@ namespace SciFi.Players.Attacks {
             if (!isServer) {
                 return;
             }
-            if (collision.gameObject.tag == "Player") {
+            if (Attack.GetAttackHit(collision.gameObject.layer) == AttackHit.HitAndDamage) {
                 targetPlayer = collision.gameObject;
                 targetOffset = gameObject.transform.position - targetPlayer.transform.position;
                 StartAttacking();

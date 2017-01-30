@@ -32,6 +32,11 @@ namespace SciFi.Items {
             }
         }
 
+        public override void TakeDamage(int amount) {
+            Effects.Explosion(transform.position);
+            Destroy(gameObject);
+        }
+
         public override bool ShouldThrow() {
             return true;
         }

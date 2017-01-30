@@ -13,7 +13,7 @@ namespace SciFi.Players.Attacks {
                 return;
             }
 
-            if (collision.gameObject.tag == "Player") {
+            if (Attack.GetAttackHit(collision.gameObject.layer) == AttackHit.HitAndDamage) {
                 GameController.Instance.TakeDamage(collision.gameObject, 3);
                 GameController.Instance.Knockback(gameObject, collision.gameObject, 5);
             }

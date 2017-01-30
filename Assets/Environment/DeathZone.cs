@@ -15,7 +15,7 @@ namespace SciFi.Environment {
         }
 
         void OnTriggerEnter2D(Collider2D collider) {
-            if (collider.gameObject.tag != "Player") {
+            if (collider.gameObject.layer != Layers.players) {
                 Destroy(collider.gameObject);
                 return;
             }

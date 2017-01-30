@@ -33,7 +33,8 @@ namespace SciFi.Players.Attacks {
                 return;
             }
 
-            if (collider.gameObject.tag == "Player" && !hitObjects.Contains(collider.gameObject)) {
+            var hit = Attack.GetAttackHit(collider.gameObject.layer);
+            if (hit == AttackHit.HitAndDamage && !hitObjects.Contains(collider.gameObject)) {
                 hitObjects.Add(collider.gameObject);
                 GameController.Instance.TakeDamage(collider.gameObject, power * 2);
                 GameController.Instance.Knockback(spawnedBy, collider.gameObject, power);

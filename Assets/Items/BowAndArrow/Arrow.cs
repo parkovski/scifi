@@ -1,5 +1,7 @@
 using UnityEngine;
 
+using SciFi.Players.Attacks;
+
 namespace SciFi.Items {
     public class Arrow : Projectile {
         void Start() {
@@ -20,7 +22,7 @@ namespace SciFi.Items {
                 return;
             }
 
-            if (collision.gameObject.tag == "Player") {
+            if (Attack.GetAttackHit(collision.gameObject.layer) == AttackHit.HitAndDamage) {
                 GameController.Instance.TakeDamage(collision.gameObject, 5);
                 GameController.Instance.Knockback(gameObject, collision.gameObject, 1f);
             }
