@@ -1209,9 +1209,6 @@ namespace dotBunny.Unity
                 // Hidden Files
                 "\t\t\"**/.DS_Store\":true,\n" +
                 "\t\t\"**/.git\":true,\n" +
-                "\t\t\"**/.gitignore\":true,\n" +
-                "\t\t\"**/.gitattributes\":true,\n" +
-                "\t\t\"**/.gitmodules\":true,\n" +
                 "\t\t\"**/.svn\":true,\n" +
 
 
@@ -1256,18 +1253,12 @@ namespace dotBunny.Unity
                 "\t\t\"**/*.obj\":true,\n" +
                 "\t\t\"**/*.OBJ\":true,\n" +
 
-                // Unity File Types
-                "\t\t\"**/*.asset\":true,\n" +
-                "\t\t\"**/*.cubemap\":true,\n" +
-                "\t\t\"**/*.flare\":true,\n" +
-                "\t\t\"**/*.mat\":true,\n" +
                 "\t\t\"**/*.meta\":true,\n" +
-                "\t\t\"**/*.prefab\":true,\n" +
-                "\t\t\"**/*.unity\":true,\n" +
 
                 // Folders
                 "\t\t\"build/\":true,\n" +
                 "\t\t\"Build/\":true,\n" +
+                "\t\t\"Builds/\":true,\n" +
                 "\t\t\"Library/\":true,\n" +
                 "\t\t\"library/\":true,\n" +
                 "\t\t\"obj/\":true,\n" +
