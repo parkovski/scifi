@@ -240,6 +240,7 @@ namespace SciFi {
 
         public event ControlCanceledHandler ControlCanceled;
         public event ObjectSelectedHandler ObjectSelected;
+        public event ObjectSelectedHandler ObjectDeselected;
         public event TouchControlStateChangedHandler TouchControlStateChanged;
 
         /// Initialize state.
@@ -311,9 +312,16 @@ namespace SciFi {
             if (active && !state.states[control].isPressed) {
                 selectedObject = GetObjectAtPosition(state.mousePosition);
             }
+            if (!active && state.states[control].isPressed) {
+                selectedObject = GetObjectAtPosition(state.mousePosition);
+            }
             state.UpdateButton(control, active);
             if (selectedObject != null) {
-                ObjectSelected(selectedObject);
+                if (active && ObjectSelected != null) {
+                    ObjectSelected(selectedObject);
+                } else if (!active && ObjectDeselected != null) {
+                    ObjectDeselected(selectedObject);
+                }
             }
         }
 
@@ -498,7 +506,9 @@ namespace SciFi {
                     }
                     var control = GetTouchControl(controlName);
                     if (control == -1) {
-                        ObjectSelected(obj);
+                        if (ObjectSelected != null) {
+                            ObjectSelected(obj);
+                        }
                         continue;
                     }
                     BeginTouch(control);

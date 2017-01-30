@@ -15,5 +15,11 @@ namespace SciFi.Scenes {
             TransitionParams.gameType = GameType.Multi;
             SceneManager.LoadScene("PlayerPicker");
         }
+
+        /// Open the directory, where you can find the stage maker,
+        /// credits, etc.
+        public void Directory() {
+            SceneManager.LoadScene("Directory");
+        }
     }
 }
