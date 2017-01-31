@@ -450,6 +450,11 @@ MonoBehaviour:
   minDoubleJumpVelocity: 2
   dynamitePrefab: {fileID: 1165641169296308, guid: c8e4ff9fdf48a124aae113895c0bff1e,
     type: 2}
+  gunPrefab: {fileID: 1580578200593256, guid: a88e1fd568d1e824cbcf2b68dc5aba48, type: 2}
+  bulletPrefab: {fileID: 1019900017308746, guid: d30a014897d3b5a4b9fd9f545a65cc4e,
+    type: 2}
+  gelignitePrefab: {fileID: 1407248016741874, guid: 01fbc57e0fe0363478290514479476b8,
+    type: 2}
 --- !u!114 &114949921319829968
 MonoBehaviour:
   m_ObjectHideFlags: 1

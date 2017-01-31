@@ -20,7 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4882417861742960}
   - component: {fileID: 212122155428461660}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: DynamiteBroken_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -37,7 +37,7 @@ GameObject:
   - component: {fileID: 4373372341146684}
   - component: {fileID: 114856032532817962}
   - component: {fileID: 114594542501621216}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: DynamiteFragment
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -53,7 +53,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4370021563375222}
   - component: {fileID: 212507470414931094}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: DynamiteBroken_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -69,7 +69,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4172594767738736}
   - component: {fileID: 212424785268330206}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: DynamiteBroken_0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -85,7 +85,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4358610106777042}
   - component: {fileID: 212308987285850024}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: DynamiteBroken_6
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,7 +101,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4624813600311152}
   - component: {fileID: 212211895927524464}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: DynamiteBroken_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -117,7 +117,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4028798082939288}
   - component: {fileID: 212242264160943622}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: DynamiteBroken_4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -133,7 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4285372867596444}
   - component: {fileID: 212053240413001858}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: DynamiteBroken_5
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -8,6 +8,7 @@ namespace SciFi.Players {
         public GameObject dynamitePrefab;
         public GameObject gunPrefab;
         public GameObject bulletPrefab;
+        public GameObject gelignitePrefab;
 
         GameObject gun;
 
@@ -18,7 +19,7 @@ namespace SciFi.Players {
 
             eAttack1 = new GunAttack(this, gun, bulletPrefab);
             eAttack2 = new DynamiteAttack(this, new[] { dynamitePrefab });
-            eSpecialAttack = new DynamiteAttack(this, new[] { dynamitePrefab });
+            eSpecialAttack = new GeligniteAttack(this, gelignitePrefab);
         }
 
         Vector3 GetGunOffset(Direction direction) {
