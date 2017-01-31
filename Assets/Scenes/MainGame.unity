@@ -231,7 +231,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4800114138721592, guid: 01c86c460784f5543a0991daa95109d8, type: 2}
       propertyPath: m_RootOrder
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4800114138721592, guid: 01c86c460784f5543a0991daa95109d8, type: 2}
       propertyPath: m_LocalScale.x
@@ -1326,7 +1326,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   text: {fileID: 660302380}
-  showDebugInfo: 0
+  showDebugInfo: 1
 --- !u!1 &711754084 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 1425973336893900, guid: 01c86c460784f5543a0991daa95109d8,
@@ -3915,7 +3915,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1909212871
 GameObject:
