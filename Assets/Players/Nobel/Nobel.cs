@@ -6,13 +6,31 @@ using SciFi.Players.Attacks;
 namespace SciFi.Players {
     public class Nobel : Player {
         public GameObject dynamitePrefab;
+        public GameObject gunPrefab;
+        public GameObject bulletPrefab;
+
+        GameObject gun;
 
         void Start() {
             BaseStart();
 
-            eAttack1 = new DynamiteAttack(this, new[] { dynamitePrefab });
+            gun = Instantiate(gunPrefab, transform.position + GetGunOffset(defaultDirection), Quaternion.identity);
+
+            eAttack1 = new GunAttack(this, gun, bulletPrefab);
             eAttack2 = new DynamiteAttack(this, new[] { dynamitePrefab });
             eSpecialAttack = new DynamiteAttack(this, new[] { dynamitePrefab });
+        }
+
+        Vector3 GetGunOffset(Direction direction) {
+            if (direction == Direction.Left) {
+                return new Vector3(-.5f, .2f);
+            } else {
+                return new Vector3(.5f, .2f);
+            }
+        }
+
+        void Update() {
+            gun.transform.position = transform.position + GetGunOffset(eDirection);
         }
 
         void FixedUpdate() {
@@ -34,6 +52,8 @@ namespace SciFi.Players {
 
         [ClientRpc]
         protected override void RpcChangeDirection(Direction direction) {
+            var gunSr = gun.GetComponent<SpriteRenderer>();
+            gunSr.flipX = !gunSr.flipX;
             foreach (var sr in gameObject.GetComponentsInChildren<SpriteRenderer>()) {
                 sr.flipX = !sr.flipX;
             }
