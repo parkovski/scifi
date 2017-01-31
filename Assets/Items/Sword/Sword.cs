@@ -16,12 +16,14 @@ namespace SciFi.Items {
         public SwordType swordType;
 
         Animator animator;
+        AudioSource audioSource;
 
         bool isAttacking;
 
         void Start() {
             BaseStart(false);
             animator = GetComponentInChildren<Animator>();
+            audioSource = GetComponent<AudioSource>();
             isTriggerItem = true;
             detectsCollisionInChild = true;
         }
@@ -59,6 +61,7 @@ namespace SciFi.Items {
             var hit = Attack.GetAttackHit(collider.gameObject.layer);
             if (hit == AttackHit.HitAndDamage) {
                 Effects.Star(collider.bounds.ClosestPoint(transform.position));
+                audioSource.Play();
                 GameController.Instance.TakeDamage(collider.gameObject, 5);
                 GameController.Instance.Knockback(gameObject, collider.gameObject, 2f);
             }
