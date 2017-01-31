@@ -11,6 +11,7 @@ namespace SciFi.Scenes {
         GameObject selected;
 
         public Button goButton;
+        public Button backButton;
 
         void Start() {
             inputManager = GetComponent<InputManager>();
@@ -19,6 +20,7 @@ namespace SciFi.Scenes {
             selected = GameObject.Find("Newton");
 
             goButton.onClick.AddListener(GoClicked);
+            backButton.onClick.AddListener(BackClicked);
         }
 
         /// A different player was selected.
@@ -33,6 +35,10 @@ namespace SciFi.Scenes {
             TransitionParams.playerName = selected.name;
 
             SceneManager.LoadScene("Lobby");
+        }
+
+        void BackClicked() {
+            SceneManager.LoadScene("TitleScreen");
         }
     }
 }
