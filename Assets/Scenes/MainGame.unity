@@ -4292,6 +4292,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   star: {fileID: 1209270900584446, guid: 7f4ab2febaaa66b42ae359ed3943959c, type: 2}
   explosion: {fileID: 1618178842744590, guid: a815d32dab174f64c8134d63b1e3cef7, type: 2}
+  smoke: {fileID: 1159153422626486, guid: 83ab5e475dc665b41a8ab453797ebbcb, type: 2}
   fadeOverlay: {fileID: 1425973336893900, guid: 01c86c460784f5543a0991daa95109d8,
     type: 2}
 --- !u!4 &2046035904
