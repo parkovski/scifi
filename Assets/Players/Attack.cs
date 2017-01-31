@@ -35,8 +35,9 @@ namespace SciFi.Players.Attacks {
                             Cancel();
                             player.ResumeFeature(PlayerFeature.Attack);
                             player.ResumeFeature(PlayerFeature.Movement);
+                        } else {
+                            OnKeepCharging(inputManager.GetControlHoldTime(control), direction);
                         }
-                        OnKeepCharging(inputManager.GetControlHoldTime(control), direction);
                     } else {
                         // Not charging but button pressed, begin charging.
                         if (player.FeatureEnabled(PlayerFeature.Attack)) {
