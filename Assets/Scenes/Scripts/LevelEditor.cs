@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using System;
 using System.Collections.Generic;
 
 namespace SciFi.Scenes {
@@ -24,12 +26,18 @@ namespace SciFi.Scenes {
         ButtonGroup objectsGroup;
         ButtonGroup toolsGroup;
 
+        Dictionary<string, Action> buttonActions;
+
         void Start() {
             inputManager.ObjectSelected += ObjectSelected;
             inputManager.ObjectDeselected += ObjectDeselected;
 
             objectsGroup = new ButtonGroup("GroundBtn", "HazardsBtn", "PlatformsBtn", "MarkersBtn");
             toolsGroup = new ButtonGroup("DrawBtn", "FillBtn", "EraseBtn", "SelectBtn");
+
+            buttonActions = new Dictionary<string, Action>() {
+                { "BackBtn", GoBack },
+            };
         }
 
         void ObjectSelected(GameObject go) {
@@ -42,6 +50,11 @@ namespace SciFi.Scenes {
 
             var sr = go.GetComponent<SpriteRenderer>();
             sr.sprite = buttonPressed;
+
+            Action action;
+            if (buttonActions.TryGetValue(go.name, out action)) {
+                action();
+            }
         }
 
         void ObjectDeselected(GameObject go) {
@@ -60,6 +73,10 @@ namespace SciFi.Scenes {
                 return true;
             }
             return false;
+        }
+
+        void GoBack() {
+            SceneManager.LoadScene("Directory");
         }
     }
 }
