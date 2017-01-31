@@ -38,8 +38,8 @@ GameObject:
   - component: {fileID: 114949921319829968}
   - component: {fileID: 114153152697457852}
   - component: {fileID: 50399158469199306}
-  - component: {fileID: 60932911765359800}
   - component: {fileID: 58476128695455820}
+  - component: {fileID: 60932911765359800}
   - component: {fileID: 114773345672155472}
   m_Layer: 9
   m_Name: Nobel
@@ -357,7 +357,7 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 60
-  m_LinearDrag: 0
+  m_LinearDrag: 1
   m_AngularDrag: 0.05
   m_GravityScale: 1
   m_Material: {fileID: 0}
@@ -376,9 +376,9 @@ CircleCollider2D:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_UsedByEffector: 0
-  m_Offset: {x: 0.04, y: -0.63}
+  m_Offset: {x: 0, y: -0.57}
   serializedVersion: 2
-  m_Radius: 0.08866382
+  m_Radius: 0.15
 --- !u!60 &60932911765359800
 PolygonCollider2D:
   m_ObjectHideFlags: 1

@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 
 using SciFi.Items;
+using SciFi.Environment.Effects;
 
 namespace SciFi.Players.Attacks {
     public class Dynamite : Projectile {
@@ -13,6 +14,7 @@ namespace SciFi.Players.Attacks {
         }
 
         public void Explode() {
+            Effects.Explosion(transform.position);
             if (explodeCallback != null) {
                 explodeCallback();
             }
