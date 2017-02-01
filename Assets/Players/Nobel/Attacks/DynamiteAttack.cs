@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace SciFi.Players.Attacks {
     public class DynamiteAttack : Attack {
@@ -29,6 +30,7 @@ namespace SciFi.Players.Attacks {
             dynamite.spawnedBy = player.netId;
             dynamite.spawnedByExtra = player.GetItemNetId();
             dynamite.explodeCallback = OnDynamiteExploded;
+            NetworkServer.Spawn(dynamiteGo);
         }
 
         public override void OnKeepCharging(float chargeTime, Direction direction) {
@@ -39,6 +41,11 @@ namespace SciFi.Players.Attacks {
         }
 
         void OnDynamiteExploded() {
+            var fragGo = Object.Instantiate(dynamitePrefabs[1], dynamite.transform.position, Quaternion.identity);
+            var frag = fragGo.GetComponent<DynamiteFragment>();
+            frag.spawnedBy = player.netId;
+            frag.spawnedByExtra = player.GetItemNetId();
+            NetworkServer.Spawn(fragGo);
             dynamite = null;
         }
     }

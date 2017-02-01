@@ -20,11 +20,5 @@ namespace SciFi.Players.Attacks {
             }
             Destroy(gameObject);
         }
-
-        void OnCollisionEnter2D(Collision2D collision) {
-            if (Attack.GetAttackHit(collision.gameObject.layer) != AttackHit.None) {
-                Explode();
-            }
-        }
     }
 }

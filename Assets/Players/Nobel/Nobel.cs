@@ -6,6 +6,7 @@ using SciFi.Players.Attacks;
 namespace SciFi.Players {
     public class Nobel : Player {
         public GameObject dynamitePrefab;
+        public GameObject dynamiteFragmentPrefab;
         public GameObject gunPrefab;
         public GameObject bulletPrefab;
         public GameObject gelignitePrefab;
@@ -18,8 +19,8 @@ namespace SciFi.Players {
             gun = Instantiate(gunPrefab, transform.position + GetGunOffset(defaultDirection), Quaternion.identity);
 
             eAttack1 = new GunAttack(this, gun, bulletPrefab);
-            eAttack2 = new DynamiteAttack(this, new[] { dynamitePrefab });
-            eSpecialAttack = new GeligniteAttack(this, gelignitePrefab);
+            eAttack2 = new GeligniteAttack(this, gelignitePrefab);
+            eSpecialAttack = new DynamiteAttack(this, new[] { dynamitePrefab, dynamiteFragmentPrefab });
         }
 
         Vector3 GetGunOffset(Direction direction) {
