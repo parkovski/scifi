@@ -16,14 +16,22 @@ namespace SciFi.Players.Attacks {
 
         GameObject targetPlayer;
         Vector3 targetOffset;
+        /// If the fireball is being held and charging, it can't
+        /// be destroyed - only when it is flying.
+        bool canDestroy = false;
+        float destroyTime;
 
         void Start() {
             BaseStart();
-            Destroy(gameObject, 3f);
         }
 
         void Update() {
             if (!isServer) {
+                return;
+            }
+
+            if (canDestroy && Time.time > destroyTime) {
+                Destroy(gameObject);
                 return;
             }
 
@@ -34,6 +42,13 @@ namespace SciFi.Players.Attacks {
                     nextDamageTime = Time.time + nextDamageWait;
                     DoAttack();
                 }
+            }
+        }
+
+        public void SetCanDestroy(bool canDestroy) {
+            this.canDestroy = canDestroy;
+            if (canDestroy) {
+                destroyTime = Time.time + 3f;
             }
         }
 
@@ -74,7 +89,7 @@ namespace SciFi.Players.Attacks {
                 targetPlayer = collision.gameObject;
                 targetOffset = gameObject.transform.position - targetPlayer.transform.position;
                 StartAttacking();
-            } else {
+            } else if (canDestroy) {
                 Destroy(gameObject);
             }
         }
