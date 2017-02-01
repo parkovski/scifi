@@ -1,8 +1,6 @@
 using UnityEngine;
 using System.Linq;
 
-using SciFi.Players.Attacks;
-
 namespace SciFi.Players.Attacks {
     public class GravityWellAttack : Attack {
         GameObject gravityWellPrefab;

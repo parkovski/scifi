@@ -1,3 +1,4 @@
+using UnityEngine;
 using UnityEngine.Networking;
 
 namespace SciFi.Items {
@@ -13,6 +14,13 @@ namespace SciFi.Items {
         [SyncVar]
         public NetworkInstanceId spawnedByExtra = NetworkInstanceId.Invalid;
 
+        /// When an object collides, it bounces in the opposite direction
+        /// sometimes causing knockback to go in the wrong direction.
+        /// This remembers the first force applied and uses that for knockback.
+        /// If an object is supposed to bounce, it will need to change this.
+        [SyncVar]
+        protected Vector3 initialForce;
+
         protected void BaseStart() {
             // Don't let this object hit the player that created it.
             Item.IgnoreCollisions(gameObject, ClientScene.FindLocalObject(spawnedBy));
@@ -26,6 +34,15 @@ namespace SciFi.Items {
             // so we initialize stuff on a non-colliding layer and
             // change it here.
             gameObject.layer = Layers.projectiles;
+        }
+        
+        public void AddInitialForce(Vector3 force) {
+            initialForce = force;
+            GetComponent<Rigidbody2D>().AddForce(force);
+        }
+
+        public Vector3 GetInitialForce() {
+            return initialForce;
         }
     }
 }

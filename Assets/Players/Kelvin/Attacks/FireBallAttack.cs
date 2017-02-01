@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace SciFi.Players.Attacks {
     // The fire ball grows bigger while charging,
@@ -8,14 +9,12 @@ namespace SciFi.Players.Attacks {
     public class FireBallAttack : Attack {
         const float horizontalForce = 20f;
         GameObject fireBall;
-        int fireBallPrefabIndex;
         GameObject chargingFireBall;
 
         public FireBallAttack(Player player, GameObject fireBall)
             : base(player, true)
         {
             this.fireBall = fireBall;
-            this.fireBallPrefabIndex = GameController.PrefabToIndex(fireBall);
         }
 
         public override void OnBeginCharging(Direction direction) {
@@ -27,13 +26,17 @@ namespace SciFi.Players.Attacks {
                 player.gameObject.transform.position + offset,
                 Quaternion.identity
             );
+            var fb = chargingFireBall.GetComponent<FireBall>();
+            fb.spawnedBy = player.netId;
+            fb.spawnedByExtra = player.GetItemNetId();
+            NetworkServer.Spawn(chargingFireBall);
         }
 
         public override void OnKeepCharging(float chargeTime, Direction direction) {
             if (chargeTime > 1f) {
                 chargeTime = 1f;
             }
-            var scale = .5f + chargeTime / 2f;
+            var scale = .25f + chargeTime / 4f;
             chargingFireBall.transform.localScale = new Vector3(scale, scale, 1f);
         }
 
@@ -45,16 +48,9 @@ namespace SciFi.Players.Attacks {
                 force = new Vector2(horizontalForce, 0f);
             }
 
-            var position = chargingFireBall.transform.position;
-            Object.Destroy(chargingFireBall);
-
-            player.CmdSpawnProjectile(
-                fireBallPrefabIndex,
-                position,
-                Quaternion.identity,
-                force,
-                0f
-            );
+            var fb = chargingFireBall.GetComponent<FireBall>();
+            fb.AddInitialForce(force);
+            fb.SetCanDestroy(true);
         }
     }
 }

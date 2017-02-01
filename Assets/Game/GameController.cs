@@ -358,10 +358,15 @@ namespace SciFi {
             }
             amount *= player.eDamage;
             Vector3 vector;
-            var attackingRb = attackingObject.GetComponent<Rigidbody2D>();
-            if (attackingRb != null && !Mathf.Approximately(attackingRb.velocity.x, 0)) {
+            var projectile = attackingObject.GetComponent<Projectile>();
+            var initialForceX = 0f;
+            if (projectile != null) {
                 // Do knockback in the direction the projectile is moving in.
-                if (attackingRb.velocity.x > 0) {
+                initialForceX = projectile.GetInitialForce().x;
+            }
+
+            if (!Mathf.Approximately(initialForceX, 0f)) {
+                if (initialForceX > 0) {
                     vector = new Vector3(amount, amount);
                 } else {
                     vector = new Vector3(-amount, amount);

@@ -274,7 +274,7 @@ namespace SciFi.Players {
             projectile.spawnedByExtra = GetItemNetId();
             var rb = obj.GetComponent<Rigidbody2D>();
             if (rb != null) {
-                rb.AddForce(force);
+                projectile.AddInitialForce(force);
                 rb.AddTorque(torque);
             }
             NetworkServer.Spawn(obj);
@@ -293,7 +293,7 @@ namespace SciFi.Players {
             projectileComponent.spawnedByExtra = GetItemNetId();
             var rb = projectile.GetComponent<Rigidbody2D>();
             if (rb != null) {
-                rb.AddForce(force);
+                projectileComponent.AddInitialForce(force);
                 rb.AddTorque(torque);
             }
             NetworkServer.Spawn(projectile);

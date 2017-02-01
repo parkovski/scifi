@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 
 using SciFi.Environment.Effects;
@@ -26,10 +27,11 @@ namespace SciFi.Players.Attacks {
             if (direction == Direction.Left) {
                 bulletGo.GetComponent<SpriteRenderer>().flipX = true;
             }
-            bulletGo.GetComponent<Rigidbody2D>().AddForce(GetBulletForce(direction));
             var bullet = bulletGo.GetComponent<Bullet>();
+            bullet.AddInitialForce(GetBulletForce(direction));
             bullet.spawnedBy = player.netId;
             bullet.spawnedByExtra = player.GetItemNetId();
+            NetworkServer.Spawn(bulletGo);
         }
 
         Vector2 GetBulletForce(Direction direction) {
