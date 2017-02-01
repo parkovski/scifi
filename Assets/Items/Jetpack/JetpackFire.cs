@@ -1,5 +1,7 @@
 using UnityEngine;
 
+using SciFi.Environment.Effects;
+
 namespace SciFi.Items {
     public class JetpackFire : MonoBehaviour {
         public Sprite[] fires;
@@ -21,7 +23,14 @@ namespace SciFi.Items {
                     fireIndex = 0;
                 }
                 spriteRenderer.sprite = fires[fireIndex];
+                Effects.Smoke(transform.position + GetRandomOffset());
             }
+        }
+
+        Vector3 GetRandomOffset() {
+            var x = Random.Range(-.1f, .1f);
+            var y = Random.Range(-.2f, 0f);
+            return new Vector3(x, y, 0f);
         }
     }
 }
