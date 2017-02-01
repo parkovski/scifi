@@ -359,7 +359,7 @@ namespace SciFi {
             amount *= player.eDamage;
             Vector3 vector;
             var attackingRb = attackingObject.GetComponent<Rigidbody2D>();
-            if (attackingRb != null) {
+            if (attackingRb != null && !Mathf.Approximately(attackingRb.velocity.x, 0)) {
                 // Do knockback in the direction the projectile is moving in.
                 if (attackingRb.velocity.x > 0) {
                     vector = new Vector3(amount, amount);
