@@ -58,7 +58,7 @@ namespace SciFi.Players.Attacks {
                 var p = go.GetComponent<Player>();
                 if (p != null) {
                     GameController.Instance.TakeDamage(go, (int)(1.3f * power));
-                    GameController.Instance.Knockback(player.gameObject, go, -power);
+                    GameController.Instance.Knockback(player.gameObject, go, -power * 3.5f);
                 }
             }
         }
