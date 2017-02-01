@@ -28,6 +28,7 @@ namespace SciFi {
         public static int touchControls;
         public static int noncollidingItems;
         public static int shield;
+        public static int projectileInteractables;
 
         /// Initialize the layer IDs. To be called by <see cref="GameController" />.
         public static void Init() {
@@ -39,6 +40,7 @@ namespace SciFi {
             touchControls = LayerMask.NameToLayer("Touch Controls");
             noncollidingItems = LayerMask.NameToLayer("Noncolliding Items");
             shield = LayerMask.NameToLayer("Shield");
+            projectileInteractables = LayerMask.NameToLayer("Projectile Interactables");
         }
     }
 
@@ -355,13 +357,24 @@ namespace SciFi {
                 return;
             }
             amount *= player.eDamage;
-            var vector = playerObject.transform.position - attackingObject.transform.position;
-            var force = transform.up * amount;
-            if (vector.x < 0) {
-                amount = -amount;
+            Vector3 vector;
+            var attackingRb = attackingObject.GetComponent<Rigidbody2D>();
+            if (attackingRb != null) {
+                // Do knockback in the direction the projectile is moving in.
+                if (attackingRb.velocity.x > 0) {
+                    vector = new Vector3(amount, amount);
+                } else {
+                    vector = new Vector3(-amount, amount);
+                }
+            } else {
+                // Projectile is stationary, base direction off its offset to the player
+                if ((playerObject.transform.position - attackingObject.transform.position).x > 0) {
+                    vector = new Vector3(amount, amount);
+                } else {
+                    vector = new Vector3(-amount, amount);
+                }
             }
-            force += transform.right * amount;
-            player.RpcKnockback(force);
+            player.RpcKnockback(vector);
         }
 
         /// Initialize fields that other objects depend on.
