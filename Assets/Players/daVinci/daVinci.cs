@@ -6,6 +6,7 @@ using SciFi.Players.Attacks;
 namespace SciFi.Players {
     public class daVinci : Player {
         public GameObject boneArmPrefab;
+        public GameObject flyingMachinePrefab;
         GameObject boneArm;
 
         void Start() {
@@ -16,7 +17,7 @@ namespace SciFi.Players {
 
             eAttack1 = new PaintbrushAttack(this);
             eAttack2 = new BoneArmAttack(this, boneArm);
-            eSpecialAttack = new FlyingMachineAttack(this);
+            eSpecialAttack = new FlyingMachineAttack(this, flyingMachinePrefab);
         }
 
         void Update() {
