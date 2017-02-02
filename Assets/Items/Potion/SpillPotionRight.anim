@@ -263,7 +263,7 @@ AnimationClip:
   m_IsEmpty: 0
   m_Events:
   - time: 0.28333333
-    functionName: SpillJuice
+    functionName: SpillJuiceRight
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

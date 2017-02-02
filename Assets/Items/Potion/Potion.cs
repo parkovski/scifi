@@ -48,7 +48,7 @@ namespace SciFi.Items {
             var hit = Attack.GetAttackHit(collision.gameObject.layer);
             if (hit != AttackHit.None) {
                 if (!used) {
-                    SpillJuice();
+                    SpillJuice(Direction.Down);
                 }
                 if (hit == AttackHit.HitAndDamage) {
                     GameController.Instance.TakeDamage(collision.gameObject, 5);
@@ -63,8 +63,27 @@ namespace SciFi.Items {
             animator.enabled = false;
         }
 
-        public void SpillJuice() {
-            var juice = Instantiate(juicePrefab, transform.position, Quaternion.identity);
+        Vector3 GetJuiceOffset(Direction direction) {
+            if (direction == Direction.Left) {
+                return new Vector3(-.316f, -.32f);
+            } else if (direction == Direction.Right) {
+                return new Vector3(.316f, -.32f);
+            } else {
+                // Down
+                return Vector3.zero;
+            }
+        }
+
+        public void SpillJuiceLeft() {
+            SpillJuice(Direction.Left);
+        }
+
+        public void SpillJuiceRight() {
+            SpillJuice(Direction.Right);
+        }
+
+        public void SpillJuice(Direction direction) {
+            var juice = Instantiate(juicePrefab, transform.position + GetJuiceOffset(direction), Quaternion.identity);
             var pj = juice.GetComponent<PotionJuice>();
             pj.spawnedBy = netId;
             if (eOwner != null) {
