@@ -96,7 +96,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1457805978234942}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.3586519, y: -0.5248397, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4956605041450018}
@@ -159,6 +159,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6db948082b5cb6343adc6c84353308b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  boneHandPrefab: {fileID: 1604782102379740, guid: 2a47ad38879339b4b85d84c7d92ede0c,
+    type: 2}
+  attachedHand: {fileID: 1558441942229236}
+  alwaysThrowHand: 1
+  player: {fileID: 0}
 --- !u!212 &212484550653298582
 SpriteRenderer:
   m_ObjectHideFlags: 1

@@ -9,6 +9,7 @@ namespace SciFi.Players.Attacks {
         public BoneArmAttack(Player player, BoneArm boneArm)
             : base(player, false)
         {
+            boneArm.player = player;
             this.boneArm = boneArm;
             this.animator = boneArm.GetComponent<Animator>();
         }
