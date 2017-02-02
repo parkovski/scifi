@@ -21,7 +21,9 @@ GameObject:
   - component: {fileID: 4010532356778450}
   - component: {fileID: 50622941104192326}
   - component: {fileID: 58531015564276236}
-  m_Layer: 11
+  - component: {fileID: 114873021512641104}
+  - component: {fileID: 114472335496054356}
+  m_Layer: 13
   m_Name: FlyingMachine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -37,7 +39,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4150081742249248}
   - component: {fileID: 212371468893307852}
-  m_Layer: 11
+  m_Layer: 13
   m_Name: FlyingMachine_Prop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -53,7 +55,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4530593244440202}
   - component: {fileID: 212843792595538228}
-  m_Layer: 11
+  m_Layer: 13
   m_Name: FlyingMachine_Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -135,6 +137,56 @@ CircleCollider2D:
   m_Offset: {x: 0, y: -0.27}
   serializedVersion: 2
   m_Radius: 0.2297029
+--- !u!114 &114472335496054356
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1143090844137626}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3dae2a148bbd13c4188e81c6fbc16914, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  unmovingProp: {fileID: 21300002, guid: 88206e8c653766b4294e1b07ff2bda87, type: 3}
+  movingProps:
+  - {fileID: 21300000, guid: 74e89c6a55b84f346b469214c290003f, type: 3}
+  - {fileID: 21300002, guid: 74e89c6a55b84f346b469214c290003f, type: 3}
+  - {fileID: 21300004, guid: 74e89c6a55b84f346b469214c290003f, type: 3}
+  dx: 0
+  y: 0
+--- !u!114 &114873021512641104
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1143090844137626}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 372142912, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SceneId:
+    m_Value: 0
+  m_AssetId:
+    i0: 8
+    i1: 119
+    i2: 183
+    i3: 158
+    i4: 181
+    i5: 54
+    i6: 116
+    i7: 228
+    i8: 57
+    i9: 144
+    i10: 199
+    i11: 65
+    i12: 55
+    i13: 0
+    i14: 243
+    i15: 188
+  m_ServerOnly: 0
+  m_LocalPlayerAuthority: 0
 --- !u!212 &212371468893307852
 SpriteRenderer:
   m_ObjectHideFlags: 1
