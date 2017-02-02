@@ -434,6 +434,10 @@ MonoBehaviour:
   walkForce: 1000
   jumpForce: 600
   minDoubleJumpVelocity: 2
+  boneArmPrefab: {fileID: 1457805978234942, guid: e58887ed3ee3c3945ad86258263d68f8,
+    type: 2}
+  flyingMachinePrefab: {fileID: 1143090844137626, guid: 0877b79eb53674e43990c7413700f3bc,
+    type: 2}
 --- !u!114 &114921518029735292
 MonoBehaviour:
   m_ObjectHideFlags: 1
