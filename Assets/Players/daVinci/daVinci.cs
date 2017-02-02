@@ -1,10 +1,16 @@
 using UnityEngine;
 using UnityEngine.Networking;
 
+using SciFi.Players.Attacks;
+
 namespace SciFi.Players {
     public class daVinci : Player {
         void Start() {
             BaseStart();
+
+            eAttack1 = new PaintbrushAttack(this);
+            eAttack2 = new BoneArmAttack(this);
+            eSpecialAttack = new FlyingMachineAttack(this);
         }
 
         void FixedUpdate() {
