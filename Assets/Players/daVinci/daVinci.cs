@@ -16,7 +16,7 @@ namespace SciFi.Players {
             ReverseSprite(boneArm);
 
             eAttack1 = new PaintbrushAttack(this);
-            eAttack2 = new BoneArmAttack(this, boneArm);
+            eAttack2 = new BoneArmAttack(this, boneArm.GetComponent<BoneArm>());
             eSpecialAttack = new FlyingMachineAttack(this, flyingMachinePrefab);
         }
 
@@ -26,9 +26,9 @@ namespace SciFi.Players {
 
         Vector3 GetBoneArmOffset(Direction direction) {
             if (direction == Direction.Left) {
-                return new Vector3(-.9f, .2f);
+                return new Vector3(-.7f, .2f);
             } else {
-                return new Vector3(.9f, .2f);
+                return new Vector3(.7f, .2f);
             }
         }
 
@@ -48,13 +48,19 @@ namespace SciFi.Players {
             BaseCollisionExit2D(collision);
         }
 
+        void ReverseTransform(Transform transform) {
+            transform.localPosition = new Vector3(-transform.localPosition.x, transform.localPosition.y, transform.localPosition.z);
+            for (var i = 0; i < transform.childCount; i++) {
+                ReverseTransform(transform.GetChild(i));
+            }
+        }
+
         void ReverseSprite(GameObject sprite) {
             foreach (var sr in sprite.GetComponentsInChildren<SpriteRenderer>()) {
                 sr.flipX = !sr.flipX;
             }
             for (var i = 0; i < sprite.transform.childCount; i++) {
-                var child = sprite.transform.GetChild(i);
-                child.localPosition = new Vector3(-child.localPosition.x, child.localPosition.y, child.localPosition.z);
+                ReverseTransform(sprite.transform.GetChild(i));
             }
         }
 

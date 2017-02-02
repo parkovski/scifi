@@ -33,32 +33,62 @@ function getAxis(str) {
 }
 
 function mirror(anim, axis) {
-    for (let h = 1; h < anim.AnimationClip.m_PositionCurves.length; h++) {
-        let points = anim.AnimationClip.m_PositionCurves[h].curve.m_Curve;
+    for (let i = 1; i < anim.AnimationClip.m_PositionCurves.length; i++) {
+        let points = anim.AnimationClip.m_PositionCurves[i].curve.m_Curve;
         let firstPoint = points[0];
-        for (let i = 1; i < points.length; i++) {
+        for (let j = 1; j < points.length; j++) {
             if (axis.x) {
-                mirrorAxis(points[i], firstPoint, 'x');
+                mirrorAxis(points[j], firstPoint, 'x');
             }
             if (axis.y) {
-                mirrorAxis(points[i], firstPoint, 'y');
+                mirrorAxis(points[j], firstPoint, 'y');
             }
             if (axis.z) {
-                mirrorAxis(points[i], firstPoint, 'z');
+                mirrorAxis(points[j], firstPoint, 'z');
+            }
+        }
+    }
+
+    for (let i = 0; i < anim.AnimationClip.m_EulerCurves.length; i++) {
+        let points = anim.AnimationClip.m_EulerCurves[i].curve.m_Curve;
+        // x is rotation around z,
+        // y is rotation around x,
+        // z is rotation around y
+        for (let j = 0; j < points.length; j++) {
+            if (axis.y) {
+                points[j].value.x = -points[j].value.x;
+            }
+            if (axis.z) {
+                points[j].value.y = -points[j].value.y;
+            }
+            if (axis.x) {
+                points[j].value.z = -points[j].value.z;
             }
         }
     }
 
     let editorCurves = anim.AnimationClip.m_EditorCurves;
     for (let i = 0; i < editorCurves.length; i++) {
-        if (!/m_LocalPosition\.[xyz]/.test(editorCurves[i].attribute)) {
-            continue;
+        if (/m_LocalPosition\.[xyz]/.test(editorCurves[i].attribute)) {
+            let curveAxis = editorCurves[i].attribute;
+            curveAxis = curveAxis[curveAxis.length - 1];
+            if (axis[curveAxis]) {
+                mirrorEditorCurves(editorCurves[i].curve.m_Curve);
+            }
+        } else if (/localEulerAnglesRaw\.[xyz]/.test(editorCurves[i].attribute)) {
+            let curveAxis = editorCurves[i].attribute;
+            curveAxis = curveAxis[curveAxis.length - 1];
+            if (axis.y && curveAxis == 'x') {
+                reverseEditorCurves(editorCurves[i].curve.m_Curve);
+            }
+            if (axis.z && curveAxis == 'y') {
+                reverseEditorCurves(editorCurves[i].curve.m_Curve);
+            }
+            if (axis.x && curveAxis == 'z') {
+                reverseEditorCurves(editorCurves[i].curve.m_Curve);
+            }
         }
-        let curveAxis = editorCurves[i].attribute;
-        curveAxis = curveAxis[curveAxis.length - 1];
-        if (axis[curveAxis]) {
-            mirrorEditorCurves(editorCurves[i].curve.m_Curve);
-        }
+
     }
 }
 
@@ -77,5 +107,13 @@ function mirrorEditorCurves(editorCurves) {
         curve.value = firstCurve.value - delta;
         curve.inSlope = -curve.inSlope;
         curve.outSlope = -curve.outSlope;
+    }
+}
+
+function reverseEditorCurves(editorCurves) {
+    for (let i = 1; i < editorCurves.length; i++) {
+        editorCurves[i].value = -editorCurves[i].value;
+        editorCurves[i].inSlope = -editorCurves[i].inSlope;
+        editorCurves[i].outSlope = -editorCurves[i].outSlope;
     }
 }
