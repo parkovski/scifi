@@ -20,6 +20,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4355602504492274}
   - component: {fileID: 212805521065522956}
+  - component: {fileID: 61348647591025892}
+  - component: {fileID: 114940786961694062}
   m_Layer: 12
   m_Name: BoneArm_Bone2
   m_TagString: Untagged
@@ -53,6 +55,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4237930294214574}
   - component: {fileID: 212484550653298582}
+  - component: {fileID: 61297832494466610}
+  - component: {fileID: 114935861869946022}
   m_Layer: 12
   m_Name: BoneArm_Hand
   m_TagString: Untagged
@@ -69,6 +73,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4956605041450018}
   - component: {fileID: 212997824831268938}
+  - component: {fileID: 61108618452349498}
+  - component: {fileID: 61658654134531548}
+  - component: {fileID: 114400563770030702}
   m_Layer: 12
   m_Name: BoneArm_Bone1
   m_TagString: Untagged
@@ -96,7 +103,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1457805978234942}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -2.2560186, y: -0.16311216, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4956605041450018}
@@ -131,6 +138,62 @@ Transform:
   m_Father: {fileID: 4274897989255162}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &61108618452349498
+BoxCollider2D:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1675259024259518}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_Offset: {x: -0.11254525, y: -0.0028633364}
+  serializedVersion: 2
+  m_Size: {x: 0.27360362, y: 0.06784111}
+--- !u!61 &61297832494466610
+BoxCollider2D:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1558441942229236}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_Offset: {x: -0.13474464, y: 0.010982215}
+  serializedVersion: 2
+  m_Size: {x: 0.30661607, y: 0.15237081}
+--- !u!61 &61348647591025892
+BoxCollider2D:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1152694887123922}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_Offset: {x: -0.19954619, y: 0.0102024}
+  serializedVersion: 2
+  m_Size: {x: 0.41138622, y: 0.09180185}
+--- !u!61 &61658654134531548
+BoxCollider2D:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1675259024259518}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_Offset: {x: -0.36154604, y: -0.06942789}
+  serializedVersion: 2
+  m_Size: {x: 0.22922719, y: 0.06291014}
 --- !u!95 &95174321207383588
 Animator:
   serializedVersion: 3
@@ -162,8 +225,44 @@ MonoBehaviour:
   boneHandPrefab: {fileID: 1604782102379740, guid: 2a47ad38879339b4b85d84c7d92ede0c,
     type: 2}
   attachedHand: {fileID: 1558441942229236}
-  alwaysThrowHand: 1
+  alwaysThrowHand: 0
   player: {fileID: 0}
+--- !u!114 &114400563770030702
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1675259024259518}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f20f15a691ca52242a62183a51aa1043, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boneArm: {fileID: 114342512722116822}
+--- !u!114 &114935861869946022
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1558441942229236}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f20f15a691ca52242a62183a51aa1043, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boneArm: {fileID: 114342512722116822}
+--- !u!114 &114940786961694062
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1152694887123922}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f20f15a691ca52242a62183a51aa1043, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boneArm: {fileID: 114342512722116822}
 --- !u!212 &212484550653298582
 SpriteRenderer:
   m_ObjectHideFlags: 1

@@ -1,4 +1,7 @@
 using UnityEngine;
+using System.Collections.Generic;
+
+using SciFi.Environment.Effects;
 
 namespace SciFi.Players.Attacks {
     public class BoneArm : MonoBehaviour {
@@ -10,14 +13,17 @@ namespace SciFi.Players.Attacks {
         public Player player;
 
         SpriteRenderer[] spriteRenderers;
+        bool isActive;
+        HashSet<GameObject> hitObjects;
 
         void Start() {
             spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
+            hitObjects = new HashSet<GameObject>();
             Hide();
         }
 
         public void HandMaybeDetach() {
-            if (Random.Range(0, 15) == 7
+            if (Random.Range(0, 3) == 1
 #if UNITY_EDITOR
                 || alwaysThrowHand
 #endif
@@ -39,6 +45,7 @@ namespace SciFi.Players.Attacks {
         }
 
         public void Show() {
+            hitObjects.Clear();
             ShowHide(true);
         }
 
@@ -47,8 +54,29 @@ namespace SciFi.Players.Attacks {
         }
 
         void ShowHide(bool show) {
+            isActive = show;
             foreach (var sr in spriteRenderers) {
                 sr.enabled = show;
+            }
+        }
+
+        public void ChildCollide(GameObject child, Collider2D collider) {
+            if (!isActive) {
+                return;
+            }
+
+            if (collider.gameObject == player.gameObject) {
+                return;
+            }
+
+            if (Attack.GetAttackHit(collider.gameObject.layer) == AttackHit.HitAndDamage) {
+                if (hitObjects.Contains(collider.gameObject)) {
+                    return;
+                }
+                hitObjects.Add(collider.gameObject);
+                Effects.Star(collider.bounds.ClosestPoint(collider.gameObject.transform.position));
+                GameController.Instance.TakeDamage(collider.gameObject, 5);
+                GameController.Instance.Knockback(child, collider.gameObject, 2f);
             }
         }
     }

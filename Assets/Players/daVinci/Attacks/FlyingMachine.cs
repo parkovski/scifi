@@ -7,7 +7,9 @@ namespace SciFi.Players.Attacks {
         public Sprite unmovingProp;
         public Sprite[] movingProps;
 
+        [HideInInspector]
         public float dx;
+        [HideInInspector]
         public float y;
         Rigidbody2D rb;
         float initialTime;
