@@ -2,6 +2,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 
 using SciFi.Items;
+using SciFi.Players.Modifiers;
 
 namespace SciFi.Players.Attacks {
     public class FireBall : Projectile {
@@ -55,8 +56,9 @@ namespace SciFi.Players.Attacks {
         void StartAttacking() {
             rounds = Random.Range(minRounds, maxRounds + 1);
             var player = targetPlayer.GetComponent<Player>();
-            player.SuspendFeature(PlayerFeature.Movement);
-            player.SuspendFeature(PlayerFeature.Attack);
+            GameController.Instance.CmdAddModifier(player.netId, ModId.CantMove);
+            GameController.Instance.CmdAddModifier(player.netId, ModId.CantAttack);
+            GameController.Instance.CmdAddModifier(player.netId, ModId.OnFire);
             nextDamageTime = Time.time + nextDamageWait;
             DoAttack();
         }
@@ -74,8 +76,9 @@ namespace SciFi.Players.Attacks {
 
         void StopAttacking() {
             var player = targetPlayer.GetComponent<Player>();
-            player.ResumeFeature(PlayerFeature.Movement);
-            player.ResumeFeature(PlayerFeature.Attack);
+            GameController.Instance.CmdRemoveModifier(player.netId, ModId.CantMove);
+            GameController.Instance.CmdRemoveModifier(player.netId, ModId.CantAttack);
+            GameController.Instance.CmdRemoveModifier(player.netId, ModId.OnFire);
 
             targetPlayer = null;
             Destroy(gameObject);

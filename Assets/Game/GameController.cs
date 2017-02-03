@@ -7,6 +7,7 @@ using System.Linq;
 using Random = UnityEngine.Random;
 
 using SciFi.Players;
+using SciFi.Players.Modifiers;
 using SciFi.Items;
 using SciFi.UI;
 using SciFi.Environment.Effects;
@@ -155,7 +156,8 @@ namespace SciFi {
                 }
                 player.eLives = 5;
                 if (countdown) {
-                    player.SuspendAllFeatures();
+                    player.AddModifier(Modifier.CantMove);
+                    player.AddModifier(Modifier.CantAttack);
                 }
                 EventLifeChanged(player.eId, player.eLives);
             }
@@ -173,11 +175,8 @@ namespace SciFi {
                 this.countdown.OnFinished += _ => {
                     this.isPlaying = true;
                     foreach (var p in activePlayers) {
-                        // TODO: this needs to be run on both server and client
-                        // including the SuspendAllFeatures call above.
-                        // Attack and Movement are handled on the client,
-                        // while Damage and Knockback are handled on the server.
-                        p.ResumeAllFeatures(true);
+                        p.RemoveModifier(Modifier.CantMove);
+                        p.RemoveModifier(Modifier.CantAttack);
                     }
                     if (_GameStarted != null) {
                         _GameStarted();
@@ -333,7 +332,7 @@ namespace SciFi {
         /// Inflict damage on a player.
         [Server]
         void PlayerTakeDamage(Player player, int amount) {
-            if (!player.FeatureEnabled(PlayerFeature.Damage)) {
+            if (player.IsModifierEnabled(Modifier.Invincible)) {
                 return;
             }
             player.eDamage += amount;
@@ -353,7 +352,7 @@ namespace SciFi {
             if (player == null) {
                 return;
             }
-            if (!player.FeatureEnabled(PlayerFeature.Knockback)) {
+            if (player.IsModifierEnabled(Modifier.Invincible)) {
                 return;
             }
             amount *= player.eDamage;
@@ -380,6 +379,22 @@ namespace SciFi {
                 }
             }
             player.RpcKnockback(vector);
+        }
+
+        /// Add a player modifier potentially from a client without authority.
+        /// TODO: Exposing this may allow cheating.
+        [Command]
+        public void CmdAddModifier(NetworkInstanceId playerId, ModId modId) {
+            var player = ClientScene.FindLocalObject(playerId).GetComponent<Player>();
+            player.AddModifier(Modifier.FromId(modId));
+        }
+
+        /// Remove a player modifier potentially from a client without authority.
+        /// TODO: Exposing this may allow cheating.
+        [Command]
+        public void CmdRemoveModifier(NetworkInstanceId playerId, ModId modId) {
+            var player = ClientScene.FindLocalObject(playerId).GetComponent<Player>();
+            player.RemoveModifier(Modifier.FromId(modId));
         }
 
         /// Initialize fields that other objects depend on.

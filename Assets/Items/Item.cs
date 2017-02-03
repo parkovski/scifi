@@ -315,9 +315,9 @@ namespace SciFi.Items {
                 RpcNotifyPickup(owner);
             } else {
                 IgnoreCollisions(gameObject, eOwnerGo, false);
-                this.eOwner = null;
                 sDestroyTime = Time.time + sAliveTime;
-                RpcNotifyDiscard();
+                RpcNotifyDiscard(eOwnerGo);
+                this.eOwner = null;
             }
             this.eOwnerGo = owner;
             UpdateTriggerItemState();
@@ -345,14 +345,18 @@ namespace SciFi.Items {
         }
 
         [ClientRpc]
-        void RpcNotifyDiscard() {
-            if (eOwnerGo != null) {
-                IgnoreCollisions(gameObject, eOwnerGo, false);
-            }
+        void RpcNotifyDiscard(GameObject oldOwner) {
+            IgnoreCollisions(gameObject, oldOwner, false);
+            /// This gets set to null sometimes - I think it's when the client/server
+            /// are running on the same instance and the RPC call gets delayed?
+            /// Either way, we pass the old parameter so OnDiscard can interact
+            /// with the previous owner.
+            this.eOwnerGo = oldOwner;
+            this.eOwner = oldOwner.GetComponent<Player>();
+            OnDiscard();
             this.eOwnerGo = null;
             this.eOwner = null;
             UpdateTriggerItemState();
-            OnDiscard();
         }
 
         /// Returns the offset relative to the owner that this item

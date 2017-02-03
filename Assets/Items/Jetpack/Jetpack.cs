@@ -1,6 +1,7 @@
 using UnityEngine;
 
 using SciFi.Players;
+using SciFi.Players.Modifiers;
 
 namespace SciFi.Items {
     public class Jetpack : Item {
@@ -64,8 +65,7 @@ namespace SciFi.Items {
             boostForce = eOwner.jumpForce * 10;
 
             // Turn movement back on while the jetpack is active
-            eOwner.ResumeFeature(PlayerFeature.Movement);
-            eOwner.SuspendFeature(PlayerFeature.Jump);
+            eOwner.RemoveModifier(Modifier.CantMove);
         }
 
         protected override void OnKeepCharging(float chargeTime) {
@@ -87,16 +87,14 @@ namespace SciFi.Items {
             lastTotalBoostTime = totalBoostTime;
 
             // Return feature flags to their previous state
-            eOwner.SuspendFeature(PlayerFeature.Movement);
-            eOwner.ResumeFeature(PlayerFeature.Jump);
+            eOwner.AddModifier(Modifier.CantMove);
         }
 
         protected override void OnCancel() {
             if (IsCharging()) {
                 Destroy(fire);
                 fire = null;
-                eOwner.SuspendFeature(PlayerFeature.Movement);
-                eOwner.ResumeFeature(PlayerFeature.Jump);
+                eOwner.AddModifier(Modifier.CantMove);
             }
         }
     }

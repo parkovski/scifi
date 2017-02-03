@@ -1,3 +1,5 @@
+using SciFi.Players.Modifiers;
+
 namespace SciFi.Players.Attacks {
     public enum AttackHit {
         None,
@@ -33,25 +35,25 @@ namespace SciFi.Players.Attacks {
                             inputManager.InvalidateControl(control);
                             shouldCancel = false;
                             Cancel();
-                            player.ResumeFeature(PlayerFeature.Attack);
-                            player.ResumeFeature(PlayerFeature.Movement);
+                            player.RemoveModifier(Modifier.CantAttack);
+                            player.RemoveModifier(Modifier.CantMove);
                         } else {
                             OnKeepCharging(inputManager.GetControlHoldTime(control), direction);
                         }
                     } else {
                         // Not charging but button pressed, begin charging.
-                        if (player.FeatureEnabled(PlayerFeature.Attack)) {
+                        if (!player.IsModifierEnabled(Modifier.CantAttack)) {
                             isCharging = true;
                             shouldCancel = false;
-                            player.SuspendFeature(PlayerFeature.Attack);
-                            player.SuspendFeature(PlayerFeature.Movement);
+                            player.AddModifier(Modifier.CantAttack);
+                            player.AddModifier(Modifier.CantMove);
                             OnBeginCharging(direction);
                         }
                     }
                 } else {
                     // Attack doesn't charge, fire immediately.
                     inputManager.InvalidateControl(control);
-                    if (player.FeatureEnabled(PlayerFeature.Attack)) {
+                    if (!player.IsModifierEnabled(Modifier.CantAttack)) {
                         OnEndCharging(0f, direction);
                     }
                 }
@@ -60,8 +62,8 @@ namespace SciFi.Players.Attacks {
                     // Charging but button released, fire the attack.
                     isCharging = false;
                     OnEndCharging(inputManager.GetControlHoldTime(control), direction);
-                    player.ResumeFeature(PlayerFeature.Attack);
-                    player.ResumeFeature(PlayerFeature.Movement);
+                    player.RemoveModifier(Modifier.CantAttack);
+                    player.RemoveModifier(Modifier.CantMove);
                 }
             }
         }
