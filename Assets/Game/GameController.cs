@@ -211,23 +211,14 @@ namespace SciFi {
         }
 
         /// Find the winner and report it to the clients.
-        void FindWinner() {
+        int FindWinner() {
             Player winner;
             try {
                 winner = activePlayers.Single(p => p.eLives != 0);
             } catch {
-                return;
+                return -1;
             }
-            RpcSetWinner(winner.eId);
-        }
-
-        /// Set the winner on the client.
-        /// <seealso cref="SciFi.Players.Player.eId" />.
-        [ClientRpc]
-        void RpcSetWinner(int winnerId) {
-            if (winnerId == cPlayerId) {
-                cIsWinner = true;
-            }
+            return winner.eId;
         }
 
         /// Is this client the winner? Always false
@@ -239,9 +230,9 @@ namespace SciFi {
 
         /// End the game and load the game over scene.
         [Server]
-        public void EndGame() {
+        public void EndGame(int winnerId) {
             StartCoroutine(TransitionToGameOver());
-            RpcEndGame();
+            RpcEndGame(winnerId);
         }
 
         /// Is the game currently in progress?
@@ -272,7 +263,10 @@ namespace SciFi {
 
         /// End the game on the client and load the game over scene.
         [ClientRpc]
-        void RpcEndGame() {
+        void RpcEndGame(int winnerId) {
+            if (winnerId == cPlayerId) {
+                cIsWinner = true;
+            }
             StartCoroutine(TransitionToGameOver());
         }
 
@@ -304,13 +298,13 @@ namespace SciFi {
             var player = playerObject.GetComponent<Player>();
             --player.eLives;
             if (activePlayers.Count(p => p.eLives != 0) == 1) {
-                FindWinner();
+                int winnerId = FindWinner();
 
                 foreach (var go in activePlayersGo) {
                     Destroy(go);
                 }
 
-                EndGame();
+                EndGame(winnerId);
                 return;
             }
 
