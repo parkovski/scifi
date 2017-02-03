@@ -48,32 +48,32 @@ namespace SciFi.Players.Modifiers {
             return modifiers[(int)Id] > 0;
         }
 
-        public static OnFire OnFire { get; private set; }
+        public static Marker OnFire { get; private set; }
         public static CantMove CantMove { get; private set; }
-        public static CantJump CantJump { get; private set; }
-        public static CantAttack CantAttack { get; private set; }
+        public static Marker CantJump { get; private set; }
+        public static Marker CantAttack { get; private set; }
         public static Invincible Invincible { get; private set; }
-        public static Slow Slow { get; private set; }
-        public static Fast Fast { get; private set; }
-        public static HasGelignite HasGelignite { get; private set; }
-        public static UsingShield UsingShield { get; private set; }
-        public static Frozen Frozen { get; private set; }
-        public static InGravityWell InGravityWell { get; private set; }
-        public static CanSmash CanSmash { get; private set; }
+        public static SpeedModifier Slow { get; private set; }
+        public static SpeedModifier Fast { get; private set; }
+        public static Marker HasGelignite { get; private set; }
+        public static Marker UsingShield { get; private set; }
+        public static Marker Frozen { get; private set; }
+        public static Marker InGravityWell { get; private set; }
+        public static Marker CanSmash { get; private set; }
 
         static Modifier() {
-            OnFire = new OnFire();
+            OnFire = new Marker(ModId.OnFire);
             CantMove = new CantMove();
-            CantJump = new CantJump();
-            CantAttack = new CantAttack();
+            CantJump = new Marker(ModId.CantJump);
+            CantAttack = new Marker(ModId.CantAttack);
             Invincible = new Invincible();
             Slow = new Slow();
             Fast = new Fast();
-            HasGelignite = new HasGelignite();
-            UsingShield = new UsingShield();
-            Frozen = new Frozen();
-            InGravityWell = new InGravityWell();
-            CanSmash = new CanSmash();
+            HasGelignite = new Marker(ModId.HasGelignite);
+            UsingShield = new Marker(ModId.UsingShield);
+            Frozen = new Marker(ModId.Frozen);
+            InGravityWell = new Marker(ModId.InGravityWell);
+            CanSmash = new Marker(ModId.CanSmash);
         }
 
         public static Modifier FromId(ModId id) {
