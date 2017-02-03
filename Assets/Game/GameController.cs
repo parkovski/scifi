@@ -255,14 +255,18 @@ namespace SciFi {
             cIsWinner = false;
             if (!countdown) {
                 this.isPlaying = true;
-                StartGame();
+                if (_GameStarted != null) {
+                    _GameStarted();
+                }
                 return;
             }
             this.countdown = GameObject.Find("Canvas").GetComponent<Countdown>();
             this.countdown.StartGame();
             this.countdown.OnFinished += _ => {
                 this.isPlaying = true;
-                StartGame();
+                if (_GameStarted != null) {
+                    _GameStarted();
+                }
             };
         }
 
@@ -355,7 +359,7 @@ namespace SciFi {
             if (player.IsModifierEnabled(Modifier.Invincible)) {
                 return;
             }
-            amount *= player.eDamage;
+            amount *= 50 * player.eDamage;
             Vector3 vector;
             var projectile = attackingObject.GetComponent<Projectile>();
             var initialForceX = 0f;
