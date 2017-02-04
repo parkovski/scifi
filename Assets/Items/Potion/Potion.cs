@@ -51,8 +51,7 @@ namespace SciFi.Items {
                     SpillJuice(Direction.Down);
                 }
                 if (hit == AttackHit.HitAndDamage) {
-                    GameController.Instance.TakeDamage(collision.gameObject, 5);
-                    GameController.Instance.Knockback(gameObject, collision.gameObject, 3f);
+                    GameController.Instance.Hit(collision.gameObject, this, gameObject, 5, 3f);
                 }
                 Instantiate(brokenPotionPrefab, transform.position, Quaternion.identity);
                 Destroy(gameObject);
@@ -91,5 +90,7 @@ namespace SciFi.Items {
             }
             NetworkServer.Spawn(juice);
         }
+
+        public override AttackType Type { get { return AttackType.Projectile; } }
     }
 }

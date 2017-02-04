@@ -62,8 +62,7 @@ namespace SciFi.Items {
             if (hit == AttackHit.HitAndDamage) {
                 Effects.Star(collider.bounds.ClosestPoint(transform.position));
                 audioSource.Play();
-                GameController.Instance.TakeDamage(collider.gameObject, 5);
-                GameController.Instance.Knockback(gameObject, collider.gameObject, 2f);
+                GameController.Instance.Hit(collider.gameObject, this, gameObject, 5, 2f);
             }
         }
 
@@ -88,6 +87,23 @@ namespace SciFi.Items {
                 return new Vector3(-.7f, .3f);
             } else {
                 return new Vector3(.7f, .3f);
+            }
+        }
+
+        public override AttackType Type {
+            get {
+                return eOwner == null ? AttackType.Projectile : AttackType.Melee;
+            }
+        }
+        public override AttackProperty Properties {
+            get {
+                if (swordType == SwordType.Fire) {
+                    return AttackProperty.OnFire;
+                } else if (swordType == SwordType.Ice) {
+                    return AttackProperty.Frozen;
+                } else {
+                    return AttackProperty.None;
+                }
             }
         }
     }

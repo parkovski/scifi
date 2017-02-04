@@ -1,3 +1,5 @@
+using System;
+
 using SciFi.Players.Modifiers;
 
 namespace SciFi.Players.Attacks {
@@ -5,6 +7,31 @@ namespace SciFi.Players.Attacks {
         None,
         HitOnly,
         HitAndDamage,
+    }
+
+    public enum AttackType {
+        /// Does no damage
+        Inert,
+        /// Close-range attacks
+        Melee,
+        /// Thrown, launched, etc.
+        Projectile,
+    }
+
+    [Flags]
+    public enum AttackProperty {
+        None           = 0x0,
+        OnFire         = 0x1,
+        Explosive      = 0x2,
+        Frozen         = 0x4,
+        AffectsGravity = 0x8,
+        LightBeam      = 0x10,
+        Electric       = 0x20,
+    }
+
+    public interface IAttack {
+        AttackType Type { get; }
+        AttackProperty Properties { get; }
     }
 
     public abstract class Attack {

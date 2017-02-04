@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Networking;
 
 using SciFi.Items;
 using SciFi.Environment.Effects;
@@ -26,17 +27,24 @@ namespace SciFi.Players.Attacks {
         }
 
         void OnCollisionEnter2D(Collision2D collision) {
-            if (stuckToPlayer) {
-                HandleStuckCollision(collision);
-            } else {
+            if (!isServer) {
+                return;
+            }
+
+            if (stuckToPlayer == null) {
                 HandleFreestandingCollision(collision);
             }
         }
 
-        void HandleStuckCollision(Collision2D collision) {
+        [Server]
+        void PlayerHit(AttackType type, AttackProperty properties) {
+            if ((properties & AttackProperty.Explosive) == 0) {
+                return;
+            }
+
+            stuckToPlayer.sAttackHit -= PlayerHit;
+            GameController.Instance.Hit(stuckToPlayer.gameObject, this, gameObject, 10, 5f);
             Effects.Explosion(transform.position);
-            GameController.Instance.TakeDamage(stuckToPlayer.gameObject, 5);
-            GameController.Instance.Knockback(gameObject, stuckToPlayer.gameObject, 1f);
             Destroy(gameObject);
         }
 
@@ -45,7 +53,12 @@ namespace SciFi.Players.Attacks {
             if (player != null) {
                 stuckToPlayer = player;
                 gameObject.layer = Layers.projectileInteractables;
+                if (isServer) {
+                    player.sAttackHit += PlayerHit;
+                }
             }
         }
+
+        public override AttackProperty Properties { get { return AttackProperty.OnFire; } }
     }
 }

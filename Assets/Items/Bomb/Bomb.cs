@@ -25,8 +25,7 @@ namespace SciFi.Items {
                 Effects.Explosion(transform.position);
                 Destroy(gameObject);
             } else if (hit == AttackHit.HitAndDamage) {
-                GameController.Instance.TakeDamage(collision.gameObject, 15);
-                GameController.Instance.Knockback(gameObject, collision.gameObject, 7.5f);
+                GameController.Instance.Hit(collision.gameObject, this, gameObject, 15, 7.5f);
                 Effects.Explosion(transform.position);
                 Destroy(gameObject);
             }
@@ -44,5 +43,8 @@ namespace SciFi.Items {
         public override bool ShouldCharge() {
             return false;
         }
+
+        public override AttackType Type { get { return AttackType.Projectile; } }
+        public override AttackProperty Properties { get { return AttackProperty.Explosive; } }
     }
 }

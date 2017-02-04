@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace SciFi.Players.Attacks {
     public class GeligniteAttack : Attack {
@@ -19,6 +20,7 @@ namespace SciFi.Players.Attacks {
             var gelignite = geligniteGo.GetComponent<Gelignite>();
             gelignite.spawnedBy = player.netId;
             gelignite.spawnedByExtra = player.GetItemNetId();
+            NetworkServer.Spawn(geligniteGo);
         }
 
         Vector3 GetGeligniteOffset(Direction direction) {

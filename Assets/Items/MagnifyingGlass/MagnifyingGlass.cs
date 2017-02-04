@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 
 using SciFi.Players;
+using SciFi.Players.Attacks;
 
 namespace SciFi.Items {
     public class MagnifyingGlass : Item {
@@ -53,8 +54,10 @@ namespace SciFi.Items {
 
         public void Hit(GameObject obj) {
             if (isServer) {
-                GameController.Instance.TakeDamage(obj, 1);
+                GameController.Instance.Hit(obj, this, gameObject, 1, 0f);
             }
         }
+
+        public override AttackType Type { get { return AttackType.Projectile; } }
     }
 }

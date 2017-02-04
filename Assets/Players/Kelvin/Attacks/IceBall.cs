@@ -14,10 +14,15 @@ namespace SciFi.Players.Attacks {
             }
 
             if (Attack.GetAttackHit(collision.gameObject.layer) == AttackHit.HitAndDamage) {
-                GameController.Instance.TakeDamage(collision.gameObject, 3);
-                GameController.Instance.Knockback(gameObject, collision.gameObject, 5);
+                GameController.Instance.Hit(collision.gameObject, this, gameObject, 3, 5f);
             }
             Destroy(gameObject);
+        }
+
+        public override AttackProperty Properties {
+            get {
+                return AttackProperty.Frozen;
+            }
         }
     }
 }

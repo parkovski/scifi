@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Networking;
 using Random = UnityEngine.Random;
 
 using SciFi.Items;
@@ -53,16 +54,18 @@ namespace SciFi.Players.Attacks {
             }
         }
 
+        [Server]
         void StartAttacking() {
             rounds = Random.Range(minRounds, maxRounds + 1);
             var player = targetPlayer.GetComponent<Player>();
-            GameController.Instance.CmdAddModifier(player.netId, ModId.CantMove);
-            GameController.Instance.CmdAddModifier(player.netId, ModId.CantAttack);
-            GameController.Instance.CmdAddModifier(player.netId, ModId.OnFire);
+            player.AddModifier(Modifier.CantMove);
+            player.AddModifier(Modifier.CantAttack);
+            player.AddModifier(Modifier.OnFire);
             nextDamageTime = Time.time + nextDamageWait;
             DoAttack();
         }
 
+        [Server]
         void DoAttack() {
             if (rounds <= 0) {
                 StopAttacking();
@@ -70,15 +73,15 @@ namespace SciFi.Players.Attacks {
             }
 
             --rounds;
-            GameController.Instance.TakeDamage(targetPlayer, 3);
-            GameController.Instance.Knockback(gameObject, targetPlayer, 3f);
+            GameController.Instance.Hit(targetPlayer, this, gameObject, 3, 3f);
         }
 
+        [Server]
         void StopAttacking() {
             var player = targetPlayer.GetComponent<Player>();
-            GameController.Instance.CmdRemoveModifier(player.netId, ModId.CantMove);
-            GameController.Instance.CmdRemoveModifier(player.netId, ModId.CantAttack);
-            GameController.Instance.CmdRemoveModifier(player.netId, ModId.OnFire);
+            player.RemoveModifier(Modifier.CantMove);
+            player.RemoveModifier(Modifier.CantAttack);
+            player.RemoveModifier(Modifier.OnFire);
 
             targetPlayer = null;
             Destroy(gameObject);
@@ -94,6 +97,12 @@ namespace SciFi.Players.Attacks {
                 StartAttacking();
             } else if (canDestroy) {
                 Destroy(gameObject);
+            }
+        }
+
+        public override AttackProperty Properties {
+            get {
+                return AttackProperty.OnFire;
             }
         }
     }

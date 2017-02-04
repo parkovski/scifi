@@ -3,10 +3,11 @@ using UnityEngine.Networking;
 using System.Collections.Generic;
 
 using SciFi.Players;
+using SciFi.Players.Attacks;
 
 namespace SciFi.Items {
     /// An item that spawns randomly and can be picked up and used by the player.
-    public abstract class Item : NetworkBehaviour {
+    public abstract class Item : NetworkBehaviour, IAttack {
         /// The outline graphic to show on the item button
         /// when a player is holding this item.
         public Sprite itemButtonGraphic;
@@ -368,5 +369,8 @@ namespace SciFi.Items {
                 return new Vector3(1, 0);
             }
         }
+
+        public abstract AttackType Type { get; }
+        public virtual AttackProperty Properties { get { return AttackProperty.None; } }
     }
 }

@@ -7,6 +7,7 @@ using System.Linq;
 using Random = UnityEngine.Random;
 
 using SciFi.Players;
+using SciFi.Players.Attacks;
 using SciFi.Players.Modifiers;
 using SciFi.Items;
 using SciFi.UI;
@@ -313,9 +314,23 @@ namespace SciFi {
             EventLifeChanged(player.eId, player.eLives);
         }
 
+        [Server]
+        public void Hit(GameObject obj, IAttack attack, GameObject attackingObject, int damage, float knockback) {
+            if (damage != 0) {
+                TakeDamage(obj, damage);
+            }
+            if (!Mathf.Approximately(knockback, 0f)) {
+                Knockback(attackingObject, obj, knockback);
+            }
+            var player = obj.GetComponent<Player>();
+            if (player != null) {
+                player.NotifyAttackHit(attack);
+            }
+        }
+
         /// Inflict damage on a player or item.
         [Server]
-        public void TakeDamage(GameObject obj, int amount) {
+        void TakeDamage(GameObject obj, int amount) {
             var player = obj.GetComponent<Player>();
             if (player == null) {
                 var item = obj.GetComponent<Item>();
@@ -345,7 +360,7 @@ namespace SciFi {
 
         /// Inflict knockback on a player.
         [Server]
-        public void Knockback(GameObject attackingObject, GameObject playerObject, float amount) {
+        void Knockback(GameObject attackingObject, GameObject playerObject, float amount) {
             var player = playerObject.GetComponent<Player>();
             if (player == null) {
                 return;
@@ -377,22 +392,6 @@ namespace SciFi {
                 }
             }
             player.RpcKnockback(vector);
-        }
-
-        /// Add a player modifier potentially from a client without authority.
-        /// TODO: Exposing this may allow cheating.
-        [Command]
-        public void CmdAddModifier(NetworkInstanceId playerId, ModId modId) {
-            var player = ClientScene.FindLocalObject(playerId).GetComponent<Player>();
-            player.AddModifier(Modifier.FromId(modId));
-        }
-
-        /// Remove a player modifier potentially from a client without authority.
-        /// TODO: Exposing this may allow cheating.
-        [Command]
-        public void CmdRemoveModifier(NetworkInstanceId playerId, ModId modId) {
-            var player = ClientScene.FindLocalObject(playerId).GetComponent<Player>();
-            player.RemoveModifier(Modifier.FromId(modId));
         }
 
         /// Initialize fields that other objects depend on.

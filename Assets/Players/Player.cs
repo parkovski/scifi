@@ -7,6 +7,7 @@ using SciFi.Players.Attacks;
 using SciFi.Players.Modifiers;
 using SciFi.Items;
 using SciFi.UI;
+using SciFi.Util;
 
 namespace SciFi.Players {
     public enum Direction {
@@ -65,6 +66,10 @@ namespace SciFi.Players {
         protected Attack eSpecialAttack;
         //protected Attack eSuperAttack;
         protected Shield eShield;
+
+        public delegate void AttackHitHandler(AttackType type, AttackProperty properties);
+        /// Emitted on the server when an attack hits.
+        public event AttackHitHandler sAttackHit;
 
         public override void OnStartServer() {
             Modifier.Initialize(eModifiers);
@@ -134,13 +139,11 @@ namespace SciFi.Players {
         }
 
         /// Must be called on an authoritative copy
-        /// <seealso cref="GameController.CmdAddModifier" />
         public void AddModifier(Modifier modifier) {
             modifier.Add(eModifiers);
         }
 
         /// Must be called on an authoritative copy
-        /// <seealso cref="GameController.CmdRemoveModifier" />
         public void RemoveModifier(Modifier modifier) {
             modifier.Remove(eModifiers);
         }
@@ -199,6 +202,10 @@ namespace SciFi.Players {
         }
 
         protected void BaseInput() {
+            if (!hasAuthority) {
+                return;
+            }
+
             pLeftControl.Update();
             pRightControl.Update();
 
@@ -573,6 +580,12 @@ namespace SciFi.Players {
                 return;
             }
             Modifier.Invincible.TryAddKnockback(eModifiers, lRb, force);
+        }
+
+        public void NotifyAttackHit(IAttack attack) {
+            if (sAttackHit != null) {
+                sAttackHit(attack.Type, attack.Properties);
+            }
         }
     }
 }

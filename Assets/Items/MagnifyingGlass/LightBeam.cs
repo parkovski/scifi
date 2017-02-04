@@ -3,7 +3,7 @@ using UnityEngine;
 using SciFi.Players.Attacks;
 
 namespace SciFi.Items {
-    public class LightBeam : MonoBehaviour {
+    public class LightBeam : MonoBehaviour, IAttack {
         float startTime;
         float stopTime;
         bool hasSetStopTime = false;
@@ -66,5 +66,8 @@ namespace SciFi.Items {
                 }
             }
         }
+
+        public AttackType Type { get { return AttackType.Melee; } }
+        public AttackProperty Properties { get { return AttackProperty.LightBeam; } }
     }
 }

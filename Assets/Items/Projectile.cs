@@ -1,11 +1,13 @@
 using UnityEngine;
 using UnityEngine.Networking;
 
+using SciFi.Players.Attacks;
+
 namespace SciFi.Items {
     /// A projectile, spawned by either a player or an item,
     /// which cannot be held but otherwise interacts with players
     /// and other items.
-    public class Projectile : NetworkBehaviour {
+    public class Projectile : NetworkBehaviour, IAttack {
         /// The player or other object that spawned the projectile.
         /// Projectiles won't collide with objects that spawned them.
         [SyncVar]
@@ -44,5 +46,8 @@ namespace SciFi.Items {
         public Vector3 GetInitialForce() {
             return initialForce;
         }
+
+        public AttackType Type { get { return AttackType.Projectile; } }
+        public virtual AttackProperty Properties { get { return AttackProperty.None; } }
     }
 }

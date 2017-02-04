@@ -28,9 +28,10 @@ namespace SciFi.Players.Attacks {
             if (Attack.GetAttackHit(collision.gameObject.layer) == AttackHit.HitAndDamage) {
                 child.layer = Layers.displayOnly;
                 child.GetComponent<SpriteRenderer>().enabled = false;
-                GameController.Instance.TakeDamage(collision.gameObject, 8);
-                GameController.Instance.Knockback(gameObject, collision.gameObject, 3f);
+                GameController.Instance.Hit(collision.gameObject, this, child, 8, 3f);
             }
         }
+
+        public override AttackProperty Properties { get { return AttackProperty.Explosive; } }
     }
 }

@@ -5,7 +5,7 @@ using SciFi.Items;
 using SciFi.Environment.Effects;
 
 namespace SciFi.Players.Attacks {
-    public class CalcBook : MonoBehaviour {
+    public class CalcBook : MonoBehaviour, IAttack {
         public GameObject spawnedBy;
         public int power;
 
@@ -36,11 +36,13 @@ namespace SciFi.Players.Attacks {
             var hit = Attack.GetAttackHit(collider.gameObject.layer);
             if (hit == AttackHit.HitAndDamage && !hitObjects.Contains(collider.gameObject)) {
                 hitObjects.Add(collider.gameObject);
-                GameController.Instance.TakeDamage(collider.gameObject, power * 2);
-                GameController.Instance.Knockback(spawnedBy, collider.gameObject, power);
+                GameController.Instance.Hit(collider.gameObject, this, spawnedBy, power * 2, power);
                 audioSource.Play();
                 Effects.Star(collider.bounds.ClosestPoint(transform.position));
             }
         }
+
+        public AttackType Type { get { return AttackType.Melee; } }
+        public AttackProperty Properties { get { return AttackProperty.None; } }
     }
 }

@@ -4,6 +4,7 @@ using Random = UnityEngine.Random;
 using System.Collections;
 
 using SciFi.Players;
+using SciFi.Players.Attacks;
 
 namespace SciFi.Items {
     public class Bow : Item {
@@ -184,5 +185,7 @@ namespace SciFi.Items {
             yield return new WaitForSeconds(.5f);
             CreateDisplayArrow();
         }
+
+        public override AttackType Type { get { return AttackType.Projectile; } }
     }
 }

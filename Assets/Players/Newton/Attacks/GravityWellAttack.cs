@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Linq;
 
 namespace SciFi.Players.Attacks {
-    public class GravityWellAttack : Attack {
+    public class GravityWellAttack : Attack, IAttack {
         GameObject gravityWellPrefab;
         GameObject gravityWellObj;
         GravityWell gravityWell;
@@ -57,10 +57,12 @@ namespace SciFi.Players.Attacks {
                 }
                 var p = go.GetComponent<Player>();
                 if (p != null) {
-                    GameController.Instance.TakeDamage(go, (int)(1.3f * power));
-                    GameController.Instance.Knockback(player.gameObject, go, -power * 3.5f);
+                    GameController.Instance.Hit(go, this, player.gameObject, (int)(1.3f * power), power * 3.5f);
                 }
             }
         }
+
+        public AttackType Type { get { return AttackType.Melee; } }
+        public AttackProperty Properties { get { return AttackProperty.AffectsGravity; } }
     }
 }

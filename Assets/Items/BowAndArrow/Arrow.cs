@@ -23,8 +23,7 @@ namespace SciFi.Items {
             }
 
             if (Attack.GetAttackHit(collision.gameObject.layer) == AttackHit.HitAndDamage) {
-                GameController.Instance.TakeDamage(collision.gameObject, 5);
-                GameController.Instance.Knockback(gameObject, collision.gameObject, 1f);
+                GameController.Instance.Hit(collision.gameObject, this, gameObject, 5, 1f);
             }
             Destroy(gameObject);
         }

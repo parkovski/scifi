@@ -1,6 +1,7 @@
 using UnityEngine;
 
 using SciFi.Players;
+using SciFi.Players.Attacks;
 using SciFi.Players.Modifiers;
 
 namespace SciFi.Items {
@@ -97,5 +98,7 @@ namespace SciFi.Items {
                 eOwner.AddModifier(Modifier.CantMove);
             }
         }
+
+        public override AttackType Type { get { return AttackType.Inert; } }
     }
 }

@@ -10,11 +10,10 @@ namespace SciFi.Players.Modifiers {
         Invincible    = 4,
         Slow          = 5,
         Fast          = 6,
-        HasGelignite  = 7,
-        UsingShield   = 8,
-        Frozen        = 9,
-        InGravityWell = 10,
-        CanSmash      = 11,
+        UsingShield   = 7,
+        Frozen        = 8,
+        InGravityWell = 9,
+        CanSmash      = 10,
     }
 
     public abstract class Modifier {
@@ -55,7 +54,6 @@ namespace SciFi.Players.Modifiers {
         public static Invincible Invincible { get; private set; }
         public static SpeedModifier Slow { get; private set; }
         public static SpeedModifier Fast { get; private set; }
-        public static Marker HasGelignite { get; private set; }
         public static Marker UsingShield { get; private set; }
         public static Marker Frozen { get; private set; }
         public static Marker InGravityWell { get; private set; }
@@ -69,7 +67,6 @@ namespace SciFi.Players.Modifiers {
             Invincible = new Invincible();
             Slow = new Slow();
             Fast = new Fast();
-            HasGelignite = new Marker(ModId.HasGelignite);
             UsingShield = new Marker(ModId.UsingShield);
             Frozen = new Marker(ModId.Frozen);
             InGravityWell = new Marker(ModId.InGravityWell);
@@ -92,8 +89,6 @@ namespace SciFi.Players.Modifiers {
                 return Slow;
             case ModId.Fast:
                 return Fast;
-            case ModId.HasGelignite:
-                return HasGelignite;
             case ModId.UsingShield:
                 return UsingShield;
             case ModId.Frozen:

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using SciFi.Environment.Effects;
 
 namespace SciFi.Players.Attacks {
-    public class BoneArm : MonoBehaviour {
+    public class BoneArm : MonoBehaviour, IAttack {
         public GameObject boneHandPrefab;
         public GameObject attachedHand;
         public bool alwaysThrowHand = false;
@@ -75,9 +75,12 @@ namespace SciFi.Players.Attacks {
                 }
                 hitObjects.Add(collider.gameObject);
                 Effects.Star(collider.bounds.ClosestPoint(collider.gameObject.transform.position));
-                GameController.Instance.TakeDamage(collider.gameObject, 5);
-                GameController.Instance.Knockback(child, collider.gameObject, 2f);
+                GameController.Instance.Hit(collider.gameObject, this, child, 5, 2f);
             }
         }
+
+        // IAttack implementation
+        public AttackType Type { get { return AttackType.Melee; } }
+        public AttackProperty Properties { get { return AttackProperty.None; } }
     }
 }

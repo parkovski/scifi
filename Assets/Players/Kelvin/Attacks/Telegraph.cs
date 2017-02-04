@@ -3,7 +3,7 @@ using UnityEngine;
 using SciFi.Items;
 
 namespace SciFi.Players.Attacks {
-    public class Telegraph : MonoBehaviour {
+    public class Telegraph : MonoBehaviour, IAttack {
         public GameObject spawnedBy;
 
         SpriteRenderer electricity1, electricity2;
@@ -28,10 +28,12 @@ namespace SciFi.Players.Attacks {
 
         void OnCollisionEnter2D(Collision2D collision) {
             if (Attack.GetAttackHit(collision.gameObject.layer) == AttackHit.HitAndDamage) {
-                GameController.Instance.TakeDamage(collision.gameObject, 5);
-                GameController.Instance.Knockback(gameObject, collision.gameObject, 2f);
+                GameController.Instance.Hit(collision.gameObject, this, gameObject, 5, 2f);
                 Destroy(gameObject);
             }
         }
+
+        public AttackType Type { get { return AttackType.Melee; } }
+        public AttackProperty Properties { get { return AttackProperty.Electric; } }
     }
 }

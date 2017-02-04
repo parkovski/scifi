@@ -33,8 +33,7 @@ namespace SciFi.Items {
             if (!isServer) {
                 return;
             }
-            GameController.Instance.TakeDamage(collision.gameObject, 10);
-            GameController.Instance.Knockback(gameObject, collision.gameObject, 3f);
+            GameController.Instance.Hit(collision.gameObject, this, gameObject, 10, 3f);
         }
     }
 }
