@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace SciFi.Players.Attacks {
     public class FlyingMachineAttack : Attack {
@@ -20,6 +21,7 @@ namespace SciFi.Players.Attacks {
             } else {
                 fm.dx = 1.5f;
             }
+            NetworkServer.Spawn(fmObj);
         }
     }
 }

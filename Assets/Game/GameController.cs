@@ -337,6 +337,11 @@ namespace SciFi {
                 if (item != null) {
                     ItemTakeDamage(item, amount);
                     item.Interact(attack);
+                } else {
+                    var projectile = obj.GetComponent<Projectile>();
+                    if (projectile != null) {
+                        projectile.Interact(attack);
+                    }
                 }
             } else {
                 PlayerTakeDamage(player, amount);
