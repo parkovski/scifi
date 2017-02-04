@@ -20,7 +20,24 @@
 
 ## Characters
 - Isaac Newton
+  - Apple - standard projectile. Sometimes a stronger green apple will come up.
+    Try catching it in a gravity well.
+  - Calculus book - maybe this will teach you!
+  - Gravity well - Newton wishes he was this cool.
 - Lord Kelvin
+  - Ice ball - more fun than throwing snowballs.
+  - Fireball - way more fun than throwing snowballs.
+  - Broken telegraph - not nearly as fun as throwing snowballs.
+    Try shocking someone that is on fire.
+- Alfred Nobel
+  - Gun - bam.
+  - Dynamite - BAM!
+  - Gelignite - wait, what is that word? Try shooting it.
+- Leonardo da Vinci
+  - Bone arm - you know the real da Vinci kept a few of these
+    around to prank his friends.
+  - Flying machine - just try it, it's awesome!
+  - Paintbrush - cause these hurt so much.
 
 ## Tools used to create this game
 Most of these are free. For a free alternative

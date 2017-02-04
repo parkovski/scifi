@@ -57,7 +57,7 @@ namespace SciFi.Players.Attacks {
                 }
                 var p = go.GetComponent<Player>();
                 if (p != null) {
-                    GameController.Instance.Hit(go, this, player.gameObject, (int)(1.3f * power), power * 3.5f);
+                    GameController.Instance.Hit(go, this, player.gameObject, (int)(1.3f * power), power * -3.5f);
                 }
             }
         }
