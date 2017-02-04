@@ -145,7 +145,7 @@ MonoBehaviour:
   explodingApple: {fileID: 1844964400331752, guid: 2e5da8ecefc6341559bae17575f7ea32,
     type: 2}
   damage: 9
-  knockback: 4
+  knockback: 5
   postGroundDamage: 3
   postGroundKnockback: 1.5
 --- !u!212 &212914230991580068

@@ -75,7 +75,7 @@ namespace SciFi.Players.Attacks {
                 }
                 hitObjects.Add(collider.gameObject);
                 Effects.Star(collider.bounds.ClosestPoint(collider.gameObject.transform.position));
-                GameController.Instance.Hit(collider.gameObject, this, child, 5, 2f);
+                GameController.Instance.Hit(collider.gameObject, this, player.gameObject, 5, 3.5f);
             }
         }
 
