@@ -62,7 +62,7 @@ namespace SciFi.Items {
                         stopTime = time + .02f;
                     }
                     nextHitTime = Time.time + hitTimeout;
-                    magnifyingGlass.Hit(hit.collider.gameObject);
+                    magnifyingGlass.Hit(hit.collider.gameObject, this);
                 }
             }
         }

@@ -317,28 +317,30 @@ namespace SciFi {
         [Server]
         public void Hit(GameObject obj, IAttack attack, GameObject attackingObject, int damage, float knockback) {
             if (damage != 0) {
-                TakeDamage(obj, damage);
+                TakeDamage(obj, attack, damage);
             }
             if (!Mathf.Approximately(knockback, 0f)) {
                 Knockback(attackingObject, obj, knockback);
             }
             var player = obj.GetComponent<Player>();
             if (player != null) {
-                player.NotifyAttackHit(attack);
+                player.Interact(attack);
             }
         }
 
         /// Inflict damage on a player or item.
         [Server]
-        void TakeDamage(GameObject obj, int amount) {
+        void TakeDamage(GameObject obj, IAttack attack, int amount) {
             var player = obj.GetComponent<Player>();
             if (player == null) {
                 var item = obj.GetComponent<Item>();
                 if (item != null) {
                     ItemTakeDamage(item, amount);
+                    item.Interact(attack);
                 }
             } else {
                 PlayerTakeDamage(player, amount);
+                player.Interact(attack);
             }
         }
 

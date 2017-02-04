@@ -7,7 +7,7 @@ using SciFi.Players.Attacks;
 
 namespace SciFi.Items {
     /// An item that spawns randomly and can be picked up and used by the player.
-    public abstract class Item : NetworkBehaviour, IAttack {
+    public abstract class Item : NetworkBehaviour, IAttack, IInteractable {
         /// The outline graphic to show on the item button
         /// when a player is holding this item.
         public Sprite itemButtonGraphic;
@@ -372,5 +372,7 @@ namespace SciFi.Items {
 
         public abstract AttackType Type { get; }
         public virtual AttackProperty Properties { get { return AttackProperty.None; } }
+
+        public virtual void Interact(IAttack attack) {}
     }
 }

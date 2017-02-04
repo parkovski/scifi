@@ -10,6 +10,7 @@ namespace SciFi.Items {
         public GameObject brokenPotionPrefab;
 
         bool used = false;
+        bool isRedPotion = false;
         Animator animator;
 
         void Start() {
@@ -30,7 +31,6 @@ namespace SciFi.Items {
         }
 
         protected override void OnEndCharging(float chargeTime) {
-            animator.enabled = true;
             if (eDirection == Direction.Left) {
                 animator.SetTrigger("SpillLeft");
             } else {
@@ -56,10 +56,6 @@ namespace SciFi.Items {
                 Instantiate(brokenPotionPrefab, transform.position, Quaternion.identity);
                 Destroy(gameObject);
             }
-        }
-
-        public void StopAnimation() {
-            animator.enabled = false;
         }
 
         Vector3 GetJuiceOffset(Direction direction) {
@@ -88,9 +84,27 @@ namespace SciFi.Items {
             if (eOwner != null) {
                 pj.spawnedByExtra = eOwner.netId;
             }
+            pj.isRedPotion = isRedPotion;
             NetworkServer.Spawn(juice);
         }
 
         public override AttackType Type { get { return AttackType.Projectile; } }
+
+        public override void Interact(IAttack attack) {
+            if (isRedPotion) {
+                return;
+            }
+
+            if ((attack.Properties & AttackProperty.LightBeam) != 0) {
+                isRedPotion = true;
+                RpcChangeToRed();
+            }
+        }
+
+        [ClientRpc]
+        void RpcChangeToRed() {
+            isRedPotion = true;
+            animator.SetTrigger("ChangeToRed");
+        }
     }
 }

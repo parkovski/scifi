@@ -52,9 +52,9 @@ namespace SciFi.Items {
             sr.sprite = unlitSprite;
         }
 
-        public void Hit(GameObject obj) {
+        public void Hit(GameObject obj, LightBeam beam) {
             if (isServer) {
-                GameController.Instance.Hit(obj, this, gameObject, 1, 0f);
+                GameController.Instance.Hit(obj, beam, gameObject, 1, 0f);
             }
         }
 

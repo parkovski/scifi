@@ -102,7 +102,7 @@ Animator:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1541472850479400}
-  m_Enabled: 0
+  m_Enabled: 1
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 9336b0ce5023c5d44ac5f4d994a71f47, type: 2}
   m_CullingMode: 0
@@ -143,6 +143,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbbde8bc9f7945a4e83bbebe13f2a728, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  itemButtonGraphic: {fileID: 0}
   juicePrefab: {fileID: 1639080595370010, guid: 53d57cf41b90fe34587ff657317b1d6e,
     type: 2}
   brokenPotionPrefab: {fileID: 1064301103715158, guid: 864d8f9f02e6d4d428d039e76df6ae90,

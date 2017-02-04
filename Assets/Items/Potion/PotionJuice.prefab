@@ -94,6 +94,12 @@ MonoBehaviour:
   - {fileID: 21300000, guid: dd8cfa1b67f8e3b4bbe86081a470247e, type: 3}
   - {fileID: 21300000, guid: 010562c60b081704ebb24e389ceef7fd, type: 3}
   - {fileID: 21300000, guid: 796059932cef84146916fa0266946244, type: 3}
+  redJuiceStages:
+  - {fileID: 21300000, guid: d193c95ffab54144fb83237ea383ee70, type: 3}
+  - {fileID: 21300000, guid: ecf789ddd25e7604cb6ba76d1fb726ad, type: 3}
+  - {fileID: 21300000, guid: 85c6bbb08528f5948bae401eedc0f266, type: 3}
+  - {fileID: 21300000, guid: b0be3a3b854eb984c8625ca4d888cbf5, type: 3}
+  isRedPotion: 0
 --- !u!114 &114814155401346200
 MonoBehaviour:
   m_ObjectHideFlags: 1

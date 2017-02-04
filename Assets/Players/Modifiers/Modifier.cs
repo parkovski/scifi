@@ -109,7 +109,8 @@ namespace SciFi.Players.Modifiers {
         }
 
         public static void Initialize(SyncListUInt modifiers) {
-            for (var i = 0; i < Count; i++) {
+            int count = Count;
+            for (var i = 0; i < count; i++) {
                 modifiers.Add(0);
             }
         }

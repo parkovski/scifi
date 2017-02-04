@@ -5,7 +5,7 @@ AnimationClip:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: SpillPotionLeft
+  m_Name: SpillRedPotionRight
   serializedVersion: 6
   m_Legacy: 0
   m_Compressed: 0
@@ -30,7 +30,7 @@ AnimationClip:
         tangentMode: 0
       - serializedVersion: 2
         time: 0.3
-        value: {x: 0, y: 0, z: 103.771}
+        value: {x: 0, y: 0, z: -103.771}
         inSlope: {x: 0, y: 0, z: Infinity}
         outSlope: {x: 0, y: 0, z: 1.1427559}
         tangentMode: 0
@@ -50,23 +50,23 @@ AnimationClip:
   m_PPtrCurves:
   - curve:
     - time: 0
-      value: {fileID: 21300000, guid: 6f686224f9c1ca843938d15076b75f0b, type: 3}
+      value: {fileID: 21300000, guid: 2d817821b44795849816a1a50e5612e4, type: 3}
     - time: 0.033333335
-      value: {fileID: 21300000, guid: d05f546da3a837b47ac7b53cdb2bb12a, type: 3}
+      value: {fileID: 21300000, guid: 7708de88964500b458087c75f3a6c12f, type: 3}
     - time: 0.06666667
-      value: {fileID: 21300000, guid: 88b2b13132804504eb0dfa60f87df3cc, type: 3}
+      value: {fileID: 21300000, guid: 3daa8c5c6b3966548956bf4502f72a37, type: 3}
     - time: 0.1
-      value: {fileID: 21300000, guid: 00eabdf188eca404eb41f9cb2a8d2e23, type: 3}
+      value: {fileID: 21300000, guid: ac2749276af05744888c5180f4fbb2fe, type: 3}
     - time: 0.13333334
-      value: {fileID: 21300000, guid: a56dacc307696f346b416619743f6eec, type: 3}
+      value: {fileID: 21300000, guid: cbbb34ce50dfda84bb0907a4d96b0b3f, type: 3}
     - time: 0.16666667
-      value: {fileID: 21300000, guid: 2b8c4f4152a1c8d47b7ca557d649a953, type: 3}
+      value: {fileID: 21300000, guid: f3383caf6d5d52448bec0834a126cc25, type: 3}
     - time: 0.2
-      value: {fileID: 21300000, guid: c978abaa413675244b0ac0fb1336dc19, type: 3}
+      value: {fileID: 21300000, guid: b5f3f30fe5f46d2488a4138a18d00ff3, type: 3}
     - time: 0.23333333
-      value: {fileID: 21300000, guid: c59b72524abac00418bb34c9178e9715, type: 3}
+      value: {fileID: 21300000, guid: 444a4c80b3483dd43ab5e624d5d1c2d4, type: 3}
     - time: 0.26666668
-      value: {fileID: 21300000, guid: 1315ef8ca61c63446a8b166f60c8e864, type: 3}
+      value: {fileID: 21300000, guid: 4f5ff96e6fa39b5429ba6a7756e2535b, type: 3}
     - time: 0.3
       value: {fileID: 21300000, guid: 72539165d4c48af42a0628090bb36c58, type: 3}
     attribute: m_Sprite
@@ -93,15 +93,15 @@ AnimationClip:
       customType: 23
       isPPtrCurve: 1
     pptrCurveMapping:
-    - {fileID: 21300000, guid: 6f686224f9c1ca843938d15076b75f0b, type: 3}
-    - {fileID: 21300000, guid: d05f546da3a837b47ac7b53cdb2bb12a, type: 3}
-    - {fileID: 21300000, guid: 88b2b13132804504eb0dfa60f87df3cc, type: 3}
-    - {fileID: 21300000, guid: 00eabdf188eca404eb41f9cb2a8d2e23, type: 3}
-    - {fileID: 21300000, guid: a56dacc307696f346b416619743f6eec, type: 3}
-    - {fileID: 21300000, guid: 2b8c4f4152a1c8d47b7ca557d649a953, type: 3}
-    - {fileID: 21300000, guid: c978abaa413675244b0ac0fb1336dc19, type: 3}
-    - {fileID: 21300000, guid: c59b72524abac00418bb34c9178e9715, type: 3}
-    - {fileID: 21300000, guid: 1315ef8ca61c63446a8b166f60c8e864, type: 3}
+    - {fileID: 21300000, guid: 2d817821b44795849816a1a50e5612e4, type: 3}
+    - {fileID: 21300000, guid: 7708de88964500b458087c75f3a6c12f, type: 3}
+    - {fileID: 21300000, guid: 3daa8c5c6b3966548956bf4502f72a37, type: 3}
+    - {fileID: 21300000, guid: ac2749276af05744888c5180f4fbb2fe, type: 3}
+    - {fileID: 21300000, guid: cbbb34ce50dfda84bb0907a4d96b0b3f, type: 3}
+    - {fileID: 21300000, guid: f3383caf6d5d52448bec0834a126cc25, type: 3}
+    - {fileID: 21300000, guid: b5f3f30fe5f46d2488a4138a18d00ff3, type: 3}
+    - {fileID: 21300000, guid: 444a4c80b3483dd43ab5e624d5d1c2d4, type: 3}
+    - {fileID: 21300000, guid: 4f5ff96e6fa39b5429ba6a7756e2535b, type: 3}
     - {fileID: 21300000, guid: 72539165d4c48af42a0628090bb36c58, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
@@ -209,7 +209,7 @@ AnimationClip:
         tangentMode: 136
       - serializedVersion: 2
         time: 0.3
-        value: 103.771
+        value: -103.771
         inSlope: Infinity
         outSlope: 1.1427559
         tangentMode: 7
@@ -263,7 +263,7 @@ AnimationClip:
   m_IsEmpty: 0
   m_Events:
   - time: 0.28333333
-    functionName: SpillJuiceLeft
+    functionName: SpillJuiceRight
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

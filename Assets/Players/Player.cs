@@ -7,7 +7,6 @@ using SciFi.Players.Attacks;
 using SciFi.Players.Modifiers;
 using SciFi.Items;
 using SciFi.UI;
-using SciFi.Util;
 
 namespace SciFi.Players {
     public enum Direction {
@@ -18,7 +17,7 @@ namespace SciFi.Players {
         Invalid,
     }
 
-    public abstract class Player : NetworkBehaviour {
+    public abstract class Player : NetworkBehaviour, IInteractable {
         public GameObject shieldPrefab;
 
         // Gameplay data
@@ -582,7 +581,7 @@ namespace SciFi.Players {
             Modifier.Invincible.TryAddKnockback(eModifiers, lRb, force);
         }
 
-        public void NotifyAttackHit(IAttack attack) {
+        public void Interact(IAttack attack) {
             if (sAttackHit != null) {
                 sAttackHit(attack.Type, attack.Properties);
             }
