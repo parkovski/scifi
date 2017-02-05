@@ -69,7 +69,7 @@ namespace SciFi.Players.Attacks {
                 return;
             }
 
-            if (Attack.GetAttackHit(collider.gameObject.layer) == AttackHit.HitAndDamage) {
+            if (Attack.GetAttackHit(collider.gameObject.layer) != AttackHit.None) {
                 if (hitObjects.Contains(collider.gameObject)) {
                     return;
                 }

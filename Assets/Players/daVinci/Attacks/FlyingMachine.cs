@@ -1,11 +1,14 @@
 using UnityEngine;
+using UnityEngine.Networking;
 
 using SciFi.Items;
+using SciFi.Environment.Effects;
 
 namespace SciFi.Players.Attacks {
     public class FlyingMachine : Projectile {
         public Sprite unmovingProp;
         public Sprite[] movingProps;
+        public GameObject projectileItemContainerPrefab;
 
         // Flight path
         [HideInInspector]
@@ -62,7 +65,7 @@ namespace SciFi.Players.Attacks {
             rb = GetComponent<Rigidbody2D>();
             spriteRenderer = transform.Find("FlyingMachine_Prop").GetComponent<SpriteRenderer>();
             changePropSpriteTime = Time.time + .3f;
-            Destroy(gameObject, 5f);
+            //Destroy(gameObject, 5f);
         }
 
         void FixedUpdate() {
@@ -170,7 +173,6 @@ namespace SciFi.Players.Attacks {
         }
 
         void UpdateHoldingPlayer() {
-            //transform.position = holdPosition;
             heldPlayer.transform.position = transform.position - heldPlayerOffset;
             heldPlayer.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
             rb.velocity = new Vector2(rb.velocity.x / 1.1f, 1f);
@@ -194,9 +196,15 @@ namespace SciFi.Players.Attacks {
         void OnTriggerEnter2D(Collider2D collider) {
             if (state == State.Flying) {
                 CollideFlying(collider);
-            } else if (state == State.Broken) {
-                CollideBroken(collider);
             }
+        }
+
+        void OnCollisionEnter2D(Collision2D collision) {
+            if (state != State.Broken) {
+                return;
+            }
+
+            CollideBroken(collision);
         }
 
         void CollideFlying(Collider2D collider) {
@@ -206,8 +214,12 @@ namespace SciFi.Players.Attacks {
             }
         }
 
-        void CollideBroken(Collider2D collider) {
-            //Destroy(gameObject);
+        void CollideBroken(Collision2D collision) {
+            if (Attack.GetAttackHit(collision.gameObject.layer) == AttackHit.HitAndDamage) {
+                GameController.Instance.Hit(collision.gameObject, this, gameObject, 10, 6f);
+                Effects.Star(transform.position);
+                Destroy(transform.parent.gameObject);
+            }
         }
 
         /// When the machine is hit while in the initial flying state,
@@ -217,6 +229,11 @@ namespace SciFi.Players.Attacks {
                 state = State.Broken;
                 spriteRenderer.sprite = unmovingProp;
                 GetComponent<Collider2D>().isTrigger = false;
+                if (isServer) {
+                    var container = Instantiate(projectileItemContainerPrefab, transform.position, Quaternion.identity);
+                    container.GetComponent<ProjectileItemContainer>().projectile = gameObject;
+                    NetworkServer.Spawn(container);
+                }
             }
         }
     }
