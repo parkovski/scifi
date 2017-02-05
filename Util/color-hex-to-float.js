@@ -3,7 +3,6 @@ let r = color.substr(0, 2);
 let g = color.substr(2, 2);
 let b = color.substr(4, 2);
 let a = color.substr(6, 2);
-console.log(r, g, b,a);
 r = parseInt(r, 16) / 255;
 g = parseInt(g, 16) / 255;
 b = parseInt(b, 16) / 255;
