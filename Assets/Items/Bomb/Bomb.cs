@@ -6,7 +6,7 @@ using SciFi.Players.Attacks;
 namespace SciFi.Items {
     public class Bomb : Item {
         void Start() {
-            BaseStart(false);
+            BaseStart();
         }
 
         void Update() {

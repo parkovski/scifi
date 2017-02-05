@@ -33,7 +33,7 @@ namespace SciFi.Items {
         AudioSource audioSource;
 
         void Start() {
-            BaseStart(true);
+            BaseStart();
             InitArrowsArray();
             audioSource = GetComponent<AudioSource>();
         }

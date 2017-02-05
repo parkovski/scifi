@@ -14,7 +14,7 @@ namespace SciFi.Items {
         const int maxUses = 7;
 
         void Start() {
-            BaseStart(false);
+            BaseStart();
         }
 
         void Update() {

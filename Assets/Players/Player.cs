@@ -382,7 +382,7 @@ namespace SciFi.Players {
                     pInputManager.InvalidateControl(Control.Item);
                     CmdLoseOwnershipOfItem(eDirection);
                     eItemGo = null;
-                } else if (!eItem.CanCharge()) {
+                } else {
                     pInputManager.InvalidateControl(Control.Item);
                     eItem.Use();
                     UpdateItemControlGraphic();

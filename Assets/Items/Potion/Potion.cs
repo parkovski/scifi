@@ -14,7 +14,7 @@ namespace SciFi.Items {
         Animator animator;
 
         void Start() {
-            BaseStart(false);
+            BaseStart();
             animator = GetComponent<Animator>();
         }
 

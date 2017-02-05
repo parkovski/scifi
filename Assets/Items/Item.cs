@@ -13,7 +13,6 @@ namespace SciFi.Items {
         public Sprite itemButtonGraphic;
 
         bool pIsCharging = false;
-        bool eCanCharge;
         protected Direction eDirection = Direction.Right;
         /// The layer the item should be on when it is not acting as a projectile.
         int eInitialLayer;
@@ -59,10 +58,9 @@ namespace SciFi.Items {
         private HashSet<GameObject> hitObjects;
 
         /// Initializes common item state.
-        protected void BaseStart(bool canCharge, float aliveTime = 15f) {
+        protected void BaseStart(float aliveTime = 15f) {
             this.sAliveTime = aliveTime;
             this.sDestroyTime = Time.time + aliveTime;
-            this.eCanCharge = canCharge;
             this.eInitialLayer = gameObject.layer;
             this.spriteRenderer = GetComponent<SpriteRenderer>();
             this.lRb = GetComponent<Rigidbody2D>();
@@ -152,9 +150,6 @@ namespace SciFi.Items {
         /// True if the attack should charge and fire when the button is released,
         /// false to fire immediately.
         public abstract bool ShouldCharge();
-        public bool CanCharge() {
-            return eCanCharge;
-        }
         /// Only valid on the client w/ local authority over the owner.
         [Client]
         public bool IsCharging() {

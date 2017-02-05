@@ -18,7 +18,7 @@ namespace SciFi.Items {
         const float maxBoostTime = 8f;
 
         void Start() {
-            BaseStart(canCharge: true);
+            BaseStart();
         }
 
         void Update() {

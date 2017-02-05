@@ -21,7 +21,7 @@ namespace SciFi.Items {
         bool isAttacking;
 
         void Start() {
-            BaseStart(false);
+            BaseStart();
             animator = GetComponentInChildren<Animator>();
             audioSource = GetComponent<AudioSource>();
             isTriggerItem = true;

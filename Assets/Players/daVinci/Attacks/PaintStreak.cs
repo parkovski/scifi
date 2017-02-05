@@ -5,6 +5,7 @@ namespace SciFi.Players.Attacks {
         float startTime;
         const float lifetime = 1.5f;
         /// The thing that got painted, that the paint streak should follow.
+        [HideInInspector]
         public GameObject paintedObject;
         Vector3 paintedObjectOffset;
 
