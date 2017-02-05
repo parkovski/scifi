@@ -19,7 +19,6 @@ namespace SciFi.Players.Attacks {
         // Trapped player
         float holdTime = 1f;
         float initialHoldStateTime;
-        Vector3 holdPosition;
         Vector3 heldPlayerOffset;
         Player heldPlayer;
 
@@ -158,7 +157,6 @@ namespace SciFi.Players.Attacks {
             if (rb.velocity.y < 1f) {
                 rb.velocity = new Vector2(newXVelocity, 1f);
                 initialHoldStateTime = Time.time;
-                holdPosition = transform.position;
                 state = State.HoldingPlayer;
                 rb.isKinematic = true;
             } else if (rb.velocity.y > 2f) {
