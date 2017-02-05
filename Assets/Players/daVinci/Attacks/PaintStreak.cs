@@ -17,6 +17,7 @@ namespace SciFi.Players.Attacks {
         void Update() {
             if (Time.time > startTime + lifetime || paintedObject == null) {
                 Destroy(gameObject);
+                return;
             }
             transform.position = paintedObject.transform.position + paintedObjectOffset;
         }
