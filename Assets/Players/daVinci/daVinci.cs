@@ -7,21 +7,26 @@ namespace SciFi.Players {
     public class daVinci : Player {
         public GameObject boneArmPrefab;
         public GameObject flyingMachinePrefab;
+        public GameObject paintbrushPrefab;
+        public GameObject paintStreak;
         GameObject boneArm;
+        GameObject paintbrush;
 
         void Start() {
             BaseStart();
 
-            boneArm = Instantiate(boneArmPrefab, transform.position, Quaternion.identity);
+            boneArm = Instantiate(boneArmPrefab, transform.position + GetBoneArmOffset(defaultDirection), Quaternion.identity);
             ReverseSprite(boneArm);
+            paintbrush = Instantiate(paintbrushPrefab, transform.position + GetBoneArmOffset(defaultDirection), Quaternion.identity);
 
-            eAttack1 = new PaintbrushAttack(this);
+            eAttack1 = new PaintbrushAttack(this, paintbrush.GetComponent<Paintbrush>());
             eAttack2 = new BoneArmAttack(this, boneArm.GetComponent<BoneArm>());
             eSpecialAttack = new FlyingMachineAttack(this, flyingMachinePrefab);
         }
 
         void Update() {
             boneArm.transform.position = transform.position + GetBoneArmOffset(eDirection);
+            paintbrush.transform.position = transform.position + GetBoneArmOffset(eDirection);
         }
 
         Vector3 GetBoneArmOffset(Direction direction) {

@@ -438,6 +438,10 @@ MonoBehaviour:
     type: 2}
   flyingMachinePrefab: {fileID: 1143090844137626, guid: 0877b79eb53674e43990c7413700f3bc,
     type: 2}
+  paintbrushPrefab: {fileID: 1857861135128364, guid: e407205e83f69704a93ea003390e7140,
+    type: 2}
+  paintStreak: {fileID: 1803598983150488, guid: af0c869939c6e99489efdab96ac54731,
+    type: 2}
 --- !u!114 &114921518029735292
 MonoBehaviour:
   m_ObjectHideFlags: 1

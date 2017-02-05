@@ -1,0 +1,15 @@
+const color = process.argv[2];
+let r = color.substr(0, 2);
+let g = color.substr(2, 2);
+let b = color.substr(4, 2);
+let a = color.substr(6, 2);
+console.log(r, g, b,a);
+r = parseInt(r, 16) / 255;
+g = parseInt(g, 16) / 255;
+b = parseInt(b, 16) / 255;
+a = parseInt(a, 16) / 255;
+r = (''+r).substr(0, 6) + 'f';
+g = (''+g).substr(0, 6) + 'f';
+b = (''+b).substr(0, 6) + 'f';
+a = (''+a).substr(0, 6) + 'f';
+console.log(`new Color(${r}, ${g}, ${b}, ${a})`);
