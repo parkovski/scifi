@@ -14,6 +14,7 @@ namespace SciFi.Players.Attacks {
         public override void OnEndCharging(float chargeTime, Direction direction) {
             var fmObj = Object.Instantiate(flyingMachinePrefab, player.transform.position, Quaternion.identity);
             var fm = fmObj.GetComponent<FlyingMachine>();
+            fm.power = Mathf.Clamp((int)(chargeTime * 7.5f), 1, 10);
             fm.spawnedBy = player.netId;
             fm.spawnedByExtra = player.GetItemNetId();
             if (direction == Direction.Left) {

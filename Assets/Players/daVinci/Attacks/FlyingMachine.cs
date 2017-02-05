@@ -12,10 +12,12 @@ namespace SciFi.Players.Attacks {
         public float dx;
         [HideInInspector]
         public float y;
+        /// 1-10
+        [HideInInspector]
+        public int power;
 
         // Trapped player
-        [HideInInspector]
-        public float holdTime = 1f;
+        float holdTime = 1f;
         float initialHoldStateTime;
         Vector3 holdPosition;
         Vector3 heldPlayerOffset;
@@ -57,6 +59,7 @@ namespace SciFi.Players.Attacks {
             BaseStart();
             y = transform.position.y;
             initialTime = Time.time;
+            holdTime = .5f + power * 1.5f / 10f;
             rb = GetComponent<Rigidbody2D>();
             spriteRenderer = transform.Find("FlyingMachine_Prop").GetComponent<SpriteRenderer>();
             changePropSpriteTime = Time.time + .3f;
