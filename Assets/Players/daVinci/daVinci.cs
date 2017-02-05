@@ -17,7 +17,7 @@ namespace SciFi.Players {
 
             boneArm = Instantiate(boneArmPrefab, transform.position + GetBoneArmOffset(defaultDirection), Quaternion.identity);
             ReverseSprite(boneArm);
-            paintbrush = Instantiate(paintbrushPrefab, transform.position + GetBoneArmOffset(defaultDirection), Quaternion.identity);
+            paintbrush = Instantiate(paintbrushPrefab, transform.position + GetPaintbrushOffset(defaultDirection), Quaternion.identity);
 
             eAttack1 = new PaintbrushAttack(this, paintbrush.GetComponent<Paintbrush>());
             eAttack2 = new BoneArmAttack(this, boneArm.GetComponent<BoneArm>());
@@ -26,7 +26,7 @@ namespace SciFi.Players {
 
         void Update() {
             boneArm.transform.position = transform.position + GetBoneArmOffset(eDirection);
-            paintbrush.transform.position = transform.position + GetBoneArmOffset(eDirection);
+            paintbrush.transform.position = transform.position + GetPaintbrushOffset(eDirection);
         }
 
         Vector3 GetBoneArmOffset(Direction direction) {
@@ -34,6 +34,14 @@ namespace SciFi.Players {
                 return new Vector3(-.7f, .2f);
             } else {
                 return new Vector3(.7f, .2f);
+            }
+        }
+
+        Vector3 GetPaintbrushOffset(Direction direction) {
+            if (direction == Direction.Left) {
+                return new Vector3(-.35f, .3f);
+            } else {
+                return new Vector3(.35f, .3f);
             }
         }
 

@@ -14,6 +14,7 @@ namespace SciFi.Players.Attacks {
 
         public override void OnEndCharging(float chargeTime, Direction direction) {
             paintbrush.SetDirection(direction);
+            paintbrush.SetPower(Mathf.Clamp((int)(chargeTime * 10f), 1, 10));
             if (direction == Direction.Left) {
                 animator.SetTrigger("SwingLeft");
             } else {
