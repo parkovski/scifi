@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.Networking;
 
+using SciFi.Util.Extensions;
+
 namespace SciFi.Players.Attacks {
     public class FlyingMachineAttack : Attack {
         GameObject flyingMachinePrefab;
@@ -17,11 +19,7 @@ namespace SciFi.Players.Attacks {
             fm.power = Mathf.Clamp((int)(chargeTime * 7.5f), 1, 10);
             fm.spawnedBy = player.netId;
             fm.spawnedByExtra = player.GetItemNetId();
-            if (direction == Direction.Left) {
-                fm.dx = -1.5f;
-            } else {
-                fm.dx = 1.5f;
-            }
+            fm.dx = 1.5f.FlipDirection(direction);
             NetworkServer.Spawn(fmObj);
         }
     }

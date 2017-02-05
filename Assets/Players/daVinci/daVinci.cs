@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 using SciFi.Players.Attacks;
+using SciFi.Util.Extensions;
 
 namespace SciFi.Players {
     public class daVinci : Player {
@@ -30,19 +31,11 @@ namespace SciFi.Players {
         }
 
         Vector3 GetBoneArmOffset(Direction direction) {
-            if (direction == Direction.Left) {
-                return new Vector3(-.7f, .2f);
-            } else {
-                return new Vector3(.7f, .2f);
-            }
+            return new Vector3(.7f, .2f).FlipDirection(direction);
         }
 
         Vector3 GetPaintbrushOffset(Direction direction) {
-            if (direction == Direction.Left) {
-                return new Vector3(-.35f, .3f);
-            } else {
-                return new Vector3(.35f, .3f);
-            }
+            return new Vector3(.35f, .3f).FlipDirection(direction);
         }
 
         void FixedUpdate() {
@@ -62,7 +55,7 @@ namespace SciFi.Players {
         }
 
         void ReverseTransform(Transform transform) {
-            transform.localPosition = new Vector3(-transform.localPosition.x, transform.localPosition.y, transform.localPosition.z);
+            transform.localPosition = transform.localPosition.FlipX();
             for (var i = 0; i < transform.childCount; i++) {
                 ReverseTransform(transform.GetChild(i));
             }

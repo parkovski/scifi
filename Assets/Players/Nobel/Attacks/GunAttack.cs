@@ -3,6 +3,7 @@ using UnityEngine.Networking;
 using System.Collections;
 
 using SciFi.Environment.Effects;
+using SciFi.Util.Extensions;
 
 namespace SciFi.Players.Attacks {
     public class GunAttack : Attack {
@@ -27,11 +28,11 @@ namespace SciFi.Players.Attacks {
             var rotation = Quaternion.identity;
             if (direction == Direction.Down) {
                 player.StartCoroutine(ShowHideGunDown());
-                rotation = Quaternion.Euler(0, 0, 90f);
+                rotation = Quaternion.Euler(0, 0, -90f);
             } else {
                 player.StartCoroutine(ShowHideGun());
             }
-            var bulletGo = Object.Instantiate(bulletPrefab, gun.transform.position + GetBulletOffset(direction), Quaternion.identity);
+            var bulletGo = Object.Instantiate(bulletPrefab, gun.transform.position + GetBulletOffset(direction), rotation);
             Effects.Smoke(bulletGo.transform.position);
             audioSource.Play();
             if (direction == Direction.Left) {
@@ -62,7 +63,7 @@ namespace SciFi.Players.Attacks {
                 return new Vector3(.3f, -.1f);
             } else {
                 // Down
-                return new Vector3(-.3f, -.1f);
+                return new Vector3(.3f, -.1f).FlipDirection(player.eDirection);
             }
         }
 
@@ -74,7 +75,11 @@ namespace SciFi.Players.Attacks {
 
         IEnumerator ShowHideGunDown() {
             gunRenderer.enabled = true;
-            gun.transform.rotation = Quaternion.Euler(0, 0, 90f);
+            if (player.eDirection == Direction.Left) {
+                gun.transform.rotation = Quaternion.Euler(0, 0, 90f);
+            } else {
+                gun.transform.rotation = Quaternion.Euler(0, 0, -90f);
+            }
             yield return new WaitForSeconds(0.3f);
             gun.transform.rotation = Quaternion.identity;
             gunRenderer.enabled = false;

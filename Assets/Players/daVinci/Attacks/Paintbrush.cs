@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+using SciFi.Util.Extensions;
+
 namespace SciFi.Players.Attacks {
     public class Paintbrush : MonoBehaviour, IAttack {
         public GameObject paintStreakPrefab;
@@ -61,11 +63,7 @@ namespace SciFi.Players.Attacks {
         }
 
         Vector3 GetPaintbrushTipOffset() {
-            if (direction == Direction.Left) {
-                return new Vector3(-.2f, 0f);
-            } else {
-                return new Vector3(.2f, 0f);
-            }
+            return new Vector3(.2f, 0f).FlipDirection(direction);
         }
 
         void OnTriggerEnter2D(Collider2D collider) {

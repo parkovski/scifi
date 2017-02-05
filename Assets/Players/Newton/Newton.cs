@@ -2,6 +2,7 @@
 using UnityEngine.Networking;
 
 using SciFi.Players.Attacks;
+using SciFi.Util.Extensions;
 
 namespace SciFi.Players {
     public class Newton : Player {
@@ -56,7 +57,7 @@ namespace SciFi.Players {
             }
             for (var i = 0; i < transform.childCount; i++) {
                 var child = transform.GetChild(i);
-                child.localPosition = new Vector3(-child.localPosition.x, child.localPosition.y, child.localPosition.z);
+                child.localPosition = child.localPosition.FlipX();
             }
         }
     }

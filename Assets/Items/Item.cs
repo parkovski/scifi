@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 using SciFi.Players;
 using SciFi.Players.Attacks;
+using SciFi.Util.Extensions;
 
 namespace SciFi.Items {
     /// An item that spawns randomly and can be picked up and used by the player.
@@ -358,11 +359,7 @@ namespace SciFi.Items {
         /// Returns the offset relative to the owner that this item
         /// should appear when picked up.
         protected virtual Vector3 GetOwnerOffset(Direction direction) {
-            if (direction == Direction.Left) {
-                return new Vector3(-1, 0);
-            } else {
-                return new Vector3(1, 0);
-            }
+            return new Vector3(1, 0).FlipDirection(direction);
         }
 
         public abstract AttackType Type { get; }

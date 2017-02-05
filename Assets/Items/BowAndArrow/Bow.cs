@@ -5,6 +5,7 @@ using System.Collections;
 
 using SciFi.Players;
 using SciFi.Players.Attacks;
+using SciFi.Util.Extensions;
 
 namespace SciFi.Items {
     public class Bow : Item {
@@ -164,11 +165,7 @@ namespace SciFi.Items {
         }
 
         Vector2 GetArrowForce() {
-            if (eDirection == Direction.Left) {
-                return new Vector2(-250f - lPower * 25, 50f + lPower * 5f);
-            } else {
-                return new Vector2(250f + lPower * 25, 50f + lPower * 5f);
-            }
+            return new Vector2(250f + lPower * 25, 50f + lPower * 5f).FlipDirection(eDirection);
         }
 
         float GetArrowAngle(Vector2 force) {
