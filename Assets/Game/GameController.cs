@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.Networking.NetworkSystem;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using System.Collections;
@@ -13,51 +14,10 @@ using SciFi.Items;
 using SciFi.UI;
 using SciFi.Environment.Effects;
 using SciFi.Scenes;
+using SciFi.Network;
 using SciFi.Util;
 
 namespace SciFi {
-    public delegate void DamageChangedHandler(int playerId, int newDamage);
-    public delegate void LifeChangedHandler(int playerId, int newLives);
-    public delegate void StartGameHandler();
-    public delegate void PlayersInitializedHandler(Player[] players);
-
-    /// Commonly used layers. This is initialized by the <see cref="GameController" />
-    /// so if you need a layer before it is created, use <c>LayerMask.NameToLayer(string)</c>.
-    public static class Layers {
-        public static int projectiles;
-        public static int items;
-        public static int players;
-        public static int displayOnly;
-        public static int heldAttacks;
-        public static int touchControls;
-        public static int noncollidingItems;
-        public static int shield;
-        public static int projectileInteractables;
-
-        /// Initialize the layer IDs. To be called by <see cref="GameController" />.
-        public static void Init() {
-            projectiles = LayerMask.NameToLayer("Projectiles");
-            items = LayerMask.NameToLayer("Items");
-            players = LayerMask.NameToLayer("Players");
-            displayOnly = LayerMask.NameToLayer("Display Only");
-            heldAttacks = LayerMask.NameToLayer("Held Attacks");
-            touchControls = LayerMask.NameToLayer("Touch Controls");
-            noncollidingItems = LayerMask.NameToLayer("Noncolliding Items");
-            shield = LayerMask.NameToLayer("Shield");
-            projectileInteractables = LayerMask.NameToLayer("Projectile Interactables");
-        }
-    }
-
-    /// How often will items appear on the screen?
-    public enum ItemFrequency {
-        None,
-        VeryLow,
-        Low,
-        Normal,
-        High,
-        VeryHigh,
-    }
-
     /// Handles "bookkeeping" for the game - which players are active,
     /// when is the game over, who won, when should an item spawn, etc.
     public class GameController : NetworkBehaviour {
@@ -95,6 +55,12 @@ namespace SciFi {
         /// The ID of the player controlled by this client.
         /// <seealso cref="SciFi.Players.Player.eId" />
         int cPlayerId;
+        /// Need to wait for all clients to be initialized
+        /// to send player info and sync starting the game.
+        int sReadyClients = 0;
+        /// Total number of clients - game starts
+        /// when sReadyClients == sNumClients.
+        int sNumClients;
 
         /// Event emitted when a player's damage changes.
         [SyncEvent]
@@ -415,6 +381,11 @@ namespace SciFi {
             activePlayersGo = new GameObject[0];
             displayNames = new string[0];
             Layers.Init();
+            PlayersInitialized += players => {
+                foreach (var player in players) {
+                    player.GameControllerReady(this);
+                }
+            };
 
             DontDestroyOnLoad(gameObject);
         }
@@ -425,6 +396,30 @@ namespace SciFi {
             } else {
                 spawnPrefabList = NetworkManager.singleton.spawnPrefabs;
             }
+        }
+
+        public override void OnStartServer() {
+            NetworkServer.RegisterHandler(NetworkMessages.ClientGameReady, ClientGameReady);
+        }
+
+        [Server]
+        void ClientGameReady(NetworkMessage message) {
+            if (++sReadyClients == sNumClients) {
+                StartGame(
+#if UNITY_EDITOR
+                    false
+#endif
+                );
+            }
+        }
+
+        [Server]
+        public void SetClientCount(int numClients) {
+            sNumClients = numClients;
+        }
+
+        public override void OnStartClient() {
+            NetworkController.clientConnectionToServer.Send(NetworkMessages.ClientGameReady, new EmptyMessage());
         }
 
         /// Spawn items when they are due.
@@ -483,4 +478,47 @@ namespace SciFi {
             NetworkServer.Spawn(item);
         }
     }
+
+    public delegate void DamageChangedHandler(int playerId, int newDamage);
+    public delegate void LifeChangedHandler(int playerId, int newLives);
+    public delegate void StartGameHandler();
+    public delegate void PlayersInitializedHandler(Player[] players);
+
+    /// Commonly used layers. This is initialized by the <see cref="GameController" />
+    /// so if you need a layer before it is created, use <c>LayerMask.NameToLayer(string)</c>.
+    public static class Layers {
+        public static int projectiles;
+        public static int items;
+        public static int players;
+        public static int displayOnly;
+        public static int heldAttacks;
+        public static int touchControls;
+        public static int noncollidingItems;
+        public static int shield;
+        public static int projectileInteractables;
+
+        /// Initialize the layer IDs. To be called by <see cref="GameController" />.
+        public static void Init() {
+            projectiles = LayerMask.NameToLayer("Projectiles");
+            items = LayerMask.NameToLayer("Items");
+            players = LayerMask.NameToLayer("Players");
+            displayOnly = LayerMask.NameToLayer("Display Only");
+            heldAttacks = LayerMask.NameToLayer("Held Attacks");
+            touchControls = LayerMask.NameToLayer("Touch Controls");
+            noncollidingItems = LayerMask.NameToLayer("Noncolliding Items");
+            shield = LayerMask.NameToLayer("Shield");
+            projectileInteractables = LayerMask.NameToLayer("Projectile Interactables");
+        }
+    }
+
+    /// How often will items appear on the screen?
+    public enum ItemFrequency {
+        None,
+        VeryLow,
+        Low,
+        Normal,
+        High,
+        VeryHigh,
+    }
+
 }

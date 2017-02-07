@@ -13,10 +13,10 @@ namespace SciFi.Scenes {
             GameObject.Find("Music").GetComponent<AudioSource>().enabled = playMusicInEditor;
 #endif
 
-            if (FindObjectOfType<GameController>() == null) {
+            /*if (FindObjectOfType<GameController>() == null) {
                 TransitionParams.gameType = GameType.Single;
                 SceneManager.LoadScene("Lobby");
-            }
+            }*/
         }
     }
 }

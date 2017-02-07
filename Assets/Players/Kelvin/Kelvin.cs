@@ -10,9 +10,7 @@ namespace SciFi.Players {
         public GameObject fireBallInactive;
         public GameObject telegraph;
 
-        void Start() {
-            BaseStart();
-
+        protected override void OnInitialize() {
             eAttack1 = new IceBallAttack(this, iceBall);
             eAttack2 = new FireBallAttack(this, fireBall);
             eSpecialAttack = new TelegraphAttack(this, telegraph);

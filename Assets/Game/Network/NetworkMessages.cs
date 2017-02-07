@@ -7,5 +7,7 @@ namespace SciFi.Network {
         public static short SetPlayerName = MsgType.Highest + 1;
         /// Display name / nickname
         public static short SetPlayerDisplayName = MsgType.Highest + 2;
+        /// Client GameController initialized
+        public static short ClientGameReady = MsgType.Highest + 3;
     }
 }

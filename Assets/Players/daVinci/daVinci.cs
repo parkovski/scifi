@@ -13,9 +13,7 @@ namespace SciFi.Players {
         GameObject boneArm;
         GameObject paintbrush;
 
-        void Start() {
-            BaseStart();
-
+        protected override void OnInitialize() {
             boneArm = Instantiate(boneArmPrefab, transform.position + GetBoneArmOffset(defaultDirection), Quaternion.identity);
             ReverseSprite(boneArm);
             paintbrush = Instantiate(paintbrushPrefab, transform.position + GetPaintbrushOffset(defaultDirection), Quaternion.identity);
@@ -26,6 +24,9 @@ namespace SciFi.Players {
         }
 
         void Update() {
+            if (boneArm == null || paintbrush == null) {
+                return;
+            }
             boneArm.transform.position = transform.position + GetBoneArmOffset(eDirection);
             paintbrush.transform.position = transform.position + GetPaintbrushOffset(eDirection);
         }

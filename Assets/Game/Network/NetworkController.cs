@@ -2,22 +2,36 @@
 
 using UnityEngine;
 using UnityEngine.Networking;
+using System.Collections;
+using System.Collections.Generic;
 
 using SciFi.Scenes;
 
 namespace SciFi.Network {
     /// Handle the multiplayer lobby.
     public class NetworkController : NetworkLobbyManager {
+        List<GameObject> playersToRegister;
+        List<string> displayNames;
+
+        /// Unity's network documentation is shit and I can't figure out
+        /// how to get this from within GameController.
+        public static NetworkConnection clientConnectionToServer;
+
         /// Set up message handlers.
         public override void OnStartServer() {
             base.OnStartServer();
             NetworkServer.RegisterHandler(NetworkMessages.SetPlayerName, SetPlayerName);
             NetworkServer.RegisterHandler(NetworkMessages.SetPlayerDisplayName, SetPlayerDisplayName);
+
+            playersToRegister = new List<GameObject>();
+            displayNames = new List<string>();
         }
 
         /// Send the server a message indicating which player the client has chosen.
         public override void OnClientConnect(NetworkConnection conn) {
             base.OnClientConnect(conn);
+
+            clientConnectionToServer = conn;
 
             // Set the character
             var writer = new NetworkWriter();
@@ -53,31 +67,41 @@ namespace SciFi.Network {
             }
             var prefab = spawnPrefabs.Find(p => p.name == playerName);
             var obj = Instantiate(prefab, Vector3.zero, Quaternion.identity);
-            GameController.Instance.RegisterNewPlayer(obj, TransitionParams.GetDisplayName(conn));
+            playersToRegister.Add(obj);
+            displayNames.Add(TransitionParams.GetDisplayName(conn));
             return obj;
         }
 
         /// Start the game when the scene changes to MainGame.
         public override void OnLobbyServerSceneChanged(string sceneName) {
+            base.OnLobbyServerSceneChanged(sceneName);
             if (sceneName == "MainGame") {
-                // Temporary hack until you can add computer players to a single player game
-                if (TransitionParams.gameType == GameType.Single) {
-                    var newtonPrefab = spawnPrefabs.Find(p => p.name == "Newton");
-                    var obj = Instantiate(newtonPrefab, Vector3.zero, Quaternion.identity);
-                    obj.GetComponent<NetworkIdentity>().localPlayerAuthority = false;
-                    GameController.Instance.RegisterNewPlayer(obj, TransitionParams.displayName);
-                    NetworkServer.Spawn(obj);
-                }
-                GameController.Instance.StartGame(
-#if UNITY_EDITOR
-                    false
-#endif
-                );
+                StartCoroutine(InitializeWhenGameControllerReady());
+            }
+        }
+
+        IEnumerator InitializeWhenGameControllerReady() {
+            yield return new WaitUntil(() => GameController.Instance != null);
+            GameController.Instance.SetClientCount(numPlayers);
+            yield return new WaitUntil(() => playersToRegister.Count == numPlayers);
+            for (int i = 0; i < playersToRegister.Count; i++) {
+                var player = playersToRegister[i];
+                var displayName = displayNames[i];
+                GameController.Instance.RegisterNewPlayer(player, displayName);
+            }
+            // Temporary hack until you can add computer players to a single player game
+            if (TransitionParams.gameType == GameType.Single) {
+                var newtonPrefab = spawnPrefabs.Find(p => p.name == "Newton");
+                var obj = Instantiate(newtonPrefab, Vector3.zero, Quaternion.identity);
+                obj.GetComponent<NetworkIdentity>().localPlayerAuthority = false;
+                GameController.Instance.RegisterNewPlayer(obj, TransitionParams.displayName);
+                NetworkServer.Spawn(obj);
             }
         }
 
         /// Destroy the lobby player.
         public override bool OnLobbyServerSceneLoadedForPlayer(GameObject lobbyPlayer, GameObject gamePlayer) {
+            base.OnLobbyServerSceneLoadedForPlayer(lobbyPlayer, gamePlayer);
             Destroy(lobbyPlayer);
             return true;
         }

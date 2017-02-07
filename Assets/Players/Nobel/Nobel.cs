@@ -15,9 +15,7 @@ namespace SciFi.Players {
         GameObject gunGo;
         GameObject dynamiteGo;
 
-        void Start() {
-            BaseStart();
-
+        protected override void OnInitialize() {
             gunGo = Instantiate(gunPrefab, transform.position + GetGunOffset(defaultDirection), Quaternion.identity);
 
             eAttack1 = new GunAttack(this, gunGo, bulletPrefab);
@@ -34,6 +32,9 @@ namespace SciFi.Players {
         }
 
         void Update() {
+            if (gunGo == null) {
+                return;
+            }
             gunGo.transform.position = transform.position + GetGunOffset(eDirection);
         }
 

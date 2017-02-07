@@ -88,11 +88,23 @@ namespace SciFi.Players {
             eModifiers.InitializeBehaviour(this, field);
         }
 
-        protected void BaseStart() {
+        void Start() {
             lRb = GetComponent<Rigidbody2D>();
             eDirection = Direction.Right;
-            var gameControllerGo = GameObject.Find("GameController");
-            pInputManager = gameControllerGo.GetComponent<InputManager>();
+
+            var shieldObj = Instantiate(shieldPrefab, transform.position + new Vector3(.6f, .1f), Quaternion.identity, transform);
+            eShield = shieldObj.GetComponent<Shield>();
+
+            /// OnInitialize should be called after Start _and_ GameControllerReady.
+            if (pInputManager != null) {
+                OnInitialize();
+            }
+        }
+
+        protected abstract void OnInitialize();
+
+        public void GameControllerReady(GameController gameController) {
+            pInputManager = gameController.GetComponent<InputManager>();
             pLeftControl = new MultiPressControl(pInputManager, Control.Left, .4f);
             pRightControl = new MultiPressControl(pInputManager, Control.Right, .4f);
 
@@ -105,8 +117,10 @@ namespace SciFi.Players {
                 }
             }
 
-            var shieldObj = Instantiate(shieldPrefab, transform.position + new Vector3(.6f, .1f), Quaternion.identity, transform);
-            eShield = shieldObj.GetComponent<Shield>();
+            /// Call OnInitialize if Start has already been called.
+            if (lRb != null) {
+                OnInitialize();
+            }
         }
 
         protected void BaseCollisionEnter2D(Collision2D collision) {
@@ -202,6 +216,9 @@ namespace SciFi.Players {
 
         protected void BaseInput() {
             if (!hasAuthority) {
+                return;
+            }
+            if (pInputManager == null) {
                 return;
             }
 

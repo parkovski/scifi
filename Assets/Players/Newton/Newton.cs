@@ -16,9 +16,7 @@ namespace SciFi.Players {
         private Animator animator;
         private bool walkAnimationPlaying;
 
-        void Start() {
-            BaseStart();
-
+        protected override void OnInitialize() {
             eAttack1 = new AppleAttack(this, apple, greenApple);
             eAttack2 = new CalcBookAttack(this, new [] { calc1, calc2, calc3 });
             eSpecialAttack = new GravityWellAttack(this, gravityWell);
@@ -46,6 +44,9 @@ namespace SciFi.Players {
         }
 
         void Update() {
+            if (animator == null) {
+                return;
+            }
             animator.SetFloat("Velocity", lRb.velocity.x);
         }
 
