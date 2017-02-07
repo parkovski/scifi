@@ -12,6 +12,8 @@ using SciFi.Players.Modifiers;
 using SciFi.Items;
 using SciFi.UI;
 using SciFi.Environment.Effects;
+using SciFi.Scenes;
+using SciFi.Util;
 
 namespace SciFi {
     public delegate void DamageChangedHandler(int playerId, int newDamage);
@@ -64,6 +66,12 @@ namespace SciFi {
 
         /// Set on scene change to the countdown in the main game scene.
         private Countdown countdown;
+
+        /// Either the network server's spawn prefab list in multiplayer mode,
+        /// or a JitList which adds the prefab to the list when it is requested,
+        /// in single player mode. Note - this approach would not work over the
+        /// network, but luckily, it is only needed in single player mode.
+        private static IList<GameObject> spawnPrefabList;
 
         // Items
         public ItemFrequency itemFrequency;
@@ -284,12 +292,12 @@ namespace SciFi {
 
         /// Convert a prefab object to its index in the spawnable prefabs list.
         public static int PrefabToIndex(GameObject prefab) {
-            return NetworkManager.singleton.spawnPrefabs.IndexOf(prefab);
+            return spawnPrefabList.IndexOf(prefab);
         }
 
         /// Convert an index in the spawnable prefabs list to a prefab object.
         public static GameObject IndexToPrefab(int index) {
-            return NetworkManager.singleton.spawnPrefabs[index];
+            return spawnPrefabList[index];
         }
 
         /// Deduct a life from the player, respawn, and
@@ -409,6 +417,14 @@ namespace SciFi {
             Layers.Init();
 
             DontDestroyOnLoad(gameObject);
+        }
+
+        void Start() {
+            if (TransitionParams.gameType == GameType.Single) {
+                spawnPrefabList = new JitList<GameObject>();
+            } else {
+                spawnPrefabList = NetworkManager.singleton.spawnPrefabs;
+            }
         }
 
         /// Spawn items when they are due.
