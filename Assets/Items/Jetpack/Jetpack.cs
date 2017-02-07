@@ -63,7 +63,7 @@ namespace SciFi.Items {
         protected override void OnBeginCharging() {
             fire = Instantiate(firePrefab, transform.position + GetFireOffset(), Quaternion.identity, transform);
             nextBoostTime = 0f;
-            boostForce = eOwner.jumpForce * 10;
+            boostForce = eOwnerGo.GetComponent<Rigidbody2D>().mass * 2f;
 
             // Turn movement back on while the jetpack is active
             eOwner.RemoveModifier(Modifier.CantMove);
@@ -78,7 +78,7 @@ namespace SciFi.Items {
 
             if (chargeTime > nextBoostTime && transform.position.y < 1) {
                 nextBoostTime = chargeTime + boostTimeout;
-                eOwner.GetComponent<Rigidbody2D>().AddForce(new Vector2(0f, boostForce));
+                eOwner.GetComponent<Rigidbody2D>().AddForce(new Vector2(0f, boostForce), ForceMode2D.Impulse);
             }
         }
 
