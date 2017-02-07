@@ -89,14 +89,6 @@ namespace SciFi.Network {
                 var displayName = displayNames[i];
                 GameController.Instance.RegisterNewPlayer(player, displayName);
             }
-            // Temporary hack until you can add computer players to a single player game
-            if (TransitionParams.gameType == GameType.Single) {
-                var newtonPrefab = spawnPrefabs.Find(p => p.name == "Newton");
-                var obj = Instantiate(newtonPrefab, Vector3.zero, Quaternion.identity);
-                obj.GetComponent<NetworkIdentity>().localPlayerAuthority = false;
-                GameController.Instance.RegisterNewPlayer(obj, TransitionParams.displayName);
-                NetworkServer.Spawn(obj);
-            }
         }
 
         /// Destroy the lobby player.
