@@ -34,7 +34,11 @@ namespace SciFi.Scenes {
         void GoClicked() {
             TransitionParams.playerName = selected.name;
 
-            SceneManager.LoadScene("Lobby");
+            if (TransitionParams.gameType == GameType.Single) {
+                SceneManager.LoadScene("MainGame");
+            } else {
+                SceneManager.LoadScene("Lobby");
+            }
         }
 
         void BackClicked() {

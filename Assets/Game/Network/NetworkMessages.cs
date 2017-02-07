@@ -9,5 +9,8 @@ namespace SciFi.Network {
         public static short SetPlayerDisplayName = MsgType.Highest + 2;
         /// Client GameController initialized
         public static short ClientGameReady = MsgType.Highest + 3;
+        /// The dummy network manager has connected;
+        /// create players for single player mode.
+        public static short SpawnSinglePlayer = MsgType.Highest + 4;
     }
 }

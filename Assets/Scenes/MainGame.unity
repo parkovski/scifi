@@ -1386,47 +1386,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   triggerName: FadeIn
---- !u!1 &752821537
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 752821539}
-  - component: {fileID: 752821538}
-  m_Layer: 0
-  m_Name: EditorHack
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &752821538
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 752821537}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 453661399f578b54d8e1e2919ef84382, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playMusicInEditor: 1
---- !u!4 &752821539
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 752821537}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.5269338, y: 0.004127457, z: -10.017578}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &754323252
 GameObject:
   m_ObjectHideFlags: 0
@@ -2510,6 +2469,53 @@ BoxCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Size: {x: 1.5, y: 1}
+--- !u!1 &1101283755
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1101283757}
+  - component: {fileID: 1101283756}
+  m_Layer: 0
+  m_Name: SinglePlayerNetworkManagerHack
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1101283756
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1101283755}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e5c54e56f1bcbc449f9765fc481f50f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerPrefabs:
+  - {fileID: 1445736531698702, guid: 6fd8ac635fa114c41a4491e9070621b6, type: 2}
+  - {fileID: 1456088037116718, guid: 97e910a513a1be44394d891d1d560d15, type: 2}
+  - {fileID: 1151894973709560, guid: 9ec45d9c8571fed44826d8a888a48297, type: 2}
+  - {fileID: 1241054994475270, guid: 503121c237150cf489949a815d7ac7b8, type: 2}
+  humanPlayer: Nobel
+  computerPlayer: Kelvin
+--- !u!4 &1101283757
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1101283755}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1119847006
 GameObject:
   m_ObjectHideFlags: 0

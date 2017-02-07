@@ -20,6 +20,9 @@ namespace SciFi.Scenes {
                     TransitionParams.displayName = n;
                 }
             });
+#if UNITY_EDITOR
+            hostName.text = "localhost";
+#endif
         }
 
         /// Set this client as the game host.

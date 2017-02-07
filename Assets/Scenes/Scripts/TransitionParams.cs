@@ -13,12 +13,12 @@ namespace SciFi.Scenes {
     /// Parameters to be passed between scenes.
     public static class TransitionParams {
         #region Title screen -> Player picker
-        public static GameType gameType = GameType.Multi;
+        public static GameType gameType = GameType.Single;
         #endregion
 
         #region Player picker -> Lobby
         /// The prefab name of this client's player.
-        public static string playerName = "Newton";
+        public static string playerName = null;
         /// The custom display name for this client's player, if any.
         public static string displayName = null;
 

@@ -178,6 +178,9 @@ namespace SciFi {
 
         /// Find the active player with ID <c>id</c>.
         public Player GetPlayer(int id) {
+            if (activePlayers == null) {
+                return null;
+            }
             if (id >= activePlayers.Length) {
                 return null;
             }
@@ -419,7 +422,9 @@ namespace SciFi {
         }
 
         public override void OnStartClient() {
-            NetworkController.clientConnectionToServer.Send(NetworkMessages.ClientGameReady, new EmptyMessage());
+            if (TransitionParams.gameType == GameType.Multi) {
+                NetworkController.clientConnectionToServer.Send(NetworkMessages.ClientGameReady, new EmptyMessage());
+            }
         }
 
         /// Spawn items when they are due.
