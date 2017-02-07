@@ -12,6 +12,10 @@ namespace SciFi.Players.Attacks {
         }
 
         void OnCollisionEnter2D(Collision2D collision) {
+            if (!isServer) {
+                return;
+            }
+
             var hit = Attack.GetAttackHit(collision.gameObject.layer);
             if (hit != AttackHit.None) {
                 if (hit == AttackHit.HitAndDamage) {

@@ -262,9 +262,47 @@ namespace SciFi.Players {
             Vector2 position,
             Quaternion rotation,
             Vector2 force,
-            float torque)
-        {
-            var obj = Instantiate(GameController.IndexToPrefab(prefabIndex), position, rotation);
+            float torque
+        ) {
+            SpawnProjectile(
+                GameController.IndexToPrefab(prefabIndex),
+                position,
+                rotation,
+                force,
+                torque,
+                false
+            );
+        }
+
+        [Command]
+        public void CmdSpawnProjectileFlipped(
+            int prefabIndex,
+            Vector2 position,
+            Quaternion rotation,
+            Vector2 force,
+            float torque,
+            bool flipX
+        ) {
+            SpawnProjectile(
+                GameController.IndexToPrefab(prefabIndex),
+                position,
+                rotation,
+                force,
+                torque,
+                flipX
+            );
+        }
+
+        [Server]
+        void SpawnProjectile(
+            GameObject prefab,
+            Vector2 position,
+            Quaternion rotation,
+            Vector2 force,
+            float torque,
+            bool flipX
+        ) {
+            var obj = Instantiate(prefab, position, rotation);
             var projectile = obj.GetComponent<Projectile>();
             projectile.spawnedBy = netId;
             projectile.spawnedByExtra = GetItemNetId();
@@ -273,26 +311,10 @@ namespace SciFi.Players {
                 projectile.AddInitialForce(force);
                 rb.AddTorque(torque);
             }
-            NetworkServer.Spawn(obj);
-        }
-
-        /// Spawns a projectile for a pre-instantiated object
-        /// so it can be customized beforehand.
-        [Command]
-        public void CmdSpawnCustomProjectile(
-            GameObject projectile,
-            Vector2 force,
-            float torque)
-        {
-            var projectileComponent = projectile.GetComponent<Projectile>();
-            projectileComponent.spawnedBy = netId;
-            projectileComponent.spawnedByExtra = GetItemNetId();
-            var rb = projectile.GetComponent<Rigidbody2D>();
-            if (rb != null) {
-                projectileComponent.AddInitialForce(force);
-                rb.AddTorque(torque);
+            if (flipX) {
+                projectile.GetComponent<SpriteRenderer>().flipX = true;
             }
-            NetworkServer.Spawn(projectile);
+            NetworkServer.Spawn(obj);
         }
 
         public NetworkInstanceId GetItemNetId() {

@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Networking;
 using System.Collections;
 
 using SciFi.Environment.Effects;
@@ -32,17 +31,16 @@ namespace SciFi.Players.Attacks {
             } else {
                 player.StartCoroutine(ShowHideGun());
             }
-            var bulletGo = Object.Instantiate(bulletPrefab, gun.transform.position + GetBulletOffset(direction), rotation);
-            Effects.Smoke(bulletGo.transform.position);
+            player.CmdSpawnProjectileFlipped(
+                GameController.PrefabToIndex(bulletPrefab),
+                gun.transform.position + GetBulletOffset(direction),
+                rotation,
+                GetBulletForce(direction),
+                0f,
+                direction == Direction.Left
+            );
+            //Effects.Smoke(bulletGo.transform.position);
             audioSource.Play();
-            if (direction == Direction.Left) {
-                bulletGo.GetComponent<SpriteRenderer>().flipX = true;
-            }
-            var bullet = bulletGo.GetComponent<Bullet>();
-            bullet.AddInitialForce(GetBulletForce(direction));
-            bullet.spawnedBy = player.netId;
-            bullet.spawnedByExtra = player.GetItemNetId();
-            NetworkServer.Spawn(bulletGo);
         }
 
         Vector2 GetBulletForce(Direction direction) {

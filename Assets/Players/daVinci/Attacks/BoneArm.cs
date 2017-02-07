@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 
 using SciFi.Environment.Effects;
+using SciFi.Util.Extensions;
 
 namespace SciFi.Players.Attacks {
     public class BoneArm : MonoBehaviour, IAttack {
@@ -12,12 +13,14 @@ namespace SciFi.Players.Attacks {
         [HideInInspector]
         public Player player;
 
+        Collider2D attachedHandCollider;
         SpriteRenderer[] spriteRenderers;
         bool isActive;
         HashSet<GameObject> hitObjects;
 
         void Start() {
             spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
+            attachedHandCollider = attachedHand.GetComponent<Collider2D>();
             hitObjects = new HashSet<GameObject>();
             Hide();
         }
@@ -29,23 +32,21 @@ namespace SciFi.Players.Attacks {
 #endif
             ) {
                 spriteRenderers[spriteRenderers.Length - 1].enabled = false;
-                var detachedHandGo = Instantiate(boneHandPrefab, attachedHand.transform.position, attachedHand.transform.rotation);
-                Vector2 force;
-                float torque;
-                if (player.eDirection == Direction.Left) {
-                    force = new Vector2(-350f, 50f);
-                    torque = 3;
-                } else {
-                    force = new Vector2(350f, 50f);
-                    torque = -3;
-                    detachedHandGo.GetComponent<SpriteRenderer>().flipX = true;
-                }
-                player.CmdSpawnCustomProjectile(detachedHandGo, force, torque);
+                attachedHandCollider.enabled = false;
+                player.CmdSpawnProjectileFlipped(
+                    GameController.PrefabToIndex(boneHandPrefab),
+                    attachedHand.transform.position,
+                    attachedHand.transform.rotation,
+                    new Vector2(350f, 50f).FlipDirection(player.eDirection),
+                    -(3.FlipDirection(player.eDirection)),
+                    player.eDirection == Direction.Right
+                );
             }
         }
 
         public void Show() {
             hitObjects.Clear();
+            attachedHandCollider.enabled = true;
             ShowHide(true);
         }
 

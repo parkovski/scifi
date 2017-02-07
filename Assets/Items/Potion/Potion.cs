@@ -85,6 +85,7 @@ namespace SciFi.Items {
                 pj.spawnedByExtra = eOwner.netId;
             }
             pj.isRedPotion = isRedPotion;
+            // TODO: Spawn
             NetworkServer.Spawn(juice);
         }
 

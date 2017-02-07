@@ -11,12 +11,10 @@ namespace SciFi.Players.Attacks {
         public GameObject projectileItemContainerPrefab;
 
         // Flight path
-        [HideInInspector]
+        [SyncVar, HideInInspector]
         public float dx;
-        [HideInInspector]
-        public float y;
         /// 1-10
-        [HideInInspector]
+        [SyncVar, HideInInspector]
         public int power;
 
         // Trapped player
@@ -59,7 +57,6 @@ namespace SciFi.Players.Attacks {
 
         void Start() {
             BaseStart();
-            y = transform.position.y;
             initialTime = Time.time;
             holdTime = .5f + power * 1.5f / 10f;
             rb = GetComponent<Rigidbody2D>();

@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Networking;
 
 namespace SciFi.Players.Attacks {
     public class GeligniteAttack : Attack {
@@ -12,15 +11,13 @@ namespace SciFi.Players.Attacks {
         }
 
         public override void OnEndCharging(float chargeTime, Direction direction) {
-            var geligniteGo = Object.Instantiate(
-                gelignitePrefab,
+            player.CmdSpawnProjectile(
+                GameController.PrefabToIndex(gelignitePrefab),
                 player.transform.position + GetGeligniteOffset(direction),
-                Quaternion.identity
+                Quaternion.identity,
+                Vector2.zero,
+                0f
             );
-            var gelignite = geligniteGo.GetComponent<Gelignite>();
-            gelignite.spawnedBy = player.netId;
-            gelignite.spawnedByExtra = player.GetItemNetId();
-            NetworkServer.Spawn(geligniteGo);
         }
 
         Vector3 GetGeligniteOffset(Direction direction) {

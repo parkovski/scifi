@@ -154,14 +154,15 @@ namespace SciFi.Items {
                 StartCoroutine(TemporarilyDestroyDisplayArrow());
             }
 
-            var force = GetArrowForce();
-
-            var arrow = Instantiate(GameController.IndexToPrefab(eArrowPrefabIndex), gameObject.transform.position, Quaternion.identity);
             audioSource.Play();
-            if (eFlipArrow) {
-                arrow.GetComponent<SpriteRenderer>().flipX = true;
-            }
-            eOwner.CmdSpawnCustomProjectile(arrow, force, 0f);
+            eOwner.CmdSpawnProjectileFlipped(
+                eArrowPrefabIndex,
+                gameObject.transform.position,
+                Quaternion.identity,
+                GetArrowForce(),
+                0f,
+                eFlipArrow
+            );
         }
 
         Vector2 GetArrowForce() {

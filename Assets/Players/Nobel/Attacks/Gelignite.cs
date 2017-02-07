@@ -36,6 +36,8 @@ namespace SciFi.Players.Attacks {
             }
         }
 
+        /// Registers a callback on the player, so that when they are hit,
+        /// this can explode.
         [Server]
         void PlayerHit(AttackType type, AttackProperty properties) {
             if ((properties & AttackProperty.Explosive) == 0) {
@@ -52,7 +54,7 @@ namespace SciFi.Players.Attacks {
             var player = collision.gameObject.GetComponent<Player>();
             if (player != null) {
                 stuckToPlayer = player;
-                gameObject.layer = Layers.projectileInteractables;
+                gameObject.layer = Layers.displayOnly;
                 if (isServer) {
                     player.sAttackHit += PlayerHit;
                 }

@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 using SciFi.Players.Attacks;
+using SciFi.Environment.Effects;
 
 namespace SciFi.Players {
     public class Nobel : Player {
@@ -11,14 +12,15 @@ namespace SciFi.Players {
         public GameObject bulletPrefab;
         public GameObject gelignitePrefab;
 
-        GameObject gun;
+        GameObject gunGo;
+        GameObject dynamiteGo;
 
         void Start() {
             BaseStart();
 
-            gun = Instantiate(gunPrefab, transform.position + GetGunOffset(defaultDirection), Quaternion.identity);
+            gunGo = Instantiate(gunPrefab, transform.position + GetGunOffset(defaultDirection), Quaternion.identity);
 
-            eAttack1 = new GunAttack(this, gun, bulletPrefab);
+            eAttack1 = new GunAttack(this, gunGo, bulletPrefab);
             eAttack2 = new GeligniteAttack(this, gelignitePrefab);
             eSpecialAttack = new DynamiteAttack(this, new[] { dynamitePrefab, dynamiteFragmentPrefab });
         }
@@ -32,7 +34,7 @@ namespace SciFi.Players {
         }
 
         void Update() {
-            gun.transform.position = transform.position + GetGunOffset(eDirection);
+            gunGo.transform.position = transform.position + GetGunOffset(eDirection);
         }
 
         void FixedUpdate() {
@@ -54,7 +56,7 @@ namespace SciFi.Players {
 
         [ClientRpc]
         protected override void RpcChangeDirection(Direction direction) {
-            var gunSr = gun.GetComponent<SpriteRenderer>();
+            var gunSr = gunGo.GetComponent<SpriteRenderer>();
             gunSr.flipX = !gunSr.flipX;
             foreach (var sr in gameObject.GetComponentsInChildren<SpriteRenderer>()) {
                 sr.flipX = !sr.flipX;
@@ -63,6 +65,57 @@ namespace SciFi.Players {
                 var child = transform.GetChild(i);
                 child.localPosition = new Vector3(-child.localPosition.x, child.localPosition.y, child.localPosition.z);
             }
+        }
+
+        [Command]
+        public void CmdPlantOrExplodeDynamite() {
+            if (dynamiteGo != null) {
+                ExplodeDynamite();
+            } else {
+                PlantDynamite();
+            }
+        }
+
+        [Server]
+        void PlantDynamite() {
+            var position = transform.position;
+            if (eDirection == Direction.Left) {
+                position += new Vector3(-1f, -.5f);
+            } else {
+                position += new Vector3(1f, -.5f);
+            }
+            dynamiteGo = Object.Instantiate(dynamitePrefab, position, Quaternion.identity);
+            var dynamite = dynamiteGo.GetComponent<Dynamite>();
+            dynamite.spawnedBy = netId;
+            dynamite.spawnedByExtra = GetItemNetId();
+            dynamite.explodeCallback = OnDynamiteExploded;
+            dynamite.destroyCallback = OnDynamiteDestroyed;
+            NetworkServer.Spawn(dynamiteGo);
+            RpcSetDynamiteShouldCharge(false);
+        }
+
+        [Server]
+        void ExplodeDynamite() {
+            dynamiteGo.GetComponent<Dynamite>().Explode();
+        }
+
+        [Server]
+        void OnDynamiteExploded() {
+            var fragGo = Object.Instantiate(dynamiteFragmentPrefab, dynamiteGo.transform.position, Quaternion.identity);
+            var frag = fragGo.GetComponent<DynamiteFragment>();
+            frag.spawnedBy = netId;
+            frag.spawnedByExtra = GetItemNetId();
+            NetworkServer.Spawn(fragGo);
+        }
+
+        [Server]
+        void OnDynamiteDestroyed() {
+            RpcSetDynamiteShouldCharge(true);
+        }
+
+        [ClientRpc]
+        void RpcSetDynamiteShouldCharge(bool shouldCharge) {
+            ((DynamiteAttack)eSpecialAttack).SetShouldCharge(shouldCharge);
         }
     }
 }

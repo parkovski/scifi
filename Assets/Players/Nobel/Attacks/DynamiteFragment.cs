@@ -25,10 +25,14 @@ namespace SciFi.Players.Attacks {
         }
 
         public void ChildCollide(GameObject child, Collision2D collision) {
+            if (!isServer) {
+                return;
+            }
+
             if (Attack.GetAttackHit(collision.gameObject.layer) == AttackHit.HitAndDamage) {
                 child.layer = Layers.displayOnly;
                 child.GetComponent<SpriteRenderer>().enabled = false;
-                GameController.Instance.Hit(collision.gameObject, this, child, 8, 3f);
+                GameController.Instance.Hit(collision.gameObject, this, child, 3, 1f);
             }
         }
 

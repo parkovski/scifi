@@ -23,6 +23,7 @@ namespace SciFi.Players.Attacks {
             if (!isServer) {
                 return;
             }
+
             var hit = Attack.GetAttackHit(collision.gameObject.layer);
             if (collision.gameObject.tag == "Ground") {
                 hasHitGround = true;

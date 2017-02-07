@@ -1,5 +1,6 @@
 using UnityEngine;
-using UnityEngine.Networking;
+
+using SciFi.Util.Extensions;
 
 namespace SciFi.Players.Attacks {
     // The fire ball grows bigger while charging,
@@ -18,18 +19,13 @@ namespace SciFi.Players.Attacks {
         }
 
         public override void OnBeginCharging(Direction direction) {
-            var offset = player.eDirection == Direction.Left
-                ? new Vector3(-1f, .5f)
-                : new Vector3(1f, .5f);
-            chargingFireBall = Object.Instantiate(
-                fireBall,
-                player.gameObject.transform.position + offset,
-                Quaternion.identity
+            player.CmdSpawnProjectile(
+                GameController.PrefabToIndex(fireBall),
+                player.transform.position + new Vector3(1f, .5f).FlipDirection(player.eDirection),
+                Quaternion.identity,
+                Vector2.zero,
+                0f
             );
-            var fb = chargingFireBall.GetComponent<FireBall>();
-            fb.spawnedBy = player.netId;
-            fb.spawnedByExtra = player.GetItemNetId();
-            NetworkServer.Spawn(chargingFireBall);
         }
 
         public override void OnKeepCharging(float chargeTime, Direction direction) {
