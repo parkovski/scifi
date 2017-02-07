@@ -22,7 +22,7 @@ namespace SciFi.Players {
 
             eAttack1 = new PaintbrushAttack(this, paintbrush.GetComponent<Paintbrush>());
             eAttack2 = new BoneArmAttack(this, boneArm.GetComponent<BoneArm>());
-            eSpecialAttack = new FlyingMachineAttack(this, flyingMachinePrefab);
+            eSpecialAttack = new FlyingMachineAttack(this);
         }
 
         void Update() {

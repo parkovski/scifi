@@ -1,16 +1,10 @@
-using UnityEngine;
-using UnityEngine.Networking;
-
 namespace SciFi.Players.Attacks {
     public class DynamiteAttack : Attack {
-        GameObject[] dynamitePrefabs;
-        Dynamite dynamite;
         bool shouldCharge = true;
 
-        public DynamiteAttack(Nobel player, GameObject[] dynamitePrefabs)
+        public DynamiteAttack(Nobel player)
             : base(player, true)
         {
-            this.dynamitePrefabs = dynamitePrefabs;
         }
 
         public override void OnBeginCharging(Direction direction) {
