@@ -1,5 +1,5 @@
-using UnityEngine.Networking;
 using System;
+using System.Collections.Generic;
 
 namespace SciFi.Players.Modifiers {
     public enum ModId : uint {
@@ -19,7 +19,7 @@ namespace SciFi.Players.Modifiers {
     public abstract class Modifier {
         public abstract ModId Id { get; }
 
-        public void Add(SyncListUInt modifiers) {
+        public void Add(IList<uint> modifiers) {
             if (modifiers == null) {
                 return;
             }
@@ -27,7 +27,7 @@ namespace SciFi.Players.Modifiers {
             ++modifiers[(int)Id];
         }
 
-        public void Remove(SyncListUInt modifiers) {
+        public void Remove(IList<uint> modifiers) {
             if (modifiers == null) {
                 return;
             }
@@ -39,7 +39,7 @@ namespace SciFi.Players.Modifiers {
             --modifiers[(int)Id];
         }
 
-        public bool IsEnabled(SyncListUInt modifiers) {
+        public bool IsEnabled(IList<uint> modifiers) {
             if (modifiers == null) {
                 return false;
             }
@@ -108,7 +108,7 @@ namespace SciFi.Players.Modifiers {
             }
         }
 
-        public static void Initialize(SyncListUInt modifiers) {
+        public static void Initialize(IList<uint> modifiers) {
             int count = Count;
             for (var i = 0; i < count; i++) {
                 modifiers.Add(0);
