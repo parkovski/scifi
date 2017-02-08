@@ -170,6 +170,11 @@ namespace SciFi {
         void RpcCreateCharacterList(NetworkInstanceId[] ids) {
             activePlayersGo = ids.Select(id => ClientScene.FindLocalObject(id)).ToArray();
             activePlayers = activePlayersGo.Select(p => p.GetComponent<Player>()).ToArray();
+            StartCoroutine(WaitForPlayersToSync());
+        }
+
+        IEnumerator WaitForPlayersToSync() {
+            yield return new WaitWhile(() => activePlayers.Count(p => p.eId == 0) > 1);
             cPlayerId = activePlayers.First(p => p.hasAuthority).eId;
             if (_PlayersInitialized != null) {
                 _PlayersInitialized(activePlayers);
