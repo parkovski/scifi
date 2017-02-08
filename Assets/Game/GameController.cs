@@ -283,8 +283,8 @@ namespace SciFi {
 
         /// Deduct a life from the player, respawn, and
         /// check if the game is over.
-        [Command]
-        public void CmdDie(GameObject playerObject) {
+        [Server]
+        public void Die(GameObject playerObject) {
             var player = playerObject.GetComponent<Player>();
             --player.eLives;
             if (activePlayers.Count(p => p.eLives > 0) == 1) {

@@ -15,6 +15,9 @@ namespace SciFi.Environment {
         }
 
         void OnTriggerEnter2D(Collider2D collider) {
+            if (!UnityEngine.Network.isServer) {
+                return;
+            }
             if (collider.gameObject.layer != Layers.players) {
                 Destroy(collider.gameObject);
                 return;
@@ -26,7 +29,7 @@ namespace SciFi.Environment {
                 }
             }
             timeOfDeath[collider.gameObject] = Time.time;
-            GameController.Instance.CmdDie(collider.gameObject);
+            GameController.Instance.Die(collider.gameObject);
         }
     }
 }
