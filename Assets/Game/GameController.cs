@@ -525,5 +525,4 @@ namespace SciFi {
         High,
         VeryHigh,
     }
-
 }

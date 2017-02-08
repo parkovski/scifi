@@ -49,6 +49,17 @@ namespace SciFi.Players.Attacks {
             this.canCharge = canCharge;
         }
 
+        public Player Player { get { return player; } }
+        public bool CanCharge { get { return canCharge; } }
+        public bool IsCharging {
+            get {
+                return isCharging;
+            }
+            set {
+                isCharging = value;
+            }
+        }
+
         public void UpdateState(InputManager inputManager, int control) {
             var direction = player.eDirection;
             if (canFireDown && inputManager.IsControlActive(Control.Down)) {

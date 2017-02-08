@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
 using System.Reflection;
+using System.Collections.Generic;
 
 using SciFi.Environment;
 using SciFi.Players.Attacks;
@@ -44,6 +45,7 @@ namespace SciFi.Players {
         private OneWayPlatform pCurrentOneWayPlatform;
         [SyncVar]
         private SyncListUInt eModifiers;
+        private List<NetworkAttack> lNetworkAttacks;
 
         // Unity editor parameters
         public Direction defaultDirection;
@@ -95,20 +97,23 @@ namespace SciFi.Players {
             var shieldObj = Instantiate(shieldPrefab, transform.position + new Vector3(.6f, .1f), Quaternion.identity, transform);
             eShield = shieldObj.GetComponent<Shield>();
 
-            /// OnInitialize should be called after Start _and_ GameControllerReady.
-            if (pInputManager != null) {
-                OnInitialize();
-            }
+            lNetworkAttacks = new List<NetworkAttack>();
         }
 
         protected abstract void OnInitialize();
 
         public void GameControllerReady(GameController gameController) {
-            pInputManager = gameController.GetComponent<InputManager>();
-            pLeftControl = new MultiPressControl(pInputManager, Control.Left, .4f);
-            pRightControl = new MultiPressControl(pInputManager, Control.Right, .4f);
+            // This is called twice on a host - once when the client game
+            // starts and once when the server game starts.
+            if (pInputManager != null) {
+                return;
+            }
 
+            pInputManager = gameController.GetComponent<InputManager>();
             if (isLocalPlayer) {
+                pLeftControl = new MultiPressControl(pInputManager, Control.Left, .4f);
+                pRightControl = new MultiPressControl(pInputManager, Control.Right, .4f);
+
                 pInputManager.ObjectSelected += ObjectSelected;
                 pInputManager.ControlCanceled += ControlCanceled;
                 var leftButton = GameObject.Find("LeftButton");
@@ -117,10 +122,10 @@ namespace SciFi.Players {
                 }
             }
 
-            /// Call OnInitialize if Start has already been called.
-            if (lRb != null) {
-                OnInitialize();
-            }
+            // This function is called in GameController.StartGame,
+            // so Start has already been called here - now all of the
+            // pre-initialization is done.
+            OnInitialize();
         }
 
         protected void BaseCollisionEnter2D(Collision2D collision) {
@@ -131,7 +136,6 @@ namespace SciFi.Players {
 
                 var oneWay = collision.gameObject.GetComponent<OneWayPlatform>();
                 if (oneWay != null) {
-
                     pCurrentOneWayPlatform = oneWay;
                 }
             }
@@ -228,7 +232,8 @@ namespace SciFi.Players {
             HandleLeftRightInput(pLeftControl, Direction.Left, true);
             HandleLeftRightInput(pRightControl, Direction.Right, false);
             if (!pLeftControl.IsActive() && !pRightControl.IsActive()) {
-                AddDampingForce();
+                // TODO: Only do this when no knockback is active.
+                //AddDampingForce();
             }
 
             if (pInputManager.IsControlActive(Control.Up) && !Modifier.CantMove.IsEnabled(eModifiers)) {
@@ -624,6 +629,26 @@ namespace SciFi.Players {
             if (sAttackHit != null) {
                 sAttackHit(attack.Type, attack.Properties);
             }
+        }
+
+        public int RegisterNetworkAttack(NetworkAttack attack) {
+            lNetworkAttacks.Add(attack);
+            return lNetworkAttacks.Count - 1;
+        }
+
+        [Command]
+        public void CmdNetworkAttackSync(NetworkAttackMessage message) {
+            RpcNetworkAttackSync(message);
+        }
+
+        [ClientRpc]
+        void RpcNetworkAttackSync(NetworkAttackMessage message) {
+            if (message.messageId < 0 || message.messageId >= lNetworkAttacks.Count) {
+                Debug.LogWarning("Network attack index out of range, ignoring (" + message.messageId + ")");
+                return;
+            }
+
+            lNetworkAttacks[message.messageId].ReceiveMessage(message);
         }
     }
 }
