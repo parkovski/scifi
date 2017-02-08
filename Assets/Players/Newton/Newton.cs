@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
-using UnityEngine.Networking;
 
 using SciFi.Players.Attacks;
-using SciFi.Util.Extensions;
+using SciFi.Util;
 
 namespace SciFi.Players {
     public class Newton : Player {
@@ -15,12 +14,14 @@ namespace SciFi.Players {
 
         private Animator animator;
         private bool walkAnimationPlaying;
+        private CompoundSpriteFlip spriteFlip;
 
         protected override void OnInitialize() {
             eAttack1 = new AppleAttack(this, apple, greenApple);
             eAttack2 = new NetworkAttack(new CalcBookAttack(this, new [] { calc1, calc2, calc3 }), 0.1f);
             eSpecialAttack = new NetworkAttack(new GravityWellAttack(this, gravityWell), 0.1f);
             animator = GetComponent<Animator>();
+            spriteFlip = new CompoundSpriteFlip(gameObject, defaultDirection);
         }
 
         public override void OnStartLocalPlayer() {
@@ -51,16 +52,9 @@ namespace SciFi.Players {
             animator.SetFloat("Velocity", lRb.velocity.x);
         }
 
-        [ClientRpc]
-        protected override void RpcChangeDirection(Direction direction) {
-            animator.SetBool("FacingLeft", direction == Direction.Left);
-            foreach (var sr in gameObject.GetComponentsInChildren<SpriteRenderer>()) {
-                sr.flipX = direction == Direction.Left;
-            }
-            for (var i = 0; i < transform.childCount; i++) {
-                var child = transform.GetChild(i);
-                child.localPosition = child.localPosition.FlipDirection(direction);
-            }
+        protected override void OnChangeDirection() {
+            animator.SetBool("FacingLeft", eDirection == Direction.Left);
+            spriteFlip.Flip(eDirection);
         }
     }
 }

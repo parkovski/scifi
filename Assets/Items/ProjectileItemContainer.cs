@@ -1,11 +1,12 @@
 using UnityEngine;
+using UnityEngine.Networking;
 
 using SciFi.Players.Attacks;
 
 namespace SciFi.Items {
     /// Wraps a projectile so it can be picked up and thrown.
     public class ProjectileItemContainer : Item {
-        [HideInInspector]
+        [SyncVar, HideInInspector]
         public GameObject projectile;
 
         void Start() {

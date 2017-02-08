@@ -85,5 +85,20 @@ namespace SciFi.Util.Extensions {
                 throw new ArgumentException("Direction should be left or right only", "direction");
             }
         }
+
+        public static Direction Opposite(this Direction direction) {
+            switch (direction) {
+            case Direction.Left:
+                return Direction.Right;
+            case Direction.Right:
+                return Direction.Left;
+            case Direction.Down:
+                return Direction.Up;
+            case Direction.Up:
+                return Direction.Down;
+            default:
+                return Direction.Invalid;
+            }
+        }
     }
 }

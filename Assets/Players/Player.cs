@@ -31,11 +31,12 @@ namespace SciFi.Players {
         public int eLives;
         [SyncVar, HideInInspector]
         public int eDamage;
-        [SyncVar, HideInInspector]
+        [SyncVar(hook = "ChangeDirection"), HideInInspector]
         public Direction eDirection;
         [SyncVar, HideInInspector]
         public bool eShouldFallThroughOneWayPlatform;
 
+        private bool lInitialized = false;
         protected Rigidbody2D lRb;
         protected InputManager pInputManager;
         private int pGroundCollisions;
@@ -103,6 +104,7 @@ namespace SciFi.Players {
 
             if (pInputManager != null) {
                 OnInitialize();
+                lInitialized = true;
             }
         }
 
@@ -130,6 +132,7 @@ namespace SciFi.Players {
 
             if (lRb != null) {
                 OnInitialize();
+                lInitialized = true;
             }
         }
 
@@ -620,11 +623,20 @@ namespace SciFi.Players {
                 MoveItemForChangeDirection(direction);
                 RpcChangeItemDirection(direction);
             }
-            RpcChangeDirection(direction);
         }
 
-        [ClientRpc]
-        protected virtual void RpcChangeDirection(Direction direction) {}
+        [Client]
+        void ChangeDirection(Direction direction) {
+            eDirection = direction;
+            // Don't call this if the player hasn't been initialized yet,
+            // we'll get nulls trying to access the sprite flip objects.
+            if (lInitialized) {
+                OnChangeDirection();
+            }
+        }
+
+        /// eDirection contains the new direction.
+        protected virtual void OnChangeDirection() {}
 
         [ClientRpc]
         void RpcChangeItemDirection(Direction direction) {

@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 using SciFi.Players.Attacks;
+using SciFi.Util;
 using SciFi.Util.Extensions;
 
 namespace SciFi.Players {
@@ -13,17 +14,24 @@ namespace SciFi.Players {
         GameObject boneArm;
         GameObject paintbrush;
 
+        private CompoundSpriteFlip playerFlip;
+        private CompoundSpriteFlip boneArmFlip;
+
         protected override void OnInitialize() {
             boneArm = Instantiate(boneArmPrefab, transform.position + GetBoneArmOffset(defaultDirection), Quaternion.identity);
-            ReverseSprite(boneArm);
             paintbrush = Instantiate(paintbrushPrefab, transform.position + GetPaintbrushOffset(defaultDirection), Quaternion.identity);
 
             eAttack1 = new NetworkAttack(new PaintbrushAttack(this, paintbrush.GetComponent<Paintbrush>()), 0.1f);
             eAttack2 = new NetworkAttack(new BoneArmAttack(this, boneArm.GetComponent<BoneArm>()), 0.1f);
             eSpecialAttack = new FlyingMachineAttack(this);
+
+            playerFlip = new CompoundSpriteFlip(gameObject, defaultDirection);
+            boneArmFlip = new CompoundSpriteFlip(boneArm, defaultDirection.Opposite());
+            boneArmFlip.Flip(defaultDirection);
         }
 
-        void Update() {
+        new void Update() {
+            base.Update();
             if (boneArm == null || paintbrush == null) {
                 return;
             }
@@ -55,26 +63,24 @@ namespace SciFi.Players {
             BaseCollisionExit2D(collision);
         }
 
-        void ReverseTransform(Transform transform) {
-            transform.localPosition = transform.localPosition.FlipX();
-            for (var i = 0; i < transform.childCount; i++) {
-                ReverseTransform(transform.GetChild(i));
+        static Direction InvertDirection(Direction direction) {
+            switch (direction) {
+            case Direction.Left:
+                return Direction.Right;
+            case Direction.Right:
+                return Direction.Left;
+            case Direction.Up:
+                return Direction.Down;
+            case Direction.Down:
+                return Direction.Up;
+            default:
+                return Direction.Invalid;
             }
         }
 
-        void ReverseSprite(GameObject sprite) {
-            foreach (var sr in sprite.GetComponentsInChildren<SpriteRenderer>()) {
-                sr.flipX = !sr.flipX;
-            }
-            for (var i = 0; i < sprite.transform.childCount; i++) {
-                ReverseTransform(sprite.transform.GetChild(i));
-            }
-        }
-
-        [ClientRpc]
-        protected override void RpcChangeDirection(Direction direction) {
-            ReverseSprite(gameObject);
-            ReverseSprite(boneArm);
+        protected override void OnChangeDirection() {
+            playerFlip.Flip(eDirection);
+            boneArmFlip.Flip(eDirection);
         }
 
         [Command]

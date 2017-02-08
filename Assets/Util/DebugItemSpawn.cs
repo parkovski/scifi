@@ -15,9 +15,16 @@ namespace SciFi.Util {
         public Dropdown dropdown;
         /// Spawn the currently selected item.
         public Button spawnButton;
+        public bool showItemSpawn;
 
         void Start() {
 #if UNITY_EDITOR
+            if (!showItemSpawn) {
+                Destroy(dropdown.gameObject);
+                Destroy(spawnButton.gameObject);
+                return;
+            }
+
             // The dropdown is unusable without this,
             // but it puts the UI behind attacks and players.
             GetComponent<Canvas>().sortingLayerID = SortingLayer.NameToID("Default");

@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 using SciFi.Players.Attacks;
-using SciFi.Environment.Effects;
+using SciFi.Util;
 
 namespace SciFi.Players {
     public class Nobel : Player {
@@ -15,12 +15,16 @@ namespace SciFi.Players {
         GameObject gunGo;
         GameObject dynamiteGo;
 
+        private CompoundSpriteFlip spriteFlip;
+
         protected override void OnInitialize() {
             gunGo = Instantiate(gunPrefab, transform.position + GetGunOffset(defaultDirection), Quaternion.identity);
 
             eAttack1 = new GunAttack(this, gunGo, bulletPrefab);
             eAttack2 = new GeligniteAttack(this, gelignitePrefab);
             eSpecialAttack = new DynamiteAttack(this);
+
+            spriteFlip = new CompoundSpriteFlip(gameObject, defaultDirection);
         }
 
         Vector3 GetGunOffset(Direction direction) {
@@ -31,7 +35,8 @@ namespace SciFi.Players {
             }
         }
 
-        void Update() {
+        new void Update() {
+            base.Update();
             if (gunGo == null) {
                 return;
             }
@@ -55,17 +60,10 @@ namespace SciFi.Players {
         }
 
 
-        [ClientRpc]
-        protected override void RpcChangeDirection(Direction direction) {
+        protected override void OnChangeDirection() {
             var gunSr = gunGo.GetComponent<SpriteRenderer>();
-            gunSr.flipX = !gunSr.flipX;
-            foreach (var sr in gameObject.GetComponentsInChildren<SpriteRenderer>()) {
-                sr.flipX = !sr.flipX;
-            }
-            for (var i = 0; i < transform.childCount; i++) {
-                var child = transform.GetChild(i);
-                child.localPosition = new Vector3(-child.localPosition.x, child.localPosition.y, child.localPosition.z);
-            }
+            gunSr.flipX = eDirection == Direction.Left;
+            spriteFlip.Flip(eDirection);
         }
 
         [Command]

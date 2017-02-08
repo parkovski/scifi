@@ -47,7 +47,8 @@ namespace SciFi.Players.Attacks {
                 direction: Vector2.zero,
                 distance: Mathf.Infinity,
                 layerMask: Attack.LayerMask
-            ).Select(h => h.rigidbody.gameObject)
+            ).Where(h => h.rigidbody != null && h.rigidbody.gameObject != null)
+             .Select(h => h.rigidbody.gameObject)
              .Where(go => go.transform.parent == null)
              .Distinct();
 
