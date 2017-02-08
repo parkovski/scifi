@@ -98,6 +98,10 @@ namespace SciFi.Players {
             eShield = shieldObj.GetComponent<Shield>();
 
             lNetworkAttacks = new List<NetworkAttack>();
+
+            if (pInputManager != null) {
+                OnInitialize();
+            }
         }
 
         protected abstract void OnInitialize();
@@ -122,10 +126,9 @@ namespace SciFi.Players {
                 }
             }
 
-            // This function is called in GameController.StartGame,
-            // so Start has already been called here - now all of the
-            // pre-initialization is done.
-            OnInitialize();
+            if (lRb != null) {
+                OnInitialize();
+            }
         }
 
         protected void BaseCollisionEnter2D(Collision2D collision) {
