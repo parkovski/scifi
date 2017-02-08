@@ -101,4 +101,11 @@ namespace SciFi.Util.Extensions {
             }
         }
     }
+
+    public static class ColorExtensions {
+        /// Changes the alpha value for a color, leaving the color values the same.
+        public static Color WithAlpha(this Color c, float newAlpha) {
+            return new Color(c.r, c.g, c.b, newAlpha);
+        }
+    }
 }
