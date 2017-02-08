@@ -18,8 +18,8 @@ namespace SciFi.Players {
             ReverseSprite(boneArm);
             paintbrush = Instantiate(paintbrushPrefab, transform.position + GetPaintbrushOffset(defaultDirection), Quaternion.identity);
 
-            eAttack1 = new PaintbrushAttack(this, paintbrush.GetComponent<Paintbrush>());
-            eAttack2 = new BoneArmAttack(this, boneArm.GetComponent<BoneArm>());
+            eAttack1 = new NetworkAttack(new PaintbrushAttack(this, paintbrush.GetComponent<Paintbrush>()), 0.1f);
+            eAttack2 = new NetworkAttack(new BoneArmAttack(this, boneArm.GetComponent<BoneArm>()), 0.1f);
             eSpecialAttack = new FlyingMachineAttack(this);
         }
 
