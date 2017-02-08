@@ -47,6 +47,25 @@ namespace SciFi.Players.Modifiers {
             return modifiers[(int)Id] > 0;
         }
 
+        public static uint GetState(IList<uint> modifiers) {
+            if (modifiers == null) {
+                return 0;
+            }
+
+            return
+                (OnFire.IsEnabled(modifiers) ? 1u : 0u)          << 0
+                | (CantMove.IsEnabled(modifiers) ? 1u : 0u)      << 1
+                | (CantJump.IsEnabled(modifiers) ? 1u : 0u)      << 2
+                | (CantAttack.IsEnabled(modifiers) ? 1u : 0u)    << 3
+                | (Invincible.IsEnabled(modifiers) ? 1u : 0u)    << 4
+                | (Slow.IsEnabled(modifiers) ? 1u : 0u)          << 5
+                | (Fast.IsEnabled(modifiers) ? 1u : 0u)          << 6
+                | (UsingShield.IsEnabled(modifiers) ? 1u : 0u)   << 7
+                | (Frozen.IsEnabled(modifiers) ? 1u : 0u)        << 8
+                | (InGravityWell.IsEnabled(modifiers) ? 1u : 0u) << 9
+                | (CanSmash.IsEnabled(modifiers) ? 1u : 0u)      << 10;
+        }
+
         public static Marker OnFire { get; private set; }
         public static CantMove CantMove { get; private set; }
         public static Marker CantJump { get; private set; }
@@ -71,6 +90,23 @@ namespace SciFi.Players.Modifiers {
             Frozen = new Marker(ModId.Frozen);
             InGravityWell = new Marker(ModId.InGravityWell);
             CanSmash = new Marker(ModId.CanSmash);
+        }
+
+        public static string GetDebugString(IList<uint> modifiers) {
+            return string.Format(
+                "{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}{10}",
+                OnFire.IsEnabled(modifiers)         ? "F" : "",
+                CantMove.IsEnabled(modifiers)       ? "M" : "",
+                CantJump.IsEnabled(modifiers)       ? "J" : "",
+                CantAttack.IsEnabled(modifiers)     ? "A" : "",
+                Invincible.IsEnabled(modifiers)     ? "I" : "",
+                Slow.IsEnabled(modifiers)           ? "-" : "",
+                Fast.IsEnabled(modifiers)           ? "+" : "",
+                UsingShield.IsEnabled(modifiers)    ? "U" : "",
+                Frozen.IsEnabled(modifiers)         ? "Z" : "",
+                InGravityWell.IsEnabled(modifiers)  ? "G" : "",
+                CanSmash.IsEnabled(modifiers)       ? "S" : ""
+            );
         }
 
         public static Modifier FromId(ModId id) {

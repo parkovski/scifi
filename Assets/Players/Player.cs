@@ -8,6 +8,7 @@ using SciFi.Players.Attacks;
 using SciFi.Players.Modifiers;
 using SciFi.Items;
 using SciFi.UI;
+using SciFi.Util;
 using SciFi.Util.Extensions;
 
 namespace SciFi.Players {
@@ -47,6 +48,8 @@ namespace SciFi.Players {
         private OneWayPlatform pCurrentOneWayPlatform;
         [SyncVar]
         private SyncListUInt eModifiers;
+        private int pModifiersDebugField;
+        private uint pOldModifierState;
         private List<NetworkAttack> lNetworkAttacks;
         private float pKnockbackLockoutEndTime = float.PositiveInfinity;
 
@@ -101,6 +104,8 @@ namespace SciFi.Players {
             eShield = shieldObj.GetComponent<Shield>();
 
             lNetworkAttacks = new List<NetworkAttack>();
+
+            pModifiersDebugField = DebugPrinter.Instance.NewField();
 
             if (pInputManager != null) {
                 OnInitialize();
@@ -285,6 +290,14 @@ namespace SciFi.Players {
             eAttack1.UpdateState(pInputManager, Control.Attack1);
             eAttack2.UpdateState(pInputManager, Control.Attack2);
             eSpecialAttack.UpdateState(pInputManager, Control.SpecialAttack);
+
+#if UNITY_EDITOR
+            var newModifierState = Modifier.GetState(eModifiers);
+            if (newModifierState != pOldModifierState) {
+                pOldModifierState = newModifierState;
+                DebugPrinter.Instance.SetField(pModifiersDebugField, Modifier.GetDebugString(eModifiers));
+            }
+#endif
         }
 
         protected void Update() {
