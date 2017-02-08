@@ -280,7 +280,7 @@ namespace SciFi {
         public void CmdDie(GameObject playerObject) {
             var player = playerObject.GetComponent<Player>();
             --player.eLives;
-            if (activePlayers.Count(p => p.eLives != 0) == 1) {
+            if (activePlayers.Count(p => p.eLives > 0) == 1) {
                 int winnerId = FindWinner();
 
                 foreach (var go in activePlayersGo) {

@@ -60,6 +60,14 @@ namespace SciFi.Players.Attacks {
             }
         }
         public bool CanFireDown { get { return canFireDown; } }
+        public bool ShouldCancel {
+            get { return shouldCancel; }
+            protected set { shouldCancel = value; }
+        }
+
+        /// This function is called on every frame for non-authoritative
+        /// attacks, so that network attacks can call OnKeepCharging on every frame.
+        public virtual void UpdateStateNonAuthoritative() {}
 
         public void UpdateState(InputManager inputManager, int control) {
             var direction = player.eDirection;

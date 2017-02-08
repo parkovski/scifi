@@ -1,6 +1,9 @@
+using UnityEngine;
 using System;
 
 namespace SciFi.Players.Attacks {
+    /// This is a wrapper class that will mirror the enclosed attack's
+    /// events across the network.
     public class NetworkAttack : Attack {
         /// The underlying attack that calls are forwarded/synced to.
         Attack attack;
@@ -14,6 +17,8 @@ namespace SciFi.Players.Attacks {
         float keepChargingSyncPeriod;
         /// The last time a KeepCharging message was sent.
         float lastKeepChargingSendTime;
+        float beginChargeTime;
+        Direction chargeDirection;
 
         /// Create an attack wrapper that will sync to all players with the same syncId set.
         /// KeepCharging messages will be sent every keepChargingSyncPeriod seconds.
@@ -27,10 +32,17 @@ namespace SciFi.Players.Attacks {
             this.keepChargingSyncPeriod = keepChargingSyncPeriod;
         }
 
+        public override void UpdateStateNonAuthoritative() {
+            if (IsCharging) {
+                OnKeepCharging(Time.time - beginChargeTime, chargeDirection);
+            }
+        }
+
         public override void OnBeginCharging(Direction direction) {
             lastKeepChargingSendTime = 0f;
-            attack.OnBeginCharging(direction);
             attack.IsCharging = true;
+            attack.OnBeginCharging(direction);
+            this.ShouldCancel = attack.ShouldCancel;
             player.CmdNetworkAttackSync(new NetworkAttackMessage {
                 sender = this.guidAsBytes,
                 messageId = this.messageId,
@@ -42,7 +54,10 @@ namespace SciFi.Players.Attacks {
 
         public override void OnKeepCharging(float chargeTime, Direction direction) {
             attack.OnKeepCharging(chargeTime, direction);
-            if (chargeTime > lastKeepChargingSendTime + keepChargingSyncPeriod) {
+            this.ShouldCancel = attack.ShouldCancel;
+            // TODO: Send this occasionally, and interpolate between the charge time
+            // on the local copy and the one sent here.
+            /*if (chargeTime > lastKeepChargingSendTime + keepChargingSyncPeriod) {
                 lastKeepChargingSendTime = chargeTime;
                 player.CmdNetworkAttackSync(new NetworkAttackMessage {
                     sender = this.guidAsBytes,
@@ -51,12 +66,12 @@ namespace SciFi.Players.Attacks {
                     direction = direction,
                     chargeTime = chargeTime,
                 });
-            }
+            }*/
         }
 
         public override void OnEndCharging(float chargeTime, Direction direction) {
-            attack.OnEndCharging(chargeTime, direction);
             attack.IsCharging = false;
+            attack.OnEndCharging(chargeTime, direction);
             player.CmdNetworkAttackSync(new NetworkAttackMessage {
                 sender = this.guidAsBytes,
                 messageId = this.messageId,
@@ -94,18 +109,22 @@ namespace SciFi.Players.Attacks {
 
             switch (message.function) {
             case NetworkAttackFunction.OnBeginCharging:
-                attack.OnBeginCharging(message.direction);
+                beginChargeTime = Time.time;
+                chargeDirection = message.direction;
+                this.IsCharging = true;
                 attack.IsCharging = true;
+                attack.OnBeginCharging(message.direction);
                 break;
             case NetworkAttackFunction.OnKeepCharging:
                 attack.OnKeepCharging(message.chargeTime, message.direction);
                 break;
             case NetworkAttackFunction.OnEndCharging:
-                attack.OnEndCharging(message.chargeTime, message.direction);
+                this.IsCharging = false;
                 attack.IsCharging = false;
+                attack.OnEndCharging(message.chargeTime, message.direction);
                 break;
             case NetworkAttackFunction.OnCancel:
-                attack.RequestCancel();
+                RequestCancel();
                 break;
             }
         }

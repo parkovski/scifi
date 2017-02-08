@@ -48,7 +48,7 @@ namespace SciFi.Players {
         [SyncVar]
         private SyncListUInt eModifiers;
         private List<NetworkAttack> lNetworkAttacks;
-        private float pKnockbackLockoutEndTime;
+        private float pKnockbackLockoutEndTime = float.PositiveInfinity;
 
         // Unity editor parameters
         public Direction defaultDirection;
@@ -227,10 +227,13 @@ namespace SciFi.Players {
         }
 
         protected void BaseInput() {
-            if (!hasAuthority) {
+            if (pInputManager == null) {
                 return;
             }
-            if (pInputManager == null) {
+            if (!hasAuthority) {
+                eAttack1.UpdateStateNonAuthoritative();
+                eAttack2.UpdateStateNonAuthoritative();
+                eSpecialAttack.UpdateStateNonAuthoritative();
                 return;
             }
 
@@ -292,6 +295,7 @@ namespace SciFi.Players {
             if (Time.time > pKnockbackLockoutEndTime) {
                 Modifier.CantAttack.Remove(eModifiers);
                 Modifier.CantMove.Remove(eModifiers);
+                pKnockbackLockoutEndTime = float.PositiveInfinity;
             }
         }
 
