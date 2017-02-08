@@ -59,6 +59,7 @@ namespace SciFi.Players.Attacks {
                 isCharging = value;
             }
         }
+        public bool CanFireDown { get { return canFireDown; } }
 
         public void UpdateState(InputManager inputManager, int control) {
             var direction = player.eDirection;

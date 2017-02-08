@@ -9,7 +9,7 @@ namespace SciFi.Players.Attacks {
         int messageId;
         /// A unique identifier for each copy, so that
         /// the originator doesn't run twice.
-        Guid guid;
+        byte[] guidAsBytes;
         /// How often to send KeepCharging messages, in seconds.
         float keepChargingSyncPeriod;
         /// The last time a KeepCharging message was sent.
@@ -21,17 +21,18 @@ namespace SciFi.Players.Attacks {
             : base(attack.Player, attack.CanCharge)
         {
             this.attack = attack;
-            this.guid = Guid.NewGuid();
+            this.canFireDown = attack.CanFireDown;
+            this.guidAsBytes = Guid.NewGuid().ToByteArray();
             this.messageId = player.RegisterNetworkAttack(this);
-            UnityEngine.MonoBehaviour.print(this.messageId);
             this.keepChargingSyncPeriod = keepChargingSyncPeriod;
         }
 
         public override void OnBeginCharging(Direction direction) {
             lastKeepChargingSendTime = 0f;
             attack.OnBeginCharging(direction);
+            attack.IsCharging = true;
             player.CmdNetworkAttackSync(new NetworkAttackMessage {
-                sender = this.guid.ToByteArray(),
+                sender = this.guidAsBytes,
                 messageId = this.messageId,
                 function = NetworkAttackFunction.OnBeginCharging,
                 direction = direction,
@@ -44,7 +45,7 @@ namespace SciFi.Players.Attacks {
             if (chargeTime > lastKeepChargingSendTime + keepChargingSyncPeriod) {
                 lastKeepChargingSendTime = chargeTime;
                 player.CmdNetworkAttackSync(new NetworkAttackMessage {
-                    sender = this.guid.ToByteArray(),
+                    sender = this.guidAsBytes,
                     messageId = this.messageId,
                     function = NetworkAttackFunction.OnKeepCharging,
                     direction = direction,
@@ -55,8 +56,9 @@ namespace SciFi.Players.Attacks {
 
         public override void OnEndCharging(float chargeTime, Direction direction) {
             attack.OnEndCharging(chargeTime, direction);
+            attack.IsCharging = false;
             player.CmdNetworkAttackSync(new NetworkAttackMessage {
-                sender = this.guid.ToByteArray(),
+                sender = this.guidAsBytes,
                 messageId = this.messageId,
                 function = NetworkAttackFunction.OnEndCharging,
                 direction = direction,
@@ -67,7 +69,7 @@ namespace SciFi.Players.Attacks {
         public override void OnCancel() {
             attack.OnCancel();
             player.CmdNetworkAttackSync(new NetworkAttackMessage {
-                sender = this.guid.ToByteArray(),
+                sender = this.guidAsBytes,
                 messageId = this.messageId,
                 function = NetworkAttackFunction.OnCancel,
                 direction = Direction.Invalid,
@@ -75,8 +77,18 @@ namespace SciFi.Players.Attacks {
             });
         }
 
+        /// This assumes these arrays are Guids, and their lengths are equal.
+        bool GuidArraysEqual(byte[] guid1, byte[] guid2) {
+            for (var i = 0; i < guid1.Length; i++) {
+                if (guid1[i] != guid2[i]) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         public void ReceiveMessage(NetworkAttackMessage message) {
-            if (new Guid(message.sender) == this.guid) {
+            if (GuidArraysEqual(this.guidAsBytes, message.sender)) {
                 return;
             }
 
