@@ -147,6 +147,7 @@ namespace SciFi {
             RpcStartGame(countdown);
             if (countdown) {
                 this.countdown.StartGame();
+                System.GC.Collect();
                 this.countdown.OnFinished += _ => {
                     this.isPlaying = true;
                     foreach (var p in activePlayers) {
@@ -236,6 +237,7 @@ namespace SciFi {
             }
             this.countdown = GameObject.Find("Canvas").GetComponent<Countdown>();
             this.countdown.StartGame();
+            System.GC.Collect();
             this.countdown.OnFinished += _ => {
                 this.isPlaying = true;
                 if (_GameStarted != null) {
