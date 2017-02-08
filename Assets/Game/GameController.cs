@@ -177,7 +177,9 @@ namespace SciFi {
         IEnumerator WaitForPlayersToSync() {
             yield return new WaitWhile(() => activePlayers.Count(p => p.eId == 0) > 1);
             cPlayerId = activePlayers.First(p => p.hasAuthority).eId;
-            if (_PlayersInitialized != null) {
+            // If this copy is both client and server, the server
+            // side will already have called this.
+            if (_PlayersInitialized != null && !isServer) {
                 _PlayersInitialized(activePlayers);
             }
         }
@@ -224,13 +226,16 @@ namespace SciFi {
             return isPlaying;
         }
 
-        /// Start the game on the client.
+        /// Start the game on the client. Note the isServer checks -
+        /// the server will already have raised these events
+        /// when a client/server copy is running, and we don't want to
+        /// call them twice.
         [ClientRpc]
         void RpcStartGame(bool countdown) {
             cIsWinner = false;
             if (!countdown) {
                 this.isPlaying = true;
-                if (_GameStarted != null) {
+                if (_GameStarted != null && !isServer) {
                     _GameStarted();
                 }
                 return;
@@ -240,7 +245,7 @@ namespace SciFi {
             System.GC.Collect();
             this.countdown.OnFinished += _ => {
                 this.isPlaying = true;
-                if (_GameStarted != null) {
+                if (_GameStarted != null && !isServer) {
                     _GameStarted();
                 }
             };
