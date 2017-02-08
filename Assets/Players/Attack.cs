@@ -1,3 +1,4 @@
+using UnityEngine;
 using System;
 
 using SciFi.Players.Modifiers;
@@ -37,6 +38,7 @@ namespace SciFi.Players.Attacks {
     public abstract class Attack {
         protected Player player;
         float cooldown;
+        float lastFireTime;
         bool canCharge;
         bool isCharging;
         bool shouldCancel;
@@ -44,12 +46,19 @@ namespace SciFi.Players.Attacks {
         // Extra parameters for child classes
         protected bool canFireDown = false;
 
-        public Attack(Player player, bool canCharge) {
+        public Attack(Player player, bool canCharge)
+            : this(player, 0.5f, canCharge)
+        {
+        }
+
+        public Attack(Player player, float cooldown, bool canCharge) {
             this.player = player;
+            this.cooldown = cooldown;
             this.canCharge = canCharge;
         }
 
         public Player Player { get { return player; } }
+        public float Cooldown { get { return cooldown; } }
         public bool CanCharge { get { return canCharge; } }
         public bool IsCharging {
             get {
@@ -71,6 +80,7 @@ namespace SciFi.Players.Attacks {
 
         public void UpdateState(InputManager inputManager, int control) {
             var direction = player.eDirection;
+            bool cooldownOver = Time.time > lastFireTime + cooldown;
             if (canFireDown && inputManager.IsControlActive(Control.Down)) {
                 direction = Direction.Down;
             }
@@ -89,9 +99,10 @@ namespace SciFi.Players.Attacks {
                         }
                     } else {
                         // Not charging but button pressed, begin charging.
-                        if (!player.IsModifierEnabled(Modifier.CantAttack)) {
+                        if (!player.IsModifierEnabled(Modifier.CantAttack) && cooldownOver) {
                             isCharging = true;
                             shouldCancel = false;
+                            lastFireTime = Time.time;
                             player.AddModifier(Modifier.CantAttack);
                             player.AddModifier(Modifier.CantMove);
                             OnBeginCharging(direction);
@@ -100,7 +111,8 @@ namespace SciFi.Players.Attacks {
                 } else {
                     // Attack doesn't charge, fire immediately.
                     inputManager.InvalidateControl(control);
-                    if (!player.IsModifierEnabled(Modifier.CantAttack)) {
+                    if (!player.IsModifierEnabled(Modifier.CantAttack) && cooldownOver) {
+                        lastFireTime = Time.time;
                         OnEndCharging(0f, direction);
                     }
                 }

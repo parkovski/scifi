@@ -23,7 +23,7 @@ namespace SciFi.Players.Attacks {
         /// Create an attack wrapper that will sync to all players with the same syncId set.
         /// KeepCharging messages will be sent every keepChargingSyncPeriod seconds.
         public NetworkAttack(Attack attack, float keepChargingSyncPeriod)
-            : base(attack.Player, attack.CanCharge)
+            : base(attack.Player, attack.Cooldown, attack.CanCharge)
         {
             this.attack = attack;
             this.canFireDown = attack.CanFireDown;
