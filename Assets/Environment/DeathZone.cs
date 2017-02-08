@@ -8,7 +8,7 @@ namespace SciFi.Environment {
         /// Record the times so that players with multiple colliders
         /// don't die more than once.
         Dictionary<GameObject, float> timeOfDeath;
-        float ignoreDeathTime = .1f;
+        float ignoreDeathTime = .25f;
 
         void Start() {
             timeOfDeath = new Dictionary<GameObject, float>();
