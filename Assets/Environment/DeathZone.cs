@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections.Generic;
 
 namespace SciFi.Environment {
@@ -15,7 +16,7 @@ namespace SciFi.Environment {
         }
 
         void OnTriggerEnter2D(Collider2D collider) {
-            if (!UnityEngine.Network.isServer) {
+            if (!NetworkServer.active) {
                 return;
             }
             if (collider.gameObject.layer != Layers.players) {
