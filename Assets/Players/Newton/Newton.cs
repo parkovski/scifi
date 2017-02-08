@@ -43,7 +43,8 @@ namespace SciFi.Players {
             BaseInput();
         }
 
-        void Update() {
+        new void Update() {
+            base.Update();
             if (animator == null) {
                 return;
             }
@@ -54,11 +55,11 @@ namespace SciFi.Players {
         protected override void RpcChangeDirection(Direction direction) {
             animator.SetBool("FacingLeft", direction == Direction.Left);
             foreach (var sr in gameObject.GetComponentsInChildren<SpriteRenderer>()) {
-                sr.flipX = !sr.flipX;
+                sr.flipX = direction == Direction.Left;
             }
             for (var i = 0; i < transform.childCount; i++) {
                 var child = transform.GetChild(i);
-                child.localPosition = child.localPosition.FlipX();
+                child.localPosition = child.localPosition.FlipDirection(direction);
             }
         }
     }

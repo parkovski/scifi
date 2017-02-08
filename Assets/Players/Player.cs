@@ -8,6 +8,7 @@ using SciFi.Players.Attacks;
 using SciFi.Players.Modifiers;
 using SciFi.Items;
 using SciFi.UI;
+using SciFi.Util.Extensions;
 
 namespace SciFi.Players {
     public enum Direction {
@@ -46,6 +47,7 @@ namespace SciFi.Players {
         [SyncVar]
         private SyncListUInt eModifiers;
         private List<NetworkAttack> lNetworkAttacks;
+        private float pKnockbackLockoutEndTime;
 
         // Unity editor parameters
         public Direction defaultDirection;
@@ -277,6 +279,17 @@ namespace SciFi.Players {
             eAttack1.UpdateState(pInputManager, Control.Attack1);
             eAttack2.UpdateState(pInputManager, Control.Attack2);
             eSpecialAttack.UpdateState(pInputManager, Control.SpecialAttack);
+        }
+
+        protected void Update() {
+            if (!isServer) {
+                return;
+            }
+
+            if (Time.time > pKnockbackLockoutEndTime) {
+                Modifier.CantAttack.Remove(eModifiers);
+                Modifier.CantMove.Remove(eModifiers);
+            }
         }
 
         /// Spawns a projectile, ignoring collisions
@@ -617,6 +630,16 @@ namespace SciFi.Players {
         void RpcChangeItemDirection(Direction direction) {
             if (eItem != null) {
                 eItem.ChangeDirection(direction);
+            }
+        }
+
+        [Server]
+        public void Knockback(Vector2 force) {
+            RpcKnockback(force);
+            if (!Modifier.Invincible.IsEnabled(eModifiers)) {
+                pKnockbackLockoutEndTime = Time.time + ((float)eDamage).Scale(0f, 1000f, 0.2f, 1.2f);
+                Modifier.CantMove.Add(eModifiers);
+                Modifier.CantAttack.Add(eModifiers);
             }
         }
 
