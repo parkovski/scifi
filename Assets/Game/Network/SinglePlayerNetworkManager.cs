@@ -5,6 +5,7 @@ using UnityEngine.Networking.NetworkSystem;
 using SciFi.Scenes;
 
 namespace SciFi.Network {
+    /// The dummy NetworkManager that handles single player games.
     public class SinglePlayerNetworkManager : NetworkManager {
         public GameObject[] playerPrefabs;
         /// This only applies if the player is not set through the player picker.
@@ -45,7 +46,11 @@ namespace SciFi.Network {
             GameController.Instance.RegisterNewPlayer(p, "COM");
             NetworkServer.Spawn(p);
 
-            GameController.Instance.StartGame();
+            GameController.Instance.StartGame(
+#if UNITY_EDITOR
+                false
+#endif
+            );
         }
     }
 }
