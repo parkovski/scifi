@@ -10,7 +10,7 @@ namespace SciFi.Players.Attacks {
         const int chanceOfGreenApple = 10;
 
         public AppleAttack(Player player, GameObject apple, GameObject greenApple)
-            : base(player, false)
+            : base(player, 0.25f, false)
         {
             this.applePrefabIndex = GameController.PrefabToIndex(apple);
             this.greenApplePrefabIndex = GameController.PrefabToIndex(greenApple);
