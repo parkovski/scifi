@@ -89,7 +89,6 @@ namespace SciFi.Network {
         void UpdateStats(float timestamp) {
             float clientDeltaTime = Time.realtimeSinceStartup - lastMessageReceivedTime;
             float serverDeltaTime = timestamp - lastTimestamp;
-            lastTimestamp = timestamp;
             float interpolationTime = 0.2f;
             if (serverDeltaTime > interpolationTime) {
                 timeToTarget = interpolationTime;
@@ -98,6 +97,7 @@ namespace SciFi.Network {
             }
 
             lastMessageReceivedTime = Time.realtimeSinceStartup;
+            lastTimestamp = timestamp;
         }
 
         bool NeedsSnap(Vector2 sourcePosition, Vector2 targetPosition) {
