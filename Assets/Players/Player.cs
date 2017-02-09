@@ -21,6 +21,11 @@ namespace SciFi.Players {
     }
 
     public abstract class Player : NetworkBehaviour, IInteractable {
+        public static readonly Color blueTeamColor = new Color(0, 0, 0.235f, 1f);
+        public static readonly Color redTeamColor = new Color(0.235f, 0, 0, 1f);
+        public static readonly Color greenTeamColor = new Color(0, 0.235f, 0, 1f);
+        public static readonly Color yellowTeamColor = new Color(0.235f, 0.235f, 0, 1f);
+
         public GameObject shieldPrefab;
 
         // Gameplay data
@@ -661,6 +666,8 @@ namespace SciFi.Players {
                 eItem.ChangeDirection(direction);
             }
         }
+
+        public virtual void SetColor(Color color) {}
 
         [Server]
         public void Knockback(Vector2 force) {

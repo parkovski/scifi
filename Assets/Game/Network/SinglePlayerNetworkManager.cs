@@ -3,6 +3,7 @@ using UnityEngine.Networking;
 using UnityEngine.Networking.NetworkSystem;
 
 using SciFi.Scenes;
+using SciFi.UI;
 
 namespace SciFi.Network {
     /// The dummy NetworkManager that handles single player games.
@@ -38,6 +39,9 @@ namespace SciFi.Network {
             }
 
             var p = Instantiate(FindPrefab(humanPlayer), Vector3.zero, Quaternion.identity);
+            if (TransitionParams.team != -1) {
+                p.GetComponent<SpriteOverlay>().SetColor(NetworkController.TeamToColor(TransitionParams.team));
+            }
             GameController.Instance.RegisterNewPlayer(p, "P1");
             NetworkServer.AddPlayerForConnection(conn, p, playerControllerId);
 

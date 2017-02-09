@@ -6,6 +6,8 @@ using System.Collections;
 using System.Collections.Generic;
 
 using SciFi.Scenes;
+using SciFi.UI;
+using SciFi.Players;
 
 namespace SciFi.Network {
     /// Handle the multiplayer lobby.
@@ -22,6 +24,7 @@ namespace SciFi.Network {
             base.OnStartServer();
             NetworkServer.RegisterHandler(NetworkMessages.SetPlayerName, SetPlayerName);
             NetworkServer.RegisterHandler(NetworkMessages.SetPlayerDisplayName, SetPlayerDisplayName);
+            NetworkServer.RegisterHandler(NetworkMessages.SetPlayerTeam, SetPlayerTeam);
 
             playersToRegister = new List<GameObject>();
             displayNames = new List<string>();
@@ -47,6 +50,13 @@ namespace SciFi.Network {
                 writer.FinishMessage();
                 conn.SendWriter(writer, 0);
             }
+
+            if (TransitionParams.team != -1) {
+                writer.StartMessage(NetworkMessages.SetPlayerTeam);
+                writer.Write(TransitionParams.team);
+                writer.FinishMessage();
+                conn.SendWriter(writer, 0);
+            }
         }
 
         /// Receive a player selection message from the client.
@@ -59,6 +69,10 @@ namespace SciFi.Network {
             TransitionParams.AddDisplayName(msg.conn, msg.reader.ReadString());
         }
 
+        void SetPlayerTeam(NetworkMessage msg) {
+            TransitionParams.AddTeam(msg.conn, msg.reader.ReadInt32());
+        }
+
         /// Create the player for <c>conn</c> and register it with <see cref="GameController" />.
         public override GameObject OnLobbyServerCreateGamePlayer(NetworkConnection conn, short playerControllerId) {
             string playerName;
@@ -67,9 +81,28 @@ namespace SciFi.Network {
             }
             var prefab = spawnPrefabs.Find(p => p.name == playerName);
             var obj = Instantiate(prefab, Vector3.zero, Quaternion.identity);
+            int team = TransitionParams.GetTeam(conn);
+            if (team != -1) {
+                obj.GetComponent<SpriteOverlay>().SetColor(TeamToColor(team));
+            }
             playersToRegister.Add(obj);
             displayNames.Add(TransitionParams.GetDisplayName(conn));
             return obj;
+        }
+
+        public static Color TeamToColor(int team) {
+            switch (team) {
+            case 0:
+                return Player.blueTeamColor;
+            case 1:
+                return Player.redTeamColor;
+            case 2:
+                return Player.greenTeamColor;
+            case 3:
+                return Player.yellowTeamColor;
+            default:
+                return Color.clear;
+            }
         }
 
         /// Start the game when the scene changes to MainGame.

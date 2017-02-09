@@ -104,8 +104,13 @@ namespace SciFi.Util.Extensions {
 
     public static class ColorExtensions {
         /// Changes the alpha value for a color, leaving the color values the same.
-        public static Color WithAlpha(this Color c, float newAlpha) {
-            return new Color(c.r, c.g, c.b, newAlpha);
+        public static Color WithAlpha(this Color c, float alpha) {
+            return new Color(c.r, c.g, c.b, alpha);
+        }
+
+        /// Changes the color but leaves the alpha the same.
+        public static Color WithColor(this Color c, float red, float green, float blue) {
+            return new Color(red, green, blue, c.a);
         }
     }
 }

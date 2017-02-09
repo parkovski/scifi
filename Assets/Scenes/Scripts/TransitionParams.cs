@@ -21,35 +21,38 @@ namespace SciFi.Scenes {
         public static string playerName = null;
         /// The custom display name for this client's player, if any.
         public static string displayName = null;
+        /// Currently just sets the player's color.
+        public static int team = -1;
 
         /// The prefab name of each player connected to the server.
         private static Dictionary<NetworkConnection, string> players;
         /// The display name of each client connect to the server, if they set one.
         private static Dictionary<NetworkConnection, string> displayNames;
+        /// The teams of each connected player, or -1 for none.
+        private static Dictionary<NetworkConnection, int> teams;
         /// Thread-safety
-        private static object playersLock;
-        /// Thread-safety
-        private static object displayNamesLock;
+        private static object threadLock;
+
         #endregion
 
         #region Accessors for private fields
         static TransitionParams() {
             players = new Dictionary<NetworkConnection, string>();
-            playersLock = new object();
             displayNames = new Dictionary<NetworkConnection, string>();
-            displayNamesLock = new object();
+            teams = new Dictionary<NetworkConnection, int>();
+            threadLock = new object();
         }
 
         /// Add a player for <c>conn</c> with prefab <c>name</c>.
         public static void AddPlayer(NetworkConnection conn, string name) {
-            lock(playersLock) {
+            lock(threadLock) {
                 players.Add(conn, name);
             }
         }
 
         /// Get the player prefab name for <c>conn</c>.
         public static string GetPlayerName(NetworkConnection conn) {
-            lock(playersLock) {
+            lock(threadLock) {
                 string name = null;
                 players.TryGetValue(conn, out name);
                 return name;
@@ -58,17 +61,31 @@ namespace SciFi.Scenes {
 
         /// Add a display name (<c>name</c>) for player <c>conn</c>.
         public static void AddDisplayName(NetworkConnection conn, string name) {
-            lock(displayNamesLock) {
+            lock(threadLock) {
                 displayNames.Add(conn, name);
             }
         }
 
         /// Get the display name for <c>conn</c> or null if none was set.
         public static string GetDisplayName(NetworkConnection conn) {
-            lock(displayNamesLock) {
+            lock(threadLock) {
                 string name = null;
                 displayNames.TryGetValue(conn, out name);
                 return name;
+            }
+        }
+
+        public static void AddTeam(NetworkConnection conn, int team) {
+            lock(threadLock) {
+                teams.Add(conn, team);
+            }
+        }
+
+        public static int GetTeam(NetworkConnection conn) {
+            lock(threadLock) {
+                int team = -1;
+                teams.TryGetValue(conn, out team);
+                return team;
             }
         }
         #endregion

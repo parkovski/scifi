@@ -92,6 +92,7 @@ GameObject:
   - component: {fileID: 58309631591817466}
   - component: {fileID: 58767711717038062}
   - component: {fileID: 95872986989503038}
+  - component: {fileID: 114576076954628190}
   m_Layer: 9
   m_Name: Newton
   m_TagString: Player
@@ -202,7 +203,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1445736531698702}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.1313647, y: -1.1773102, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4287435098207938}
@@ -512,6 +513,22 @@ MonoBehaviour:
   calc3: {fileID: 1214470367260520, guid: e3ac8cf483c0848bfa910e7cb48ce11e, type: 2}
   gravityWell: {fileID: 1647321388344430, guid: 9a4dd0a39592e0e4cabe85a6287f93f7,
     type: 2}
+--- !u!114 &114576076954628190
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1445736531698702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01bb79fd81895484db917840b5ebe5c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spriteRenderers:
+  - {fileID: 212209011733335456}
+  - {fileID: 212299048790469776}
+  - {fileID: 212789448061487186}
+  - {fileID: 212512424050722634}
 --- !u!114 &114846927447625442
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -580,7 +597,7 @@ SpriteRenderer:
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 8a8ced79b8fb22848a2cdca36f5be52d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -615,7 +632,7 @@ SpriteRenderer:
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 8a8ced79b8fb22848a2cdca36f5be52d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -720,7 +737,7 @@ SpriteRenderer:
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 8a8ced79b8fb22848a2cdca36f5be52d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -790,7 +807,7 @@ SpriteRenderer:
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 8a8ced79b8fb22848a2cdca36f5be52d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

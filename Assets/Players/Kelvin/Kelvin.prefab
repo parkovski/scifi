@@ -105,6 +105,7 @@ GameObject:
   - component: {fileID: 114965330100693014}
   - component: {fileID: 60810175828574442}
   - component: {fileID: 58578176784719120}
+  - component: {fileID: 114387987497582024}
   m_Layer: 9
   m_Name: Kelvin
   m_TagString: Player
@@ -339,6 +340,21 @@ PolygonCollider2D:
       - {x: -0.45963815, y: -0.41542244}
       - {x: 0.0076602697, y: -0.08447528}
       - {x: 0.1931136, y: 0.5470047}
+--- !u!114 &114387987497582024
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1456088037116718}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01bb79fd81895484db917840b5ebe5c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spriteRenderers:
+  - {fileID: 212047818730495602}
+  - {fileID: 212911727145840830}
+  - {fileID: 212359675069479318}
 --- !u!114 &114540426630040802
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -468,7 +484,7 @@ SpriteRenderer:
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 8a8ced79b8fb22848a2cdca36f5be52d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -538,7 +554,7 @@ SpriteRenderer:
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 8a8ced79b8fb22848a2cdca36f5be52d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -608,7 +624,7 @@ SpriteRenderer:
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 8a8ced79b8fb22848a2cdca36f5be52d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

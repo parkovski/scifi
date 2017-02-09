@@ -12,5 +12,7 @@ namespace SciFi.Network {
         /// The dummy network manager has connected;
         /// create players for single player mode.
         public static short SpawnSinglePlayer = MsgType.Highest + 4;
+        /// Team/color.
+        public static short SetPlayerTeam = MsgType.Highest + 5;
     }
 }
