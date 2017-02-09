@@ -673,7 +673,7 @@ namespace SciFi.Players {
         public void Knockback(Vector2 force) {
             RpcKnockback(force);
             if (!Modifier.Invincible.IsEnabled(eModifiers)) {
-                pKnockbackLockoutEndTime = Time.time + ((float)eDamage).Scale(0f, 1000f, 0.2f, 1.2f);
+                pKnockbackLockoutEndTime = Time.time + ((float)eDamage).Scale(0f, 1000f, 0.1f, 1.2f);
                 Modifier.CantMove.Add(eModifiers);
                 Modifier.CantAttack.Add(eModifiers);
             }
