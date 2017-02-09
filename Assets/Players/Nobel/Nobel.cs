@@ -44,10 +44,6 @@ namespace SciFi.Players {
         }
 
         void FixedUpdate() {
-            if (!isLocalPlayer) {
-                return;
-            }
-
             BaseInput();
         }
 
