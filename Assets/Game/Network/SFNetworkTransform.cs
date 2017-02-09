@@ -25,6 +25,9 @@ namespace SciFi.Network {
             if (!hasAuthority) {
                 rb.gravityScale = 0.0001f;
             }
+
+            targetVelocity = rb.velocity;
+            targetPosition = transform.position;
         }
 
         void Update() {
