@@ -4,10 +4,12 @@ using UnityEngine.Networking;
 namespace SciFi.Network {
     public class SFNetworkTransform : NetworkBehaviour {
         public float syncInterval;
+        public float interpolationTime = 0.2f;
         public float closeEnoughPosition = 0.01f;
         public float closeEnoughVelocity = 0.1f;
-        public float snapDistance = 1.0f;
+        public float snapDistance = 1f;
 
+        float snapTimer;
         float lastMessageSentTime;
         float lastMessageReceivedTime;
         float timeToTarget;
@@ -83,7 +85,6 @@ namespace SciFi.Network {
         void UpdateStats(float timestamp) {
             float clientDeltaTime = Time.realtimeSinceStartup - lastMessageReceivedTime;
             float serverDeltaTime = timestamp - lastTimestamp;
-            float interpolationTime = 0.2f;
             if (clientDeltaTime > interpolationTime) {
                 timeToTarget = interpolationTime;
             } else {
@@ -95,8 +96,20 @@ namespace SciFi.Network {
         }
 
         bool NeedsSnap(Vector2 sourcePosition, Vector2 targetPosition) {
-            var deltaPosition = targetPosition - sourcePosition;
-            return deltaPosition.magnitude >= snapDistance;
+            if ((targetPosition - sourcePosition).magnitude > snapDistance) {
+                if (Mathf.Approximately(snapTimer, 0f)) {
+                    snapTimer = Time.realtimeSinceStartup;
+                } else {
+                    if (Time.realtimeSinceStartup - snapTimer > interpolationTime) {
+                        snapTimer = 0;
+                        return true;
+                    }
+                }
+            } else {
+                snapTimer = 0;
+            }
+
+            return false;
         }
 
         void Interpolate() {
