@@ -12,6 +12,8 @@ namespace SciFi.Network {
         float lastMessageReceivedTime;
         uint messagesReceived;
         double averageMessageInterval;
+        float timeToTarget;
+        float lastTimestamp;
         Vector2 targetVelocity;
         Vector2 targetPosition;
         Rigidbody2D rb;
@@ -19,6 +21,10 @@ namespace SciFi.Network {
         void Start() {
             isUpdatedByClient = GetComponent<NetworkIdentity>().localPlayerAuthority;
             rb = GetComponent<Rigidbody2D>();
+
+            if (!hasAuthority) {
+                rb.gravityScale = 0.0001f;
+            }
         }
 
         void Update() {
@@ -41,11 +47,9 @@ namespace SciFi.Network {
             if (!isServer && hasAuthority) {
                 if (Time.realtimeSinceStartup > lastMessageSentTime + syncInterval) {
                     if (!PositionCloseEnough(transform.position, targetPosition) || !VelocityCloseEnough(rb.velocity, targetVelocity)) {
-                        int skippedMessages = (int)((Time.realtimeSinceStartup - lastMessageReceivedTime) / syncInterval) - 1;
-                        lastMessageSentTime = Time.realtimeSinceStartup;
                         targetPosition = transform.position;
                         targetVelocity = rb.velocity;
-                        CmdSyncState(GetSyncVector(), skippedMessages);
+                        CmdSyncState(GetSyncVector(), Time.realtimeSinceStartup);
                     }
                 }
             } else if (isServer && !hasAuthority) {
@@ -53,11 +57,9 @@ namespace SciFi.Network {
             } else if (isServer && hasAuthority) {
                 if (Time.realtimeSinceStartup > lastMessageSentTime + syncInterval) {
                     if (!PositionCloseEnough(transform.position, targetPosition) || !VelocityCloseEnough(rb.velocity, targetVelocity)) {
-                        int skippedMessages = (int)((Time.realtimeSinceStartup - lastMessageReceivedTime) / syncInterval) - 1;
-                        lastMessageSentTime = Time.realtimeSinceStartup;
                         targetPosition = transform.position;
                         targetVelocity = rb.velocity;
-                        RpcSyncState(GetSyncVector(), skippedMessages);
+                        RpcSyncState(GetSyncVector(), Time.realtimeSinceStartup);
                     }
                 }
             } else if (!isServer && !hasAuthority) {
@@ -83,37 +85,31 @@ namespace SciFi.Network {
         }
 
         [Command]
-        void CmdSyncState(Vector4 syncVector, int skippedMessages) {
-            RpcSyncState(syncVector, skippedMessages);
+        void CmdSyncState(Vector4 syncVector, float timestamp) {
+            RpcSyncState(syncVector, timestamp);
             GetVelPosVectors(syncVector, out targetVelocity, out targetPosition);
-            UpdateStats(skippedMessages);
+            UpdateStats(timestamp);
             lastMessageReceivedTime = Time.realtimeSinceStartup;
         }
 
         [ClientRpc]
-        void RpcSyncState(Vector4 syncVector, int skippedMessages) {
+        void RpcSyncState(Vector4 syncVector, float timestamp) {
             GetVelPosVectors(syncVector, out targetVelocity, out targetPosition);
-            UpdateStats(skippedMessages);
+            UpdateStats(timestamp);
             lastMessageReceivedTime = Time.realtimeSinceStartup;
         }
 
-        void UpdateStats(int skippedMessages) {
-            if (messagesReceived == 0) {
-                lastMessageReceivedTime = Time.realtimeSinceStartup;
-                averageMessageInterval = .01;
-                messagesReceived = 1;
-                return;
+        void UpdateStats(float timestamp) {
+            float clientDeltaTime = Time.realtimeSinceStartup - lastMessageReceivedTime;
+            float serverDeltaTime = timestamp - lastTimestamp;
+            float interpolationTime = 0.2f;
+            if (serverDeltaTime > interpolationTime) {
+                timeToTarget = interpolationTime;
+            } else {
+                timeToTarget += serverDeltaTime - clientDeltaTime;
             }
 
-            var timeSinceLastMessage = (Time.realtimeSinceStartup - lastMessageReceivedTime);
-            if (skippedMessages > 1) {
-                timeSinceLastMessage /= skippedMessages + 1;
-            }
             lastMessageReceivedTime = Time.realtimeSinceStartup;
-            averageMessageInterval = (timeSinceLastMessage + messagesReceived*averageMessageInterval) / (messagesReceived + 1);
-            if (messagesReceived < 10) {
-                ++messagesReceived;
-            }
         }
 
         bool IsPositionTolerable(float deltaPosition, float velocity) {
@@ -121,14 +117,21 @@ namespace SciFi.Network {
         }
 
         void Interpolate() {
-            var deltaTime = (float)((Time.realtimeSinceStartup - lastMessageReceivedTime) / averageMessageInterval);
-            rb.velocity = Vector2.Lerp(rb.velocity, targetVelocity, deltaTime);
-            var deltaPosition = targetPosition - (Vector2)transform.position;
-
-            if (IsPositionTolerable(deltaPosition.magnitude, rb.velocity.magnitude)) {
-                rb.velocity += deltaPosition;
+            var dt = Time.realtimeSinceStartup - lastMessageReceivedTime;
+            float interpTime;
+            if (dt >= timeToTarget) {
+                interpTime = 1f;
             } else {
-                transform.position = Vector2.Lerp(transform.position, targetPosition, Mathf.Pow(deltaTime, 2));
+                interpTime = timeToTarget - dt;
+            }
+
+            rb.velocity = Vector2.Lerp(rb.velocity, targetVelocity, interpTime);
+
+            var deltaPosition = targetPosition - (Vector2)transform.position;
+            if (PositionCloseEnough(transform.position, targetPosition)) {
+                transform.position = targetPosition;
+            } else if (!IsPositionTolerable(deltaPosition.magnitude, rb.velocity.magnitude)) {
+                transform.position = Vector2.Lerp(transform.position, targetPosition, interpTime);
             }
         }
 
