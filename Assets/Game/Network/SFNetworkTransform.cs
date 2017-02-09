@@ -90,10 +90,10 @@ namespace SciFi.Network {
             float clientDeltaTime = Time.realtimeSinceStartup - lastMessageReceivedTime;
             float serverDeltaTime = timestamp - lastTimestamp;
             float interpolationTime = 0.2f;
-            if (serverDeltaTime > interpolationTime) {
+            if (clientDeltaTime > interpolationTime) {
                 timeToTarget = interpolationTime;
             } else {
-                timeToTarget += serverDeltaTime - clientDeltaTime;
+                timeToTarget = interpolationTime - clientDeltaTime;
             }
 
             lastMessageReceivedTime = Time.realtimeSinceStartup;
