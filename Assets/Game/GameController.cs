@@ -387,7 +387,7 @@ namespace SciFi {
                     vector = new Vector3(-amount, amount);
                 }
             }
-            player.RpcKnockback(vector);
+            player.Knockback(vector);
         }
 
         /// Initialize fields that other objects depend on.
