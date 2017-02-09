@@ -200,7 +200,7 @@ namespace SciFi {
         int FindWinner() {
             Player winner;
             try {
-                winner = activePlayers.Single(p => p.eLives != 0);
+                winner = activePlayers.Single(p => p.eLives > 0);
             } catch {
                 return -1;
             }
