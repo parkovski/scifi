@@ -23,8 +23,8 @@ GameObject:
   - component: {fileID: 61054608619039738}
   - component: {fileID: 114358476192096598}
   - component: {fileID: 114013069344136812}
-  - component: {fileID: 114166644554298494}
   - component: {fileID: 50511433649175914}
+  - component: {fileID: 114011685520970260}
   m_Layer: 0
   m_Name: BoneHand
   m_TagString: Untagged
@@ -79,6 +79,26 @@ BoxCollider2D:
   m_Offset: {x: -0.13474464, y: 0.010982215}
   serializedVersion: 2
   m_Size: {x: 0.30661607, y: 0.15237081}
+--- !u!114 &114011685520970260
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1604782102379740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9690a394f44b2e6479514a7679af70db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_TransformSyncMode: 2
+  m_SendInterval: 0
+  m_SyncRotationAxis: 3
+  m_RotationSyncCompression: 0
+  m_SyncSpin: 0
+  m_MovementTheshold: 0.001
+  m_SnapThreshold: 5
+  m_InterpolateRotation: 1
+  m_InterpolateMovement: 1
 --- !u!114 &114013069344136812
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -90,26 +110,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f83bb7cfbae1ee47809f5b2ca801d7b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &114166644554298494
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1604782102379740}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1768714887, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TransformSyncMode: 1
-  m_SendInterval: 0.1
-  m_SyncRotationAxis: 7
-  m_RotationSyncCompression: 0
-  m_SyncSpin: 0
-  m_MovementTheshold: 0.001
-  m_SnapThreshold: 5
-  m_InterpolateRotation: 1
-  m_InterpolateMovement: 1
 --- !u!114 &114358476192096598
 MonoBehaviour:
   m_ObjectHideFlags: 1

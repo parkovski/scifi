@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 50158982170073844}
   - component: {fileID: 58431733497880524}
   - component: {fileID: 114536395684050878}
-  - component: {fileID: 114150680437719354}
+  - component: {fileID: 114047584444058344}
   m_Layer: 13
   m_Name: Apple
   m_TagString: Untagged
@@ -79,7 +79,7 @@ CircleCollider2D:
   m_Offset: {x: 0, y: -0.09}
   serializedVersion: 2
   m_Radius: 0.46
---- !u!114 &114150680437719354
+--- !u!114 &114047584444058344
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -87,11 +87,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1357499644953146}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1768714887, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
+  m_Script: {fileID: 11500000, guid: 9690a394f44b2e6479514a7679af70db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_TransformSyncMode: 2
-  m_SendInterval: 0.04761905
+  m_SendInterval: 0
   m_SyncRotationAxis: 3
   m_RotationSyncCompression: 0
   m_SyncSpin: 0

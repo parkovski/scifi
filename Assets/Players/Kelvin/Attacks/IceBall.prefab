@@ -23,8 +23,8 @@ GameObject:
   - component: {fileID: 50209709933789152}
   - component: {fileID: 58203540000438844}
   - component: {fileID: 114581121180703790}
-  - component: {fileID: 114156858324216832}
   - component: {fileID: 114790896274836606}
+  - component: {fileID: 114305738484763300}
   m_Layer: 13
   m_Name: IceBall
   m_TagString: Untagged
@@ -79,7 +79,7 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.36
---- !u!114 &114156858324216832
+--- !u!114 &114305738484763300
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -87,11 +87,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1284917634577738}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1768714887, guid: 870353891bb340e2b2a9c8707e7419ba, type: 3}
+  m_Script: {fileID: 11500000, guid: 9690a394f44b2e6479514a7679af70db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_TransformSyncMode: 2
-  m_SendInterval: 0.04761905
+  m_SendInterval: 0
   m_SyncRotationAxis: 3
   m_RotationSyncCompression: 0
   m_SyncSpin: 0

@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 61153881104421844}
   - component: {fileID: 114760202321868942}
   - component: {fileID: 114368102634575572}
-  - component: {fileID: 114051087210147222}
+  - component: {fileID: 114731090954010518}
   m_Layer: 13
   m_Name: Bullet
   m_TagString: Untagged
@@ -79,26 +79,6 @@ BoxCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Size: {x: 0.3, y: 0.1}
---- !u!114 &114051087210147222
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1019900017308746}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1768714887, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TransformSyncMode: 2
-  m_SendInterval: 0.16666667
-  m_SyncRotationAxis: 3
-  m_RotationSyncCompression: 0
-  m_SyncSpin: 0
-  m_MovementTheshold: 0.001
-  m_SnapThreshold: 5
-  m_InterpolateRotation: 1
-  m_InterpolateMovement: 1
 --- !u!114 &114368102634575572
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -112,6 +92,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damage: 5
   knockback: 3
+--- !u!114 &114731090954010518
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1019900017308746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9690a394f44b2e6479514a7679af70db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_TransformSyncMode: 2
+  m_SendInterval: 0
+  m_SyncRotationAxis: 3
+  m_RotationSyncCompression: 0
+  m_SyncSpin: 0
+  m_MovementTheshold: 0.001
+  m_SnapThreshold: 5
+  m_InterpolateRotation: 1
+  m_InterpolateMovement: 1
 --- !u!114 &114760202321868942
 MonoBehaviour:
   m_ObjectHideFlags: 1

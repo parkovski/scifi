@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 50807222610474374}
   - component: {fileID: 58688076574055786}
   - component: {fileID: 114267997417385408}
-  - component: {fileID: 114452642708474906}
+  - component: {fileID: 114730722216971466}
   m_Layer: 13
   m_Name: GreenApple
   m_TagString: Untagged
@@ -111,26 +111,6 @@ MonoBehaviour:
     i15: 203
   m_ServerOnly: 0
   m_LocalPlayerAuthority: 0
---- !u!114 &114452642708474906
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1620461812501308}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1768714887, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TransformSyncMode: 2
-  m_SendInterval: 0.04761905
-  m_SyncRotationAxis: 3
-  m_RotationSyncCompression: 0
-  m_SyncSpin: 0
-  m_MovementTheshold: 0.001
-  m_SnapThreshold: 5
-  m_InterpolateRotation: 1
-  m_InterpolateMovement: 1
 --- !u!114 &114673505912176346
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -148,6 +128,26 @@ MonoBehaviour:
   knockback: 5
   postGroundDamage: 3
   postGroundKnockback: 1.5
+--- !u!114 &114730722216971466
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1620461812501308}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9690a394f44b2e6479514a7679af70db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_TransformSyncMode: 2
+  m_SendInterval: 0
+  m_SyncRotationAxis: 3
+  m_RotationSyncCompression: 0
+  m_SyncSpin: 0
+  m_MovementTheshold: 0.001
+  m_SnapThreshold: 5
+  m_InterpolateRotation: 1
+  m_InterpolateMovement: 1
 --- !u!212 &212914230991580068
 SpriteRenderer:
   m_ObjectHideFlags: 1
