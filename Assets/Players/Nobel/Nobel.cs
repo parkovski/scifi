@@ -90,7 +90,7 @@ namespace SciFi.Players {
             dynamite.explodeCallback = OnDynamiteExploded;
             dynamite.destroyCallback = OnDynamiteDestroyed;
             NetworkServer.Spawn(dynamiteGo);
-            RpcSetDynamiteShouldCharge(false);
+            RpcSetHasPlantedDynamite(true);
         }
 
         [Server]
@@ -109,12 +109,12 @@ namespace SciFi.Players {
 
         [Server]
         void OnDynamiteDestroyed() {
-            RpcSetDynamiteShouldCharge(true);
+            RpcSetHasPlantedDynamite(false);
         }
 
         [ClientRpc]
-        void RpcSetDynamiteShouldCharge(bool shouldCharge) {
-            ((DynamiteAttack)eSpecialAttack).SetShouldCharge(shouldCharge);
+        void RpcSetHasPlantedDynamite(bool hasPlantedDynamite) {
+            ((DynamiteAttack)eSpecialAttack).SetHasPlantedDynamite(hasPlantedDynamite);
         }
     }
 }

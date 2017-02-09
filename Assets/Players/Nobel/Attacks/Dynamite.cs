@@ -18,7 +18,7 @@ namespace SciFi.Players.Attacks {
         }
 
         void OnDestroy() {
-            if (isServer && destroyCallback != null) {
+            if (destroyCallback != null) {
                 destroyCallback();
             }
         }

@@ -1,16 +1,24 @@
+using UnityEngine;
+
 namespace SciFi.Players.Attacks {
     public class DynamiteAttack : Attack {
-        bool shouldCharge = true;
+        bool hasPlantedDynamite = false;
+        const float cooldownInterval = 1f;
+        float lastFireTime;
 
         public DynamiteAttack(Nobel player)
-            : base(player, true)
+            : base(player, 0f, true)
         {
         }
 
         public override void OnBeginCharging(Direction direction) {
-            if (!shouldCharge) {
+            if (hasPlantedDynamite) {
                 ((Nobel)player).CmdPlantOrExplodeDynamite();
                 RequestCancel();
+            } else {
+                if (Time.time < lastFireTime + cooldownInterval) {
+                    RequestCancel();
+                }
             }
         }
 
@@ -18,13 +26,14 @@ namespace SciFi.Players.Attacks {
         }
 
         public override void OnEndCharging(float chargeTime, Direction direction) {
-            if (shouldCharge) {
+            if (!hasPlantedDynamite) {
                 ((Nobel)player).CmdPlantOrExplodeDynamite();
+                lastFireTime = Time.time;
             }
         }
 
-        public void SetShouldCharge(bool shouldCharge) {
-            this.shouldCharge = shouldCharge;
+        public void SetHasPlantedDynamite(bool hasPlantedDynamite) {
+            this.hasPlantedDynamite = hasPlantedDynamite;
         }
     }
 }
