@@ -128,12 +128,9 @@ namespace SciFi.Network {
                 interpTime = timeToTarget - dt;
             }
 
-            rb.velocity = Vector2.Lerp(rb.velocity, targetVelocity, interpTime);
-
-            var deltaPosition = targetPosition - (Vector2)transform.position;
             if (PositionCloseEnough(transform.position, targetPosition)) {
                 transform.position = targetPosition;
-            } else if (!IsPositionTolerable(deltaPosition.magnitude, rb.velocity.magnitude)) {
+            } else {
                 transform.position = Vector2.Lerp(transform.position, targetPosition, interpTime);
             }
         }
