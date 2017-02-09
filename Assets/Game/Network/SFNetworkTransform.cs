@@ -93,7 +93,7 @@ namespace SciFi.Network {
             if (clientDeltaTime > interpolationTime) {
                 timeToTarget = interpolationTime;
             } else {
-                timeToTarget = interpolationTime - clientDeltaTime;
+                timeToTarget += interpolationTime - clientDeltaTime;
             }
 
             lastMessageReceivedTime = Time.realtimeSinceStartup;
