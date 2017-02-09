@@ -4,7 +4,6 @@ using UnityEngine.Networking;
 namespace SciFi.Network {
     public class SFNetworkTransform : NetworkBehaviour {
         public float syncInterval;
-        public float interpolationTime;
         public float closeEnoughPosition = 0.01f;
         public float closeEnoughVelocity = 0.1f;
 
@@ -112,16 +111,25 @@ namespace SciFi.Network {
             }
             lastMessageReceivedTime = Time.realtimeSinceStartup;
             averageMessageInterval = (timeSinceLastMessage + messagesReceived*averageMessageInterval) / (messagesReceived + 1);
-            print(timeSinceLastMessage + " " + averageMessageInterval);
             if (messagesReceived < 10) {
                 ++messagesReceived;
             }
         }
 
+        bool IsPositionTolerable(float deltaPosition, float velocity) {
+            return (!Mathf.Approximately(velocity, 0f)) && (deltaPosition / velocity) < closeEnoughVelocity;
+        }
+
         void Interpolate() {
             var deltaTime = (float)((Time.realtimeSinceStartup - lastMessageReceivedTime) / averageMessageInterval);
             rb.velocity = Vector2.Lerp(rb.velocity, targetVelocity, deltaTime);
-            //transform.position = Vector2.Lerp(transform.position, targetPosition, deltaTime);
+            var deltaPosition = targetPosition - (Vector2)transform.position;
+
+            if (IsPositionTolerable(deltaPosition.magnitude, rb.velocity.magnitude)) {
+                rb.velocity += deltaPosition;
+            } else {
+                transform.position = Vector2.Lerp(transform.position, targetPosition, Mathf.Pow(deltaTime, 2));
+            }
         }
 
         public override int GetNetworkChannel() {
