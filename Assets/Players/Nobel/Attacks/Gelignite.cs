@@ -12,7 +12,7 @@ namespace SciFi.Players.Attacks {
         SpriteRenderer spriteRenderer;
         SpriteRenderer flameSpriteRenderer;
 
-        const float burnTime = 3f;
+        const float burnTime = 6f;
         const int fadeSteps = 20;
         const float fadeStepInterval = burnTime / fadeSteps;
 
@@ -43,7 +43,7 @@ namespace SciFi.Players.Attacks {
             while (fadeStep > 0) {
                 var alpha = ((float)fadeStep) / fadeSteps;
                 spriteRenderer.color = spriteRenderer.color.WithAlpha(alpha);
-                flameSpriteRenderer.color = flameSpriteRenderer.color.WithAlpha(alpha);
+                //flameSpriteRenderer.color = flameSpriteRenderer.color.WithAlpha(alpha);
                 --fadeStep;
                 yield return new WaitForSeconds(fadeStepInterval);
             }

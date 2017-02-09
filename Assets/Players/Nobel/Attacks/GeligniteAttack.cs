@@ -5,7 +5,7 @@ namespace SciFi.Players.Attacks {
         GameObject gelignitePrefab;
 
         public GeligniteAttack(Player player, GameObject gelignitePrefab)
-            : base(player, false)
+            : base(player, 1f, false)
         {
             this.gelignitePrefab = gelignitePrefab;
         }

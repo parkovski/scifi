@@ -12,7 +12,7 @@ namespace SciFi.Players.Attacks {
         AudioSource audioSource;
 
         public GunAttack(Player player, GameObject gun, GameObject bulletPrefab)
-            : base(player, false)
+            : base(player, .25f, false)
         {
             this.gun = gun;
             this.bulletPrefab = bulletPrefab;
