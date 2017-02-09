@@ -7,22 +7,16 @@ namespace SciFi.Network {
         public float closeEnoughPosition = 0.01f;
         public float closeEnoughVelocity = 0.1f;
 
-        bool isUpdatedByClient;
         float lastMessageSentTime;
         float lastMessageReceivedTime;
-        uint messagesReceived;
-        double averageMessageInterval;
         float timeToTarget;
         float lastTimestamp;
-        Vector2 targetVelocity;
         Vector2 targetPosition;
         Rigidbody2D rb;
 
         void Start() {
-            isUpdatedByClient = GetComponent<NetworkIdentity>().localPlayerAuthority;
             rb = GetComponent<Rigidbody2D>();
 
-            targetVelocity = rb.velocity;
             targetPosition = transform.position;
         }
 
@@ -45,9 +39,8 @@ namespace SciFi.Network {
 
             if (!isServer && hasAuthority) {
                 if (Time.realtimeSinceStartup > lastMessageSentTime + syncInterval) {
-                    if (!PositionCloseEnough(transform.position, targetPosition) || !VelocityCloseEnough(rb.velocity, targetVelocity)) {
+                    if (!PositionCloseEnough(transform.position, targetPosition)) {
                         targetPosition = transform.position;
-                        targetVelocity = rb.velocity;
                         CmdSyncState(GetSyncVector(), Time.realtimeSinceStartup);
                     }
                 }
@@ -56,9 +49,8 @@ namespace SciFi.Network {
                 Interpolate();
             } else if (isServer && hasAuthority) {
                 if (Time.realtimeSinceStartup > lastMessageSentTime + syncInterval) {
-                    if (!PositionCloseEnough(transform.position, targetPosition) || !VelocityCloseEnough(rb.velocity, targetVelocity)) {
+                    if (!PositionCloseEnough(transform.position, targetPosition)) {
                         targetPosition = transform.position;
-                        targetVelocity = rb.velocity;
                         RpcSyncState(GetSyncVector(), Time.realtimeSinceStartup);
                     }
                 }
@@ -80,29 +72,23 @@ namespace SciFi.Network {
             return new Vector4(rb.velocity.x, rb.velocity.y, transform.position.x, transform.position.y);
         }
 
-        void GetVelPosVectors(Vector4 syncVector, out Vector2 velocity, out Vector2 position) {
-            velocity = new Vector2(syncVector.x, syncVector.y);
-            position = new Vector2(syncVector.z, syncVector.w);
-        }
-
         [Command]
-        void CmdSyncState(Vector4 syncVector, float timestamp) {
-            RpcSyncState(syncVector, timestamp);
-            GetVelPosVectors(syncVector, out targetVelocity, out targetPosition);
+        void CmdSyncState(Vector2 position, float timestamp) {
+            RpcSyncState(position, timestamp);
+            targetPosition = position;
             UpdateStats(timestamp);
-            lastMessageReceivedTime = Time.realtimeSinceStartup;
         }
 
         [ClientRpc]
-        void RpcSyncState(Vector4 syncVector, float timestamp) {
-            GetVelPosVectors(syncVector, out targetVelocity, out targetPosition);
+        void RpcSyncState(Vector2 position, float timestamp) {
+            targetPosition = position;
             UpdateStats(timestamp);
-            lastMessageReceivedTime = Time.realtimeSinceStartup;
         }
 
         void UpdateStats(float timestamp) {
             float clientDeltaTime = Time.realtimeSinceStartup - lastMessageReceivedTime;
             float serverDeltaTime = timestamp - lastTimestamp;
+            lastTimestamp = timestamp;
             float interpolationTime = 0.2f;
             if (serverDeltaTime > interpolationTime) {
                 timeToTarget = interpolationTime;
@@ -111,10 +97,6 @@ namespace SciFi.Network {
             }
 
             lastMessageReceivedTime = Time.realtimeSinceStartup;
-        }
-
-        bool IsPositionTolerable(float deltaPosition, float velocity) {
-            return (!Mathf.Approximately(velocity, 0f)) && (deltaPosition / velocity) < closeEnoughVelocity;
         }
 
         void Interpolate() {
