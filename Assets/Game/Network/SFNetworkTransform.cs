@@ -6,6 +6,7 @@ namespace SciFi.Network {
         public float syncInterval;
         public float closeEnoughPosition = 0.01f;
         public float closeEnoughVelocity = 0.1f;
+        public float snapDistance = 1.0f;
 
         float lastMessageSentTime;
         float lastMessageReceivedTime;
@@ -99,6 +100,11 @@ namespace SciFi.Network {
             lastMessageReceivedTime = Time.realtimeSinceStartup;
         }
 
+        bool NeedsSnap(Vector2 sourcePosition, Vector2 targetPosition) {
+            var deltaPosition = targetPosition - sourcePosition;
+            return deltaPosition.magnitude >= snapDistance;
+        }
+
         void Interpolate() {
             var dt = Time.realtimeSinceStartup - lastMessageReceivedTime;
             float interpTime;
@@ -108,7 +114,7 @@ namespace SciFi.Network {
                 interpTime = timeToTarget - dt;
             }
 
-            if (PositionCloseEnough(transform.position, targetPosition)) {
+            if (PositionCloseEnough(transform.position, targetPosition) || NeedsSnap(transform.position, targetPosition)) {
                 transform.position = targetPosition;
             } else {
                 transform.position = Vector2.Lerp(transform.position, targetPosition, interpTime);
