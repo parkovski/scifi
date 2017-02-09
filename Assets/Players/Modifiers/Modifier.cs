@@ -14,6 +14,7 @@ namespace SciFi.Players.Modifiers {
         Frozen        = 8,
         InGravityWell = 9,
         CanSmash      = 10,
+        InKnockback   = 11,
     }
 
     public abstract class Modifier {
@@ -63,7 +64,8 @@ namespace SciFi.Players.Modifiers {
                 | (UsingShield.IsEnabled(modifiers) ? 1u : 0u)   << 7
                 | (Frozen.IsEnabled(modifiers) ? 1u : 0u)        << 8
                 | (InGravityWell.IsEnabled(modifiers) ? 1u : 0u) << 9
-                | (CanSmash.IsEnabled(modifiers) ? 1u : 0u)      << 10;
+                | (CanSmash.IsEnabled(modifiers) ? 1u : 0u)      << 10
+                | (InKnockback.IsEnabled(modifiers) ? 1u : 0u)   << 11;
         }
 
         public static Marker OnFire { get; private set; }
@@ -77,6 +79,7 @@ namespace SciFi.Players.Modifiers {
         public static Marker Frozen { get; private set; }
         public static Marker InGravityWell { get; private set; }
         public static Marker CanSmash { get; private set; }
+        public static Marker InKnockback { get; private set; }
 
         static Modifier() {
             OnFire = new Marker(ModId.OnFire);
@@ -90,11 +93,12 @@ namespace SciFi.Players.Modifiers {
             Frozen = new Marker(ModId.Frozen);
             InGravityWell = new Marker(ModId.InGravityWell);
             CanSmash = new Marker(ModId.CanSmash);
+            InKnockback = new Marker(ModId.InKnockback);
         }
 
         public static string GetDebugString(IList<uint> modifiers) {
             return string.Format(
-                "{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}{10}",
+                "{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}{10}{11}",
                 OnFire.IsEnabled(modifiers)         ? "F" : "",
                 CantMove.IsEnabled(modifiers)       ? "M" : "",
                 CantJump.IsEnabled(modifiers)       ? "J" : "",
@@ -105,7 +109,8 @@ namespace SciFi.Players.Modifiers {
                 UsingShield.IsEnabled(modifiers)    ? "U" : "",
                 Frozen.IsEnabled(modifiers)         ? "Z" : "",
                 InGravityWell.IsEnabled(modifiers)  ? "G" : "",
-                CanSmash.IsEnabled(modifiers)       ? "S" : ""
+                CanSmash.IsEnabled(modifiers)       ? "S" : "",
+                InKnockback.IsEnabled(modifiers)    ? "K" : ""
             );
         }
 
@@ -133,6 +138,8 @@ namespace SciFi.Players.Modifiers {
                 return InGravityWell;
             case ModId.CanSmash:
                 return CanSmash;
+            case ModId.InKnockback:
+                return InKnockback;
             default:
                 throw new ArgumentOutOfRangeException("id", "Not a valid modifier ID");
             }

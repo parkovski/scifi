@@ -56,7 +56,7 @@ namespace SciFi.Players {
         private int pModifiersDebugField;
         private uint pOldModifierState;
         private List<NetworkAttack> lNetworkAttacks;
-        private float pKnockbackLockoutEndTime = float.PositiveInfinity;
+        private float sKnockbackLockoutEndTime = float.PositiveInfinity;
 
         // Unity editor parameters
         public Direction defaultDirection;
@@ -310,10 +310,11 @@ namespace SciFi.Players {
                 return;
             }
 
-            if (Time.time > pKnockbackLockoutEndTime) {
+            if (Modifier.InKnockback.IsEnabled(eModifiers) && Time.time > sKnockbackLockoutEndTime) {
+                Modifier.InKnockback.Remove(eModifiers);
                 Modifier.CantAttack.Remove(eModifiers);
                 Modifier.CantMove.Remove(eModifiers);
-                pKnockbackLockoutEndTime = float.PositiveInfinity;
+                sKnockbackLockoutEndTime = float.PositiveInfinity;
             }
         }
 
@@ -673,9 +674,12 @@ namespace SciFi.Players {
         public void Knockback(Vector2 force) {
             RpcKnockback(force);
             if (!Modifier.Invincible.IsEnabled(eModifiers)) {
-                pKnockbackLockoutEndTime = Time.time + ((float)eDamage).Scale(0f, 1000f, 0.1f, 1.2f);
-                Modifier.CantMove.Add(eModifiers);
-                Modifier.CantAttack.Add(eModifiers);
+                sKnockbackLockoutEndTime = Time.time + ((float)eDamage).Scale(0f, 1000f, 0.1f, 1.2f);
+                if (!Modifier.InKnockback.IsEnabled(eModifiers)) {
+                    Modifier.InKnockback.Add(eModifiers);
+                    Modifier.CantMove.Add(eModifiers);
+                    Modifier.CantAttack.Add(eModifiers);
+                }
             }
         }
 
