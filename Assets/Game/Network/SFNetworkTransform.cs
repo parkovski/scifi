@@ -41,8 +41,7 @@ namespace SciFi.Network {
             if (!isServer && hasAuthority) {
                 if (Time.realtimeSinceStartup > lastMessageSentTime + syncInterval) {
                     if (!PositionCloseEnough(transform.position, targetPosition)) {
-                        targetPosition = transform.position;
-                        CmdSyncState(GetSyncVector(), Time.realtimeSinceStartup);
+                        CmdSyncState(transform.position, Time.realtimeSinceStartup);
                     }
                 }
             } else if (isServer && !hasAuthority) {
@@ -51,8 +50,7 @@ namespace SciFi.Network {
             } else if (isServer && hasAuthority) {
                 if (Time.realtimeSinceStartup > lastMessageSentTime + syncInterval) {
                     if (!PositionCloseEnough(transform.position, targetPosition)) {
-                        targetPosition = transform.position;
-                        RpcSyncState(GetSyncVector(), Time.realtimeSinceStartup);
+                        RpcSyncState(transform.position, Time.realtimeSinceStartup);
                     }
                 }
             } else if (!isServer && !hasAuthority) {
@@ -67,10 +65,6 @@ namespace SciFi.Network {
 
         bool VelocityCloseEnough(Vector2 sourceVec, Vector2 targetVec) {
             return Mathf.Abs((sourceVec - targetVec).magnitude) < closeEnoughVelocity;
-        }
-
-        Vector4 GetSyncVector() {
-            return new Vector4(rb.velocity.x, rb.velocity.y, transform.position.x, transform.position.y);
         }
 
         [Command]
@@ -93,7 +87,7 @@ namespace SciFi.Network {
             if (clientDeltaTime > interpolationTime) {
                 timeToTarget = interpolationTime;
             } else {
-                timeToTarget += interpolationTime - clientDeltaTime;
+                timeToTarget = interpolationTime - clientDeltaTime;
             }
 
             lastMessageReceivedTime = Time.realtimeSinceStartup;
@@ -116,6 +110,7 @@ namespace SciFi.Network {
 
             if (PositionCloseEnough(transform.position, targetPosition) || NeedsSnap(transform.position, targetPosition)) {
                 transform.position = targetPosition;
+                lastMessageReceivedTime = Time.realtimeSinceStartup;
             } else {
                 transform.position = Vector2.Lerp(transform.position, targetPosition, interpTime);
             }
