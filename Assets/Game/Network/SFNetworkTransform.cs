@@ -22,10 +22,6 @@ namespace SciFi.Network {
             isUpdatedByClient = GetComponent<NetworkIdentity>().localPlayerAuthority;
             rb = GetComponent<Rigidbody2D>();
 
-            if (!hasAuthority) {
-                rb.gravityScale = 0.0001f;
-            }
-
             targetVelocity = rb.velocity;
             targetPosition = transform.position;
         }
@@ -56,6 +52,7 @@ namespace SciFi.Network {
                     }
                 }
             } else if (isServer && !hasAuthority) {
+                rb.velocity = Vector2.zero;
                 Interpolate();
             } else if (isServer && hasAuthority) {
                 if (Time.realtimeSinceStartup > lastMessageSentTime + syncInterval) {
@@ -66,6 +63,7 @@ namespace SciFi.Network {
                     }
                 }
             } else if (!isServer && !hasAuthority) {
+                rb.velocity = Vector2.zero;
                 Interpolate();
             }
         }
