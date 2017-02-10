@@ -76,6 +76,9 @@ namespace SciFi.Network {
 
         [Command]
         void CmdSyncState(Vector2 position, float timestamp) {
+            if (timestamp < lastTimestamp) {
+                return;
+            }
             targetPosition = position;
             originalPosition = transform.position;
             UpdateStats(timestamp);
@@ -87,6 +90,9 @@ namespace SciFi.Network {
             if (isServer) {
                 return;
             }
+            if (timestamp < lastTimestamp) {
+                return;
+            }
             targetPosition = position;
             originalPosition = transform.position;
             UpdateStats(timestamp);
@@ -95,11 +101,7 @@ namespace SciFi.Network {
         void UpdateStats(float timestamp) {
             float clientDeltaTime = Time.realtimeSinceStartup - lastMessageReceivedTime;
             float serverDeltaTime = timestamp - lastTimestamp;
-            if (clientDeltaTime > timeToTarget) {
-                timeToTarget = interpolationTime + serverDeltaTime;
-            } else {
-                timeToTarget += serverDeltaTime - clientDeltaTime;
-            }
+            timeToTarget = interpolationTime + serverDeltaTime;
 
             lastMessageReceivedTime = Time.realtimeSinceStartup;
             lastTimestamp = timestamp;
@@ -124,17 +126,12 @@ namespace SciFi.Network {
 
         void Interpolate() {
             var dt = Time.realtimeSinceStartup - lastMessageReceivedTime;
-            float interpTime;
-            if (dt >= timeToTarget) {
-                interpTime = 1f;
-            } else {
-                interpTime = dt / timeToTarget;
-            }
+            float interpTime = dt / timeToTarget;
 
             if (PositionCloseEnough(transform.position, targetPosition) || NeedsSnap(transform.position, targetPosition)) {
                 transform.position = targetPosition;
             } else {
-                transform.position = Vector2.Lerp(originalPosition, targetPosition, interpTime);
+                transform.position = Vector2.LerpUnclamped(transform.position, targetPosition, interpTime);
             }
         }
 
