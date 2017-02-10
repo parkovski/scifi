@@ -81,7 +81,6 @@ namespace SciFi.Network {
             if (timestamp < lastTimestamp) {
                 return;
             }
-            clockOffset = (clockOffset * 4 + Time.realtimeSinceStartup - timestamp) / 5;
             targetPosition = position;
             originalPosition = transform.position;
             UpdateStats(timestamp);
@@ -96,7 +95,6 @@ namespace SciFi.Network {
             if (timestamp < lastTimestamp) {
                 return;
             }
-            clockOffset = (clockOffset * 4 + Time.realtimeSinceStartup - timestamp) / 5;
             targetPosition = position;
             originalPosition = transform.position;
             UpdateStats(timestamp);
@@ -105,11 +103,15 @@ namespace SciFi.Network {
         void UpdateStats(float timestamp) {
             float clientDeltaTime = Time.realtimeSinceStartup - lastMessageReceivedTime;
             float serverDeltaTime = timestamp - lastTimestamp;
+            if (Mathf.Approximately(clockOffset, 0f)) {
+                clockOffset = Time.realtimeSinceStartup - timestamp;
+            }
             float messageClockOffset = (Time.realtimeSinceStartup - timestamp) - clockOffset;
-            timeToTarget = interpolationTime + serverDeltaTime - messageClockOffset;
+            timeToTarget = interpolationTime - messageClockOffset;
 
             lastMessageReceivedTime = Time.realtimeSinceStartup;
             lastTimestamp = timestamp;
+            clockOffset = (clockOffset * 4 + (Time.realtimeSinceStartup - timestamp)) / 5;
         }
 
         bool NeedsSnap(Vector2 sourcePosition, Vector2 targetPosition) {
@@ -136,7 +138,7 @@ namespace SciFi.Network {
             if (PositionCloseEnough(transform.position, targetPosition) || NeedsSnap(transform.position, targetPosition)) {
                 transform.position = targetPosition;
             } else {
-                transform.position = Vector2.LerpUnclamped(transform.position, targetPosition, interpTime);
+                transform.position = Vector2.Lerp(transform.position, targetPosition, interpTime);
             }
         }
 
