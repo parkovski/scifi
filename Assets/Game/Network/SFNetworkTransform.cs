@@ -7,7 +7,7 @@ namespace SciFi.Network {
         public float interpolationTime = 0.2f;
         public float closeEnoughPosition = 0.01f;
         public float closeEnoughVelocity = 0.1f;
-        public float snapDistance = 1f;
+        public float snapDistance = 3f;
 
         float snapTimer;
         float lastMessageSentTime;
@@ -43,6 +43,7 @@ namespace SciFi.Network {
             if (!isServer && hasAuthority) {
                 if (Time.realtimeSinceStartup > lastMessageSentTime + syncInterval) {
                     if (!PositionCloseEnough(transform.position, targetPosition)) {
+                        lastMessageSentTime = Time.realtimeSinceStartup;
                         CmdSyncState(transform.position, Time.realtimeSinceStartup);
                     }
                 }
@@ -52,6 +53,7 @@ namespace SciFi.Network {
             } else if (isServer && hasAuthority) {
                 if (Time.realtimeSinceStartup > lastMessageSentTime + syncInterval) {
                     if (!PositionCloseEnough(transform.position, targetPosition)) {
+                        lastMessageSentTime = Time.realtimeSinceStartup;
                         RpcSyncState(transform.position, Time.realtimeSinceStartup);
                     }
                 }
@@ -85,11 +87,7 @@ namespace SciFi.Network {
         void UpdateStats(float timestamp) {
             float clientDeltaTime = Time.realtimeSinceStartup - lastMessageReceivedTime;
             float serverDeltaTime = timestamp - lastTimestamp;
-            if (clientDeltaTime > interpolationTime) {
-                timeToTarget = interpolationTime;
-            } else {
-                timeToTarget = interpolationTime - clientDeltaTime;
-            }
+            timeToTarget = interpolationTime * serverDeltaTime / syncInterval;
 
             lastMessageReceivedTime = Time.realtimeSinceStartup;
             lastTimestamp = timestamp;
@@ -118,7 +116,7 @@ namespace SciFi.Network {
             if (dt >= timeToTarget) {
                 interpTime = 1f;
             } else {
-                interpTime = timeToTarget - dt;
+                interpTime = dt / timeToTarget;
             }
 
             if (PositionCloseEnough(transform.position, targetPosition) || NeedsSnap(transform.position, targetPosition)) {
@@ -131,6 +129,10 @@ namespace SciFi.Network {
 
         public override int GetNetworkChannel() {
             return 2;
+        }
+
+        public override float GetNetworkSendInterval() {
+            return syncInterval;
         }
     }
 }
