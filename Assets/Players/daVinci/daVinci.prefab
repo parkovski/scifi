@@ -454,8 +454,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9690a394f44b2e6479514a7679af70db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncInterval: 0.05
-  interpolationTime: 0.125
+  syncInterval: 0.1
+  interpolationTime: 0.2
   closeEnoughPosition: 0.01
   closeEnoughVelocity: 0.1
   snapDistance: 1
