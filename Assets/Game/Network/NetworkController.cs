@@ -20,6 +20,8 @@ namespace SciFi.Network {
     public class NetworkController : NetworkLobbyManager {
         List<GameObject> playersToRegister;
         List<string> displayNames;
+        List<NetworkConnection> clientConnections;
+        object threadLock;
 
         /// Unity's network documentation is shit and I can't figure out
         /// how to get this from within GameController.
@@ -39,6 +41,8 @@ namespace SciFi.Network {
 
             playersToRegister = new List<GameObject>();
             displayNames = new List<string>();
+            clientConnections = new List<NetworkConnection>();
+            threadLock = new object();
             clientClocks = new Dictionary<NetworkConnection, ConnectionClockOffset>();
         }
 
@@ -140,8 +144,11 @@ namespace SciFi.Network {
             if (team != -1) {
                 obj.GetComponent<SpriteOverlay>().SetColor(TeamToColor(team));
             }
-            playersToRegister.Add(obj);
-            displayNames.Add(TransitionParams.GetDisplayName(conn));
+            lock(threadLock) {
+                playersToRegister.Add(obj);
+                displayNames.Add(TransitionParams.GetDisplayName(conn));
+                clientConnections.Add(conn);
+            }
             return obj;
         }
 
@@ -175,7 +182,8 @@ namespace SciFi.Network {
             for (int i = 0; i < playersToRegister.Count; i++) {
                 var player = playersToRegister[i];
                 var displayName = displayNames[i];
-                GameController.Instance.RegisterNewPlayer(player, displayName);
+                var conn = clientConnections[i];
+                GameController.Instance.RegisterNewPlayer(player, displayName, conn);
             }
         }
 

@@ -49,6 +49,8 @@ namespace SciFi {
         /// Each player's nickname, only valid before the game starts.
         /// To access these during the game, use <see cref="SciFi.Players.Player.eDisplayName" />.
         string[] displayNames;
+        /// Connections for each client
+        NetworkConnection[] sClientConnections;
         /// Is this client the winner? This is always false if the game
         /// is not over yet.
         bool cIsWinner;
@@ -109,9 +111,20 @@ namespace SciFi {
         /// <param name="playerObject">A pre-spawned player object.</param>
         /// <param name="displayName">May be null to get the default display name ("P1", etc.).</param>
         [Server]
-        public void RegisterNewPlayer(GameObject playerObject, string displayName) {
+        public void RegisterNewPlayer(GameObject playerObject, string displayName, NetworkConnection conn) {
             activePlayersGo = activePlayersGo.Concat(new[] { playerObject }).ToArray();
             displayNames = displayNames.Concat(new[] { displayName }).ToArray();
+            sClientConnections = sClientConnections.Concat(new[] { conn }).ToArray();
+        }
+
+        /// A null return value means this player is either not valid
+        /// or is controlled by the server.
+        [Server]
+        public NetworkConnection ConnectionForPlayer(int playerId) {
+            if (playerId > sClientConnections.Length) {
+                return null;
+            }
+            return sClientConnections[playerId];
         }
 
         /// Start the game.
