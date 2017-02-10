@@ -51,8 +51,9 @@ namespace SciFi.Players {
         protected GameObject eItemGo;
         protected Item eItem;
         private OneWayPlatform pCurrentOneWayPlatform;
+        private List<uint> sModifiers;
         [SyncVar]
-        private SyncListUInt eModifiers;
+        private uint eModifierState;
         private int pModifiersDebugField;
         private uint pOldModifierState;
         private List<NetworkAttack> lNetworkAttacks;
@@ -84,21 +85,8 @@ namespace SciFi.Players {
         public event AttackHitHandler sAttackHit;
 
         public override void OnStartServer() {
-            Modifier.Initialize(eModifiers);
-        }
-
-        void Awake() {
-            InitializeChildClassSyncList();
-        }
-
-        /// Unity initializes SyncLists ID in the static constructor,
-        /// but it doesn't get called for child classes.
-        /// This patches it up with reflection.
-        void InitializeChildClassSyncList() {
-            var listIdFieldParent = typeof(Player).GetField("kListeModifiers", BindingFlags.NonPublic | BindingFlags.Static);
-            int field = (int)listIdFieldParent.GetValue(null);
-            eModifiers = new SyncListUInt();
-            eModifiers.InitializeBehaviour(this, field);
+            sModifiers = new List<uint>();
+            Modifier.Initialize(sModifiers);
         }
 
         void Start() {
@@ -174,17 +162,19 @@ namespace SciFi.Players {
         }
 
         /// Must be called on an authoritative copy
+        [Server]
         public void AddModifier(Modifier modifier) {
-            modifier.Add(eModifiers);
+            modifier.Add(sModifiers, ref eModifierState);
         }
 
         /// Must be called on an authoritative copy
+        [Server]
         public void RemoveModifier(Modifier modifier) {
-            modifier.Remove(eModifiers);
+            modifier.Remove(sModifiers, ref eModifierState);
         }
 
         public bool IsModifierEnabled(Modifier modifier) {
-            return modifier.IsEnabled(eModifiers);
+            return modifier.IsEnabled(eModifierState);
         }
 
         void HandleLeftRightInput(MultiPressControl control, Direction direction, bool backwards) {
@@ -197,8 +187,8 @@ namespace SciFi.Players {
                 localMaxSpeed /= 2f;
                 localWalkForce /= 2f;
             }
-            Modifier.Slow.Modify(eModifiers, ref localMaxSpeed, ref localWalkForce);
-            Modifier.Fast.Modify(eModifiers, ref localMaxSpeed, ref localWalkForce);
+            Modifier.Slow.Modify(eModifierState, ref localMaxSpeed, ref localWalkForce);
+            Modifier.Fast.Modify(eModifierState, ref localMaxSpeed, ref localWalkForce);
 
             if (backwards) {
                 canSpeedUp = lRb.velocity.x > -localMaxSpeed;
@@ -210,11 +200,11 @@ namespace SciFi.Players {
 
             if (control.IsActive()) {
                 if (canSpeedUp) {
-                    Modifier.CantMove.TryMove(eModifiers, lRb, force);
+                    Modifier.CantMove.TryMove(eModifierState, lRb, force);
                 }
                 // Without the cached parameter, this will get triggered
                 // multiple times until the direction has had a chance to sync.
-                if (this.eDirection != direction && !Modifier.CantMove.IsEnabled(eModifiers)) {
+                if (this.eDirection != direction && !Modifier.CantMove.IsEnabled(eModifierState)) {
                     this.eDirection = direction;
                     CmdChangeDirection(direction);
                 }
@@ -257,7 +247,7 @@ namespace SciFi.Players {
                 //AddDampingForce();
             }
 
-            if (pInputManager.IsControlActive(Control.Up) && !Modifier.CantMove.IsEnabled(eModifiers)) {
+            if (pInputManager.IsControlActive(Control.Up) && !Modifier.CantMove.IsEnabled(eModifierState)) {
                 pInputManager.InvalidateControl(Control.Up);
                 if (pCanJump) {
                     pCanJump = false;
@@ -272,7 +262,7 @@ namespace SciFi.Players {
                 }
             }
 
-            if (pInputManager.IsControlActive(Control.Down) && !Modifier.CantMove.IsEnabled(eModifiers)) {
+            if (pInputManager.IsControlActive(Control.Down) && !Modifier.CantMove.IsEnabled(eModifierState)) {
                 eShouldFallThroughOneWayPlatform = true;
                 if (pCurrentOneWayPlatform != null) {
                     pCurrentOneWayPlatform.CmdFallThrough(gameObject);
@@ -297,10 +287,9 @@ namespace SciFi.Players {
             eSpecialAttack.UpdateState(pInputManager, Control.SpecialAttack);
 
 #if UNITY_EDITOR
-            var newModifierState = Modifier.GetState(eModifiers);
-            if (newModifierState != pOldModifierState) {
-                pOldModifierState = newModifierState;
-                DebugPrinter.Instance.SetField(pModifiersDebugField, Modifier.GetDebugString(eModifiers));
+            if (eModifierState != pOldModifierState) {
+                pOldModifierState = eModifierState;
+                DebugPrinter.Instance.SetField(pModifiersDebugField, Modifier.GetDebugString(eModifierState));
             }
 #endif
         }
@@ -310,10 +299,10 @@ namespace SciFi.Players {
                 return;
             }
 
-            if (Modifier.InKnockback.IsEnabled(eModifiers) && Time.time > sKnockbackLockoutEndTime) {
-                Modifier.InKnockback.Remove(eModifiers);
-                Modifier.CantAttack.Remove(eModifiers);
-                Modifier.CantMove.Remove(eModifiers);
+            if (Modifier.InKnockback.IsEnabled(eModifierState) && Time.time > sKnockbackLockoutEndTime) {
+                RemoveModifier(Modifier.InKnockback);
+                RemoveModifier(Modifier.CantAttack);
+                RemoveModifier(Modifier.CantMove);
                 sKnockbackLockoutEndTime = float.PositiveInfinity;
             }
         }
@@ -440,18 +429,18 @@ namespace SciFi.Players {
                         pInputManager.InvalidateControl(Control.Item);
                         eItem.Cancel();
                         UpdateItemControlGraphic();
-                        Modifier.CantAttack.Remove(eModifiers);
-                        Modifier.CantMove.Remove(eModifiers);
+                        RemoveModifier(Modifier.CantAttack);
+                        RemoveModifier(Modifier.CantMove);
                     } else {
                         eItem.KeepCharging(pInputManager.GetControlHoldTime(Control.Item));
                     }
                 } else {
                     eItem.EndCharging(pInputManager.GetControlHoldTime(Control.Item));
                     UpdateItemControlGraphic();
-                    Modifier.CantAttack.Remove(eModifiers);
-                    Modifier.CantMove.Remove(eModifiers);
+                    RemoveModifier(Modifier.CantAttack);
+                    RemoveModifier(Modifier.CantMove);
                 }
-            } else if (active && !Modifier.CantAttack.IsEnabled(eModifiers)) {
+            } else if (active && !Modifier.CantAttack.IsEnabled(eModifierState)) {
                 var direction = GetControlDirection();
                 var control = GetDirectionControl(direction);
                 var holdTime = GetDirectionHoldTime(direction);
@@ -461,8 +450,8 @@ namespace SciFi.Players {
                     CmdLoseOwnershipOfItem(direction);
                     eItemGo = null;
                 } else if (eItem.ShouldCharge()) {
-                    Modifier.CantAttack.Add(eModifiers);
-                    Modifier.CantMove.Add(eModifiers);
+                    AddModifier(Modifier.CantAttack);
+                    AddModifier(Modifier.CantMove);
                     eItem.BeginCharging();
                 } else if (eItem.ShouldThrow()) {
                     pInputManager.InvalidateControl(Control.Item);
@@ -673,12 +662,12 @@ namespace SciFi.Players {
         [Server]
         public void Knockback(Vector2 force) {
             RpcKnockback(force);
-            if (!Modifier.Invincible.IsEnabled(eModifiers)) {
+            if (!Modifier.Invincible.IsEnabled(eModifierState)) {
                 sKnockbackLockoutEndTime = Time.time + ((float)eDamage).Scale(0f, 1000f, 0.1f, 1.2f);
-                if (!Modifier.InKnockback.IsEnabled(eModifiers)) {
-                    Modifier.InKnockback.Add(eModifiers);
-                    Modifier.CantMove.Add(eModifiers);
-                    Modifier.CantAttack.Add(eModifiers);
+                if (!Modifier.InKnockback.IsEnabled(eModifierState)) {
+                    AddModifier(Modifier.InKnockback);
+                    AddModifier(Modifier.CantMove);
+                    AddModifier(Modifier.CantAttack);
                 }
             }
         }
@@ -688,7 +677,7 @@ namespace SciFi.Players {
             if (!hasAuthority) {
                 return;
             }
-            Modifier.Invincible.TryAddKnockback(eModifiers, lRb, force);
+            Modifier.Invincible.TryAddKnockback(eModifierState, lRb, force);
         }
 
         public void Interact(IAttack attack) {

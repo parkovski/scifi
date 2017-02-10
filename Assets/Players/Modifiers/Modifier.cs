@@ -20,15 +20,16 @@ namespace SciFi.Players.Modifiers {
     public abstract class Modifier {
         public abstract ModId Id { get; }
 
-        public void Add(IList<uint> modifiers) {
+        public void Add(IList<uint> modifiers, ref uint modifierState) {
             if (modifiers == null) {
                 return;
             }
 
             ++modifiers[(int)Id];
+            modifierState |= (1u << (int)Id);
         }
 
-        public void Remove(IList<uint> modifiers) {
+        public void Remove(IList<uint> modifiers, ref uint modifierState) {
             if (modifiers == null) {
                 return;
             }
@@ -36,36 +37,18 @@ namespace SciFi.Players.Modifiers {
             if (modifiers[(int)Id] == 0) {
                 return;
             }
-            
-            --modifiers[(int)Id];
+
+            if (--modifiers[(int)Id] == 0) {
+                modifierState &= ~(1u << (int)Id);
+            }
         }
 
-        public bool IsEnabled(IList<uint> modifiers) {
-            if (modifiers == null) {
-                return false;
-            }
+        public bool IsEnabled(uint modifierState) {
+            return (modifierState & (1u << (int)Id)) != 0;
+        }
 
+        private bool IsEnabled(IList<uint> modifiers) {
             return modifiers[(int)Id] > 0;
-        }
-
-        public static uint GetState(IList<uint> modifiers) {
-            if (modifiers == null) {
-                return 0;
-            }
-
-            return
-                (OnFire.IsEnabled(modifiers) ? 1u : 0u)          << 0
-                | (CantMove.IsEnabled(modifiers) ? 1u : 0u)      << 1
-                | (CantJump.IsEnabled(modifiers) ? 1u : 0u)      << 2
-                | (CantAttack.IsEnabled(modifiers) ? 1u : 0u)    << 3
-                | (Invincible.IsEnabled(modifiers) ? 1u : 0u)    << 4
-                | (Slow.IsEnabled(modifiers) ? 1u : 0u)          << 5
-                | (Fast.IsEnabled(modifiers) ? 1u : 0u)          << 6
-                | (UsingShield.IsEnabled(modifiers) ? 1u : 0u)   << 7
-                | (Frozen.IsEnabled(modifiers) ? 1u : 0u)        << 8
-                | (InGravityWell.IsEnabled(modifiers) ? 1u : 0u) << 9
-                | (CanSmash.IsEnabled(modifiers) ? 1u : 0u)      << 10
-                | (InKnockback.IsEnabled(modifiers) ? 1u : 0u)   << 11;
         }
 
         public static Marker OnFire { get; private set; }
@@ -96,21 +79,21 @@ namespace SciFi.Players.Modifiers {
             InKnockback = new Marker(ModId.InKnockback);
         }
 
-        public static string GetDebugString(IList<uint> modifiers) {
+        public static string GetDebugString(uint modifierState) {
             return string.Format(
                 "{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}{10}{11}",
-                OnFire.IsEnabled(modifiers)         ? "F" : "",
-                CantMove.IsEnabled(modifiers)       ? "M" : "",
-                CantJump.IsEnabled(modifiers)       ? "J" : "",
-                CantAttack.IsEnabled(modifiers)     ? "A" : "",
-                Invincible.IsEnabled(modifiers)     ? "I" : "",
-                Slow.IsEnabled(modifiers)           ? "-" : "",
-                Fast.IsEnabled(modifiers)           ? "+" : "",
-                UsingShield.IsEnabled(modifiers)    ? "U" : "",
-                Frozen.IsEnabled(modifiers)         ? "Z" : "",
-                InGravityWell.IsEnabled(modifiers)  ? "G" : "",
-                CanSmash.IsEnabled(modifiers)       ? "S" : "",
-                InKnockback.IsEnabled(modifiers)    ? "K" : ""
+                OnFire.IsEnabled(modifierState)         ? "F" : "",
+                CantMove.IsEnabled(modifierState)       ? "M" : "",
+                CantJump.IsEnabled(modifierState)       ? "J" : "",
+                CantAttack.IsEnabled(modifierState)     ? "A" : "",
+                Invincible.IsEnabled(modifierState)     ? "I" : "",
+                Slow.IsEnabled(modifierState)           ? "-" : "",
+                Fast.IsEnabled(modifierState)           ? "+" : "",
+                UsingShield.IsEnabled(modifierState)    ? "U" : "",
+                Frozen.IsEnabled(modifierState)         ? "Z" : "",
+                InGravityWell.IsEnabled(modifierState)  ? "G" : "",
+                CanSmash.IsEnabled(modifierState)       ? "S" : "",
+                InKnockback.IsEnabled(modifierState)    ? "K" : ""
             );
         }
 
