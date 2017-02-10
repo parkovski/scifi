@@ -399,10 +399,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncInterval: 0.05
-  interpolationTime: 0.125
+  interpolationTime: 0.15
   closeEnoughPosition: 0.01
   closeEnoughVelocity: 0.1
-  snapDistance: 1
+  snapDistance: 3
 --- !u!114 &114965330100693014
 MonoBehaviour:
   m_ObjectHideFlags: 1
