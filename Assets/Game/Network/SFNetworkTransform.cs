@@ -44,6 +44,7 @@ namespace SciFi.Network {
                 if (Time.realtimeSinceStartup > lastMessageSentTime + syncInterval) {
                     if (!PositionCloseEnough(transform.position, targetPosition)) {
                         lastMessageSentTime = Time.realtimeSinceStartup;
+                        targetPosition = transform.position;
                         CmdSyncState(transform.position, Time.realtimeSinceStartup);
                     }
                 }
@@ -54,6 +55,7 @@ namespace SciFi.Network {
                 if (Time.realtimeSinceStartup > lastMessageSentTime + syncInterval) {
                     if (!PositionCloseEnough(transform.position, targetPosition)) {
                         lastMessageSentTime = Time.realtimeSinceStartup;
+                        targetPosition = transform.position;
                         RpcSyncState(transform.position, Time.realtimeSinceStartup);
                     }
                 }
@@ -73,9 +75,9 @@ namespace SciFi.Network {
 
         [Command]
         void CmdSyncState(Vector2 position, float timestamp) {
-            RpcSyncState(position, timestamp);
             targetPosition = position;
             UpdateStats(timestamp);
+            RpcSyncState(position, timestamp);
         }
 
         [ClientRpc]
@@ -87,7 +89,7 @@ namespace SciFi.Network {
         void UpdateStats(float timestamp) {
             float clientDeltaTime = Time.realtimeSinceStartup - lastMessageReceivedTime;
             float serverDeltaTime = timestamp - lastTimestamp;
-            timeToTarget = interpolationTime * serverDeltaTime / syncInterval;
+            timeToTarget = interpolationTime + serverDeltaTime / syncInterval;
 
             lastMessageReceivedTime = Time.realtimeSinceStartup;
             lastTimestamp = timestamp;
@@ -121,7 +123,6 @@ namespace SciFi.Network {
 
             if (PositionCloseEnough(transform.position, targetPosition) || NeedsSnap(transform.position, targetPosition)) {
                 transform.position = targetPosition;
-                lastMessageReceivedTime = Time.realtimeSinceStartup;
             } else {
                 transform.position = Vector2.Lerp(transform.position, targetPosition, interpTime);
             }
