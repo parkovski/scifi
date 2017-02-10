@@ -15,6 +15,7 @@ namespace SciFi.Network {
         float timeToTarget;
         float lastTimestamp;
         Vector2 targetPosition;
+        Vector2 originalPosition;
         Rigidbody2D rb;
 
         void Start() {
@@ -76,20 +77,29 @@ namespace SciFi.Network {
         [Command]
         void CmdSyncState(Vector2 position, float timestamp) {
             targetPosition = position;
+            originalPosition = transform.position;
             UpdateStats(timestamp);
             RpcSyncState(position, timestamp);
         }
 
         [ClientRpc]
         void RpcSyncState(Vector2 position, float timestamp) {
+            if (isServer) {
+                return;
+            }
             targetPosition = position;
+            originalPosition = transform.position;
             UpdateStats(timestamp);
         }
 
         void UpdateStats(float timestamp) {
             float clientDeltaTime = Time.realtimeSinceStartup - lastMessageReceivedTime;
             float serverDeltaTime = timestamp - lastTimestamp;
-            timeToTarget = interpolationTime + serverDeltaTime / syncInterval;
+            if (clientDeltaTime > timeToTarget) {
+                timeToTarget = interpolationTime + serverDeltaTime;
+            } else {
+                timeToTarget += serverDeltaTime - clientDeltaTime;
+            }
 
             lastMessageReceivedTime = Time.realtimeSinceStartup;
             lastTimestamp = timestamp;
@@ -124,7 +134,7 @@ namespace SciFi.Network {
             if (PositionCloseEnough(transform.position, targetPosition) || NeedsSnap(transform.position, targetPosition)) {
                 transform.position = targetPosition;
             } else {
-                transform.position = Vector2.Lerp(transform.position, targetPosition, interpTime);
+                transform.position = Vector2.Lerp(originalPosition, targetPosition, interpTime);
             }
         }
 
