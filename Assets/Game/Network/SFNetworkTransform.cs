@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Networking;
+using System.Collections;
 
 namespace SciFi.Network {
     public class SFNetworkTransform : NetworkBehaviour {
@@ -14,6 +15,7 @@ namespace SciFi.Network {
         float lastMessageReceivedTime;
         float timeToTarget;
         float lastTimestamp;
+        float clockOffset;
         Vector2 targetPosition;
         Vector2 originalPosition;
         Rigidbody2D rb;
@@ -79,6 +81,7 @@ namespace SciFi.Network {
             if (timestamp < lastTimestamp) {
                 return;
             }
+            clockOffset = (clockOffset * 4 + Time.realtimeSinceStartup - timestamp) / 5;
             targetPosition = position;
             originalPosition = transform.position;
             UpdateStats(timestamp);
@@ -93,6 +96,7 @@ namespace SciFi.Network {
             if (timestamp < lastTimestamp) {
                 return;
             }
+            clockOffset = (clockOffset * 4 + Time.realtimeSinceStartup - timestamp) / 5;
             targetPosition = position;
             originalPosition = transform.position;
             UpdateStats(timestamp);
@@ -101,7 +105,8 @@ namespace SciFi.Network {
         void UpdateStats(float timestamp) {
             float clientDeltaTime = Time.realtimeSinceStartup - lastMessageReceivedTime;
             float serverDeltaTime = timestamp - lastTimestamp;
-            timeToTarget = interpolationTime + serverDeltaTime;
+            float messageClockOffset = (Time.realtimeSinceStartup - timestamp) - clockOffset;
+            timeToTarget = interpolationTime + serverDeltaTime - messageClockOffset;
 
             lastMessageReceivedTime = Time.realtimeSinceStartup;
             lastTimestamp = timestamp;
