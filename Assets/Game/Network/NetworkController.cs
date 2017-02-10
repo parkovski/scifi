@@ -2,6 +2,7 @@
 
 using UnityEngine;
 using UnityEngine.Networking;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -10,6 +11,11 @@ using SciFi.UI;
 using SciFi.Players;
 
 namespace SciFi.Network {
+    public struct ConnectionClockOffset {
+        public float clockOffset;
+        public int pings;
+    }
+
     /// Handle the multiplayer lobby.
     public class NetworkController : NetworkLobbyManager {
         List<GameObject> playersToRegister;
@@ -19,15 +25,21 @@ namespace SciFi.Network {
         /// how to get this from within GameController.
         public static NetworkConnection clientConnectionToServer;
 
+        /// On the client, Time.realtimeSinceStartup - serverClockOffset == server's Time.realtimeSinceStartup.
+        public static ConnectionClockOffset serverClock = new ConnectionClockOffset();
+        Dictionary<NetworkConnection, ConnectionClockOffset> clientClocks;
+
         /// Set up message handlers.
         public override void OnStartServer() {
             base.OnStartServer();
             NetworkServer.RegisterHandler(NetworkMessages.SetPlayerName, SetPlayerName);
             NetworkServer.RegisterHandler(NetworkMessages.SetPlayerDisplayName, SetPlayerDisplayName);
             NetworkServer.RegisterHandler(NetworkMessages.SetPlayerTeam, SetPlayerTeam);
+            NetworkServer.RegisterHandler(NetworkMessages.SyncClock, ServerSyncClock);
 
             playersToRegister = new List<GameObject>();
             displayNames = new List<string>();
+            clientClocks = new Dictionary<NetworkConnection, ConnectionClockOffset>();
         }
 
         /// Send the server a message indicating which player the client has chosen.
@@ -57,6 +69,49 @@ namespace SciFi.Network {
                 writer.FinishMessage();
                 conn.SendWriter(writer, 0);
             }
+
+            this.client.connection.RegisterHandler(NetworkMessages.SyncClock, ClientSyncClock);
+            StartCoroutine(SyncClockCoroutine(conn));
+        }
+
+        IEnumerator SyncClockCoroutine(NetworkConnection conn) {
+            var writer = new NetworkWriter();
+            for (int i = 0; i < 5; i++) {
+                writer.StartMessage(NetworkMessages.SyncClock);
+                writer.Write(Time.realtimeSinceStartup);
+                writer.FinishMessage();
+                conn.SendWriter(writer, 1);
+                yield return new WaitForSeconds(.5f);
+            }
+        }
+
+        public Nullable<float> GetClientClockOffset(NetworkConnection conn) {
+            ConnectionClockOffset offset;
+            if (clientClocks.TryGetValue(conn, out offset)) {
+                return offset.clockOffset;
+            }
+            return null;
+        }
+
+        /// Records the average offset between the client/server clocks.
+        /// The first time a client sends this message, it starts sending them back too.
+        void ServerSyncClock(NetworkMessage msg) {
+            float timeOffset = Time.realtimeSinceStartup - msg.reader.ReadSingle();
+            ConnectionClockOffset clientClock;
+            if (!clientClocks.TryGetValue(msg.conn, out clientClock)) {
+                // On the first message, also start syncing the clock to the client.
+                StartCoroutine(SyncClockCoroutine(msg.conn));
+            }
+            clientClock.clockOffset = (clientClock.clockOffset * clientClock.pings + timeOffset) / (clientClock.pings + 1);
+            ++clientClock.pings;
+            clientClocks[msg.conn] = clientClock;
+        }
+
+        /// Records the average offset between the client/server clocks.
+        void ClientSyncClock(NetworkMessage msg) {
+            float timeOffset = Time.realtimeSinceStartup - msg.reader.ReadSingle();
+            serverClock.clockOffset = (serverClock.clockOffset * serverClock.pings + timeOffset) / (serverClock.pings + 1);
+            ++serverClock.pings;
         }
 
         /// Receive a player selection message from the client.

@@ -14,5 +14,7 @@ namespace SciFi.Network {
         public static short SpawnSinglePlayer = MsgType.Highest + 4;
         /// Team/color.
         public static short SetPlayerTeam = MsgType.Highest + 5;
+        /// Clock synchronization for movements.
+        public static short SyncClock = MsgType.Highest + 6;
     }
 }
