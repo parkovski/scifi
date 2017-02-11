@@ -59,21 +59,6 @@ namespace SciFi.Players {
             BaseCollisionExit2D(collision);
         }
 
-        static Direction InvertDirection(Direction direction) {
-            switch (direction) {
-            case Direction.Left:
-                return Direction.Right;
-            case Direction.Right:
-                return Direction.Left;
-            case Direction.Up:
-                return Direction.Down;
-            case Direction.Down:
-                return Direction.Up;
-            default:
-                return Direction.Invalid;
-            }
-        }
-
         protected override void OnChangeDirection() {
             playerFlip.Flip(eDirection);
             boneArmFlip.Flip(eDirection);
