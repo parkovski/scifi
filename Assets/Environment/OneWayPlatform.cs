@@ -79,8 +79,8 @@ namespace SciFi.Environment {
         /// If down is pressed when the player enters the trigger
         /// area, fall through will happen automatically without
         /// calling this.
-        [Command]
-        public void CmdFallThrough(GameObject go) {
+        [Server]
+        public void FallThrough(GameObject go) {
             Item.IgnoreCollisions(go, lGroundCollider);
             RpcFallThrough(go);
         }

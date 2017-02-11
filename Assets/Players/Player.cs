@@ -265,7 +265,7 @@ namespace SciFi.Players {
             if (pInputManager.IsControlActive(Control.Down) && !Modifier.CantMove.IsEnabled(eModifierState)) {
                 eShouldFallThroughOneWayPlatform = true;
                 if (pCurrentOneWayPlatform != null) {
-                    pCurrentOneWayPlatform.CmdFallThrough(gameObject);
+                    CmdFallThroughOneWayPlatform();
                     // Forget the platform so we don't keep sending messages.
                     pCurrentOneWayPlatform = null;
                 } else {
@@ -292,6 +292,13 @@ namespace SciFi.Players {
                 DebugPrinter.Instance.SetField(pModifiersDebugField, Modifier.GetDebugString(eModifierState));
             }
 #endif
+        }
+
+        [Command]
+        void CmdFallThroughOneWayPlatform() {
+            if (pCurrentOneWayPlatform != null) {
+                pCurrentOneWayPlatform.FallThrough(gameObject);
+            }
         }
 
         protected void Update() {
