@@ -236,9 +236,6 @@ namespace SciFi.Players {
                 eSpecialAttack.UpdateStateNonAuthoritative();
                 return;
             }
-            if (!isLocalPlayer) {
-                return;
-            }
 
             pLeftControl.Update();
             pRightControl.Update();
