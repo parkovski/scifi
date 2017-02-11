@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <canvas id="canvas" width="600" height="600">
+        </canvas>
+        <script>
+        var points = `v: 0,0    dx/dt: 0,0.3
+v: 0,0    dx/dt: 0,0.328
+v: 0,-0.381    dx/dt: 0,-0.783
+v: 0,-0.925    dx/dt: 0,-3.036
+v: 0,-1.099    dx/dt: 0,-0.904
+v: 0,-1.27    dx/dt: 0,-1.37
+v: 0,-1.762    dx/dt: 0,-4.566
+v: 0,-1.92    dx/dt: 0,-2.326
+v: 0,-2.075    dx/dt: 0,-2.402
+v: 0,-2.227    dx/dt: 0,-2.31
+v: 0,-2.375    dx/dt: 0,-3.388
+v: 0,-2.521    dx/dt: 0,-2.294
+v: 0,-2.664    dx/dt: 0,-3.315
+v: 0,-2.804    dx/dt: 0,-2.711
+v: 0,-2.941    dx/dt: 0,-3.632
+v: 0,-3.076    dx/dt: 0,-2.785
+v: 0,-3.208    dx/dt: 0,-3.545
+v: 0,-3.465    dx/dt: 0,-7.91
+v: 0,-3.465    dx/dt: 0,-0.632
+v: 0,-3.711    dx/dt: 0,-6.973
+v: 0,-3.831    dx/dt: 0,-5.193
+v: 0,-3.948    dx/dt: 0,-4.391
+v: 0,-4.063    dx/dt: 0,-4.103
+v: 0,-4.063    dx/dt: 0,-0.649
+v: 0,-4.175    dx/dt: 0,-3.242
+v: 0,-4.5    dx/dt: 0,-14.292
+v: 0,-4.5    dx/dt: 0,-1.752
+v: 0,-4.604    dx/dt: 0,-4.715
+v: 0,-4.707    dx/dt: 0,-5.965
+v: 0,-4.807    dx/dt: 0,-5.583
+v: 0,-4.905    dx/dt: 0,-5.695
+v: 0,-5.001    dx/dt: 0,-5.622
+v: 0,-5.001    dx/dt: 0,-0.592
+v: 0,-5.095    dx/dt: 0,-6.324
+v: 0,-5.188    dx/dt: 0,-5.535
+v: 0,-5.278    dx/dt: 0,-4.349
+v: 0,-5.367    dx/dt: 0,-9.76`;
+        var xmax = 0, ymax = 0;
+        points = points.split('\n').map(p => {
+            var match = /v: (.+),(.+)    dx\/dt: (.+),(.+)/.exec(p);
+            var o = { vx: eval(match[1]), vy: eval(match[2]), dx: eval(match[3]), dy: eval(match[4]) };
+            xmax = Math.max(Math.abs(o.vx), Math.abs(o.dx), xmax);
+            ymax = Math.max(Math.abs(o.vy), Math.abs(o.dy), ymax);
+            return o;
+        });
+        var canvas = document.getElementById('canvas');
+        var hw = canvas.width / 2, hh = canvas.height / 2;
+        var sh = hh / ymax, sw = hw / points.length;
+        var ctx = canvas.getContext('2d');
+        ctx.beginPath();
+        ctx.moveTo(0, hh);
+        ctx.lineTo(canvas.width, hh);
+        ctx.moveTo(hw, 0);
+        ctx.lineTo(hw, canvas.height);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.strokeStyle = 'blue';
+        for (var i = 0; i < points.length; i++) {
+            points[i].dx = (points[i].dx) * sw + hw;
+            points[i].dy = (hh - points[i].dy * sh);
+            console.log(points[i]);
+            if (i > 0) {
+                ctx.lineTo(hw + i * sw, points[i].dy);
+            }
+            ctx.moveTo(hw + i * sw, points[i].dy);
+        }
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.strokeStyle = 'red';
+        for (var i = 0; i < points.length; i++) {
+            points[i].vy = (hh - points[i].vy * sh);
+            if (i > 0) {
+                ctx.lineTo(hw + i * sw, points[i].vy);
+            }
+            ctx.moveTo(hw + i * sw, points[i].vy);
+        }
+        ctx.stroke();
+        </script>
+    </body>
+</html>
