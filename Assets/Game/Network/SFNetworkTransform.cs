@@ -4,7 +4,6 @@ using UnityEngine.Networking;
 using SciFi.Players;
 
 namespace SciFi.Network {
-    [NetworkSettings(channel = 2)]
     public class SFNetworkTransform : NetworkBehaviour {
         public float syncInterval;
         public float interpolationTime = 0.2f;
@@ -31,10 +30,6 @@ namespace SciFi.Network {
             lastMessageReceivedTime = Time.realtimeSinceStartup;
         }
 
-        public override void OnStartServer() {
-            NetworkServer.RegisterHandler(NetworkMessages.SyncPosition, ServerSyncPosition);
-        }
-
         void Update() {
             // Possibilities:
             // - This copy is on a client with authority - it needs to notify
@@ -57,12 +52,7 @@ namespace SciFi.Network {
                     if (!PositionCloseEnough(transform.position, targetPosition)) {
                         lastMessageSentTime = Time.realtimeSinceStartup;
                         targetPosition = transform.position;
-                        var writer = new NetworkWriter();
-                        writer.StartMessage(NetworkMessages.SyncPosition);
-                        writer.Write((Vector2)transform.position);
-                        writer.Write(Time.realtimeSinceStartup);
-                        writer.FinishMessage();
-                        NetworkController.clientConnectionToServer.SendWriter(writer, 2);
+                        CmdSyncState(transform.position, Time.realtimeSinceStartup);
                     }
                 }
             } else if (isServer && !hasAuthority) {
@@ -73,14 +63,7 @@ namespace SciFi.Network {
                     if (!PositionCloseEnough(transform.position, targetPosition)) {
                         lastMessageSentTime = Time.realtimeSinceStartup;
                         targetPosition = transform.position;
-                        var writer = new NetworkWriter();
-                        writer.StartMessage(NetworkMessages.SyncPosition);
-                        writer.Write((Vector2)transform.position);
-                        writer.Write(Time.realtimeSinceStartup);
-                        writer.FinishMessage();
-                        foreach (var conn in NetworkServer.connections) {
-                            conn.SendWriter(writer, 2);
-                        }
+                        RpcSyncState(transform.position, Time.realtimeSinceStartup);
                     }
                 }
             } else if (!isServer && !hasAuthority) {
@@ -97,32 +80,28 @@ namespace SciFi.Network {
             return Mathf.Abs((sourceVec - targetVec).magnitude) < closeEnoughVelocity;
         }
 
-        /// Assumes the connection is tracked by NetworkController.
-        void ServerSyncPosition(NetworkMessage msg) {
-            var position = msg.reader.ReadVector2();
-            var timestamp = msg.reader.ReadSingle();
-
-            SyncPosition(position, timestamp, NetworkController.GetClientClockOffset(msg.conn).Value);
-
-            var writer = new NetworkWriter();
-            writer.StartMessage(NetworkMessages.SyncPosition);
-            writer.Write(position);
-            writer.Write(timestamp);
-            writer.FinishMessage();
-            foreach (var conn in NetworkServer.connections) {
-                conn.SendWriter(writer, 2);
+        /// This should only be called from player objects - they
+        /// track their client connections.
+        [Command]
+        void CmdSyncState(Vector2 position, float timestamp) {
+            var conn = GameController.Instance.ConnectionForPlayer(player.eId);
+            var clockOffset = NetworkController.GetClientClockOffset(conn);
+            timestamp += clockOffset.Value;
+            if (timestamp < lastTimestamp) {
+                return;
             }
+            targetPosition = position;
+            originalPosition = transform.position;
+            UpdateStats(timestamp);
+            RpcSyncState(position, timestamp);
         }
 
-        void ClientSyncPosition(NetworkMessage msg) {
-            var position = msg.reader.ReadVector2();
-            var timestamp = msg.reader.ReadSingle();
-
-            SyncPosition(position, timestamp, NetworkController.serverClock.clockOffset);
-        }
-
-        void SyncPosition(Vector2 position, float timestamp, float clockOffset) {
-            timestamp += clockOffset;
+        [ClientRpc]
+        void RpcSyncState(Vector2 position, float timestamp) {
+            if (isServer) {
+                return;
+            }
+            timestamp += NetworkController.serverClock.clockOffset;
             if (timestamp < lastTimestamp) {
                 return;
             }
@@ -137,10 +116,10 @@ namespace SciFi.Network {
             /// Local time since the object was at this position
             float clientDeltaTime = Time.realtimeSinceStartup - timestamp;
             float serverDeltaTime = timestamp - lastTimestamp;
-            if (clientDeltaTime > interpolationTime) {
+            if (serverDeltaTime > interpolationTime) {
                 timeToTarget = interpolationTime;
             } else {
-                timeToTarget = interpolationTime - clientDeltaTime;
+                timeToTarget = interpolationTime - serverDeltaTime;
             }
 
             lastMessageReceivedTime = Time.realtimeSinceStartup;
@@ -173,6 +152,14 @@ namespace SciFi.Network {
             } else {
                 transform.position = Vector2.Lerp(transform.position, targetPosition, interpTime);
             }
+        }
+
+        public override int GetNetworkChannel() {
+            return 2;
+        }
+
+        public override float GetNetworkSendInterval() {
+            return syncInterval;
         }
     }
 }
