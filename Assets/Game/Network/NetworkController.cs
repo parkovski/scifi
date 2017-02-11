@@ -38,6 +38,7 @@ namespace SciFi.Network {
             NetworkServer.RegisterHandler(NetworkMessages.SetPlayerDisplayName, SetPlayerDisplayName);
             NetworkServer.RegisterHandler(NetworkMessages.SetPlayerTeam, SetPlayerTeam);
             NetworkServer.RegisterHandler(NetworkMessages.SyncClock, ServerSyncClock);
+            NetworkServer.RegisterHandler(NetworkMessages.ServerSyncPosition, ServerSyncPosition);
 
             playersToRegister = new List<GameObject>();
             displayNames = new List<string>();
@@ -75,6 +76,7 @@ namespace SciFi.Network {
             }
 
             this.client.connection.RegisterHandler(NetworkMessages.SyncClock, ClientSyncClock);
+            this.client.connection.RegisterHandler(NetworkMessages.ClientSyncPosition, ClientSyncPosition);
             StartCoroutine(SyncClockCoroutine(conn));
         }
 
@@ -117,6 +119,34 @@ namespace SciFi.Network {
             float timeOffset = Time.realtimeSinceStartup - msg.reader.ReadSingle();
             serverClock.clockOffset = (serverClock.clockOffset * serverClock.pings + timeOffset) / (serverClock.pings + 1);
             ++serverClock.pings;
+        }
+
+        void ServerSyncPosition(NetworkMessage msg) {
+            var netId = msg.reader.ReadNetworkId();
+            var position = msg.reader.ReadVector2();
+            var timestamp = msg.reader.ReadSingle();
+            var clockOffset = GetClientClockOffset(msg.conn).Value;
+
+            ClientScene.FindLocalObject(netId).GetComponent<SFNetworkTransform>().SyncPosition(position, timestamp, clockOffset);
+
+            var writer = new NetworkWriter();
+            writer.StartMessage(NetworkMessages.ClientSyncPosition);
+            writer.Write(netId);
+            writer.Write(position);
+            writer.Write(timestamp + clockOffset);
+            writer.FinishMessage();
+            foreach (var conn in clientConnections) {
+                conn.SendWriter(writer, 2);
+            }
+        }
+
+        void ClientSyncPosition(NetworkMessage msg) {
+            var netId = msg.reader.ReadNetworkId();
+            var position = msg.reader.ReadVector2();
+            var timestamp = msg.reader.ReadSingle();
+            var clockOffset = serverClock.clockOffset;
+
+            ClientScene.FindLocalObject(netId).GetComponent<SFNetworkTransform>().SyncPosition(position, timestamp, clockOffset);
         }
 
         /// Receive a player selection message from the client.
