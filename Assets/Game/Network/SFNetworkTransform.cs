@@ -31,6 +31,10 @@ namespace SciFi.Network {
             lastMessageReceivedTime = Time.realtimeSinceStartup;
         }
 
+        public override void OnStartServer() {
+            NetworkServer.RegisterHandler(NetworkMessages.SyncPosition, ServerSyncPosition);
+        }
+
         void Update() {
             // Possibilities:
             // - This copy is on a client with authority - it needs to notify
@@ -54,8 +58,7 @@ namespace SciFi.Network {
                         lastMessageSentTime = Time.realtimeSinceStartup;
                         targetPosition = transform.position;
                         var writer = new NetworkWriter();
-                        writer.StartMessage(NetworkMessages.ServerSyncPosition);
-                        writer.Write(netId);
+                        writer.StartMessage(NetworkMessages.SyncPosition);
                         writer.Write((Vector2)transform.position);
                         writer.Write(Time.realtimeSinceStartup);
                         writer.FinishMessage();
@@ -71,8 +74,7 @@ namespace SciFi.Network {
                         lastMessageSentTime = Time.realtimeSinceStartup;
                         targetPosition = transform.position;
                         var writer = new NetworkWriter();
-                        writer.StartMessage(NetworkMessages.ClientSyncPosition);
-                        writer.Write(netId);
+                        writer.StartMessage(NetworkMessages.SyncPosition);
                         writer.Write((Vector2)transform.position);
                         writer.Write(Time.realtimeSinceStartup);
                         writer.FinishMessage();
@@ -95,7 +97,31 @@ namespace SciFi.Network {
             return Mathf.Abs((sourceVec - targetVec).magnitude) < closeEnoughVelocity;
         }
 
-        public void SyncPosition(Vector2 position, float timestamp, float clockOffset) {
+        /// Assumes the connection is tracked by NetworkController.
+        void ServerSyncPosition(NetworkMessage msg) {
+            var position = msg.reader.ReadVector2();
+            var timestamp = msg.reader.ReadSingle();
+
+            SyncPosition(position, timestamp, NetworkController.GetClientClockOffset(msg.conn).Value);
+
+            var writer = new NetworkWriter();
+            writer.StartMessage(NetworkMessages.SyncPosition);
+            writer.Write(position);
+            writer.Write(timestamp);
+            writer.FinishMessage();
+            foreach (var conn in NetworkServer.connections) {
+                conn.SendWriter(writer, 2);
+            }
+        }
+
+        void ClientSyncPosition(NetworkMessage msg) {
+            var position = msg.reader.ReadVector2();
+            var timestamp = msg.reader.ReadSingle();
+
+            SyncPosition(position, timestamp, NetworkController.serverClock.clockOffset);
+        }
+
+        void SyncPosition(Vector2 position, float timestamp, float clockOffset) {
             timestamp += clockOffset;
             if (timestamp < lastTimestamp) {
                 return;

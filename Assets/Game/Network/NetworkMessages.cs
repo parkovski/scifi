@@ -17,7 +17,6 @@ namespace SciFi.Network {
         /// Clock synchronization for movements.
         public static short SyncClock = MsgType.Highest + 6;
         /// Position sync for SFNetworkTransform.
-        public static short ServerSyncPosition = MsgType.Highest + 7;
-        public static short ClientSyncPosition = MsgType.Highest + 8;
+        public static short SyncPosition = MsgType.Highest + 7;
     }
 }
