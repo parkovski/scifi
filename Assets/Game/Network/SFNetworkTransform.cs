@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Networking;
-using System.Collections;
+
+using SciFi.Players;
 
 namespace SciFi.Network {
     public class SFNetworkTransform : NetworkBehaviour {
@@ -15,15 +16,18 @@ namespace SciFi.Network {
         float lastMessageReceivedTime;
         float timeToTarget;
         float lastTimestamp;
-        float clockOffset;
         Vector2 targetPosition;
         Vector2 originalPosition;
         Rigidbody2D rb;
+        /// Null if none, but only players can call CmdSyncState.
+        Player player;
 
         void Start() {
             rb = GetComponent<Rigidbody2D>();
+            player = GetComponent<Player>();
 
             targetPosition = transform.position;
+            lastMessageReceivedTime = Time.realtimeSinceStartup;
         }
 
         void Update() {
@@ -76,8 +80,13 @@ namespace SciFi.Network {
             return Mathf.Abs((sourceVec - targetVec).magnitude) < closeEnoughVelocity;
         }
 
+        /// This should only be called from player objects - they
+        /// track their client connections.
         [Command]
         void CmdSyncState(Vector2 position, float timestamp) {
+            var conn = GameController.Instance.ConnectionForPlayer(player.eId);
+            var clockOffset = NetworkController.GetClientClockOffset(conn);
+            timestamp += clockOffset.Value;
             if (timestamp < lastTimestamp) {
                 return;
             }
@@ -92,6 +101,7 @@ namespace SciFi.Network {
             if (isServer) {
                 return;
             }
+            timestamp += NetworkController.serverClock.clockOffset;
             if (timestamp < lastTimestamp) {
                 return;
             }
@@ -100,18 +110,16 @@ namespace SciFi.Network {
             UpdateStats(timestamp);
         }
 
+        /// Timestamp is already corrected with the remote clock offset.
+        /// It represents the local time when the remote object was at the updated position.
         void UpdateStats(float timestamp) {
-            float clientDeltaTime = Time.realtimeSinceStartup - lastMessageReceivedTime;
+            /// Local time since the object was at this position
+            float clientDeltaTime = Time.realtimeSinceStartup - timestamp;
             float serverDeltaTime = timestamp - lastTimestamp;
-            if (Mathf.Approximately(clockOffset, 0f)) {
-                clockOffset = Time.realtimeSinceStartup - timestamp;
-            }
-            float messageClockOffset = (Time.realtimeSinceStartup - timestamp) - clockOffset;
-            timeToTarget = interpolationTime - messageClockOffset;
+            timeToTarget = interpolationTime - clientDeltaTime;
 
             lastMessageReceivedTime = Time.realtimeSinceStartup;
             lastTimestamp = timestamp;
-            clockOffset = (clockOffset * 4 + (Time.realtimeSinceStartup - timestamp)) / 5;
         }
 
         bool NeedsSnap(Vector2 sourcePosition, Vector2 targetPosition) {

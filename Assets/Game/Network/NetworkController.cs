@@ -89,9 +89,10 @@ namespace SciFi.Network {
             }
         }
 
-        public Nullable<float> GetClientClockOffset(NetworkConnection conn) {
+        public static Nullable<float> GetClientClockOffset(NetworkConnection conn) {
+            var instance = (NetworkController)singleton;
             ConnectionClockOffset offset;
-            if (clientClocks.TryGetValue(conn, out offset)) {
+            if (instance.clientClocks.TryGetValue(conn, out offset)) {
                 return offset.clockOffset;
             }
             return null;

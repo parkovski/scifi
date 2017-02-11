@@ -408,6 +408,7 @@ namespace SciFi {
             Instance = this;
             activePlayersGo = new GameObject[0];
             displayNames = new string[0];
+            sClientConnections = new NetworkConnection[0];
             Layers.Init();
             PlayersInitialized += players => {
                 foreach (var player in players) {
