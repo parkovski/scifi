@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
 using Random = UnityEngine.Random;
+using UNet = UnityEngine.Network;
 
 using SciFi.Players;
 using SciFi.Players.Attacks;
@@ -63,6 +64,10 @@ namespace SciFi {
         /// Total number of clients - game starts
         /// when sReadyClients == sNumClients.
         int sNumClients;
+
+        int dbgPingField;
+        float lastPingUpdate;
+        float pingUpdateInterval = 0.5f;
 
         /// Event emitted when a player's damage changes.
         [SyncEvent]
@@ -451,10 +456,16 @@ namespace SciFi {
             if (TransitionParams.gameType == GameType.Multi) {
                 NetworkController.clientConnectionToServer.Send(NetworkMessages.ClientGameReady, new EmptyMessage());
             }
+            dbgPingField = DebugPrinter.Instance.NewField();
         }
 
         /// Spawn items when they are due.
         void Update() {
+            if (isClient && Time.time > lastPingUpdate + pingUpdateInterval) {
+                var serverPlayer = isServer ? UNet.player : UNet.connections[0];
+                DebugPrinter.Instance.SetField(dbgPingField, "Ping: " + UNet.GetAveragePing(serverPlayer));
+                lastPingUpdate = Time.time;
+            }
             if (!isServer) {
                 return;
             }
