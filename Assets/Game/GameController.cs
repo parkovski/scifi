@@ -49,6 +49,8 @@ namespace SciFi {
         /// Each player's nickname, only valid before the game starts.
         /// To access these during the game, use <see cref="SciFi.Players.Player.eDisplayName" />.
         string[] displayNames;
+        /// Teams/colors
+        int[] teams;
         /// Connections for each client
         NetworkConnection[] sClientConnections;
         /// Is this client the winner? This is always false if the game
@@ -114,6 +116,7 @@ namespace SciFi {
         public void RegisterNewPlayer(GameObject playerObject, string displayName, int team, NetworkConnection conn) {
             activePlayersGo = activePlayersGo.Concat(new[] { playerObject }).ToArray();
             displayNames = displayNames.Concat(new[] { displayName }).ToArray();
+            teams = teams.Concat(new[] { team }).ToArray();
             sClientConnections = sClientConnections.Concat(new[] { conn }).ToArray();
         }
 
@@ -142,6 +145,7 @@ namespace SciFi {
                 } else {
                     player.eDisplayName = displayNames[i];
                 }
+                player.eTeam = teams[i];
                 player.eLives = 5;
                 if (countdown) {
                     player.AddModifier(Modifier.CantMove);
@@ -153,6 +157,7 @@ namespace SciFi {
             _PlayersInitialized(activePlayers);
 
             displayNames = null;
+            teams = null;
 
             RpcCreateCharacterList(activePlayers.Select(p => p.netId).ToArray());
 
@@ -415,6 +420,7 @@ namespace SciFi {
             Instance = this;
             activePlayersGo = new GameObject[0];
             displayNames = new string[0];
+            teams = new int[0];
             sClientConnections = new NetworkConnection[0];
             Layers.Init();
             PlayersInitialized += players => {
