@@ -154,6 +154,11 @@ namespace SciFi.Network {
             }
         }
 
+        public void SnapTo(Vector2 position) {
+            targetPosition = position;
+            transform.position = position;
+        }
+
         public override int GetNetworkChannel() {
             return 2;
         }

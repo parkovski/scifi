@@ -14,7 +14,7 @@ namespace SciFi.Players.Attacks {
 
         /// How long to wait between damage rounds
         float nextDamageTime;
-        const float nextDamageWait = .5f;
+        const float nextDamageWait = .1f;
 
         GameObject targetPlayer;
         Vector3 targetOffset;

@@ -312,7 +312,13 @@ namespace SciFi {
             }
 
             player.eDamage = 0;
-            player.RpcRespawn(new Vector3(0f, 7f));
+            if (player.eLives <= 0) {
+                player.GetComponent<Rigidbody2D>().isKinematic = true;
+                player.GetComponent<SFNetworkTransform>().SnapTo(new Vector2(-1000, -1000));
+                player.RpcYouDeadFool();
+            } else {
+                player.RpcRespawn(new Vector3(0f, 7f));
+            }
             EventLifeChanged(player.eId, player.eLives);
         }
 

@@ -1,5 +1,8 @@
 using UnityEngine;
+using UnityEngine.Networking;
 using System;
+
+using SciFi.Players.Modifiers;
 
 namespace SciFi.Players.Attacks {
     /// This is a wrapper class that will mirror the enclosed attack's
@@ -103,6 +106,15 @@ namespace SciFi.Players.Attacks {
         }
 
         public void ReceiveMessage(NetworkAttackMessage message) {
+            if (NetworkServer.active) {
+                if (message.function == NetworkAttackFunction.OnBeginCharging) {
+                    player.AddModifier(Modifier.CantAttack);
+                    player.AddModifier(Modifier.CantMove);
+                } else if (message.function == NetworkAttackFunction.OnEndCharging || message.function == NetworkAttackFunction.OnCancel) {
+                    player.RemoveModifier(Modifier.CantAttack);
+                    player.RemoveModifier(Modifier.CantMove);
+                }
+            }
             if (GuidArraysEqual(this.guidAsBytes, message.sender)) {
                 return;
             }
@@ -121,6 +133,8 @@ namespace SciFi.Players.Attacks {
             case NetworkAttackFunction.OnEndCharging:
                 this.IsCharging = false;
                 attack.IsCharging = false;
+                player.RemoveModifier(Modifier.CantAttack);
+                player.RemoveModifier(Modifier.CantMove);
                 attack.OnEndCharging(message.chargeTime, message.direction);
                 break;
             case NetworkAttackFunction.OnCancel:

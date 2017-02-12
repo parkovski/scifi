@@ -92,8 +92,11 @@ namespace SciFi.Players.Attacks {
                             inputManager.InvalidateControl(control);
                             shouldCancel = false;
                             Cancel();
-                            player.RemoveModifier(Modifier.CantAttack);
-                            player.RemoveModifier(Modifier.CantMove);
+                            // TODO: Speculatively add/remove these on the client
+                            // and check them on the server when the player tries
+                            // to attack or move.
+                            //player.RemoveModifier(Modifier.CantAttack);
+                            //player.RemoveModifier(Modifier.CantMove);
                         } else {
                             OnKeepCharging(inputManager.GetControlHoldTime(control), direction);
                         }
@@ -103,8 +106,8 @@ namespace SciFi.Players.Attacks {
                             isCharging = true;
                             shouldCancel = false;
                             lastFireTime = Time.time;
-                            player.AddModifier(Modifier.CantAttack);
-                            player.AddModifier(Modifier.CantMove);
+                            //player.AddModifier(Modifier.CantAttack);
+                            //player.AddModifier(Modifier.CantMove);
                             OnBeginCharging(direction);
                         }
                     }
@@ -121,8 +124,8 @@ namespace SciFi.Players.Attacks {
                     // Charging but button released, fire the attack.
                     isCharging = false;
                     OnEndCharging(inputManager.GetControlHoldTime(control), direction);
-                    player.RemoveModifier(Modifier.CantAttack);
-                    player.RemoveModifier(Modifier.CantMove);
+                    //player.RemoveModifier(Modifier.CantAttack);
+                    //player.RemoveModifier(Modifier.CantMove);
                 }
             }
         }

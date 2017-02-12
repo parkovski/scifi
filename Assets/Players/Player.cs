@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
-using System.Reflection;
 using System.Collections.Generic;
 
+using SciFi.Network;
 using SciFi.Environment;
 using SciFi.Players.Attacks;
 using SciFi.Players.Modifiers;
@@ -230,10 +230,16 @@ namespace SciFi.Players {
             if (pInputManager == null) {
                 return;
             }
+            if (eLives <= 0) {
+                return;
+            }
             if (!hasAuthority) {
                 eAttack1.UpdateStateNonAuthoritative();
                 eAttack2.UpdateStateNonAuthoritative();
                 eSpecialAttack.UpdateStateNonAuthoritative();
+                return;
+            }
+            if (!isLocalPlayer) {
                 return;
             }
 
@@ -631,8 +637,14 @@ namespace SciFi.Players {
                 Destroy(eItemGo);
                 eItemGo = null;
             }
-            transform.position = position;
+            GetComponent<SFNetworkTransform>().SnapTo(position);
             lRb.velocity = new Vector2(0f, 0f);
+        }
+
+        [ClientRpc]
+        public void RpcYouDeadFool() {
+            lRb.isKinematic = true;
+            GetComponent<SFNetworkTransform>().SnapTo(new Vector2(-1000, -1000));
         }
 
         [Command]
@@ -644,6 +656,7 @@ namespace SciFi.Players {
             }
         }
 
+        /// Called by a SyncVar hook.
         [Client]
         void ChangeDirection(Direction direction) {
             eDirection = direction;
@@ -701,10 +714,14 @@ namespace SciFi.Players {
         [Command]
         public void CmdNetworkAttackSync(NetworkAttackMessage message) {
             RpcNetworkAttackSync(message);
+            lNetworkAttacks[message.messageId].ReceiveMessage(message);
         }
 
         [ClientRpc]
         void RpcNetworkAttackSync(NetworkAttackMessage message) {
+            if (isServer) {
+                return;
+            }
             if (message.messageId < 0 || message.messageId >= lNetworkAttacks.Count) {
                 Debug.LogWarning("Network attack index out of range, ignoring (" + message.messageId + ")");
                 return;
