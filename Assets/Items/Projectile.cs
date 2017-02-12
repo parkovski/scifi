@@ -11,7 +11,7 @@ namespace SciFi.Items {
         /// The player or other object that spawned the projectile.
         /// Projectiles won't collide with objects that spawned them.
         [SyncVar]
-        public NetworkInstanceId spawnedBy;
+        public NetworkInstanceId spawnedBy = NetworkInstanceId.Invalid;
         /// If the player is holding an item, set this so the projectile doesn't hit it.
         [SyncVar]
         public NetworkInstanceId spawnedByExtra = NetworkInstanceId.Invalid;
