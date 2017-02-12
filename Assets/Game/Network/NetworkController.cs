@@ -141,31 +141,12 @@ namespace SciFi.Network {
             }
             var prefab = spawnPrefabs.Find(p => p.name == playerName);
             var obj = Instantiate(prefab, Vector3.zero, Quaternion.identity);
-            int team = TransitionParams.GetTeam(conn);
-            if (team != -1) {
-                obj.GetComponent<SpriteOverlay>().SetColor(TeamToColor(team));
-            }
             lock(threadLock) {
                 playersToRegister.Add(obj);
                 displayNames.Add(TransitionParams.GetDisplayName(conn));
                 clientConnections.Add(conn);
             }
             return obj;
-        }
-
-        public static Color TeamToColor(int team) {
-            switch (team) {
-            case 0:
-                return Player.blueTeamColor;
-            case 1:
-                return Player.redTeamColor;
-            case 2:
-                return Player.greenTeamColor;
-            case 3:
-                return Player.yellowTeamColor;
-            default:
-                return Color.clear;
-            }
         }
 
         /// Start the game when the scene changes to MainGame.
@@ -184,7 +165,8 @@ namespace SciFi.Network {
                 var player = playersToRegister[i];
                 var displayName = displayNames[i];
                 var conn = clientConnections[i];
-                GameController.Instance.RegisterNewPlayer(player, displayName, conn);
+                var team = TransitionParams.GetTeam(conn);
+                GameController.Instance.RegisterNewPlayer(player, displayName, team, conn);
             }
         }
 

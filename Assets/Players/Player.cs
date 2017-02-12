@@ -40,6 +40,8 @@ namespace SciFi.Players {
         [SyncVar(hook = "ChangeDirection"), HideInInspector]
         public Direction eDirection;
         [SyncVar, HideInInspector]
+        public int eTeam = -1;
+        [SyncVar, HideInInspector]
         public bool eShouldFallThroughOneWayPlatform;
 
         private bool lInitialized = false;
@@ -99,6 +101,27 @@ namespace SciFi.Players {
             if (pInputManager != null) {
                 OnInitialize();
                 lInitialized = true;
+            }
+        }
+
+        public override void OnStartClient() {
+            if (eTeam != -1) {
+                GetComponent<SpriteOverlay>().SetColor(TeamToColor(eTeam));
+            }
+        }
+
+        static Color TeamToColor(int team) {
+            switch (team) {
+            case 0:
+                return Player.blueTeamColor;
+            case 1:
+                return Player.redTeamColor;
+            case 2:
+                return Player.greenTeamColor;
+            case 3:
+                return Player.yellowTeamColor;
+            default:
+                return Color.clear;
             }
         }
 

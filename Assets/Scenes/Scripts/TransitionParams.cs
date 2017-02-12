@@ -83,9 +83,11 @@ namespace SciFi.Scenes {
 
         public static int GetTeam(NetworkConnection conn) {
             lock(threadLock) {
-                int team = -1;
-                teams.TryGetValue(conn, out team);
-                return team;
+                int team;
+                if (teams.TryGetValue(conn, out team)) {
+                    return team;
+                }
+                return -1;
             }
         }
         #endregion

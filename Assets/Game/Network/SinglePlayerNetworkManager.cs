@@ -39,15 +39,12 @@ namespace SciFi.Network {
             }
 
             var p = Instantiate(FindPrefab(humanPlayer), Vector3.zero, Quaternion.identity);
-            if (TransitionParams.team != -1) {
-                p.GetComponent<SpriteOverlay>().SetColor(NetworkController.TeamToColor(TransitionParams.team));
-            }
-            GameController.Instance.RegisterNewPlayer(p, "P1", conn);
+            GameController.Instance.RegisterNewPlayer(p, "P1", TransitionParams.team, conn);
             NetworkServer.AddPlayerForConnection(conn, p, playerControllerId);
 
             p = Instantiate(FindPrefab(computerPlayer), Vector3.zero, Quaternion.identity);
             p.GetComponent<NetworkIdentity>().localPlayerAuthority = false;
-            GameController.Instance.RegisterNewPlayer(p, "COM", null);
+            GameController.Instance.RegisterNewPlayer(p, "COM", -1, null);
             NetworkServer.Spawn(p);
 
             GameController.Instance.StartGame(
