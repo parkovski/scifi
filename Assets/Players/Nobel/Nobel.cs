@@ -81,8 +81,8 @@ namespace SciFi.Players {
             }
             dynamiteGo = Object.Instantiate(dynamitePrefab, position, Quaternion.identity);
             var dynamite = dynamiteGo.GetComponent<Dynamite>();
-            dynamite.spawnedBy = netId;
-            dynamite.spawnedByExtra = GetItemNetId();
+            // Intentionally don't set spawnedBy so the player that
+            // created it can push it around.
             dynamite.explodeCallback = OnDynamiteExploded;
             dynamite.destroyCallback = OnDynamiteDestroyed;
             NetworkServer.Spawn(dynamiteGo);

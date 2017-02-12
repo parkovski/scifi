@@ -3,7 +3,6 @@ using UnityEngine.Networking;
 using System;
 
 using SciFi.Items;
-using SciFi.Environment.Effects;
 
 namespace SciFi.Players.Attacks {
     public class Dynamite : Projectile {

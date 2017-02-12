@@ -25,7 +25,9 @@ namespace SciFi.Items {
 
         protected void BaseStart() {
             // Don't let this object hit the player that created it.
-            Item.IgnoreCollisions(gameObject, ClientScene.FindLocalObject(spawnedBy));
+            if (spawnedBy != NetworkInstanceId.Invalid) {
+                Item.IgnoreCollisions(gameObject, ClientScene.FindLocalObject(spawnedBy));
+            }
 
             if (spawnedByExtra != NetworkInstanceId.Invalid) {
                 Item.IgnoreCollisions(gameObject, ClientScene.FindLocalObject(spawnedByExtra));

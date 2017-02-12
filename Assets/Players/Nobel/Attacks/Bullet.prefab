@@ -91,7 +91,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 8
-  knockback: 5
+  knockback: 8
 --- !u!114 &114760202321868942
 MonoBehaviour:
   m_ObjectHideFlags: 1
