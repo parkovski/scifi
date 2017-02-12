@@ -104,12 +104,6 @@ namespace SciFi.Players {
             }
         }
 
-        public override void OnStartClient() {
-            if (eTeam != -1) {
-                GetComponent<SpriteOverlay>().SetColor(TeamToColor(eTeam));
-            }
-        }
-
         static Color TeamToColor(int team) {
             switch (team) {
             case 0:
@@ -132,6 +126,10 @@ namespace SciFi.Players {
             // starts and once when the server game starts.
             if (pInputManager != null) {
                 return;
+            }
+
+            if (eTeam != -1) {
+                GetComponent<SpriteOverlay>().SetColor(TeamToColor(eTeam));
             }
 
             pInputManager = gameController.GetComponent<InputManager>();
