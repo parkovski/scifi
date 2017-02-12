@@ -12,7 +12,10 @@ namespace SciFi.Players.Attacks {
         SpriteRenderer spriteRenderer;
         SpriteRenderer flameSpriteRenderer;
 
-        const float burnTime = 6f;
+        float lastBurnTime;
+
+        const float burnTime = 4.5f;
+        const float burnDamageInterval = 0.5f;
         const int fadeSteps = 20;
         const float fadeStepInterval = burnTime / fadeSteps;
 
@@ -35,6 +38,12 @@ namespace SciFi.Players.Attacks {
         void Update() {
             if (stuckToPlayer != null) {
                 transform.position = stuckToPlayer.transform.position + GetPlayerOffset(stuckToPlayer.eDirection);
+                if (isServer) {
+                    if (Time.time > lastBurnTime + burnDamageInterval) {
+                        GameController.Instance.Hit(stuckToPlayer.gameObject, this, gameObject, 1, 1);
+                        lastBurnTime = Time.time;
+                    }
+                }
             }
         }
 
@@ -79,7 +88,7 @@ namespace SciFi.Players.Attacks {
                 return;
             }
 
-            GameController.Instance.Hit(stuckToPlayer.gameObject, this, gameObject, 10, 5f);
+            GameController.Instance.Hit(stuckToPlayer.gameObject, this, gameObject, 10, 3f);
             Effects.Explosion(transform.position);
             Destroy(gameObject);
         }

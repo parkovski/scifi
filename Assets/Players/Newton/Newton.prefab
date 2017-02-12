@@ -541,7 +541,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncInterval: 0.05
-  interpolationTime: 0.15
+  interpolationTime: 0.1
   closeEnoughPosition: 0.01
   closeEnoughVelocity: 0.1
   snapDistance: 3

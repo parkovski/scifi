@@ -3,7 +3,6 @@ using UnityEngine.Networking;
 using UnityEngine.Networking.NetworkSystem;
 
 using SciFi.Scenes;
-using SciFi.UI;
 
 namespace SciFi.Network {
     /// The dummy NetworkManager that handles single player games.

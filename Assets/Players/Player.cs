@@ -720,10 +720,25 @@ namespace SciFi.Players {
         public virtual void SetColor(Color color) {}
 
         [Server]
+        public void Hit(int damage) {
+            RpcHit(damage);
+            eAttack1.RequestCancel();
+            eAttack2.RequestCancel();
+            eSpecialAttack.RequestCancel();
+        }
+
+        [ClientRpc]
+        void RpcHit(int damage) {
+            eAttack1.RequestCancel();
+            eAttack2.RequestCancel();
+            eSpecialAttack.RequestCancel();
+        }
+
+        [Server]
         public void Knockback(Vector2 force) {
             RpcKnockback(force);
             if (!Modifier.Invincible.IsEnabled(eModifierState)) {
-                sKnockbackLockoutEndTime = Time.time + ((float)eDamage).Scale(0f, 1000f, 0.1f, 1.2f);
+                sKnockbackLockoutEndTime = Time.time + ((float)eDamage).Scale(0f, 1000f, 0.15f, 1.35f);
                 if (!Modifier.InKnockback.IsEnabled(eModifierState)) {
                     AddModifier(Modifier.InKnockback);
                     AddModifier(Modifier.CantMove);
@@ -733,7 +748,7 @@ namespace SciFi.Players {
         }
 
         [ClientRpc]
-        public void RpcKnockback(Vector2 force) {
+        void RpcKnockback(Vector2 force) {
             if (!hasAuthority) {
                 return;
             }

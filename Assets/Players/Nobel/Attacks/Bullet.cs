@@ -1,6 +1,7 @@
 using UnityEngine;
 
 using SciFi.Items;
+using SciFi.Environment.Effects;
 
 namespace SciFi.Players.Attacks {
     public class Bullet : Projectile {
@@ -11,6 +12,10 @@ namespace SciFi.Players.Attacks {
         public void Start() {
             BaseStart();
             originalPosition = transform.position;
+
+            if (isServer) {
+                Effects.Smoke(transform.position);
+            }
         }
 
         void Update() {

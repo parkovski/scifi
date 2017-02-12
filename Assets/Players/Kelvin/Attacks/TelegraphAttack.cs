@@ -38,5 +38,11 @@ namespace SciFi.Players.Attacks {
         public override void OnEndCharging(float chargeTime, Direction direction) {
             Object.Destroy(telegraph);
         }
+
+        public override void OnCancel() {
+            if (telegraph != null) {
+                Object.Destroy(telegraph);
+            }
+        }
     }
 }

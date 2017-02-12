@@ -37,5 +37,8 @@ namespace SciFi.Players.Attacks {
                 torque
             );
         }
+
+        public override void OnCancel() {
+        }
     }
 }

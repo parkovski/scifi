@@ -48,5 +48,11 @@ namespace SciFi.Players.Attacks {
             fb.AddInitialForce(force);
             fb.SetCanDestroy(true);
         }
+
+        public override void OnCancel() {
+            if (chargingFireBall != null) {
+                Object.Destroy(chargingFireBall);
+            }
+        }
     }
 }

@@ -32,6 +32,9 @@ namespace SciFi.Players.Attacks {
             }
         }
 
+        public override void OnCancel() {
+        }
+
         public void SetHasPlantedDynamite(bool hasPlantedDynamite) {
             this.hasPlantedDynamite = hasPlantedDynamite;
         }

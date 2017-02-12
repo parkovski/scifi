@@ -7,8 +7,6 @@ using System.Collections;
 using System.Collections.Generic;
 
 using SciFi.Scenes;
-using SciFi.UI;
-using SciFi.Players;
 
 namespace SciFi.Network {
     public struct ConnectionClockOffset {

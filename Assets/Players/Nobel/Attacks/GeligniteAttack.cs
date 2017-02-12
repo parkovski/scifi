@@ -20,6 +20,9 @@ namespace SciFi.Players.Attacks {
             );
         }
 
+        public override void OnCancel() {
+        }
+
         Vector3 GetGeligniteOffset(Direction direction) {
             if (direction == Direction.Left) {
                 return new Vector3(-1f, 0f);

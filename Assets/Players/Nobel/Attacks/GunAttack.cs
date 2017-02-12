@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections;
 
-using SciFi.Environment.Effects;
 using SciFi.Util.Extensions;
 
 namespace SciFi.Players.Attacks {
@@ -39,8 +38,10 @@ namespace SciFi.Players.Attacks {
                 0f,
                 direction == Direction.Left
             );
-            //Effects.Smoke(bulletGo.transform.position);
             audioSource.Play();
+        }
+
+        public override void OnCancel() {
         }
 
         Vector2 GetBulletForce(Direction direction) {

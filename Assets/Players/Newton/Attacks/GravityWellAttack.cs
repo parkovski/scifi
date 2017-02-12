@@ -37,6 +37,10 @@ namespace SciFi.Players.Attacks {
             FindCollisions();
         }
 
+        public override void OnCancel() {
+            gravityWell.shrinking = true;
+        }
+
         void FindCollisions() {
             var radius = gravityWell.GetComponent<SpriteRenderer>().bounds.extents.x;
             // The LINQ stuff makes sure we only hit a player once,

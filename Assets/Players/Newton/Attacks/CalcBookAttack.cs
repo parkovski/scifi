@@ -6,7 +6,7 @@ namespace SciFi.Players.Attacks {
         GameObject chargingBook;
         int power;
 
-        const float timeToChangeBooks = 0.7f;
+        const float timeToChangeBooks = 0.5f;
 
         public CalcBookAttack(Player player, GameObject[] books)
             : base(player, true)
@@ -55,6 +55,12 @@ namespace SciFi.Players.Attacks {
                 chargingBook.GetComponent<Animator>().SetTrigger("SwingBackwards");
             } else {
                 chargingBook.GetComponent<Animator>().SetTrigger("Swing");
+            }
+        }
+
+        public override void OnCancel() {
+            if (chargingBook != null) {
+                Object.Destroy(chargingBook);
             }
         }
     }

@@ -8,5 +8,8 @@ namespace SciFi.Players.Attacks {
         public override void OnEndCharging(float chargeTime, Direction direction) {
             ((daVinci)player).CmdSpawnFlyingMachine(chargeTime);
         }
+
+        public override void OnCancel() {
+        }
     }
 }

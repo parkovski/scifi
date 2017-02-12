@@ -136,7 +136,7 @@ namespace SciFi.Players.Attacks {
         /// and the chargeTime parameter can be ignored.
         public abstract void OnEndCharging(float chargeTime, Direction direction);
 
-        public virtual void OnCancel() {}
+        public abstract void OnCancel();
 
         private void Cancel() {
             shouldCancel = false;

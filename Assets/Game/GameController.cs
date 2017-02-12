@@ -339,6 +339,7 @@ namespace SciFi {
             var player = obj.GetComponent<Player>();
             if (player != null) {
                 player.Interact(attack);
+                player.Hit(damage);
             }
         }
 

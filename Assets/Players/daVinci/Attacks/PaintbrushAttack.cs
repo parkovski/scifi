@@ -21,5 +21,8 @@ namespace SciFi.Players.Attacks {
                 animator.SetTrigger("SwingRight");
             }
         }
+
+        public override void OnCancel() {
+        }
     }
 }
