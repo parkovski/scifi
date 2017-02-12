@@ -148,7 +148,7 @@ namespace SciFi.Players.Attacks {
                 attack.OnEndCharging(message.chargeTime, message.direction);
                 break;
             case NetworkAttackFunction.OnCancel:
-                RequestCancel();
+                attack.OnCancel();
                 break;
             }
         }

@@ -92,7 +92,7 @@ namespace SciFi.Players.Attacks {
             var explosionGo = Instantiate(explosionPrefab, transform.position, Quaternion.identity);
             var explosion = explosionGo.GetComponent<Explosion>();
             explosion.damage = 5;
-            explosion.knockback = 3f;
+            explosion.knockback = 5f;
             NetworkServer.Spawn(explosionGo);
             Destroy(gameObject);
         }

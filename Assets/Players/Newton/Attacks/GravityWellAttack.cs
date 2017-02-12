@@ -26,7 +26,7 @@ namespace SciFi.Players.Attacks {
 
         public override void OnKeepCharging(float chargeTime, Direction direction) {
             chargeTime = Mathf.Clamp(chargeTime, minChargeTime, maxChargeTime);
-            var scale = 200f * (1f + Mathf.Log10(chargeTime * 50));
+            var scale = 150f * (1f + Mathf.Log10(chargeTime * 50));
             gravityWellObj.transform.localScale = new Vector3(scale, scale, 1);
             // From 1-10.
             power = 1f + chargeTime / maxChargeTime * 9f;
