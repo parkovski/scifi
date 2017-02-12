@@ -215,8 +215,8 @@ namespace SciFi.Players {
             float localMaxSpeed = maxSpeed;
             float localWalkForce = walkForce;
             if (halfForce) {
-                localMaxSpeed /= 2f;
-                localWalkForce /= 2f;
+                localMaxSpeed /= 1.5f;
+                localWalkForce /= 1.5f;
             }
             Modifier.Slow.Modify(eModifierState, ref localMaxSpeed, ref localWalkForce);
             Modifier.Fast.Modify(eModifierState, ref localMaxSpeed, ref localWalkForce);

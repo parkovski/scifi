@@ -41,7 +41,7 @@ namespace SciFi.Players.Attacks {
                 transform.position = stuckToPlayer.transform.position + GetPlayerOffset(stuckToPlayer.eDirection);
                 if (isServer) {
                     if (Time.time > lastBurnTime + burnDamageInterval) {
-                        GameController.Instance.Hit(stuckToPlayer.gameObject, this, gameObject, 1, 1);
+                        GameController.Instance.Hit(stuckToPlayer.gameObject, this, gameObject, 1, 0);
                         lastBurnTime = Time.time;
                     }
                 }
