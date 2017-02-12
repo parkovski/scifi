@@ -448,6 +448,10 @@ MonoBehaviour:
   minDoubleJumpVelocity: 2
   dynamitePrefab: {fileID: 1165641169296308, guid: c8e4ff9fdf48a124aae113895c0bff1e,
     type: 2}
+  dynamite2Prefab: {fileID: 1897242559241130, guid: 4457397b5a6311c488be9c305accfef1,
+    type: 2}
+  dynamite3Prefab: {fileID: 1860608771063556, guid: 33ff016c98e304243a9ca6dfe3a7ee08,
+    type: 2}
   dynamiteFragmentPrefab: {fileID: 1101788017807286, guid: f97de5a323d322949b2d35164db17bc8,
     type: 2}
   gunPrefab: {fileID: 1580578200593256, guid: a88e1fd568d1e824cbcf2b68dc5aba48, type: 2}

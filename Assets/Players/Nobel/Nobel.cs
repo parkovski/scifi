@@ -7,6 +7,8 @@ using SciFi.Util;
 namespace SciFi.Players {
     public class Nobel : Player {
         public GameObject dynamitePrefab;
+        public GameObject dynamite2Prefab;
+        public GameObject dynamite3Prefab;
         public GameObject dynamiteFragmentPrefab;
         public GameObject gunPrefab;
         public GameObject bulletPrefab;
@@ -63,23 +65,37 @@ namespace SciFi.Players {
         }
 
         [Command]
-        public void CmdPlantOrExplodeDynamite() {
+        public void CmdPlantOrExplodeDynamite(int sticks) {
             if (dynamiteGo != null) {
                 ExplodeDynamite();
             } else {
-                PlantDynamite();
+                PlantDynamite(sticks);
             }
         }
 
         [Server]
-        void PlantDynamite() {
+        void PlantDynamite(int sticks) {
             var position = transform.position;
             if (eDirection == Direction.Left) {
                 position += new Vector3(-1f, -.5f);
             } else {
                 position += new Vector3(1f, -.5f);
             }
-            dynamiteGo = Object.Instantiate(dynamitePrefab, position, Quaternion.identity);
+            GameObject prefab;
+            switch (sticks) {
+            case 1:
+                prefab = dynamitePrefab;
+                break;
+            case 2:
+                prefab = dynamite2Prefab;
+                break;
+            case 3:
+                prefab = dynamite3Prefab;
+                break;
+            default:
+                return;
+            }
+            dynamiteGo = Object.Instantiate(prefab, position, Quaternion.identity);
             var dynamite = dynamiteGo.GetComponent<Dynamite>();
             // Intentionally don't set spawnedBy so the player that
             // created it can push it around.

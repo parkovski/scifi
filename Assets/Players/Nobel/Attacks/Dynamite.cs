@@ -8,6 +8,11 @@ namespace SciFi.Players.Attacks {
     public class Dynamite : Projectile {
         public GameObject explosionPrefab;
 
+        public GameObject[] additionalSticks;
+        public float explosionScale;
+        public int damage;
+        public float knockback;
+
         /// Called on the server when the dynamite is exploded.
         [HideInInspector]
         public Action explodeCallback;
@@ -29,8 +34,9 @@ namespace SciFi.Players.Attacks {
         public void Explode() {
             var explosionGo = Instantiate(explosionPrefab, transform.position, Quaternion.identity);
             var explosion = explosionGo.GetComponent<Explosion>();
-            explosion.damage = 10;
-            explosion.knockback = 10f;
+            explosion.scale = explosionScale;
+            explosion.damage = damage;
+            explosion.knockback = knockback;
             NetworkServer.Spawn(explosionGo);
 
             if (explodeCallback != null) {

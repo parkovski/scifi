@@ -7,6 +7,8 @@ using SciFi.Util.Extensions;
 namespace SciFi.Players.Attacks {
     public class Explosion : NetworkBehaviour, IAttack {
         [SyncVar, HideInInspector]
+        public float scale = 1;
+        [SyncVar, HideInInspector]
         public int damage;
         [SyncVar, HideInInspector]
         public float knockback;
@@ -18,6 +20,7 @@ namespace SciFi.Players.Attacks {
         void Start() {
             hitObjects = new HashSet<GameObject>();
             startTime = Time.time;
+            scale *= 200;
         }
 
         void Update() {
@@ -25,7 +28,7 @@ namespace SciFi.Players.Attacks {
             if (isServer && time > aliveTime) {
                 Destroy(gameObject);
             }
-            var size = time.Scale(0, aliveTime, 1, 200);
+            var size = time.Scale(0, aliveTime, 1, scale);
             transform.localScale = new Vector3(size, size, 0);
         }
 

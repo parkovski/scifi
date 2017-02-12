@@ -13,7 +13,7 @@ namespace SciFi.Players.Attacks {
 
         public override void OnBeginCharging(Direction direction) {
             if (hasPlantedDynamite) {
-                ((Nobel)player).CmdPlantOrExplodeDynamite();
+                ((Nobel)player).CmdPlantOrExplodeDynamite(0);
                 RequestCancel();
             } else {
                 if (Time.time < lastFireTime + cooldownInterval) {
@@ -26,8 +26,9 @@ namespace SciFi.Players.Attacks {
         }
 
         public override void OnEndCharging(float chargeTime, Direction direction) {
+            int sticks = 1 + (int)Mathf.Clamp(chargeTime * 2, 0, 2f);
             if (!hasPlantedDynamite) {
-                ((Nobel)player).CmdPlantOrExplodeDynamite();
+                ((Nobel)player).CmdPlantOrExplodeDynamite(sticks);
                 lastFireTime = Time.time;
             }
         }
