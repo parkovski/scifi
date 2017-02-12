@@ -28,7 +28,6 @@ namespace SciFi.Players.Attacks {
 
         [Server]
         public void Explode() {
-            Effects.Explosion(transform.position);
             var explosionGo = Instantiate(explosionPrefab, transform.position, Quaternion.identity);
             var explosion = explosionGo.GetComponent<Explosion>();
             explosion.damage = 10;
