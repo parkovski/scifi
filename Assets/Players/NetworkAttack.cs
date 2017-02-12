@@ -46,6 +46,10 @@ namespace SciFi.Players.Attacks {
             attack.IsCharging = true;
             attack.OnBeginCharging(direction);
             this.ShouldCancel = attack.ShouldCancel;
+            // Speculatively add these. Two will get added/removed on a host client,
+            // but this is ok.
+            player.AddModifier(Modifier.CantMove);
+            player.AddModifier(Modifier.CantAttack);
             player.NetworkAttackSync(new NetworkAttackMessage {
                 sender = this.guidAsBytes,
                 messageId = this.messageId,
@@ -75,6 +79,8 @@ namespace SciFi.Players.Attacks {
         public override void OnEndCharging(float chargeTime, Direction direction) {
             attack.IsCharging = false;
             attack.OnEndCharging(chargeTime, direction);
+            player.RemoveModifier(Modifier.CantAttack);
+            player.RemoveModifier(Modifier.CantMove);
             player.NetworkAttackSync(new NetworkAttackMessage {
                 sender = this.guidAsBytes,
                 messageId = this.messageId,
@@ -86,6 +92,10 @@ namespace SciFi.Players.Attacks {
 
         public override void OnCancel() {
             attack.OnCancel();
+            if (IsCharging) {
+                player.RemoveModifier(Modifier.CantAttack);
+                player.RemoveModifier(Modifier.CantMove);
+            }
             player.NetworkAttackSync(new NetworkAttackMessage {
                 sender = this.guidAsBytes,
                 messageId = this.messageId,

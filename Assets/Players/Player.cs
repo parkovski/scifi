@@ -51,8 +51,7 @@ namespace SciFi.Players {
         protected GameObject eItemGo;
         protected Item eItem;
         private OneWayPlatform sCurrentOneWayPlatform;
-        private List<uint> sModifiers;
-        [SyncVar]
+        private List<uint> eModifiers;
         private uint eModifierState;
         private int pModifiersDebugField;
         private uint pOldModifierState;
@@ -84,11 +83,6 @@ namespace SciFi.Players {
         /// Emitted on the server when an attack hits.
         public event AttackHitHandler sAttackHit;
 
-        public override void OnStartServer() {
-            sModifiers = new List<uint>();
-            Modifier.Initialize(sModifiers);
-        }
-
         void Start() {
             lRb = GetComponent<Rigidbody2D>();
             eDirection = Direction.Right;
@@ -98,6 +92,8 @@ namespace SciFi.Players {
 
             lNetworkAttacks = new List<NetworkAttack>();
 
+            eModifiers = new List<uint>();
+            Modifier.Initialize(eModifiers);
             pModifiersDebugField = DebugPrinter.Instance.NewField();
 
             if (pInputManager != null) {
@@ -161,20 +157,34 @@ namespace SciFi.Players {
             }
         }
 
-        /// Must be called on an authoritative copy
-        [Server]
+        /// The server will set the real state of these, but clients
+        /// may speculatively add/remove them when appropriate.
         public void AddModifier(Modifier modifier) {
-            modifier.Add(sModifiers, ref eModifierState);
+            modifier.Add(eModifiers, ref eModifierState);
+            if (isServer) {
+                RpcSetModifier(modifier.Id, eModifiers[(int)modifier.Id]);
+            }
         }
 
-        /// Must be called on an authoritative copy
-        [Server]
         public void RemoveModifier(Modifier modifier) {
-            modifier.Remove(sModifiers, ref eModifierState);
+            modifier.Remove(eModifiers, ref eModifierState);
+            if (isServer) {
+                RpcSetModifier(modifier.Id, eModifiers[(int)modifier.Id]);
+            }
         }
 
         public bool IsModifierEnabled(Modifier modifier) {
             return modifier.IsEnabled(eModifierState);
+        }
+
+        [ClientRpc]
+        void RpcSetModifier(ModId id, uint count) {
+            eModifiers[(int)id] = count;
+            if (count == 0) {
+                eModifierState &= ~(1u << (int)id);
+            } else {
+                eModifierState |= 1u << (int)id;
+            }
         }
 
         void HandleLeftRightInput(MultiPressControl control, Direction direction, bool backwards) {
