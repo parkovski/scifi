@@ -429,11 +429,12 @@ MonoBehaviour:
   eLives: 0
   eDamage: 0
   eDirection: 0
+  eTeam: -1
   eShouldFallThroughOneWayPlatform: 0
   defaultDirection: 1
-  maxSpeed: 7
+  maxSpeed: 6
   walkForce: 1000
-  jumpForce: 600
+  jumpForce: 500
   minDoubleJumpVelocity: 2
   boneArmPrefab: {fileID: 1457805978234942, guid: e58887ed3ee3c3945ad86258263d68f8,
     type: 2}
@@ -455,7 +456,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncInterval: 0.05
-  interpolationTime: 0.15
+  interpolationTime: 0.1
   closeEnoughPosition: 0.01
   closeEnoughVelocity: 0.1
   snapDistance: 3

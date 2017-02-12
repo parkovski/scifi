@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace SciFi.Players.Attacks {
     public class AppleAttack : Attack {
-        const float verticalForce = 50f;
+        const float verticalForce = 65f;
         const float horizontalForce = 20f;
         const float torqueRange = 5f;
         int applePrefabIndex;

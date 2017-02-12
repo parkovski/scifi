@@ -500,11 +500,12 @@ MonoBehaviour:
   eLives: 0
   eDamage: 0
   eDirection: 0
+  eTeam: -1
   eShouldFallThroughOneWayPlatform: 0
   defaultDirection: 1
   maxSpeed: 6.5
   walkForce: 1500
-  jumpForce: 600
+  jumpForce: 500
   minDoubleJumpVelocity: 2
   apple: {fileID: 1357499644953146, guid: c0cadcf302e68684fbf4486bf3efe53c, type: 2}
   greenApple: {fileID: 1620461812501308, guid: 81ded7638a649f346a3c489134ed51cb, type: 2}
