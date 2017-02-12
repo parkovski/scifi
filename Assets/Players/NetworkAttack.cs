@@ -46,7 +46,7 @@ namespace SciFi.Players.Attacks {
             attack.IsCharging = true;
             attack.OnBeginCharging(direction);
             this.ShouldCancel = attack.ShouldCancel;
-            player.CmdNetworkAttackSync(new NetworkAttackMessage {
+            player.NetworkAttackSync(new NetworkAttackMessage {
                 sender = this.guidAsBytes,
                 messageId = this.messageId,
                 function = NetworkAttackFunction.OnBeginCharging,
@@ -62,7 +62,7 @@ namespace SciFi.Players.Attacks {
             // on the local copy and the one sent here.
             /*if (chargeTime > lastKeepChargingSendTime + keepChargingSyncPeriod) {
                 lastKeepChargingSendTime = chargeTime;
-                player.CmdNetworkAttackSync(new NetworkAttackMessage {
+                player.NetworkAttackSync(new NetworkAttackMessage {
                     sender = this.guidAsBytes,
                     messageId = this.messageId,
                     function = NetworkAttackFunction.OnKeepCharging,
@@ -75,7 +75,7 @@ namespace SciFi.Players.Attacks {
         public override void OnEndCharging(float chargeTime, Direction direction) {
             attack.IsCharging = false;
             attack.OnEndCharging(chargeTime, direction);
-            player.CmdNetworkAttackSync(new NetworkAttackMessage {
+            player.NetworkAttackSync(new NetworkAttackMessage {
                 sender = this.guidAsBytes,
                 messageId = this.messageId,
                 function = NetworkAttackFunction.OnEndCharging,
@@ -86,7 +86,7 @@ namespace SciFi.Players.Attacks {
 
         public override void OnCancel() {
             attack.OnCancel();
-            player.CmdNetworkAttackSync(new NetworkAttackMessage {
+            player.NetworkAttackSync(new NetworkAttackMessage {
                 sender = this.guidAsBytes,
                 messageId = this.messageId,
                 function = NetworkAttackFunction.OnCancel,

@@ -714,8 +714,16 @@ namespace SciFi.Players {
             return lNetworkAttacks.Count - 1;
         }
 
+        public void NetworkAttackSync(NetworkAttackMessage message) {
+            if (isClient && hasAuthority) {
+                CmdNetworkAttackSync(message);
+            } else if (isServer) {
+                RpcNetworkAttackSync(message);
+            }
+        }
+
         [Command]
-        public void CmdNetworkAttackSync(NetworkAttackMessage message) {
+        void CmdNetworkAttackSync(NetworkAttackMessage message) {
             RpcNetworkAttackSync(message);
             lNetworkAttacks[message.messageId].ReceiveMessage(message);
         }
