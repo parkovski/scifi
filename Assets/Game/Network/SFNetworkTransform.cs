@@ -98,7 +98,7 @@ namespace SciFi.Network {
 
         [ClientRpc]
         void RpcSyncState(Vector2 position, float timestamp) {
-            if (isServer) {
+            if (isServer || hasAuthority) {
                 return;
             }
             timestamp += NetworkController.serverClock.clockOffset;
@@ -108,6 +108,20 @@ namespace SciFi.Network {
             targetPosition = position;
             originalPosition = transform.position;
             UpdateStats(timestamp);
+        }
+
+        [Command]
+        void CmdSnapTo(Vector2 position) {
+            SnapTo(position);
+            RpcSnapTo(position);
+        }
+
+        [ClientRpc]
+        void RpcSnapTo(Vector2 position) {
+            if (isServer || hasAuthority) {
+                return;
+            }
+            SnapTo(position);
         }
 
         /// Timestamp is already corrected with the remote clock offset.
@@ -154,9 +168,15 @@ namespace SciFi.Network {
             }
         }
 
+        /// Must be called on an authoritative copy.
         public void SnapTo(Vector2 position) {
             targetPosition = position;
             transform.position = position;
+            if (isServer) {
+                RpcSnapTo(position);
+            } else {
+                CmdSnapTo(position);
+            }
         }
 
         public override int GetNetworkChannel() {
