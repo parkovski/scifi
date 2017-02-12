@@ -317,6 +317,7 @@ namespace SciFi {
                 player.GetComponent<SFNetworkTransform>().SnapTo(new Vector2(-1000, -1000));
                 player.RpcYouDeadFool();
             } else {
+                player.GetComponent<SFNetworkTransform>().SnapTo(new Vector2(0f, 7f));
                 player.RpcRespawn(new Vector3(0f, 7f));
             }
             EventLifeChanged(player.eId, player.eLives);
