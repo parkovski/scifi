@@ -313,7 +313,9 @@ namespace SciFi {
 
             player.eDamage = 0;
             if (player.eLives <= 0) {
-                player.GetComponent<Rigidbody2D>().isKinematic = true;
+                var rb = player.GetComponent<Rigidbody2D>();
+                rb.isKinematic = true;
+                rb.gravityScale = 0;
                 player.GetComponent<SFNetworkTransform>().SnapTo(new Vector2(-1000, -1000));
                 player.RpcYouDeadFool();
             } else {
