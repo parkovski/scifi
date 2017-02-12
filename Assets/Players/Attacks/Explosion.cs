@@ -25,7 +25,7 @@ namespace SciFi.Players.Attacks {
 
         void Update() {
             float time = Time.time - startTime;
-            if (isServer && time > aliveTime) {
+            if (time > aliveTime) {
                 Destroy(gameObject);
             }
             var size = time.Scale(0, aliveTime, 1, scale);
