@@ -8,6 +8,7 @@ using SciFi.Util.Extensions;
 
 namespace SciFi.Players.Attacks {
     public class Gelignite : Projectile {
+        public GameObject explosionPrefab;
         Player stuckToPlayer;
         SpriteRenderer spriteRenderer;
         SpriteRenderer flameSpriteRenderer;
@@ -88,8 +89,11 @@ namespace SciFi.Players.Attacks {
                 return;
             }
 
-            GameController.Instance.Hit(stuckToPlayer.gameObject, this, gameObject, 10, 3f);
-            Effects.Explosion(transform.position);
+            var explosionGo = Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+            var explosion = explosionGo.GetComponent<Explosion>();
+            explosion.damage = 5;
+            explosion.knockback = 3f;
+            NetworkServer.Spawn(explosionGo);
             Destroy(gameObject);
         }
 

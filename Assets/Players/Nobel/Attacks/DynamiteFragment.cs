@@ -20,7 +20,7 @@ namespace SciFi.Players.Attacks {
             foreach (var child in Children()) {
                 child.layer = Layers.projectiles;
                 var rb = child.GetComponent<Rigidbody2D>();
-                rb.AddForce(new Vector2(Random.Range(-200f, 200f), Random.Range(100f, 300f)));
+                rb.AddForce(new Vector2(Random.Range(-300f, 300f), Random.Range(150f, 400f)));
             }
         }
 
@@ -32,7 +32,7 @@ namespace SciFi.Players.Attacks {
             if (Attack.GetAttackHit(collision.gameObject.layer) == AttackHit.HitAndDamage) {
                 child.layer = Layers.displayOnly;
                 child.GetComponent<SpriteRenderer>().enabled = false;
-                GameController.Instance.Hit(collision.gameObject, this, child, 3, 1f);
+                GameController.Instance.Hit(collision.gameObject, this, child, 1, .5f);
             }
         }
 
