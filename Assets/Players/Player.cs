@@ -50,7 +50,7 @@ namespace SciFi.Players {
         protected bool pCanDoubleJump;
         protected GameObject eItemGo;
         protected Item eItem;
-        private OneWayPlatform pCurrentOneWayPlatform;
+        private OneWayPlatform sCurrentOneWayPlatform;
         private List<uint> sModifiers;
         [SyncVar]
         private uint eModifierState;
@@ -142,7 +142,7 @@ namespace SciFi.Players {
 
                 var oneWay = collision.gameObject.GetComponent<OneWayPlatform>();
                 if (oneWay != null) {
-                    pCurrentOneWayPlatform = oneWay;
+                    sCurrentOneWayPlatform = oneWay;
                 }
             }
         }
@@ -156,7 +156,7 @@ namespace SciFi.Players {
 
                 var oneWay = collision.gameObject.GetComponent<OneWayPlatform>();
                 if (oneWay != null) {
-                    pCurrentOneWayPlatform = null;
+                    sCurrentOneWayPlatform = null;
                 }
             }
         }
@@ -269,18 +269,18 @@ namespace SciFi.Players {
             }
 
             if (pInputManager.IsControlActive(Control.Down) && !Modifier.CantMove.IsEnabled(eModifierState)) {
-                eShouldFallThroughOneWayPlatform = true;
-                if (pCurrentOneWayPlatform != null) {
+                if (!eShouldFallThroughOneWayPlatform) {
+                    eShouldFallThroughOneWayPlatform = true;
                     CmdFallThroughOneWayPlatform();
-                    // Forget the platform so we don't keep sending messages.
-                    pCurrentOneWayPlatform = null;
-                } else {
-                    if (!eShield.IsActive()) {
-                        eShield.Activate();
-                    }
+                }
+                if (!eShield.IsActive()) {
+                    eShield.Activate();
                 }
             } else {
-                eShouldFallThroughOneWayPlatform = false;
+                if (eShouldFallThroughOneWayPlatform) {
+                    eShouldFallThroughOneWayPlatform = false;
+                    CmdStopFallingThroughOneWayPlatform();
+                }
                 if (eShield.IsActive()) {
                     eShield.Deactivate();
                 }
@@ -302,9 +302,15 @@ namespace SciFi.Players {
 
         [Command]
         void CmdFallThroughOneWayPlatform() {
-            if (pCurrentOneWayPlatform != null) {
-                pCurrentOneWayPlatform.FallThrough(gameObject);
+            eShouldFallThroughOneWayPlatform = true;
+            if (sCurrentOneWayPlatform != null) {
+                sCurrentOneWayPlatform.FallThrough(gameObject);
             }
+        }
+
+        [Command]
+        void CmdStopFallingThroughOneWayPlatform() {
+            eShouldFallThroughOneWayPlatform = false;
         }
 
         protected void Update() {
