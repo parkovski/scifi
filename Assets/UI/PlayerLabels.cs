@@ -36,17 +36,17 @@ namespace SciFi.UI {
             panels = new RectTransform[4];
             labels = new Text[4];
 
+            for (var i = 0; i < panels.Length; i++) {
+                panels[i] = transform.Find("P" + (i+1) + "LabelPanel").GetComponent<RectTransform>();
+                labels[i] = transform.Find("P" + (i+1) + "Label").GetComponent<Text>();
+            }
+
             // Hack: GameController is only null when the main game scene is started
             // from the editor - a hack immediately loads the lobby scene where it
             // is initialized.
             players = new Player[0];
             if (GameController.Instance != null) {
                 GameController.Instance.PlayersInitialized += Init;
-            }
-
-            for (var i = 0; i < panels.Length; i++) {
-                panels[i] = transform.Find("P" + (i+1) + "LabelPanel").GetComponent<RectTransform>();
-                labels[i] = transform.Find("P" + (i+1) + "Label").GetComponent<Text>();
             }
         }
 

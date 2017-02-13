@@ -137,8 +137,8 @@ namespace SciFi {
         public void StartGame(bool countdown = true) {
             activePlayers = activePlayersGo.Select(p => p.GetComponent<Player>()).ToArray();
 
-            for (var i = 0; i < activePlayersGo.Length; i++) {
-                var player = activePlayersGo[i].GetComponent<Player>();
+            for (var i = 0; i < activePlayers.Length; i++) {
+                var player = activePlayers[i];
                 player.eId = i;
                 if (string.IsNullOrEmpty(displayNames[i])) {
                     player.eDisplayName = "P" + (i + 1);
@@ -147,14 +147,24 @@ namespace SciFi {
                 }
                 player.eTeam = teams[i];
                 player.eLives = 5;
+            }
+
+            _PlayersInitialized(activePlayers);
+
+            StartCoroutine(StartGameWhenPlayersReady());
+        }
+
+        IEnumerator StartGameWhenPlayersReady() {
+            yield return new WaitUntil(() => activePlayers.All(p => p.IsInitialized()));
+
+            for (var i = 0; i < activePlayers.Length; i++) {
+                var player = activePlayers[i];
                 if (countdown) {
                     player.AddModifier(Modifier.CantMove);
                     player.AddModifier(Modifier.CantAttack);
                 }
                 EventLifeChanged(player.eId, player.eLives);
             }
-
-            _PlayersInitialized(activePlayers);
 
             displayNames = null;
             teams = null;
@@ -194,6 +204,7 @@ namespace SciFi {
 
         IEnumerator WaitForPlayersToSync() {
             yield return new WaitWhile(() => activePlayers.Count(p => p.eId == 0) > 1);
+            yield return new WaitUntil(() => activePlayers.All(p => p.IsInitialized()));
             cPlayerId = activePlayers.First(p => p.hasAuthority).eId;
             // If this copy is both client and server, the server
             // side will already have called this.

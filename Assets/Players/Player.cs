@@ -121,6 +121,10 @@ namespace SciFi.Players {
 
         protected abstract void OnInitialize();
 
+        public bool IsInitialized() {
+            return lInitialized;
+        }
+
         public void GameControllerReady(GameController gameController) {
             // This is called twice on a host - once when the client game
             // starts and once when the server game starts.
