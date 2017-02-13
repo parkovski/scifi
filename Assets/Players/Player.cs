@@ -21,10 +21,10 @@ namespace SciFi.Players {
     }
 
     public abstract class Player : NetworkBehaviour, IInteractable {
-        public static readonly Color blueTeamColor = new Color(0, 0, 0.235f, 1f);
-        public static readonly Color redTeamColor = new Color(0.235f, 0, 0, 1f);
-        public static readonly Color greenTeamColor = new Color(0, 0.235f, 0, 1f);
-        public static readonly Color yellowTeamColor = new Color(0.235f, 0.235f, 0, 1f);
+        public static readonly Color blueTeamColor = new Color(0, 0, 0.6f, 1f);
+        public static readonly Color redTeamColor = new Color(0.6f, 0, 0, 1f);
+        public static readonly Color greenTeamColor = new Color(0, 0.6f, 0, 1f);
+        public static readonly Color yellowTeamColor = new Color(0.6f, 0.6f, 0, 1f);
 
         public GameObject shieldPrefab;
 
@@ -104,7 +104,7 @@ namespace SciFi.Players {
             }
         }
 
-        static Color TeamToColor(int team) {
+        public static Color TeamToColor(int team) {
             switch (team) {
             case 0:
                 return Player.blueTeamColor;

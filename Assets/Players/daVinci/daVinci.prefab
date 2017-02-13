@@ -476,6 +476,7 @@ MonoBehaviour:
   - {fileID: 212090658757248582}
   - {fileID: 212875894426860778}
   - {fileID: 212734603346567256}
+  alpha: 0.3
 --- !u!212 &212090658757248582
 SpriteRenderer:
   m_ObjectHideFlags: 1

@@ -31,8 +31,10 @@ namespace SciFi.Scenes {
         void ObjectSelected(GameObject gameObject) {
             ((Behaviour)selected.GetComponent("Halo")).enabled = false;
             ((Behaviour)gameObject.GetComponent("Halo")).enabled = true;
-            selected.GetComponent<SpriteOverlay>().SetColor(Color.clear);
-            gameObject.GetComponent<SpriteOverlay>().SetColor(selectedColor);
+            if (TransitionParams.team != -1) {
+                selected.GetComponent<SpriteOverlay>().SetColorWithAlpha(Color.clear);
+                gameObject.GetComponent<SpriteOverlay>().SetColor(selectedColor);
+            }
             selected = gameObject;
         }
 
@@ -51,24 +53,47 @@ namespace SciFi.Scenes {
             SceneManager.LoadScene("TitleScreen");
         }
 
+        /// Set the team, or if this team is already selected,
+        /// unset it.
+        void SetTeam(int team) {
+            if (TransitionParams.team == team) {
+                TransitionParams.team = -1;
+                selected.GetComponent<SpriteOverlay>().SetColorWithAlpha(Color.clear);
+                return;
+            }
+
+            TransitionParams.team = team;
+            switch (team) {
+            case 0:
+                selectedColor = Player.blueTeamColor;
+                break;
+            case 1:
+                selectedColor = Player.redTeamColor;
+                break;
+            case 2:
+                selectedColor = Player.greenTeamColor;
+                break;
+            case 3:
+                selectedColor = Player.yellowTeamColor;
+                break;
+            }
+            selected.GetComponent<SpriteOverlay>().SetColor(selectedColor);
+        }
+
         public void P1Clicked() {
-            selected.GetComponent<SpriteOverlay>().SetColor(selectedColor = Player.blueTeamColor);
-            TransitionParams.team = 0;
+            SetTeam(0);
         }
 
         public void P2Clicked() {
-            selected.GetComponent<SpriteOverlay>().SetColor(selectedColor = Player.redTeamColor);
-            TransitionParams.team = 1;
+            SetTeam(1);
         }
 
         public void P3Clicked() {
-            selected.GetComponent<SpriteOverlay>().SetColor(selectedColor = Player.greenTeamColor);
-            TransitionParams.team = 2;
+            SetTeam(2);
         }
 
         public void P4Clicked() {
-            selected.GetComponent<SpriteOverlay>().SetColor(selectedColor = Player.yellowTeamColor);
-            TransitionParams.team = 3;
+            SetTeam(3);
         }
     }
 }

@@ -355,6 +355,7 @@ MonoBehaviour:
   - {fileID: 212047818730495602}
   - {fileID: 212911727145840830}
   - {fileID: 212359675069479318}
+  alpha: 0.3
 --- !u!114 &114685166662065644
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -421,6 +422,7 @@ MonoBehaviour:
   eLives: 0
   eDamage: 0
   eDirection: 0
+  eTeam: -1
   eShouldFallThroughOneWayPlatform: 0
   defaultDirection: 0
   maxSpeed: 5.5

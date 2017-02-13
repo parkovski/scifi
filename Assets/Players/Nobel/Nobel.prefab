@@ -478,6 +478,7 @@ MonoBehaviour:
   - {fileID: 212631853501278954}
   - {fileID: 212982289938221492}
   - {fileID: 212498796193949766}
+  alpha: 0.3
 --- !u!114 &114949921319829968
 MonoBehaviour:
   m_ObjectHideFlags: 1
