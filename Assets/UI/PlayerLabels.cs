@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 using SciFi.Players;
+using SciFi.Util.Extensions;
 
 namespace SciFi.UI {
     /// A label above the player, by default showing "P1", etc. but
@@ -16,6 +17,11 @@ namespace SciFi.UI {
             this.players = players;
             var i = 0;
             while (i < players.Length) {
+                if (players[i].eTeam == -1) {
+                    panels[i].GetComponent<Image>().color = Color.black.WithAlpha(0.4f);
+                } else {
+                    panels[i].GetComponent<Image>().color = Player.TeamToColor(players[i].eTeam).WithAlpha(0.4f);
+                }
                 labels[i].text = players[i].eDisplayName;
                 i++;
             }

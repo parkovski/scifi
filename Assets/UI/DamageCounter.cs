@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+using SciFi.Players;
+
 namespace SciFi.UI {
     /// Displays each player's lives and damage on the screen.
     public class DamageCounter : MonoBehaviour {
@@ -22,6 +24,11 @@ namespace SciFi.UI {
                     return;
                 }
                 var p = players[player];
+                if (p.eTeam == -1) {
+                    text.color = Color.black;
+                } else {
+                    text.color = Player.TeamToColor(p.eTeam);
+                }
                 lives = p.eLives;
                 damage = p.eDamage;
                 UpdateInfo();
