@@ -204,7 +204,6 @@ namespace SciFi {
 
         IEnumerator WaitForPlayersToSync() {
             yield return new WaitWhile(() => activePlayers.Count(p => p.eId == 0) > 1);
-            yield return new WaitUntil(() => activePlayers.All(p => p.IsInitialized()));
             cPlayerId = activePlayers.First(p => p.hasAuthority).eId;
             // If this copy is both client and server, the server
             // side will already have called this.
