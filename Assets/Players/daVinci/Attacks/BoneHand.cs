@@ -12,7 +12,7 @@ namespace SciFi.Players.Attacks {
         void OnCollisionEnter2D(Collision2D collision) {
             if (Attack.GetAttackHit(collision.gameObject.layer) == AttackHit.HitAndDamage) {
                 Effects.Star(collision.contacts[0].point);
-                GameController.Instance.Hit(collision.gameObject, this, gameObject, 10, 3.5f);
+                GameController.Instance.Hit(collision.gameObject, this, gameObject, 10, 7f);
             }
             Destroy(gameObject);
         }

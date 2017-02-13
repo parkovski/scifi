@@ -89,7 +89,7 @@ namespace SciFi.Players.Attacks {
                 material.SetInt("_Peaks", 7);
             }
 
-            GameController.Instance.Hit(collider.gameObject, this, gameObject, power, power);
+            GameController.Instance.Hit(collider.gameObject, this, gameObject, power * 3 / 2, power * 1.5f);
         }
 
         public AttackType Type { get { return AttackType.Melee; } }
