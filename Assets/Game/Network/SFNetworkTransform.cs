@@ -85,6 +85,9 @@ namespace SciFi.Network {
         [Command]
         void CmdSyncState(Vector2 position, float timestamp) {
             var conn = GameController.Instance.ConnectionForPlayer(player.eId);
+            if (conn == null) {
+                return;
+            }
             var clockOffset = NetworkController.GetClientClockOffset(conn);
             timestamp += clockOffset.Value;
             if (timestamp < lastTimestamp) {
