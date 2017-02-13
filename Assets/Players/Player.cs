@@ -21,7 +21,7 @@ namespace SciFi.Players {
     }
 
     public abstract class Player : NetworkBehaviour, IInteractable {
-        public static readonly Color blueTeamColor = new Color(0, 0, 0.6f, 1f);
+        public static readonly Color blueTeamColor = new Color(0.4f, 0.4f, 1f, 1f);
         public static readonly Color redTeamColor = new Color(0.6f, 0, 0, 1f);
         public static readonly Color greenTeamColor = new Color(0, 0.6f, 0, 1f);
         public static readonly Color yellowTeamColor = new Color(0.6f, 0.6f, 0, 1f);
@@ -77,8 +77,8 @@ namespace SciFi.Players {
         // Parameters for child classes to change behavior
         protected Attack eAttack1;
         protected Attack eAttack2;
-        protected Attack eSpecialAttack;
-        //protected Attack eSuperAttack;
+        protected Attack eAttack3;
+        //protected Attack eSpecialAttack;
         protected Shield eShield;
 
         public delegate void AttackHitHandler(AttackType type, AttackProperty properties);
@@ -267,7 +267,7 @@ namespace SciFi.Players {
             if (!hasAuthority) {
                 eAttack1.UpdateStateNonAuthoritative();
                 eAttack2.UpdateStateNonAuthoritative();
-                eSpecialAttack.UpdateStateNonAuthoritative();
+                eAttack3.UpdateStateNonAuthoritative();
                 return;
             }
             if (!isLocalPlayer) {
@@ -321,7 +321,7 @@ namespace SciFi.Players {
 
             eAttack1.UpdateState(pInputManager, Control.Attack1);
             eAttack2.UpdateState(pInputManager, Control.Attack2);
-            eSpecialAttack.UpdateState(pInputManager, Control.SpecialAttack);
+            eAttack3.UpdateState(pInputManager, Control.Attack3);
 
 #if UNITY_EDITOR
             if (eModifierState != pOldModifierState) {
@@ -724,14 +724,14 @@ namespace SciFi.Players {
             RpcHit(damage);
             eAttack1.RequestCancel();
             eAttack2.RequestCancel();
-            eSpecialAttack.RequestCancel();
+            eAttack3.RequestCancel();
         }
 
         [ClientRpc]
         void RpcHit(int damage) {
             eAttack1.RequestCancel();
             eAttack2.RequestCancel();
-            eSpecialAttack.RequestCancel();
+            eAttack3.RequestCancel();
         }
 
         [Server]

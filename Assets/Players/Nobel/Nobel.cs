@@ -25,7 +25,7 @@ namespace SciFi.Players {
 
             eAttack1 = new GunAttack(this, gunGo, bulletPrefab);
             eAttack2 = new GeligniteAttack(this, gelignitePrefab);
-            eSpecialAttack = new DynamiteAttack(this);
+            eAttack3 = new DynamiteAttack(this);
 
             spriteFlip = new CompoundSpriteFlip(gameObject, defaultDirection);
         }
@@ -127,7 +127,7 @@ namespace SciFi.Players {
 
         [ClientRpc]
         void RpcSetHasPlantedDynamite(bool hasPlantedDynamite) {
-            ((DynamiteAttack)eSpecialAttack).SetHasPlantedDynamite(hasPlantedDynamite);
+            ((DynamiteAttack)eAttack3).SetHasPlantedDynamite(hasPlantedDynamite);
         }
     }
 }

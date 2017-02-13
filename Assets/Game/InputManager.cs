@@ -31,7 +31,7 @@ namespace SciFi {
         public const int Down = 3;
         public const int Attack1 = 4;
         public const int Attack2 = 5;
-        public const int SpecialAttack = 6;
+        public const int Attack3 = 6;
         public const int SuperAttack = 7;
         public const int Item = 8;
         /// Not used in game - player may set a mouse button
@@ -260,7 +260,7 @@ namespace SciFi {
                 Destroy(GameObject.Find("DownButton"));
                 Destroy(GameObject.Find("AttackButton1"));
                 Destroy(GameObject.Find("AttackButton2"));
-                Destroy(GameObject.Find("ItemButton"));
+                Destroy(GameObject.Find("AttackButton3"));
             }
         }
 
@@ -270,7 +270,7 @@ namespace SciFi {
             var vertical = Input.GetAxis("Vertical");
             var attack1 = Input.GetButton("Fire1");
             var attack2 = Input.GetButton("Fire2");
-            var specialAttack = Input.GetButton("Fire3");
+            var attack3 = Input.GetButton("Fire3");
             var item = Input.GetButton("Item");
             var mouse1 = Input.GetKey("mouse 0");
             var mouse2 = Input.GetKey("mouse 1");
@@ -295,7 +295,7 @@ namespace SciFi {
 
             state.UpdateButton(Control.Attack1, attack1);
             state.UpdateButton(Control.Attack2, attack2);
-            state.UpdateButton(Control.SpecialAttack, specialAttack);
+            state.UpdateButton(Control.Attack3, attack3);
             state.UpdateButton(Control.Item, item);
 
             state.mousePosition = Input.mousePosition;
@@ -353,9 +353,9 @@ namespace SciFi {
                 return Control.Attack1;
             case "AttackButton2":
                 return Control.Attack2;
-            case "SpecialAttackButton": // Fake button for combo
-                return Control.SpecialAttack;
-            case "DodgeLeftButton":
+            case "AttackButton3":
+                return Control.Attack3;
+            case "DodgeLeftButton": // Fake button for combo
                 return Control.DodgeLeft;
             case "DodgeRightButton":
                 return Control.DodgeRight;
@@ -390,8 +390,8 @@ namespace SciFi {
             case Control.Item:
                 state.TouchUpdateButton(Control.Item, true);
                 break;
-            case Control.SpecialAttack:
-                state.TouchUpdateButton(Control.SpecialAttack, true);
+            case Control.Attack3:
+                state.TouchUpdateButton(Control.Attack3, true);
                 break;
             case Control.DodgeLeft:
                 state.TouchUpdateButton(Control.DodgeLeft, true);
@@ -424,8 +424,8 @@ namespace SciFi {
             case Control.Item:
                 state.TouchReset(Control.Item);
                 break;
-            case Control.SpecialAttack:
-                state.TouchReset(Control.SpecialAttack);
+            case Control.Attack3:
+                state.TouchReset(Control.Attack3);
                 break;
             case Control.DodgeLeft:
                 state.TouchReset(Control.DodgeLeft);
@@ -456,9 +456,6 @@ namespace SciFi {
             if (first == Control.Right && second == Control.Down) {
                 return Control.DodgeRight;
             }
-            if (first == Control.Attack1 && second == Control.Attack2) {
-                return Control.SpecialAttack;
-            }
             return -1;
         }
 
@@ -471,9 +468,6 @@ namespace SciFi {
             if (combo == Control.DodgeRight) {
                 return "DodgeRightButton";
             }
-            if (combo == Control.SpecialAttack) {
-                return "SpecialAttackButton";
-            }
             return "";
         }
 
@@ -483,9 +477,6 @@ namespace SciFi {
                 return true;
             }
             if (control == Control.DodgeRight) {
-                return true;
-            }
-            if (control == Control.SpecialAttack) {
                 return true;
             }
             return false;

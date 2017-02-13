@@ -23,7 +23,7 @@ namespace SciFi.Players {
 
             eAttack1 = new NetworkAttack(new PaintbrushAttack(this, paintbrush.GetComponent<Paintbrush>()), 0.1f);
             eAttack2 = new NetworkAttack(new BoneArmAttack(this, boneArm.GetComponent<BoneArm>()), 0.1f);
-            eSpecialAttack = new FlyingMachineAttack(this);
+            eAttack3 = new FlyingMachineAttack(this);
 
             playerFlip = new CompoundSpriteFlip(gameObject, defaultDirection);
             boneArmFlip = new CompoundSpriteFlip(boneArm, defaultDirection.Opposite());

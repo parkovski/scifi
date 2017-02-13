@@ -19,7 +19,7 @@ namespace SciFi.Players {
         protected override void OnInitialize() {
             eAttack1 = new AppleAttack(this, apple, greenApple);
             eAttack2 = new NetworkAttack(new CalcBookAttack(this, new [] { calc1, calc2, calc3 }), 0.1f);
-            eSpecialAttack = new NetworkAttack(new GravityWellAttack(this, gravityWell), 0.1f);
+            eAttack3 = new NetworkAttack(new GravityWellAttack(this, gravityWell), 0.1f);
             animator = GetComponent<Animator>();
             spriteFlip = new CompoundSpriteFlip(gameObject, defaultDirection);
         }
