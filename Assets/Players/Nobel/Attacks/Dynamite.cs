@@ -18,7 +18,7 @@ namespace SciFi.Players.Attacks {
         public Action explodeCallback;
         /// Called on the server when the dynamite is destroyed.
         [HideInInspector]
-        public Action destroyCallback;
+        public Action<GameObject> destroyCallback;
 
         void Start() {
             BaseStart();
@@ -26,7 +26,7 @@ namespace SciFi.Players.Attacks {
 
         void OnDestroy() {
             if (destroyCallback != null) {
-                destroyCallback();
+                destroyCallback(gameObject);
             }
         }
 

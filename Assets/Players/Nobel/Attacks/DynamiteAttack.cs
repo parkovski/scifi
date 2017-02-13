@@ -5,6 +5,7 @@ namespace SciFi.Players.Attacks {
         bool hasPlantedDynamite = false;
         const float cooldownInterval = 1f;
         float lastFireTime;
+        int sticks;
 
         public DynamiteAttack(Nobel player)
             : base(player, 0f, true)
@@ -18,19 +19,21 @@ namespace SciFi.Players.Attacks {
             } else {
                 if (Time.time < lastFireTime + cooldownInterval) {
                     RequestCancel();
+                } else {
+                    ((Nobel)player).CmdPlantOrExplodeDynamite(sticks = 1);
                 }
             }
         }
 
         public override void OnKeepCharging(float chargeTime, Direction direction) {
+            int newSticks = 1 + (int)Mathf.Clamp(chargeTime * 2, 0, 2f);
+            if (newSticks > sticks) {
+                ((Nobel)player).CmdPlantOrExplodeDynamite(sticks = newSticks);
+            }
         }
 
         public override void OnEndCharging(float chargeTime, Direction direction) {
-            int sticks = 1 + (int)Mathf.Clamp(chargeTime * 2, 0, 2f);
-            if (!hasPlantedDynamite) {
-                ((Nobel)player).CmdPlantOrExplodeDynamite(sticks);
-                lastFireTime = Time.time;
-            }
+            lastFireTime = Time.time;
         }
 
         public override void OnCancel() {

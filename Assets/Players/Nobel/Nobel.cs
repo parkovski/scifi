@@ -3,6 +3,7 @@ using UnityEngine.Networking;
 
 using SciFi.Players.Attacks;
 using SciFi.Util;
+using SciFi.Util.Extensions;
 
 namespace SciFi.Players {
     public class Nobel : Player {
@@ -66,21 +67,8 @@ namespace SciFi.Players {
 
         [Command]
         public void CmdPlantOrExplodeDynamite(int sticks) {
-            if (dynamiteGo != null) {
-                ExplodeDynamite();
-            } else {
-                PlantDynamite(sticks);
-            }
-        }
-
-        [Server]
-        void PlantDynamite(int sticks) {
-            var position = transform.position;
-            if (eDirection == Direction.Left) {
-                position += new Vector3(-1f, -.5f);
-            } else {
-                position += new Vector3(1f, -.5f);
-            }
+            var position = transform.position + new Vector3(1f, -.5f).FlipDirection(eDirection);
+            var velocity = Vector2.zero;
             GameObject prefab;
             switch (sticks) {
             case 1:
@@ -93,9 +81,16 @@ namespace SciFi.Players {
                 prefab = dynamite3Prefab;
                 break;
             default:
+                ExplodeDynamite();
                 return;
             }
+            if (dynamiteGo != null) {
+                position = dynamiteGo.transform.position;
+                velocity = dynamiteGo.GetComponent<Rigidbody2D>().velocity;
+                Destroy(dynamiteGo);
+            }
             dynamiteGo = Object.Instantiate(prefab, position, Quaternion.identity);
+            dynamiteGo.GetComponent<Rigidbody2D>().velocity = velocity;
             var dynamite = dynamiteGo.GetComponent<Dynamite>();
             // Intentionally don't set spawnedBy so the player that
             // created it can push it around.
@@ -107,7 +102,9 @@ namespace SciFi.Players {
 
         [Server]
         void ExplodeDynamite() {
-            dynamiteGo.GetComponent<Dynamite>().Explode();
+            if (dynamiteGo != null) {
+                dynamiteGo.GetComponent<Dynamite>().Explode();
+            }
         }
 
         [Server]
@@ -120,8 +117,12 @@ namespace SciFi.Players {
         }
 
         [Server]
-        void OnDynamiteDestroyed() {
-            RpcSetHasPlantedDynamite(false);
+        void OnDynamiteDestroyed(GameObject objectBeingDestroyed) {
+            // Don't want to send this when the dynamite has been
+            // replaced with a more powerful one.
+            if (dynamiteGo == null || dynamiteGo == objectBeingDestroyed) {
+                RpcSetHasPlantedDynamite(false);
+            }
         }
 
         [ClientRpc]
