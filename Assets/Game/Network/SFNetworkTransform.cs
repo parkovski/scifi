@@ -4,19 +4,34 @@ using UnityEngine.Networking;
 namespace SciFi.Network {
     public class SFNetworkTransform : NetworkBehaviour {
         public bool useDefaults = true;
-        public float syncInterval;
-        public float interpolationTime = 0.2f;
-        public float closeEnoughPosition = 0.01f;
-        public float closeEnoughVelocity = 0.1f;
-        public float snapDistance = 3f;
+        /// How often sync messages will be broadcast.
+        public float syncInterval = SFNetworkTransformGlobalParams.syncInterval;
+        /// Constant client lag factor - this is kept constant
+        /// by synchronizing the client and server clocks.
+        public float interpolationTime = SFNetworkTransformGlobalParams.interpolationTime;
+        /// Threshold for sending position updates - if the position
+        /// has changed by less than this value, an update will not be sent.
+        public float closeEnoughPosition = SFNetworkTransformGlobalParams.closeEnoughPosition;
+        /// Threshold for sending velocity updates - if the velocity
+        /// has changed by less than this value, an update will not be sent.
+        public float closeEnoughVelocity = SFNetworkTransformGlobalParams.closeEnoughVelocity;
+        /// Max distance the object can be out of sync by for one
+        /// interpolation period before it snaps to the new position.
+        public float snapDistance = SFNetworkTransformGlobalParams.snapDistance;
 
+        /// When the object gets out of sync, this timer starts, and after
+        /// one interpolation period, it will snap to the new position.
         float snapTimer;
         float lastMessageSentTime;
         float lastMessageReceivedTime;
+        /// How long it takes to reach the new position. This is equal to
+        /// the interpolation period (the constant lag) minus the lag for
+        /// the message, calculated using the clock offset.
         float timeToTarget;
+        /// Local time for the last message received.
         float lastTimestamp;
+        /// Where we want to end up at the end of the current time period.
         Vector2 targetPosition;
-        Vector2 originalPosition;
         Rigidbody2D rb;
         /// Used to identify the sender in CmdSyncState.
         NetworkIdentity networkIdentity;
@@ -54,26 +69,19 @@ namespace SciFi.Network {
             // - This copy is on a client without authority - it just receives
             // values and does interpolation.
 
-            if (!isServer && hasAuthority) {
+            if (hasAuthority) {
                 if (Time.realtimeSinceStartup > lastMessageSentTime + syncInterval) {
                     if (!PositionCloseEnough(transform.position, targetPosition)) {
                         lastMessageSentTime = Time.realtimeSinceStartup;
                         targetPosition = transform.position;
-                        CmdSyncState(transform.position, Time.realtimeSinceStartup);
+                        if (isServer) {
+                            RpcSyncState(targetPosition, lastMessageSentTime);
+                        } else {
+                            CmdSyncState(targetPosition, lastMessageSentTime);
+                        }
                     }
                 }
-            } else if (isServer && !hasAuthority) {
-                rb.velocity = Vector2.zero;
-                Interpolate();
-            } else if (isServer && hasAuthority) {
-                if (Time.realtimeSinceStartup > lastMessageSentTime + syncInterval) {
-                    if (!PositionCloseEnough(transform.position, targetPosition)) {
-                        lastMessageSentTime = Time.realtimeSinceStartup;
-                        targetPosition = transform.position;
-                        RpcSyncState(transform.position, Time.realtimeSinceStartup);
-                    }
-                }
-            } else if (!isServer && !hasAuthority) {
+            } else {
                 rb.velocity = Vector2.zero;
                 Interpolate();
             }
@@ -101,7 +109,6 @@ namespace SciFi.Network {
                 return;
             }
             targetPosition = position;
-            originalPosition = transform.position;
             UpdateStats(timestamp);
             RpcSyncState(position, timestamp);
         }
@@ -116,7 +123,6 @@ namespace SciFi.Network {
                 return;
             }
             targetPosition = position;
-            originalPosition = transform.position;
             UpdateStats(timestamp);
         }
 
@@ -199,11 +205,11 @@ namespace SciFi.Network {
     }
 
     public static class SFNetworkTransformGlobalParams {
-        public static float syncInterval = 0.05f;
-        public static float interpolationTime = 0.1f;
-        public static float closeEnoughPosition = 0.01f;
-        public static float closeEnoughVelocity = 0.1f;
-        public static float snapDistance = 3f;
+        public const float syncInterval = 0.05f;
+        public const float interpolationTime = 0.1f;
+        public const float closeEnoughPosition = 0.01f;
+        public const float closeEnoughVelocity = 0.1f;
+        public const float snapDistance = 3f;
     }
 }
 
