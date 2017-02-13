@@ -511,10 +511,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spriteRenderers:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 212309097941207720}
+  - {fileID: 212332690639639038}
+  - {fileID: 212781773480163286}
+  - {fileID: 212040203203215896}
+  - {fileID: 212475175756856198}
   alpha: 0.3
 --- !u!114 &114767566494285882
 MonoBehaviour:
