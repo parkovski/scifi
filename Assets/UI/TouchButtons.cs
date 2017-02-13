@@ -34,7 +34,7 @@ namespace SciFi.UI {
             Add("DownButton");
             Add("AttackButton1");
             Add("AttackButton2");
-            Add("ItemButton");
+            Add("AttackButton3");
 
             buttonGraphics = new Dictionary<string, SpriteRenderer>();
             AddGfx("LeftButton", "LeftArrow");
@@ -42,7 +42,7 @@ namespace SciFi.UI {
             AddGfx("DownButton", "DownArrow");
             AddGfx("AttackButton1", "Attack1");
             AddGfx("AttackButton2", "Attack2");
-            AddGfx("ItemButton", "Item");
+            AddGfx("AttackButton3", "Attack3");
 
             var gc = GameObject.Find("GameController");
             if (gc != null) {
@@ -69,10 +69,6 @@ namespace SciFi.UI {
             if (activeControl == "DownButton") {
                 buttonGraphics["LeftButton"].sprite = reset ? leftButton : dodgeLeftButton;
                 buttonGraphics["RightButton"].sprite = reset ? rightButton : dodgeRightButton;
-            } else if (activeControl == "AttackButton1") {
-                buttonGraphics["AttackButton2"].sprite = reset ? attackButton2 : specialAttackButton;
-            } else if (activeControl == "AttackButton2") {
-                buttonGraphics["AttackButton1"].sprite = reset ? attackButton1 : specialAttackButton;
             }
         }
 
