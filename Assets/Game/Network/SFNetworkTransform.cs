@@ -1,33 +1,55 @@
 using UnityEngine;
 using UnityEngine.Networking;
 
-using SciFi.Players;
-
 namespace SciFi.Network {
     public class SFNetworkTransform : NetworkBehaviour {
-        public float syncInterval;
-        public float interpolationTime = 0.2f;
-        public float closeEnoughPosition = 0.01f;
-        public float closeEnoughVelocity = 0.1f;
-        public float snapDistance = 3f;
+        public bool useDefaults = true;
+        /// How often sync messages will be broadcast.
+        public float syncInterval = SFNetworkTransformGlobalParams.syncInterval;
+        /// Constant client lag factor - this is kept constant
+        /// by synchronizing the client and server clocks.
+        public float interpolationTime = SFNetworkTransformGlobalParams.interpolationTime;
+        /// Threshold for sending position updates - if the position
+        /// has changed by less than this value, an update will not be sent.
+        public float closeEnoughPosition = SFNetworkTransformGlobalParams.closeEnoughPosition;
+        /// Threshold for sending velocity updates - if the velocity
+        /// has changed by less than this value, an update will not be sent.
+        public float closeEnoughVelocity = SFNetworkTransformGlobalParams.closeEnoughVelocity;
+        /// Max distance the object can be out of sync by for one
+        /// interpolation period before it snaps to the new position.
+        public float snapDistance = SFNetworkTransformGlobalParams.snapDistance;
 
+        /// When the object gets out of sync, this timer starts, and after
+        /// one interpolation period, it will snap to the new position.
         float snapTimer;
         float lastMessageSentTime;
         float lastMessageReceivedTime;
+        /// How long it takes to reach the new position. This is equal to
+        /// the interpolation period (the constant lag) minus the lag for
+        /// the message, calculated using the clock offset.
         float timeToTarget;
+        /// Local time for the last message received.
         float lastTimestamp;
+        /// Where we want to end up at the end of the current time period.
         Vector2 targetPosition;
-        Vector2 originalPosition;
         Rigidbody2D rb;
-        /// Null if none, but only players can call CmdSyncState.
-        Player player;
+        /// Used to identify the sender in CmdSyncState.
+        NetworkIdentity networkIdentity;
 
         void Start() {
             rb = GetComponent<Rigidbody2D>();
-            player = GetComponent<Player>();
+            networkIdentity = GetComponent<NetworkIdentity>();
 
             targetPosition = transform.position;
             lastMessageReceivedTime = Time.realtimeSinceStartup;
+
+            if (useDefaults) {
+                syncInterval = SFNetworkTransformGlobalParams.syncInterval;
+                interpolationTime = SFNetworkTransformGlobalParams.interpolationTime;
+                closeEnoughPosition = SFNetworkTransformGlobalParams.closeEnoughPosition;
+                closeEnoughVelocity = SFNetworkTransformGlobalParams.closeEnoughVelocity;
+                snapDistance = SFNetworkTransformGlobalParams.snapDistance;
+            }
         }
 
         void Update() {
@@ -47,26 +69,19 @@ namespace SciFi.Network {
             // - This copy is on a client without authority - it just receives
             // values and does interpolation.
 
-            if (!isServer && hasAuthority) {
+            if (hasAuthority) {
                 if (Time.realtimeSinceStartup > lastMessageSentTime + syncInterval) {
                     if (!PositionCloseEnough(transform.position, targetPosition)) {
                         lastMessageSentTime = Time.realtimeSinceStartup;
                         targetPosition = transform.position;
-                        CmdSyncState(transform.position, Time.realtimeSinceStartup);
+                        if (isServer) {
+                            RpcSyncState(targetPosition, lastMessageSentTime);
+                        } else {
+                            CmdSyncState(targetPosition, lastMessageSentTime);
+                        }
                     }
                 }
-            } else if (isServer && !hasAuthority) {
-                rb.velocity = Vector2.zero;
-                Interpolate();
-            } else if (isServer && hasAuthority) {
-                if (Time.realtimeSinceStartup > lastMessageSentTime + syncInterval) {
-                    if (!PositionCloseEnough(transform.position, targetPosition)) {
-                        lastMessageSentTime = Time.realtimeSinceStartup;
-                        targetPosition = transform.position;
-                        RpcSyncState(transform.position, Time.realtimeSinceStartup);
-                    }
-                }
-            } else if (!isServer && !hasAuthority) {
+            } else {
                 rb.velocity = Vector2.zero;
                 Interpolate();
             }
@@ -84,14 +99,16 @@ namespace SciFi.Network {
         /// track their client connections.
         [Command]
         void CmdSyncState(Vector2 position, float timestamp) {
-            var conn = GameController.Instance.ConnectionForPlayer(player.eId);
+            var conn = networkIdentity.clientAuthorityOwner;
+            if (conn == null) {
+                return;
+            }
             var clockOffset = NetworkController.GetClientClockOffset(conn);
             timestamp += clockOffset.Value;
             if (timestamp < lastTimestamp) {
                 return;
             }
             targetPosition = position;
-            originalPosition = transform.position;
             UpdateStats(timestamp);
             RpcSyncState(position, timestamp);
         }
@@ -106,7 +123,6 @@ namespace SciFi.Network {
                 return;
             }
             targetPosition = position;
-            originalPosition = transform.position;
             UpdateStats(timestamp);
         }
 
@@ -185,6 +201,83 @@ namespace SciFi.Network {
 
         public override float GetNetworkSendInterval() {
             return syncInterval;
+        }
+    }
+
+    public static class SFNetworkTransformGlobalParams {
+        public const float syncInterval = 0.05f;
+        public const float interpolationTime = 0.1f;
+        public const float closeEnoughPosition = 0.01f;
+        public const float closeEnoughVelocity = 0.1f;
+        public const float snapDistance = 3f;
+    }
+}
+
+namespace SciFi.Editor {
+    using UnityEditor;
+    using SFNetworkTransform = SciFi.Network.SFNetworkTransform;
+    using GP = SciFi.Network.SFNetworkTransformGlobalParams;
+
+    [CustomEditor(typeof(SFNetworkTransform))]
+    [CanEditMultipleObjects]
+    public class SFNetworkTransformEditor : Editor {
+        SerializedProperty useDefaults;
+        SerializedProperty syncInterval;
+        SerializedProperty interpolationTime;
+        SerializedProperty closeEnoughPosition;
+        SerializedProperty closeEnoughVelocity;
+        SerializedProperty snapDistance;
+
+        void OnEnable() {
+            useDefaults = serializedObject.FindProperty("useDefaults");
+            syncInterval = serializedObject.FindProperty("syncInterval");
+            interpolationTime = serializedObject.FindProperty("interpolationTime");
+            closeEnoughPosition = serializedObject.FindProperty("closeEnoughPosition");
+            closeEnoughVelocity = serializedObject.FindProperty("closeEnoughVelocity");
+            snapDistance = serializedObject.FindProperty("snapDistance");
+        }
+
+        void ShowFloatField(string label, SerializedProperty property, float globalDefault, bool useDefault) {
+            float floatValue = 0f;
+            EditorGUI.BeginChangeCheck();
+
+            EditorGUI.showMixedValue = property.hasMultipleDifferentValues;
+            if (useDefault) {
+                floatValue = EditorGUILayout.FloatField(label, property.floatValue);
+            } else {
+                EditorGUILayout.LabelField(label, globalDefault.ToString());
+            }
+
+            if (EditorGUI.EndChangeCheck()) {
+                property.floatValue = floatValue;
+            }
+        }
+
+        public override void OnInspectorGUI() {
+            bool boolValue = false;
+            bool fieldsAreEditable = false;
+
+            EditorGUI.BeginChangeCheck();
+                EditorGUI.showMixedValue = useDefaults.hasMultipleDifferentValues;
+                if (!useDefaults.hasMultipleDifferentValues) {
+                    boolValue = EditorGUILayout.Toggle("Use Global Defaults", useDefaults.boolValue);
+                }
+            if (EditorGUI.EndChangeCheck()) {
+                useDefaults.boolValue = boolValue;
+            }
+            fieldsAreEditable = !useDefaults.hasMultipleDifferentValues && !boolValue;
+
+            if (!fieldsAreEditable) {
+                EditorGUILayout.HelpBox("Globals are defined in the SFNetworkTransformGlobalParams class.", MessageType.Info, true);
+            }
+
+            ShowFloatField("Sync Interval", syncInterval, GP.syncInterval, fieldsAreEditable);
+            ShowFloatField("Interpolation Time", interpolationTime, GP.interpolationTime, fieldsAreEditable);
+            ShowFloatField("Close Enough Position", closeEnoughPosition, GP.closeEnoughPosition, fieldsAreEditable);
+            ShowFloatField("Close Enough Velocity", closeEnoughVelocity, GP.closeEnoughVelocity, fieldsAreEditable);
+            ShowFloatField("Snap Distance", snapDistance, GP.snapDistance, fieldsAreEditable);
+
+            serializedObject.ApplyModifiedProperties();
         }
     }
 }

@@ -159,12 +159,14 @@ namespace SciFi.Network {
             yield return new WaitUntil(() => GameController.Instance != null);
             GameController.Instance.SetClientCount(numPlayers);
             yield return new WaitUntil(() => playersToRegister.Count == numPlayers);
-            for (int i = 0; i < playersToRegister.Count; i++) {
-                var player = playersToRegister[i];
-                var displayName = displayNames[i];
-                var conn = clientConnections[i];
-                var team = TransitionParams.GetTeam(conn);
-                GameController.Instance.RegisterNewPlayer(player, displayName, team, conn);
+            lock(threadLock) {
+                for (int i = 0; i < playersToRegister.Count; i++) {
+                    var player = playersToRegister[i];
+                    var displayName = displayNames[i];
+                    var conn = clientConnections[i];
+                    var team = TransitionParams.GetTeam(conn);
+                    GameController.Instance.RegisterNewPlayer(player, displayName, team, conn);
+                }
             }
         }
 
