@@ -1,3 +1,5 @@
+#if UNITY_IOS
+
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEditor.iOS.Xcode;
@@ -31,3 +33,5 @@ namespace SciFi.Editor.Build {
         }
     }
 }
+
+#endif
