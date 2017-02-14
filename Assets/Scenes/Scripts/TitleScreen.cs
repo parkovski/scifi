@@ -1,9 +1,34 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+#if UNITY_IOS
+using System.Runtime.InteropServices;
+#endif
+
 namespace SciFi.Scenes {
     /// Title screen - pick single or multiplayer.
     public class TitleScreen : MonoBehaviour {
+#if UNITY_IOS
+        [DllImport("__Internal")]
+        extern static int SciFiGetQuickAction();
+        static bool isFirstRun = true;
+
+        /// On iOS, handle the 3D touch quick actions.
+        void Start() {
+            if (!isFirstRun) {
+                return;
+            }
+            isFirstRun = false;
+            /// These numbers are documented in SFQuickActions.m
+            int action = SciFiGetQuickAction();
+            if (action == 1) {
+                SinglePlayer();
+            } else if (action == 2) {
+                MultiPlayer();
+            }
+        }
+#endif
+
         /// Start a single player game and go to player picker.
         public void SinglePlayer() {
             TransitionParams.gameType = GameType.Single;
