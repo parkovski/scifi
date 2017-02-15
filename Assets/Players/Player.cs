@@ -46,7 +46,7 @@ namespace SciFi.Players {
 
         private bool lInitialized = false;
         protected Rigidbody2D lRb;
-        protected InputManager pInputManager;
+        protected IInputManager pInputManager;
         private int pGroundCollisions;
         protected bool pCanJump;
         protected bool pCanDoubleJump;
@@ -125,7 +125,7 @@ namespace SciFi.Players {
             return lInitialized;
         }
 
-        public void GameControllerReady(GameController gameController) {
+        public void GameControllerReady(GameController gameController, IInputManager inputManager) {
             // This is called twice on a host - once when the client game
             // starts and once when the server game starts.
             if (pInputManager != null) {
@@ -136,13 +136,14 @@ namespace SciFi.Players {
                 GetComponent<SpriteOverlay>().SetColor(TeamToColor(eTeam));
             }
 
-            pInputManager = gameController.GetComponent<InputManager>();
-            if (isLocalPlayer) {
-                pLeftControl = new MultiPressControl(pInputManager, Control.Left, .4f);
-                pRightControl = new MultiPressControl(pInputManager, Control.Right, .4f);
+            pInputManager = inputManager;
+            pLeftControl = new MultiPressControl(pInputManager, Control.Left, .4f);
+            pRightControl = new MultiPressControl(pInputManager, Control.Right, .4f);
 
-                pInputManager.ObjectSelected += ObjectSelected;
-                pInputManager.ControlCanceled += ControlCanceled;
+            pInputManager.ObjectSelected += ObjectSelected;
+            pInputManager.ControlCanceled += ControlCanceled;
+
+            if (isLocalPlayer) {
                 var leftButton = GameObject.Find("LeftButton");
                 if (leftButton != null) {
                     pTouchButtons = leftButton.GetComponent<TouchButtons>();
@@ -272,9 +273,6 @@ namespace SciFi.Players {
                 eAttack1.UpdateStateNonAuthoritative();
                 eAttack2.UpdateStateNonAuthoritative();
                 eAttack3.UpdateStateNonAuthoritative();
-                return;
-            }
-            if (!isLocalPlayer) {
                 return;
             }
 

@@ -193,10 +193,23 @@ namespace SciFi {
     /// press or release. For more in depth handling, poll from <see cref="InputManager" />.
     public delegate void TouchControlStateChangedHandler(string control, bool active);
 
+    public interface IInputManager {
+        bool IsControlActive(int control);
+        float GetControlHoldTime(int control);
+        float GetControlAmount(int control);
+        void InvalidateControl(int control);
+        Vector2 GetMousePosition();
+
+        event ControlCanceledHandler ControlCanceled;
+        event ObjectSelectedHandler ObjectSelected;
+        event ObjectSelectedHandler ObjectDeselected;
+        event TouchControlStateChangedHandler TouchControlStateChanged;
+    }
+
     /// Intermediate layer between Unity's input and game handling.
     /// This merges touch and keyboard/mouse input and provides
     /// input invalidation.
-    public class InputManager : MonoBehaviour {
+    public class InputManager : MonoBehaviour, IInputManager {
         /// Touch control layer - <see cref="SciFi.Layers" /> may not be initialized yet.
         int touchControlLayerId;
         /// Layers that we want to be able to select with touch/click.
@@ -572,7 +585,7 @@ namespace SciFi {
     /// Tracks a control that can be pressed multiple times 
     /// in a small amount of time.
     public class MultiPressControl {
-        InputManager inputManager;
+        IInputManager inputManager;
         int control;
         float timeout;
         float lastPressTime;
@@ -582,7 +595,7 @@ namespace SciFi {
         /// <param name="inputManager">The InputManager to poll for control values</param>
         /// <param name="control">The control to track</param>
         /// <param name="timeout">How long to wait for another press</param>
-        public MultiPressControl(InputManager inputManager, int control, float timeout) {
+        public MultiPressControl(IInputManager inputManager, int control, float timeout) {
             this.inputManager = inputManager;
             this.control = control;
             this.timeout = timeout;

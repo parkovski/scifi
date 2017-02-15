@@ -15,6 +15,7 @@ using SciFi.UI;
 using SciFi.Environment.Effects;
 using SciFi.Scenes;
 using SciFi.Network;
+using SciFi.AI;
 using SciFi.Util;
 
 namespace SciFi {
@@ -53,6 +54,8 @@ namespace SciFi {
         int[] teams;
         /// Connections for each client
         NetworkConnection[] sClientConnections;
+        /// AI Level for each player, or -1 if none.
+        int[] sAILevels;
         /// Is this client the winner? This is always false if the game
         /// is not over yet.
         bool cIsWinner;
@@ -118,6 +121,16 @@ namespace SciFi {
             displayNames = displayNames.Concat(new[] { displayName }).ToArray();
             teams = teams.Concat(new[] { team }).ToArray();
             sClientConnections = sClientConnections.Concat(new[] { conn }).ToArray();
+            sAILevels = sAILevels.Concat(new[] { 0 }).ToArray();
+        }
+
+        /// Adds a new computer player. Only AI level 1 is supported right now. Level 0 does nothing.
+        public void RegisterNewComputerPlayer(GameObject playerObject, string displayName, int team, int aiLevel) {
+            activePlayersGo = activePlayersGo.Concat(new[] { playerObject }).ToArray();
+            displayNames = displayNames.Concat(new[] { displayName }).ToArray();
+            teams = teams.Concat(new[] { team }).ToArray();
+            sClientConnections = sClientConnections.Concat(new NetworkConnection[] { null }).ToArray();
+            sAILevels = sAILevels.Concat(new[] { aiLevel }).ToArray();
         }
 
         /// A null return value means this player is either not valid
@@ -433,14 +446,35 @@ namespace SciFi {
             displayNames = new string[0];
             teams = new int[0];
             sClientConnections = new NetworkConnection[0];
+            sAILevels = new int[0];
             Layers.Init();
             PlayersInitialized += players => {
                 foreach (var player in players) {
-                    player.GameControllerReady(this);
+                    IInputManager playerInputManager;
+                    if (isClient && player.eId == cPlayerId) {
+                        playerInputManager = GetComponent<InputManager>();
+                    } else if (isServer && sAILevels[player.eId] > 0) {
+                        var aiim = new AIInputManager();
+                        AddAI(player.gameObject, aiim, sAILevels[player.eId]);
+                        playerInputManager = aiim;
+                    } else {
+                        playerInputManager = new NullInputManager();
+                    }
+                    player.GameControllerReady(this, playerInputManager);
                 }
             };
 
             DontDestroyOnLoad(gameObject);
+        }
+
+        [Server]
+        void AddAI(GameObject player, AIInputManager inputManager, int level) {
+            if (level < 1 || level > 1) {
+                throw new System.ArgumentOutOfRangeException("level");
+            }
+
+            var ai = player.AddComponent<DumbAI>();
+            ai.inputManager = inputManager;
         }
 
         void Start() {

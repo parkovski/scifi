@@ -43,7 +43,7 @@ namespace SciFi.Network {
 
             p = Instantiate(FindPrefab(computerPlayer), Vector3.zero, Quaternion.identity);
             p.GetComponent<NetworkIdentity>().localPlayerAuthority = false;
-            GameController.Instance.RegisterNewPlayer(p, "COM", -1, null);
+            GameController.Instance.RegisterNewComputerPlayer(p, "COM", -1, 1);
             NetworkServer.Spawn(p);
 
             GameController.Instance.StartGame(
