@@ -1,14 +1,14 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-#if UNITY_IOS
+#if UNITY_IOS && !UNITY_EDITOR
 using System.Runtime.InteropServices;
 #endif
 
 namespace SciFi.Scenes {
     /// Title screen - pick single or multiplayer.
     public class TitleScreen : MonoBehaviour {
-#if UNITY_IOS
+#if UNITY_IOS && !UNITY_EDITOR
         [DllImport("__Internal")]
         extern static int SciFiGetQuickAction();
         static bool isFirstRun = true;
