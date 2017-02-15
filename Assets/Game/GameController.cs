@@ -407,6 +407,11 @@ namespace SciFi {
                 return;
             }
             amount *= 50 * player.eDamage;
+            if (amount < 5000 && amount > 0) {
+                amount = 5000;
+            } else if (amount > -5000 && amount < 0) {
+                amount = -5000;
+            }
             Vector3 vector;
             var projectile = attackingObject.GetComponent<Projectile>();
             var initialForceX = 0f;

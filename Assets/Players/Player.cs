@@ -741,21 +741,26 @@ namespace SciFi.Players {
 
         [Server]
         public void Knockback(Vector2 force) {
-            RpcKnockback(force);
             if (!Modifier.Invincible.IsEnabled(eModifierState)) {
                 sKnockbackLockoutEndTime = Time.time + ((float)eDamage).Scale(0f, 1000f, 0.15f, 1.35f);
                 if (!Modifier.InKnockback.IsEnabled(eModifierState)) {
                     AddModifier(Modifier.InKnockback);
                     AddModifier(Modifier.CantMove);
                     AddModifier(Modifier.CantAttack);
+                    RpcKnockback(force, true);
+                } else {
+                    RpcKnockback(force, false);
                 }
             }
         }
 
         [ClientRpc]
-        void RpcKnockback(Vector2 force) {
+        void RpcKnockback(Vector2 force, bool resetVelocity) {
             if (!hasAuthority) {
                 return;
+            }
+            if (resetVelocity) {
+                lRb.velocity = Vector2.zero;
             }
             Modifier.Invincible.TryAddKnockback(eModifierState, lRb, force);
         }
