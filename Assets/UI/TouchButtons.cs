@@ -14,11 +14,10 @@ namespace SciFi.UI {
         public Sprite downButton;
         public Sprite dodgeLeftButton;
         public Sprite dodgeRightButton;
-        public Sprite attackButton1;
-        public Sprite attackButton2;
-        public Sprite specialAttackButton;
         public Sprite itemButton;
         public Sprite throwItemButton;
+
+        Sprite itemButtonGraphic;
 
         /// Sprite renderers for button background images.
         Dictionary<string, SpriteRenderer> buttons;
@@ -29,12 +28,12 @@ namespace SciFi.UI {
             buttons = new Dictionary<string, SpriteRenderer>();
             Add("LeftButton");
             Add("RightButton");
-            Add("UpButton");
-            Add("UpButton2");
+            Add("ItemButton");
             Add("DownButton");
             Add("AttackButton1");
             Add("AttackButton2");
             Add("AttackButton3");
+            Add("UpButton");
 
             buttonGraphics = new Dictionary<string, SpriteRenderer>();
             AddGfx("LeftButton", "LeftArrow");
@@ -43,6 +42,7 @@ namespace SciFi.UI {
             AddGfx("AttackButton1", "Attack1");
             AddGfx("AttackButton2", "Attack2");
             AddGfx("AttackButton3", "Attack3");
+            AddGfx("ItemButton", "Item");
 
             inputManager.TouchControlStateChanged += StateChanged;
         }
@@ -68,19 +68,6 @@ namespace SciFi.UI {
             }
         }
 
-        /// Returns the name of the second button that is a part of
-        /// a combo with <c>control</c>, or null if there is no combo.
-        string GetSecondComboButton(string control) {
-            switch (control) {
-            case "LeftButton":
-                return "DownButton";
-            case "RightButton":
-                return "DownButton";
-            default:
-                return null;
-            }
-        }
-
         /// Updates the background graphic for a button state change
         /// (press, release).
         void StateChanged(string control, bool active) {
@@ -92,13 +79,10 @@ namespace SciFi.UI {
             ReplaceComboButtons(control, !active);
         }
 
-        /// If down is pressed, the item button will show the
-        /// discard graphic, but it will revert back to whatever
-        /// was last set using this method.
+        /// Change the item button to show the graphic for the
+        /// current item.
         public void SetItemButtonGraphic(Sprite graphic) {
-            if (!inputManager.IsControlActive(Control.Down)) {
-                buttonGraphics["ItemButton"].sprite = graphic;
-            }
+            buttonGraphics["ItemButton"].sprite = graphic;
         }
 
         /// Resets the item button to show the generic item graphic.

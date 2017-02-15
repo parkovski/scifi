@@ -268,12 +268,12 @@ namespace SciFi {
             if (!Input.touchSupported) {
                 Destroy(GameObject.Find("LeftButton"));
                 Destroy(GameObject.Find("RightButton"));
-                Destroy(GameObject.Find("UpButton"));
-                Destroy(GameObject.Find("UpButton2"));
+                Destroy(GameObject.Find("ItemButton"));
                 Destroy(GameObject.Find("DownButton"));
                 Destroy(GameObject.Find("AttackButton1"));
                 Destroy(GameObject.Find("AttackButton2"));
                 Destroy(GameObject.Find("AttackButton3"));
+                Destroy(GameObject.Find("UpButton"));
             }
         }
 
