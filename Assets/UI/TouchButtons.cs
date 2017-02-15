@@ -6,7 +6,7 @@ namespace SciFi.UI {
     /// and other game events. This does not handle input.
     /// <seealso cref="SciFi.InputManager"/>
     public class TouchButtons : MonoBehaviour {
-        InputManager inputManager;
+        public InputManager inputManager;
         public Sprite buttonInactive;
         public Sprite buttonActive;
         public Sprite leftButton;
@@ -44,11 +44,7 @@ namespace SciFi.UI {
             AddGfx("AttackButton2", "Attack2");
             AddGfx("AttackButton3", "Attack3");
 
-            var gc = GameObject.Find("GameController");
-            if (gc != null) {
-                inputManager = gc.GetComponent<InputManager>();
-                inputManager.TouchControlStateChanged += StateChanged;
-            }
+            inputManager.TouchControlStateChanged += StateChanged;
         }
 
         /// Adds the button labeled <c>name</c> to the background graphic list.

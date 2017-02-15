@@ -1878,6 +1878,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9582e8e175ed6e8449c1a8180236266c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  inputManager: {fileID: 1356376885}
   buttonInactive: {fileID: 21300000, guid: 3a2ceaa7f6072ba47b836143b4f6ff9b, type: 3}
   buttonActive: {fileID: 21300000, guid: f386dc60f5c0b1a4fbaec4ba4df7aece, type: 3}
   leftButton: {fileID: 21300000, guid: 72d60149177a9b84b8101814c5fe2588, type: 3}
@@ -2578,7 +2579,7 @@ MonoBehaviour:
   - {fileID: 1151894973709560, guid: 9ec45d9c8571fed44826d8a888a48297, type: 2}
   - {fileID: 1241054994475270, guid: 503121c237150cf489949a815d7ac7b8, type: 2}
   humanPlayer: Nobel
-  computerPlayer: Kelvin
+  computerPlayer: Newton
 --- !u!4 &1101283757
 Transform:
   m_ObjectHideFlags: 0
@@ -2892,6 +2893,12 @@ BoxCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Size: {x: 1.5, y: 1}
+--- !u!114 &1356376885 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 114106641251323486, guid: 09a391a0b2e23744eb2e2c6239f00969,
+    type: 2}
+  m_PrefabInternal: {fileID: 407971334}
+  m_Script: {fileID: 11500000, guid: 772dafcb484671c4ab676d1ebb643e29, type: 3}
 --- !u!1 &1367597736
 GameObject:
   m_ObjectHideFlags: 0
