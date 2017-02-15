@@ -172,10 +172,6 @@ namespace SciFi {
 
             for (var i = 0; i < activePlayers.Length; i++) {
                 var player = activePlayers[i];
-                if (countdown) {
-                    player.AddModifier(Modifier.CantMove);
-                    player.AddModifier(Modifier.CantAttack);
-                }
                 EventLifeChanged(player.eId, player.eLives);
             }
 
@@ -195,15 +191,11 @@ namespace SciFi {
                         p.RemoveModifier(Modifier.CantMove);
                         p.RemoveModifier(Modifier.CantAttack);
                     }
-                    if (_GameStarted != null) {
-                        _GameStarted();
-                    }
+                    _GameStarted();
                 };
             } else {
                 this.isPlaying = true;
-                if (_GameStarted != null) {
-                    _GameStarted();
-                }
+                _GameStarted();
             }
         }
 
@@ -220,7 +212,7 @@ namespace SciFi {
             cPlayerId = activePlayers.First(p => p.hasAuthority).eId;
             // If this copy is both client and server, the server
             // side will already have called this.
-            if (_PlayersInitialized != null && !isServer) {
+            if (!isServer) {
                 _PlayersInitialized(activePlayers);
             }
         }
@@ -276,17 +268,18 @@ namespace SciFi {
             cIsWinner = false;
             if (!countdown) {
                 this.isPlaying = true;
-                if (_GameStarted != null && !isServer) {
+                if (!isServer) {
                     _GameStarted();
                 }
                 return;
             }
+
             this.countdown = GameObject.Find("Canvas").GetComponent<Countdown>();
             this.countdown.StartGame();
             System.GC.Collect();
             this.countdown.OnFinished += _ => {
                 this.isPlaying = true;
-                if (_GameStarted != null && !isServer) {
+                if (!isServer) {
                     _GameStarted();
                 }
             };
@@ -461,6 +454,13 @@ namespace SciFi {
                         playerInputManager = new NullInputManager();
                     }
                     player.GameControllerReady(this, playerInputManager);
+                }
+            };
+
+            GameStarted += () => {
+                foreach (var player in activePlayers) {
+                    player.RemoveModifier(Modifier.CantAttack);
+                    player.RemoveModifier(Modifier.CantMove);
                 }
             };
 

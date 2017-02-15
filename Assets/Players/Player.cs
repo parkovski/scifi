@@ -96,6 +96,9 @@ namespace SciFi.Players {
 
             eModifiers = new List<uint>();
             Modifier.Initialize(eModifiers);
+            // GameController will remove these when the game starts.
+            AddModifier(Modifier.CantAttack);
+            AddModifier(Modifier.CantMove);
             pModifiersDebugField = DebugPrinter.Instance.NewField();
 
             if (pInputManager != null) {
