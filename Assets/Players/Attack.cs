@@ -59,7 +59,14 @@ namespace SciFi.Players.Attacks {
 
         public Player Player { get { return player; } }
         public float Cooldown { get { return cooldown; } }
-        public bool CanCharge { get { return canCharge; } }
+        public bool CanCharge {
+            get {
+                return canCharge;
+            }
+            protected set {
+                canCharge = value;
+            }
+        }
         public bool IsCharging {
             get {
                 return isCharging;
@@ -78,7 +85,7 @@ namespace SciFi.Players.Attacks {
         /// attacks, so that network attacks can call OnKeepCharging on every frame.
         public virtual void UpdateStateNonAuthoritative() {}
 
-        public void UpdateState(InputManager inputManager, int control) {
+        public void UpdateState(IInputManager inputManager, int control) {
             var direction = player.eDirection;
             bool cooldownOver = Time.time > lastFireTime + cooldown;
             if (canFireDown && inputManager.IsControlActive(Control.Down)) {
