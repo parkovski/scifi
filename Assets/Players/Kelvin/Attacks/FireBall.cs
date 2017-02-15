@@ -61,6 +61,7 @@ namespace SciFi.Players.Attacks {
             player.AddModifier(Modifier.CantMove);
             player.AddModifier(Modifier.CantAttack);
             player.AddModifier(Modifier.OnFire);
+            canDestroy = false;
             nextDamageTime = Time.time + nextDamageWait;
             DoAttack();
         }
