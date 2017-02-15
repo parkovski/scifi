@@ -7,9 +7,11 @@ namespace SciFi.AI {
         bool movingRight = false;
 
         float nextAttackTime;
+        float nextMaybeJumpTime;
 
         void Start() {
             nextAttackTime = Time.time + 3f;
+            nextMaybeJumpTime = Time.time + 3f;
         }
 
         void FixedUpdate() {
@@ -37,10 +39,23 @@ namespace SciFi.AI {
                 }
             }
 
+            if (Time.time > nextMaybeJumpTime) {
+                if (Random.Range(0, 5) == 2) {
+                    StartCoroutine(Jump());
+                }
+                nextMaybeJumpTime = Time.time + Random.Range(0.5f, 3f);
+            }
+
             if (Time.time > nextAttackTime) {
                 StartCoroutine(Attack());
                 nextAttackTime = Time.time + Random.Range(0.5f, 3f);
             }
+        }
+
+        IEnumerator Jump() {
+            inputManager.Press(Control.Up);
+            yield return new WaitForSeconds(0.05f);
+            inputManager.Release(Control.Up);
         }
 
         IEnumerator Attack() {
