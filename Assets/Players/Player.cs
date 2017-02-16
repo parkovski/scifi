@@ -370,15 +370,15 @@ namespace SciFi.Players {
             int prefabIndex,
             Vector2 position,
             Quaternion rotation,
-            Vector2 force,
-            float torque
+            Vector2 velocity,
+            float angularVelocity
         ) {
             SpawnProjectile(
                 GameController.IndexToPrefab(prefabIndex),
                 position,
                 rotation,
-                force,
-                torque,
+                velocity,
+                angularVelocity,
                 false
             );
         }
@@ -388,16 +388,16 @@ namespace SciFi.Players {
             int prefabIndex,
             Vector2 position,
             Quaternion rotation,
-            Vector2 force,
-            float torque,
+            Vector2 velocity,
+            float angularVelocity,
             bool flipX
         ) {
             SpawnProjectile(
                 GameController.IndexToPrefab(prefabIndex),
                 position,
                 rotation,
-                force,
-                torque,
+                velocity,
+                angularVelocity,
                 flipX
             );
         }
@@ -407,21 +407,20 @@ namespace SciFi.Players {
             GameObject prefab,
             Vector2 position,
             Quaternion rotation,
-            Vector2 force,
-            float torque,
+            Vector2 velocity,
+            float angularVelocity,
             bool flipX
         ) {
             var obj = Instantiate(prefab, position, rotation);
             var projectile = obj.GetComponent<Projectile>();
             projectile.spawnedBy = netId;
             projectile.spawnedByExtra = GetItemNetId();
+            projectile.flipX = flipX;
             var rb = obj.GetComponent<Rigidbody2D>();
             if (rb != null) {
-                projectile.AddInitialForce(force);
-                rb.AddTorque(torque);
-            }
-            if (flipX) {
-                projectile.GetComponent<SpriteRenderer>().flipX = true;
+                projectile.AddInitialForce(velocity);
+                rb.velocity = velocity;
+                rb.angularVelocity = angularVelocity;
             }
             NetworkServer.Spawn(obj);
         }

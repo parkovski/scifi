@@ -24,7 +24,6 @@ GameObject:
   - component: {fileID: 114358476192096598}
   - component: {fileID: 114013069344136812}
   - component: {fileID: 50511433649175914}
-  - component: {fileID: 114062309845848724}
   m_Layer: 0
   m_Name: BoneHand
   m_TagString: Untagged
@@ -90,18 +89,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f83bb7cfbae1ee47809f5b2ca801d7b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &114062309845848724
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1604782102379740}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf8a20c44550b2e4997a70b4207bd44e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncAngularVelocity: 1
+  flipX: 0
 --- !u!114 &114358476192096598
 MonoBehaviour:
   m_ObjectHideFlags: 1

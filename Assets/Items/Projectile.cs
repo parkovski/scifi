@@ -15,6 +15,8 @@ namespace SciFi.Items {
         /// If the player is holding an item, set this so the projectile doesn't hit it.
         [SyncVar]
         public NetworkInstanceId spawnedByExtra = NetworkInstanceId.Invalid;
+        [SyncVar]
+        public bool flipX;
 
         /// When an object collides, it bounces in the opposite direction
         /// sometimes causing knockback to go in the wrong direction.
@@ -33,6 +35,10 @@ namespace SciFi.Items {
                 Item.IgnoreCollisions(gameObject, ClientScene.FindLocalObject(spawnedByExtra));
             }
 
+            if (flipX) {
+                GetComponent<SpriteRenderer>().flipX = true;
+            }
+
             // Due to what seems to be a bug in Unity,
             // collisions can be detected before Start is called,
             // so we initialize stuff on a non-colliding layer and
@@ -42,7 +48,6 @@ namespace SciFi.Items {
         
         public void AddInitialForce(Vector3 force) {
             initialForce = force;
-            GetComponent<Rigidbody2D>().AddForce(force);
         }
 
         public Vector3 GetInitialForce() {

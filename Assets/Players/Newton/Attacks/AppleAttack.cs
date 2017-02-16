@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace SciFi.Players.Attacks {
     public class AppleAttack : Attack {
-        const float verticalForce = 65f;
-        const float horizontalForce = 20f;
-        const float torqueRange = 5f;
+        const float verticalVelocity = 14f;
+        const float horizontalVelocity = 4f;
+        const float angularVelocityRange = 2000f;
         int applePrefabIndex;
         int greenApplePrefabIndex;
         const int chanceOfGreenApple = 10;
@@ -18,23 +18,23 @@ namespace SciFi.Players.Attacks {
         }
 
         public override void OnEndCharging(float chargeTime, Direction direction) {
-            var force = new Vector2(0f, verticalForce);
+            var velocity = new Vector2(0f, verticalVelocity);
             if (direction == Direction.Down) {
-                force = new Vector2(0f, -horizontalForce);
+                velocity = new Vector2(0f, -horizontalVelocity);
             } else if (direction == Direction.Left) {
-                force += new Vector2(-horizontalForce, 0f);
+                velocity += new Vector2(-horizontalVelocity, 0f);
             } else {
-                force += new Vector2(horizontalForce, 0f);
+                velocity += new Vector2(horizontalVelocity, 0f);
             }
 
-            var torque = Random.Range(-torqueRange, torqueRange);
+            var angularVelocity = Random.Range(-angularVelocityRange, angularVelocityRange);
             var prefabIndex = Random.Range(0, chanceOfGreenApple) == 1 ? greenApplePrefabIndex : applePrefabIndex;
             player.CmdSpawnProjectile(
                 prefabIndex,
                 player.gameObject.transform.position,
                 Quaternion.identity,
-                force,
-                torque
+                velocity,
+                angularVelocity
             );
         }
 

@@ -34,7 +34,7 @@ namespace SciFi.Players.Attacks {
                 GameController.PrefabToIndex(bulletPrefab),
                 gun.transform.position + GetBulletOffset(direction),
                 rotation,
-                GetBulletForce(direction),
+                GetBulletVelocity(direction),
                 0f,
                 direction == Direction.Left
             );
@@ -44,14 +44,14 @@ namespace SciFi.Players.Attacks {
         public override void OnCancel() {
         }
 
-        Vector2 GetBulletForce(Direction direction) {
+        Vector2 GetBulletVelocity(Direction direction) {
             if (direction == Direction.Left) {
-                return new Vector2(-600f, 0f);
+                return new Vector2(-10f, 0f);
             } else if (direction == Direction.Right) {
-                return new Vector2(600f, 0f);
+                return new Vector2(10f, 0f);
             } else {
                 // Down
-                return new Vector2(0f, -600f);
+                return new Vector2(0f, -10f);
             }
         }
 

@@ -24,7 +24,6 @@ GameObject:
   - component: {fileID: 50158982170073844}
   - component: {fileID: 58431733497880524}
   - component: {fileID: 114536395684050878}
-  - component: {fileID: 114475314256271068}
   m_Layer: 13
   m_Name: Apple
   m_TagString: Untagged
@@ -79,18 +78,6 @@ CircleCollider2D:
   m_Offset: {x: 0, y: -0.09}
   serializedVersion: 2
   m_Radius: 0.46
---- !u!114 &114475314256271068
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1357499644953146}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf8a20c44550b2e4997a70b4207bd44e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncAngularVelocity: 1
 --- !u!114 &114536395684050878
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -134,6 +121,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 261669bf00bc28a42bf52db26d04f2f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  flipX: 0
   explodingApple: {fileID: 1067510251126116, guid: 7d6a37a4da9154edc9a116afb28f4920,
     type: 2}
   damage: 5

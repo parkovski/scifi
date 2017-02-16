@@ -37,8 +37,8 @@ namespace SciFi.Players.Attacks {
                     GameController.PrefabToIndex(boneHandPrefab),
                     attachedHand.transform.position,
                     attachedHand.transform.rotation,
-                    new Vector2(350f, 50f).FlipDirection(player.eDirection),
-                    -(3.FlipDirection(player.eDirection)),
+                    new Vector2(7f, 2.5f).FlipDirection(player.eDirection),
+                    -(500.FlipDirection(player.eDirection)),
                     player.eDirection == Direction.Right
                 );
             }
