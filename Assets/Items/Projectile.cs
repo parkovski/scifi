@@ -10,12 +10,12 @@ namespace SciFi.Items {
     public class Projectile : NetworkBehaviour, IAttack, IInteractable {
         /// The player or other object that spawned the projectile.
         /// Projectiles won't collide with objects that spawned them.
-        [SyncVar]
+        [SyncVar, HideInInspector]
         public NetworkInstanceId spawnedBy = NetworkInstanceId.Invalid;
         /// If the player is holding an item, set this so the projectile doesn't hit it.
-        [SyncVar]
+        [SyncVar, HideInInspector]
         public NetworkInstanceId spawnedByExtra = NetworkInstanceId.Invalid;
-        [SyncVar]
+        [SyncVar, HideInInspector]
         public bool flipX;
 
         /// When an object collides, it bounces in the opposite direction
