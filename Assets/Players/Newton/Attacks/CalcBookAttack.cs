@@ -50,7 +50,7 @@ namespace SciFi.Players.Attacks {
         }
 
         public override void OnEndCharging(float chargeTime, Direction direction) {
-            chargingBook.GetComponent<CalcBook>().attacking = true;
+            chargingBook.GetComponent<CalcBook>().StartAttacking();
             if (direction == Direction.Left) {
                 chargingBook.GetComponent<Animator>().SetTrigger("SwingBackwards");
             } else {
