@@ -30,7 +30,7 @@ namespace SciFi.Players.Attacks {
             } else if (hit == AttackHit.HitAndDamage) {
                 var damage = hasHitGround ? postGroundDamage : this.damage;
                 var knockback = hasHitGround ? postGroundKnockback : this.knockback;
-                GameController.Instance.Hit(collision.gameObject, this, gameObject, damage, knockback);
+                GameController.Instance.HitNoVelocityReset(collision.gameObject, this, gameObject, damage, knockback);
                 var exploding = Instantiate(explodingApple, gameObject.transform.position, gameObject.transform.rotation);
                 NetworkServer.Spawn(exploding);
                 Destroy(gameObject);

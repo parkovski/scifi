@@ -59,6 +59,7 @@ namespace SciFi.Players {
         private uint pOldModifierState;
         private List<NetworkAttack> lNetworkAttacks;
         private float sKnockbackLockoutEndTime = float.PositiveInfinity;
+        private Vector2 sKnockbackForce;
 
         // Unity editor parameters
         public Direction defaultDirection;
@@ -734,23 +735,36 @@ namespace SciFi.Players {
 
         [ClientRpc]
         void RpcHit(int damage) {
+            if (isServer) {
+                return;
+            }
             eAttack1.RequestCancel();
             eAttack2.RequestCancel();
             eAttack3.RequestCancel();
         }
 
         [Server]
-        public void Knockback(Vector2 force) {
+        public void Knockback(Vector2 force, bool resetVelocity) {
             if (!Modifier.Invincible.IsEnabled(eModifierState)) {
                 sKnockbackLockoutEndTime = Time.time + ((float)eDamage).Scale(0f, 1000f, 0.15f, 1.35f);
                 if (!Modifier.InKnockback.IsEnabled(eModifierState)) {
                     AddModifier(Modifier.InKnockback);
                     AddModifier(Modifier.CantMove);
                     AddModifier(Modifier.CantAttack);
-                    RpcKnockback(force, true);
+                    RpcKnockback(force, resetVelocity);
                 } else {
+                    // If we get hit with another attack during the lockout period,
+                    // we should just add a force in the same direction, regardless
+                    // of where the attack came from.
+                    if ((sKnockbackForce.x < 0) != (force.x < 0)) {
+                        force.x = -force.x;
+                    }
+                    if ((sKnockbackForce.y < 0) != (force.y < 0)) {
+                        force.y = -force.y;
+                    }
                     RpcKnockback(force, false);
                 }
+                sKnockbackForce = force;
             }
         }
 

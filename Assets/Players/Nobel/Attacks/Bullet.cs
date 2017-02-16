@@ -36,7 +36,7 @@ namespace SciFi.Players.Attacks {
             var hit = Attack.GetAttackHit(collision.gameObject.layer);
             if (hit != AttackHit.None) {
                 if (hit == AttackHit.HitAndDamage) {
-                    GameController.Instance.Hit(collision.gameObject, this, gameObject, damage, knockback);
+                    GameController.Instance.HitNoVelocityReset(collision.gameObject, this, gameObject, damage, knockback);
                 }
                 Destroy(gameObject);
             }

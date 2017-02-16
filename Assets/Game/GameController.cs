@@ -345,17 +345,27 @@ namespace SciFi {
         }
 
         [Server]
+        public void Hit(GameObject obj, IAttack attack, int damage) {
+            Hit(obj, attack, null, damage, 0f, false);
+        }
+
+        [Server]
+        public void HitNoVelocityReset(GameObject obj, IAttack attack, GameObject attackingObject, int damage, float knockback) {
+            Hit(obj, attack, attackingObject, damage, knockback, false);
+        }
+
+        [Server]
         public void Hit(GameObject obj, IAttack attack, GameObject attackingObject, int damage, float knockback) {
+            Hit(obj, attack, attackingObject, damage, knockback, true);
+        }
+
+        [Server]
+        private void Hit(GameObject obj, IAttack attack, GameObject attackingObject, int damage, float knockback, bool resetVelocity) {
             if (damage != 0) {
                 TakeDamage(obj, attack, damage);
             }
             if (!Mathf.Approximately(knockback, 0f)) {
-                Knockback(attackingObject, obj, knockback);
-            }
-            var player = obj.GetComponent<Player>();
-            if (player != null) {
-                player.Interact(attack);
-                player.Hit(damage);
+                Knockback(attackingObject, obj, knockback, resetVelocity);
             }
         }
 
@@ -366,8 +376,7 @@ namespace SciFi {
             if (player == null) {
                 var item = obj.GetComponent<Item>();
                 if (item != null) {
-                    ItemTakeDamage(item, amount);
-                    item.Interact(attack);
+                    ItemTakeDamage(item, attack, amount);
                 } else {
                     var projectile = obj.GetComponent<Projectile>();
                     if (projectile != null) {
@@ -375,30 +384,34 @@ namespace SciFi {
                     }
                 }
             } else {
-                PlayerTakeDamage(player, amount);
-                player.Interact(attack);
+                PlayerTakeDamage(player, attack, amount);
             }
         }
 
         /// Inflict damage on a player.
         [Server]
-        void PlayerTakeDamage(Player player, int amount) {
+        void PlayerTakeDamage(Player player, IAttack attack, int amount) {
             if (player.IsModifierEnabled(Modifier.Invincible)) {
                 return;
             }
             player.eDamage += amount;
+            player.Hit(amount);
+            player.Interact(attack);
             EventDamageChanged(player.eId, player.eDamage);
         }
 
         /// Inflict damage on an item.
         [Server]
-        void ItemTakeDamage(Item item, int amount) {
+        void ItemTakeDamage(Item item, IAttack attack, int amount) {
             item.TakeDamage(amount);
+            item.Interact(attack);
         }
 
-        /// Inflict knockback on a player.
+        /// Inflict knockback on a player. Determines which direction the knockback
+        /// should come from, based on the projectile's initial force if set,
+        /// or the attacking object's offset to the player.
         [Server]
-        void Knockback(GameObject attackingObject, GameObject playerObject, float amount) {
+        void Knockback(GameObject attackingObject, GameObject playerObject, float amount, bool resetVelocity) {
             var player = playerObject.GetComponent<Player>();
             if (player == null) {
                 return;
@@ -412,7 +425,7 @@ namespace SciFi {
             } else if (amount > -5000 && amount < 0) {
                 amount = -5000;
             }
-            Vector3 vector;
+            Vector2 vector;
             var projectile = attackingObject.GetComponent<Projectile>();
             var initialForceX = 0f;
             if (projectile != null) {
@@ -422,19 +435,19 @@ namespace SciFi {
 
             if (!Mathf.Approximately(initialForceX, 0f)) {
                 if (initialForceX > 0) {
-                    vector = new Vector3(amount, amount);
+                    vector = new Vector2(amount, amount);
                 } else {
-                    vector = new Vector3(-amount, amount);
+                    vector = new Vector2(-amount, amount);
                 }
             } else {
                 // Projectile is stationary, base direction off its offset to the player
                 if ((playerObject.transform.position - attackingObject.transform.position).x > 0) {
-                    vector = new Vector3(amount, amount);
+                    vector = new Vector2(amount, amount);
                 } else {
-                    vector = new Vector3(-amount, amount);
+                    vector = new Vector2(-amount, amount);
                 }
             }
-            player.Knockback(vector);
+            player.Knockback(vector, resetVelocity);
         }
 
         /// Initialize fields that other objects depend on.
