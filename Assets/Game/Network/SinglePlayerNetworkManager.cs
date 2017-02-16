@@ -11,6 +11,7 @@ namespace SciFi.Network {
         /// This only applies if the player is not set through the player picker.
         public string humanPlayer;
         public string computerPlayer;
+        public int cpuLevel;
 
         public override void OnStartServer() {
         }
@@ -43,7 +44,7 @@ namespace SciFi.Network {
 
             p = Instantiate(FindPrefab(computerPlayer), Vector3.zero, Quaternion.identity);
             p.GetComponent<NetworkIdentity>().localPlayerAuthority = false;
-            GameController.Instance.RegisterNewComputerPlayer(p, "COM", -1, 1);
+            GameController.Instance.RegisterNewComputerPlayer(p, "COM", -1, cpuLevel);
             NetworkServer.Spawn(p);
 
             GameController.Instance.StartGame(

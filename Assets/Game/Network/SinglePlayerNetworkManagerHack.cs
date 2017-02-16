@@ -10,6 +10,7 @@ namespace SciFi.Network {
         public GameObject[] playerPrefabs;
         public string humanPlayer;
         public string computerPlayer;
+        public int cpuLevel;
 
         void Start() {
             if (FindObjectOfType<NetworkManager>() == null) {
@@ -18,6 +19,7 @@ namespace SciFi.Network {
                 nm.playerPrefabs = playerPrefabs;
                 nm.humanPlayer = humanPlayer;
                 nm.computerPlayer = computerPlayer;
+                nm.cpuLevel = cpuLevel;
                 clientConnection = nm.StartHost().connection;
             }
         }
