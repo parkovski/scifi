@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 using SciFi.Players.Attacks;
+using SciFi.Players.Modifiers;
 using SciFi.Util;
 using SciFi.Util.Extensions;
 
@@ -88,6 +89,9 @@ namespace SciFi.Players {
                 position = dynamiteGo.transform.position;
                 velocity = dynamiteGo.GetComponent<Rigidbody2D>().velocity;
                 Destroy(dynamiteGo);
+            } else {
+                AddModifier(Modifier.CantMove);
+                AddModifier(Modifier.CantAttack);
             }
             dynamiteGo = Object.Instantiate(prefab, position, Quaternion.identity);
             dynamiteGo.GetComponent<Rigidbody2D>().velocity = velocity;
@@ -98,6 +102,13 @@ namespace SciFi.Players {
             dynamite.destroyCallback = OnDynamiteDestroyed;
             NetworkServer.Spawn(dynamiteGo);
             RpcSetHasPlantedDynamite(true);
+        }
+
+        [Command]
+        public void CmdEndDynamiteCharging() {
+            // TODO: Check if dynamite was charging to close this potential hack.
+            RemoveModifier(Modifier.CantMove);
+            RemoveModifier(Modifier.CantAttack);
         }
 
         [Server]
