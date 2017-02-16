@@ -2640,7 +2640,7 @@ MonoBehaviour:
   - {fileID: 1241054994475270, guid: 503121c237150cf489949a815d7ac7b8, type: 2}
   humanPlayer: Newton
   computerPlayer: Newton
-  cpuLevel: 0
+  cpuLevel: 1
 --- !u!4 &1101283757
 Transform:
   m_ObjectHideFlags: 0
