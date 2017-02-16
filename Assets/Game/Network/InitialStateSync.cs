@@ -11,32 +11,6 @@ namespace SciFi.Network {
         Vector2 velocity;
         [SyncVar]
         float angularVelocity;
-        [SyncVar]
-        bool sentState = false;
-        bool initialized = false;
-
-        void Update() {
-            if (isServer) {
-                if (sentState) {
-                    return;
-                }
-                var rb = GetComponent<Rigidbody2D>();
-                velocity = rb.velocity;
-                angularVelocity = rb.angularVelocity;
-                sentState = true;
-            } else {
-                if (initialized) {
-                    return;
-                }
-                if (!sentState) {
-                    return;
-                }
-                var rb = GetComponent<Rigidbody2D>();
-                rb.velocity = velocity;
-                rb.angularVelocity = angularVelocity;
-                initialized = true;
-            }
-        }
 
         public override void OnStartServer() {
             var rb = GetComponent<Rigidbody2D>();
