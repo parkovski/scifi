@@ -45,7 +45,9 @@ namespace SciFi.Players.Attacks {
                 if (pair.Value <= 0) {
                     continue;
                 }
-                Hit(pair.Key);
+                if (pair.Key != null) {
+                    Hit(pair.Key);
+                }
             }
             attacking = true;
         }
