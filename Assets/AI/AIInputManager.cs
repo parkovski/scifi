@@ -44,9 +44,12 @@ namespace SciFi.AI {
             return Vector2.zero;
         }
 
+// Unused events... but they're part of the interface :(
+#pragma warning disable 0067
         public event ControlCanceledHandler ControlCanceled;
         public event ObjectSelectedHandler ObjectSelected;
         public event ObjectSelectedHandler ObjectDeselected;
         public event TouchControlStateChangedHandler TouchControlStateChanged;
+#pragma warning restore 0067
     }
 }
