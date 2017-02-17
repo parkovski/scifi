@@ -69,10 +69,9 @@ namespace SciFi.Players {
             var fmObj = Object.Instantiate(flyingMachinePrefab, transform.position, Quaternion.identity);
             var fm = fmObj.GetComponent<FlyingMachine>();
             fm.power = Mathf.Clamp((int)(chargeTime * 7.5f), 1, 10);
-            fm.spawnedBy = netId;
-            fm.spawnedByExtra = GetItemNetId();
             fm.dx = 1.5f.FlipDirection(eDirection);
             NetworkServer.Spawn(fmObj);
+            fm.Enable(netId, GetItemNetId(), false);
         }
     }
 }

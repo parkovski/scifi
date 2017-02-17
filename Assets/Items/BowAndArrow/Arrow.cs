@@ -4,10 +4,6 @@ using SciFi.Players.Attacks;
 
 namespace SciFi.Items {
     public class Arrow : Projectile {
-        void Start() {
-            BaseStart();
-        }
-
         void Update() {
             var velocity = GetComponent<Rigidbody2D>().velocity;
             if (velocity.x > 0) {

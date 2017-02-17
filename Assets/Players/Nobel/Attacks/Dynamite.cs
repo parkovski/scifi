@@ -20,10 +20,6 @@ namespace SciFi.Players.Attacks {
         [HideInInspector]
         public Action<GameObject> destroyCallback;
 
-        void Start() {
-            BaseStart();
-        }
-
         void OnDestroy() {
             if (destroyCallback != null) {
                 destroyCallback(gameObject);

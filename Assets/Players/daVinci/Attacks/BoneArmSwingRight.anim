@@ -18,7 +18,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 2
         time: 0
-        value: {x: 0, y: 0, z: 90}
+        value: {x: 0, y: 0, z: 150}
         inSlope: {x: 0, y: 0, z: 0}
         outSlope: {x: 0, y: 0, z: 0}
         tangentMode: 0
@@ -37,15 +37,15 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 2
         time: 0
-        value: {x: 0, y: 0, z: 30}
+        value: {x: 0, y: 0, z: 45}
         inSlope: {x: 0, y: 0, z: 0}
         outSlope: {x: 0, y: 0, z: 0}
         tangentMode: 0
       - serializedVersion: 2
         time: 0.25
         value: {x: 0, y: 0, z: 35}
-        inSlope: {x: 0, y: 0, z: 0}
-        outSlope: {x: 0, y: 0, z: 0}
+        inSlope: {x: 0, y: 0, z: -80}
+        outSlope: {x: 0, y: 0, z: -80}
         tangentMode: 0
       - serializedVersion: 2
         time: 0.5
@@ -69,8 +69,8 @@ AnimationClip:
       - serializedVersion: 2
         time: 0.25
         value: {x: 0, y: 0, z: 20}
-        inSlope: {x: 0, y: 0, z: 80}
-        outSlope: {x: 0, y: 0, z: 80}
+        inSlope: {x: 0, y: 0, z: -80}
+        outSlope: {x: 0, y: 0, z: -80}
         tangentMode: 0
       - serializedVersion: 2
         time: 0.5
@@ -182,15 +182,15 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 2
         time: 0
-        value: -90
+        value: 150
         inSlope: 0
         outSlope: 0
         tangentMode: 136
       - serializedVersion: 2
         time: 0.5
         value: -0
-        inSlope: -0
-        outSlope: -0
+        inSlope: 0
+        outSlope: 0
         tangentMode: 136
       m_PreInfinity: 2
       m_PostInfinity: 2
@@ -260,21 +260,21 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 2
         time: 0
-        value: -30
+        value: 45
         inSlope: 0
         outSlope: 0
         tangentMode: 136
       - serializedVersion: 2
         time: 0.25
         value: 35
-        inSlope: -0
-        outSlope: -0
+        inSlope: -80
+        outSlope: -80
         tangentMode: 136
       - serializedVersion: 2
         time: 0.5
         value: -60
-        inSlope: -0
-        outSlope: -0
+        inSlope: 0
+        outSlope: 0
         tangentMode: 136
       m_PreInfinity: 2
       m_PostInfinity: 2
@@ -344,7 +344,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 2
         time: 0
-        value: -30
+        value: 30
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -357,8 +357,8 @@ AnimationClip:
       - serializedVersion: 2
         time: 0.5
         value: -30
-        inSlope: -0
-        outSlope: -0
+        inSlope: 0
+        outSlope: 0
         tangentMode: 136
       m_PreInfinity: 2
       m_PostInfinity: 2
@@ -405,7 +405,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: BoneArm_Bone1/BoneArm_Bone2/BoneArm_Hand
+    path: BoneArm_Bone1/BoneArm_Bone2
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -415,17 +415,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: BoneArm_Bone1/BoneArm_Bone2/BoneArm_Hand
-    classID: 4
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.x
-    path: BoneArm_Bone1/BoneArm_Bone2/BoneArm_Hand
+    path: BoneArm_Bone1/BoneArm_Bone2
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -444,8 +434,18 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
+    attribute: m_LocalEulerAngles.x
+    path: BoneArm_Bone1/BoneArm_Bone2/BoneArm_Hand
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: BoneArm_Bone1/BoneArm_Bone2
+    path: BoneArm_Bone1/BoneArm_Bone2/BoneArm_Hand
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -455,7 +455,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: BoneArm_Bone1/BoneArm_Bone2
+    path: BoneArm_Bone1/BoneArm_Bone2/BoneArm_Hand
     classID: 4
     script: {fileID: 0}
   m_HasGenericRootTransform: 0

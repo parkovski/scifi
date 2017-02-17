@@ -7,15 +7,23 @@ namespace SciFi.Players.Attacks {
         SpriteRenderer[] spriteRenderers;
 
         public BoneArmAttack(Player player, BoneArm boneArm)
-            : base(player, false)
+            : base(player, true)
         {
             boneArm.player = player;
             this.boneArm = boneArm;
             this.animator = boneArm.GetComponent<Animator>();
         }
 
-        public override void OnEndCharging(float chargeTime, Direction direction) {
+        public override void OnBeginCharging(Direction direction) {
             boneArm.Show();
+            if (direction == Direction.Left) {
+                animator.SetTrigger("ChargeLeft");
+            } else {
+                animator.SetTrigger("ChargeRight");
+            }
+        }
+
+        public override void OnEndCharging(float chargeTime, Direction direction) {
             if (direction == Direction.Left) {
                 animator.SetTrigger("SwingLeft");
             } else {

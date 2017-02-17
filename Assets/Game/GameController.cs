@@ -33,6 +33,7 @@ namespace SciFi {
         /// in single player mode. Note - this approach would not work over the
         /// network, but luckily, it is only needed in single player mode.
         private static IList<GameObject> spawnPrefabList;
+        private GameObjectPool gameObjectPool;
 
         // Items
         public ItemFrequency itemFrequency;
@@ -315,6 +316,14 @@ namespace SciFi {
             return spawnPrefabList[index];
         }
 
+        public GameObject GetFromNetPool(int prefabIndex, Vector3 position, Quaternion rotation) {
+            return gameObjectPool.GetNet(prefabIndex, position, rotation);
+        }
+
+        public GameObject GetFromLocalPool(GameObject prefab, Vector3 position, Quaternion rotation) {
+            return gameObjectPool.Get(prefab, position, rotation);
+        }
+
         /// Deduct a life from the player, respawn, and
         /// check if the game is over.
         [Server]
@@ -430,7 +439,7 @@ namespace SciFi {
             var initialForceX = 0f;
             if (projectile != null) {
                 // Do knockback in the direction the projectile is moving in.
-                initialForceX = projectile.GetInitialForce().x;
+                initialForceX = projectile.GetInitialVelocity().x;
             }
 
             if (!Mathf.Approximately(initialForceX, 0f)) {
@@ -501,6 +510,7 @@ namespace SciFi {
             } else {
                 spawnPrefabList = NetworkManager.singleton.spawnPrefabs;
             }
+            gameObjectPool = new GameObjectPool();
         }
 
         public override void OnStartServer() {

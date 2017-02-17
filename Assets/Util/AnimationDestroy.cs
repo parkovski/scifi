@@ -4,9 +4,15 @@ namespace SciFi.Util {
     /// Add a reference to <see cref="DestroyObject" /> as an animation
     /// event to destroy an object automatically.
     public class AnimationDestroy : MonoBehaviour {
-        /// Destroy the object this is attached to.
+        /// Destroy the object this is attached to. If it is
+        /// in an object pool, release it instead of destroying it.
         public void DestroyObject() {
-            Destroy(gameObject);
+            var pooledObject = PooledObject.Get(gameObject);
+            if (pooledObject != null) {
+                pooledObject.Release();
+            } else {
+                Destroy(gameObject);
+            }
         }
 
         public void HideObject() {

@@ -24,7 +24,8 @@ GameObject:
   - component: {fileID: 50807222610474374}
   - component: {fileID: 58688076574055786}
   - component: {fileID: 114267997417385408}
-  - component: {fileID: 114881391936407380}
+  - component: {fileID: 114551737764986478}
+  - component: {fileID: 114695872751215944}
   m_Layer: 13
   m_Name: GreenApple
   m_TagString: Untagged
@@ -111,6 +112,17 @@ MonoBehaviour:
     i15: 203
   m_ServerOnly: 0
   m_LocalPlayerAuthority: 0
+--- !u!114 &114551737764986478
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1620461812501308}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf8a20c44550b2e4997a70b4207bd44e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114673505912176346
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -128,7 +140,7 @@ MonoBehaviour:
   knockback: 5
   postGroundDamage: 3
   postGroundKnockback: 1.5
---- !u!114 &114881391936407380
+--- !u!114 &114695872751215944
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -136,10 +148,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1620461812501308}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf8a20c44550b2e4997a70b4207bd44e, type: 3}
+  m_Script: {fileID: 11500000, guid: 367271472a7be064fa49c9a2e5adbfea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncAngularVelocity: 1
+  notificationHandlerComponent: {fileID: 114673505912176346}
 --- !u!212 &212914230991580068
 SpriteRenderer:
   m_ObjectHideFlags: 1

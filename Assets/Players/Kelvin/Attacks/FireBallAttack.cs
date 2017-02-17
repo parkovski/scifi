@@ -45,7 +45,7 @@ namespace SciFi.Players.Attacks {
             }
 
             var fb = chargingFireBall.GetComponent<FireBall>();
-            fb.AddInitialForce(force);
+            fb.SetInitialVelocity(force);
             fb.SetCanDestroy(true);
         }
 

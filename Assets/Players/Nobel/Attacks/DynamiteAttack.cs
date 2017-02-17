@@ -34,9 +34,13 @@ namespace SciFi.Players.Attacks {
 
         public override void OnEndCharging(float chargeTime, Direction direction) {
             lastFireTime = Time.time;
+            ((Nobel)player).CmdEndDynamiteCharging();
         }
 
         public override void OnCancel() {
+            if (IsCharging) {
+                ((Nobel)player).CmdEndDynamiteCharging();
+            }
         }
 
         public void SetHasPlantedDynamite(bool hasPlantedDynamite) {

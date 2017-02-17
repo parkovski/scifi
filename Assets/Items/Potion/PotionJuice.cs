@@ -16,7 +16,6 @@ namespace SciFi.Items {
         const float maxAlpha = 30f;
 
         void Start() {
-            BaseStart();
             spriteRenderer = GetComponent<SpriteRenderer>();
             if (isRedPotion) {
                 spriteRenderer.sprite = redJuiceStages[0];

@@ -332,7 +332,7 @@ namespace SciFi.Players {
 #if UNITY_EDITOR
             if (eModifierState != pOldModifierState) {
                 pOldModifierState = eModifierState;
-                DebugPrinter.Instance.SetField(pModifiersDebugField, Modifier.GetDebugString(eModifierState));
+                DebugPrinter.Instance.SetField(pModifiersDebugField, "P" + (eId+1) + ": " + Modifier.GetDebugString(eModifierState));
             }
 #endif
         }
@@ -370,15 +370,15 @@ namespace SciFi.Players {
             int prefabIndex,
             Vector2 position,
             Quaternion rotation,
-            Vector2 force,
-            float torque
+            Vector2 velocity,
+            float angularVelocity
         ) {
             SpawnProjectile(
                 GameController.IndexToPrefab(prefabIndex),
                 position,
                 rotation,
-                force,
-                torque,
+                velocity,
+                angularVelocity,
                 false
             );
         }
@@ -388,16 +388,16 @@ namespace SciFi.Players {
             int prefabIndex,
             Vector2 position,
             Quaternion rotation,
-            Vector2 force,
-            float torque,
+            Vector2 velocity,
+            float angularVelocity,
             bool flipX
         ) {
             SpawnProjectile(
                 GameController.IndexToPrefab(prefabIndex),
                 position,
                 rotation,
-                force,
-                torque,
+                velocity,
+                angularVelocity,
                 flipX
             );
         }
@@ -407,23 +407,44 @@ namespace SciFi.Players {
             GameObject prefab,
             Vector2 position,
             Quaternion rotation,
-            Vector2 force,
-            float torque,
+            Vector2 velocity,
+            float angularVelocity,
             bool flipX
         ) {
             var obj = Instantiate(prefab, position, rotation);
             var projectile = obj.GetComponent<Projectile>();
-            projectile.spawnedBy = netId;
-            projectile.spawnedByExtra = GetItemNetId();
             var rb = obj.GetComponent<Rigidbody2D>();
             if (rb != null) {
-                projectile.AddInitialForce(force);
-                rb.AddTorque(torque);
-            }
-            if (flipX) {
-                projectile.GetComponent<SpriteRenderer>().flipX = true;
+                projectile.SetInitialVelocity(velocity);
+                rb.velocity = velocity;
+                rb.angularVelocity = angularVelocity;
             }
             NetworkServer.Spawn(obj);
+            projectile.Enable(netId, GetItemNetId(), flipX);
+        }
+
+        [Command]
+        public void CmdSpawnPooledProjectileFlipped(
+            int prefabIndex,
+            Vector2 position,
+            Quaternion rotation,
+            Vector2 velocity,
+            float angularVelocity,
+            bool flipX
+        ) {
+            var obj = GameController.Instance.GetFromNetPool(prefabIndex, position, rotation);
+            var projectile = obj.GetComponent<Projectile>();
+            projectile.Enable(netId, GetItemNetId(), flipX);
+            var rb = obj.GetComponent<Rigidbody2D>();
+            if (rb != null) {
+                projectile.SetInitialVelocity(velocity);
+                rb.velocity = velocity;
+                rb.angularVelocity = angularVelocity;
+            }
+            var sync = obj.GetComponent<InitialStateSync>();
+            if (sync != null) {
+                sync.Resync();
+            }
         }
 
         public NetworkInstanceId GetItemNetId() {
