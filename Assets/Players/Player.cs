@@ -432,7 +432,7 @@ namespace SciFi.Players {
             float angularVelocity,
             bool flipX
         ) {
-            var obj = GameController.Instance.GetFromPool(prefabIndex, position, rotation);
+            var obj = GameController.Instance.GetFromNetPool(prefabIndex, position, rotation);
             var projectile = obj.GetComponent<Projectile>();
             projectile.Enable(netId, GetItemNetId(), flipX);
             var rb = obj.GetComponent<Rigidbody2D>();

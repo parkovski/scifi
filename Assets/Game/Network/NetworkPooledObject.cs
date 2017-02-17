@@ -28,6 +28,9 @@ namespace SciFi.Network {
 #endif
                 return;
             }
+            if (!isFree) {
+                return;
+            }
             isFree = false;
             if (notificationHandler != null) {
                 notificationHandler.OnAcquire();
@@ -43,6 +46,9 @@ namespace SciFi.Network {
 #if DEBUG_NETPOOL
                 Debug.LogWarning("Release called not on server");
 #endif
+                return;
+            }
+            if (isFree) {
                 return;
             }
             isFree = true;
@@ -79,7 +85,5 @@ namespace SciFi.Network {
         public bool IsFree() {
             return isFree;
         }
-
-        public GameObject GameObject { get { return gameObject; } }
     }
 }

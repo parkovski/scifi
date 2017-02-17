@@ -6,14 +6,27 @@ namespace SciFi {
     /// A non-networked object managed by the object pool.
     /// Do not use GetComponent to get this. Use PooledObject.Get.
     public class PooledObject : MonoBehaviour, IPooledObject {
-        public IPoolNotificationHandler notificationHandler;
+        /// The editor doesn't let you assign interfaces,
+        /// so we have to do it this way - just make sure
+        /// to assign something that's actually an IPoolNotificationHandler.
+        public MonoBehaviour notificationHandlerComponent;
+
+        IPoolNotificationHandler notificationHandler;
 
         /// Objects are considered acquired when first created,
         /// so OnAcquire is not called until it has been released first.
         bool isFree = false;
 
+        void Start() {
+            notificationHandler = (IPoolNotificationHandler)notificationHandlerComponent;
+        }
+
         /// Marks the object as not free in the pool.
         public void Acquire() {
+            if (!isFree) {
+                return;
+            }
+
             isFree = false;
             if (notificationHandler != null) {
                 notificationHandler.OnAcquire();
@@ -22,6 +35,10 @@ namespace SciFi {
 
         /// Marks the object as free in the pool.
         public void Release() {
+            if (isFree) {
+                return;
+            }
+
             isFree = true;
             if (notificationHandler != null) {
                 notificationHandler.OnRelease();
@@ -31,8 +48,6 @@ namespace SciFi {
         public bool IsFree() {
             return isFree;
         }
-
-        public GameObject GameObject { get { return gameObject; } }
 
         /// Gets the NetworkPooledObject or PooledObject component,
         /// whichever is attached.
@@ -49,7 +64,6 @@ namespace SciFi {
         void Acquire();
         void Release();
         bool IsFree();
-        GameObject GameObject { get; }
     }
 
     public interface IPoolNotificationHandler {

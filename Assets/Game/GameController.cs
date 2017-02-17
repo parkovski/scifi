@@ -316,12 +316,12 @@ namespace SciFi {
             return spawnPrefabList[index];
         }
 
-        public GameObject GetFromPool(int prefabIndex, Vector3 position, Quaternion rotation) {
-            return gameObjectPool.Get(prefabIndex, position, rotation);
+        public GameObject GetFromNetPool(int prefabIndex, Vector3 position, Quaternion rotation) {
+            return gameObjectPool.GetNet(prefabIndex, position, rotation);
         }
 
-        public GameObject GetFromPool(GameObject prefab, Vector3 position, Quaternion rotation) {
-            return gameObjectPool.Get(PrefabToIndex(prefab), position, rotation);
+        public GameObject GetFromLocalPool(GameObject prefab, Vector3 position, Quaternion rotation) {
+            return gameObjectPool.Get(prefab, position, rotation);
         }
 
         /// Deduct a life from the player, respawn, and

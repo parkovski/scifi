@@ -13,10 +13,14 @@ namespace SciFi {
     /// component, and you should assign its notification
     /// handler in the editor.
     public class GameObjectPool {
-        Dictionary<int, List<IPooledObject>> pools;
+        /// Prefab index -> pool
+        Dictionary<int, List<NetworkPooledObject>> netPools;
+        /// Prefab -> pool
+        Dictionary<GameObject, List<PooledObject>> localPools;
 
         public GameObjectPool() {
-            pools = new Dictionary<int, List<IPooledObject>>();
+            netPools = new Dictionary<int, List<NetworkPooledObject>>();
+            localPools = new Dictionary<GameObject, List<PooledObject>>();
         }
 
         /// Get the first available object from the pool,
@@ -26,23 +30,22 @@ namespace SciFi {
         /// it will be spawned.
         /// If this is called on a non-server copy for a networked
         /// object, null will be returned.
-        public GameObject Get(int prefabIndex, Vector3 position, Quaternion rotation) {
-            List<IPooledObject> list;
-            if (!pools.TryGetValue(prefabIndex, out list)) {
-                list = new List<IPooledObject>();
-                pools.Add(prefabIndex, list);
+        public GameObject GetNet(int prefabIndex, Vector3 position, Quaternion rotation) {
+            List<NetworkPooledObject> list;
+            if (!netPools.TryGetValue(prefabIndex, out list)) {
+                list = new List<NetworkPooledObject>();
+                netPools.Add(prefabIndex, list);
             }
 
             foreach (var obj in list) {
                 if (obj.IsFree()) {
-                    var go = obj.GameObject;
-                    go.transform.position = position;
-                    go.transform.rotation = rotation;
+                    obj.transform.position = position;
+                    obj.transform.rotation = rotation;
                     obj.Acquire();
                     // Networked objects not on the server do nothing
                     // for Acquire - don't return them.
                     if (!obj.IsFree()) {
-                        return obj.GameObject;
+                        return obj.gameObject;
                     } else {
                         return null;
                     }
@@ -55,13 +58,33 @@ namespace SciFi {
             // initialization logic in Start for non-pooled objects,
             // and would run that code twice if we called Acquire here.
             var newObj = Object.Instantiate(GameController.IndexToPrefab(prefabIndex), position, rotation);
-            IPooledObject pooledObj = newObj.GetComponent<NetworkPooledObject>();
-            if (pooledObj != null) {
-                NetworkServer.Spawn(newObj);
-            } else {
-                pooledObj = newObj.GetComponent<PooledObject>();
+            NetworkServer.Spawn(newObj);
+            list.Add(newObj.GetComponent<NetworkPooledObject>());
+            return newObj;
+        }
+
+        /// Gets a non-networked (local) pooled object instance,
+        /// or creates one if there is none. Acquire has already been called,
+        /// except when first created, where it is not expected. Call Release
+        /// to give it back to the pool.
+        public GameObject Get(GameObject prefab, Vector3 position, Quaternion rotation) {
+            List<PooledObject> list;
+            if (!localPools.TryGetValue(prefab, out list)) {
+                list = new List<PooledObject>();
+                localPools.Add(prefab, list);
             }
-            list.Add(pooledObj);
+
+            foreach (var obj in list) {
+                if (obj.IsFree()) {
+                    obj.transform.position = position;
+                    obj.transform.rotation = rotation;
+                    obj.Acquire();
+                    return obj.gameObject;
+                }
+            }
+
+            var newObj = Object.Instantiate(prefab, position, rotation);
+            list.Add(newObj.GetComponent<PooledObject>());
             return newObj;
         }
     }
