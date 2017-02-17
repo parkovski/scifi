@@ -20,7 +20,12 @@ namespace SciFi.Environment {
                 return;
             }
             if (collider.gameObject.layer != Layers.players) {
-                Destroy(collider.gameObject);
+                var pooledObject = PooledObject.Get(collider.gameObject);
+                if (pooledObject != null) {
+                    pooledObject.Release();
+                } else {
+                    Destroy(collider.gameObject);
+                }
                 return;
             }
             float time;

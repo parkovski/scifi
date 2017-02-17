@@ -15,7 +15,6 @@ namespace SciFi.Players.Attacks {
         bool hasHitGround = false;
 
         void Start () {
-            BaseStart();
             Destroy(gameObject, 3f);
         }
 

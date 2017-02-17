@@ -14,7 +14,6 @@ namespace SciFi.Players.Attacks {
         }
 
         void Start() {
-            BaseStart();
             Destroy(gameObject, 1f);
 
             foreach (var child in Children()) {

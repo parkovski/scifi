@@ -5,23 +5,26 @@ namespace SciFi.Network {
     /// The Unity docs claim that you can set forces on an object
     /// and it will be included in the initial update - unfortunately
     /// this is not true, and they are only converted into velocities
-    /// by the first update. This waits till then to sync them.
+    /// by the first update. So we have to use velocities, and sync
+    /// them manually.
     public class InitialStateSync : NetworkBehaviour {
-        [SyncVar]
-        Vector2 velocity;
-        [SyncVar]
-        float angularVelocity;
-
         public override void OnStartServer() {
-            var rb = GetComponent<Rigidbody2D>();
-            this.velocity = rb.velocity;
-            this.angularVelocity = rb.angularVelocity;
+            Resync();
         }
 
-        public override void OnStartClient() {
+        public void Resync() {
             var rb = GetComponent<Rigidbody2D>();
-            rb.velocity = this.velocity;
-            rb.angularVelocity = this.angularVelocity;
+            RpcSetVelocities(rb.velocity, rb.angularVelocity);
+        }
+
+        void RpcSetVelocities(Vector2 velocity, float angularVelocity) {
+            if (isServer) {
+                return;
+            }
+
+            var rb = GetComponent<Rigidbody2D>();
+            rb.velocity = velocity;
+            rb.angularVelocity = angularVelocity;
         }
 
         public override int GetNetworkChannel() {

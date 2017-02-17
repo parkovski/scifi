@@ -30,7 +30,7 @@ namespace SciFi.Players.Attacks {
             } else {
                 player.StartCoroutine(ShowHideGun());
             }
-            player.CmdSpawnProjectileFlipped(
+            player.CmdSpawnPooledProjectileFlipped(
                 GameController.PrefabToIndex(bulletPrefab),
                 gun.transform.position + GetBulletOffset(direction),
                 rotation,

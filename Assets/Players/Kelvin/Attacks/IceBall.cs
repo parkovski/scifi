@@ -4,10 +4,6 @@ using SciFi.Items;
 
 namespace SciFi.Players.Attacks {
     public class IceBall : Projectile {
-        void Start() {
-            BaseStart();
-        }
-
         void OnCollisionEnter2D(Collision2D collision) {
             if (!isServer) {
                 return;

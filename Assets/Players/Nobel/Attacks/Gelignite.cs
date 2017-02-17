@@ -3,7 +3,7 @@ using UnityEngine.Networking;
 using System.Collections;
 
 using SciFi.Items;
-using SciFi.Environment.Effects;
+using SciFi.UI;
 using SciFi.Util.Extensions;
 
 namespace SciFi.Players.Attacks {
@@ -21,10 +21,13 @@ namespace SciFi.Players.Attacks {
         const float fadeStepInterval = burnTime / fadeSteps;
 
         void Start() {
-            BaseStart();
-
             spriteRenderer = GetComponent<SpriteRenderer>();
             flameSpriteRenderer = transform.GetChild(0).GetComponent<SpriteRenderer>();
+
+            var spawnedByPlayer = ClientScene.FindLocalObject(spawnedBy).GetComponent<Player>();
+            if (spawnedByPlayer.eTeam != -1) {
+                GetComponent<SpriteOverlay>().SetColor(Player.TeamToColor(spawnedByPlayer.eTeam));
+            }
 
             StartCoroutine(BurnUp());
         }

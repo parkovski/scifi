@@ -23,10 +23,6 @@ namespace SciFi.Players.Attacks {
         bool canDestroy = false;
         float destroyTime;
 
-        void Start() {
-            BaseStart();
-        }
-
         void Update() {
             if (!isServer) {
                 return;

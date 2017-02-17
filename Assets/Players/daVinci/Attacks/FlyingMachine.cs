@@ -56,7 +56,6 @@ namespace SciFi.Players.Attacks {
         State state = State.Flying;
 
         void Start() {
-            BaseStart();
             initialTime = Time.time;
             holdTime = .5f + power * 1.5f / 10f;
             rb = GetComponent<Rigidbody2D>();

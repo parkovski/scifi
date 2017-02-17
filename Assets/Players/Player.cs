@@ -413,16 +413,38 @@ namespace SciFi.Players {
         ) {
             var obj = Instantiate(prefab, position, rotation);
             var projectile = obj.GetComponent<Projectile>();
-            projectile.spawnedBy = netId;
-            projectile.spawnedByExtra = GetItemNetId();
-            projectile.flipX = flipX;
             var rb = obj.GetComponent<Rigidbody2D>();
             if (rb != null) {
-                projectile.AddInitialForce(velocity);
+                projectile.SetInitialVelocity(velocity);
                 rb.velocity = velocity;
                 rb.angularVelocity = angularVelocity;
             }
             NetworkServer.Spawn(obj);
+            projectile.Enable(netId, GetItemNetId(), flipX);
+        }
+
+        [Command]
+        public void CmdSpawnPooledProjectileFlipped(
+            int prefabIndex,
+            Vector2 position,
+            Quaternion rotation,
+            Vector2 velocity,
+            float angularVelocity,
+            bool flipX
+        ) {
+            var obj = GameController.Instance.GetFromPool(prefabIndex, position, rotation);
+            var projectile = obj.GetComponent<Projectile>();
+            projectile.Enable(netId, GetItemNetId(), flipX);
+            var rb = obj.GetComponent<Rigidbody2D>();
+            if (rb != null) {
+                projectile.SetInitialVelocity(velocity);
+                rb.velocity = velocity;
+                rb.angularVelocity = angularVelocity;
+            }
+            var sync = obj.GetComponent<InitialStateSync>();
+            if (sync != null) {
+                sync.Resync();
+            }
         }
 
         public NetworkInstanceId GetItemNetId() {
