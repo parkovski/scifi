@@ -3,6 +3,7 @@ using UnityEngine.Networking;
 using System.Collections.Generic;
 
 using SciFi.Network;
+using SciFi.Util;
 
 namespace SciFi {
     /// Keeps track of objects to avoid running the GC.
@@ -17,6 +18,11 @@ namespace SciFi {
         Dictionary<int, List<NetworkPooledObject>> netPools;
         /// Prefab -> pool
         Dictionary<GameObject, List<PooledObject>> localPools;
+
+#if DEBUG_POOLS
+        int dbgNetPool = -1;
+        int dbgLocPool = -1;
+#endif
 
         public GameObjectPool() {
             netPools = new Dictionary<int, List<NetworkPooledObject>>();
@@ -60,6 +66,9 @@ namespace SciFi {
             var newObj = Object.Instantiate(GameController.IndexToPrefab(prefabIndex), position, rotation);
             NetworkServer.Spawn(newObj);
             list.Add(newObj.GetComponent<NetworkPooledObject>());
+#if DEBUG_POOLS
+            UpdateDebug();
+#endif
             return newObj;
         }
 
@@ -85,7 +94,53 @@ namespace SciFi {
 
             var newObj = Object.Instantiate(prefab, position, rotation);
             list.Add(newObj.GetComponent<PooledObject>());
+#if DEBUG_POOLS
+            UpdateDebug();
+#endif
             return newObj;
         }
+
+#if DEBUG_POOLS
+        void UpdateDebug() {
+            var printer = DebugPrinter.Instance;
+            if (printer == null) {
+                return;
+            }
+
+            if (dbgNetPool == -1) {
+                dbgNetPool = printer.NewField();
+            }
+            if (dbgLocPool == -1) {
+                dbgLocPool = printer.NewField();
+            }
+
+            int netMax = 0, netAvg = 0;
+            foreach (var pair in netPools) {
+                var count = pair.Value.Count;
+                if (count > netMax) {
+                    netMax = count;
+                }
+                netAvg += count;
+            }
+            if (netPools.Count != 0) {
+                netAvg /= netPools.Count;
+            }
+
+            int locMax = 0, locAvg = 0;
+            foreach (var pair in localPools) {
+                var count = pair.Value.Count;
+                if (count > locMax) {
+                    locMax = count;
+                }
+                locAvg += count;
+            }
+            if (localPools.Count != 0) {
+                locAvg /= localPools.Count;
+            }
+
+            printer.SetField(dbgNetPool, "NetPool A:" + netAvg + " M:" + netMax);
+            printer.SetField(dbgLocPool, "LocPool A:" + locAvg + " M:" + locMax);
+        }
+#endif
     }
 }
