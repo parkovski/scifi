@@ -29,12 +29,13 @@ namespace SciFi.Players.Attacks {
 
             var angularVelocity = Random.Range(-angularVelocityRange, angularVelocityRange);
             var prefabIndex = Random.Range(0, chanceOfGreenApple) == 1 ? greenApplePrefabIndex : applePrefabIndex;
-            player.CmdSpawnProjectile(
+            player.CmdSpawnPooledProjectileFlipped(
                 prefabIndex,
                 player.gameObject.transform.position,
                 Quaternion.identity,
                 velocity,
-                angularVelocity
+                angularVelocity,
+                false
             );
         }
 

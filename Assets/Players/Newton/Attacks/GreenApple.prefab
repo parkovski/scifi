@@ -25,6 +25,7 @@ GameObject:
   - component: {fileID: 58688076574055786}
   - component: {fileID: 114267997417385408}
   - component: {fileID: 114551737764986478}
+  - component: {fileID: 114695872751215944}
   m_Layer: 13
   m_Name: GreenApple
   m_TagString: Untagged
@@ -133,13 +134,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 261669bf00bc28a42bf52db26d04f2f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  flipX: 0
   explodingApple: {fileID: 1844964400331752, guid: 2e5da8ecefc6341559bae17575f7ea32,
     type: 2}
   damage: 9
   knockback: 5
   postGroundDamage: 3
   postGroundKnockback: 1.5
+--- !u!114 &114695872751215944
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1620461812501308}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 367271472a7be064fa49c9a2e5adbfea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  notificationHandlerComponent: {fileID: 114673505912176346}
 --- !u!212 &212914230991580068
 SpriteRenderer:
   m_ObjectHideFlags: 1

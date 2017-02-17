@@ -332,7 +332,7 @@ namespace SciFi.Players {
 #if UNITY_EDITOR
             if (eModifierState != pOldModifierState) {
                 pOldModifierState = eModifierState;
-                DebugPrinter.Instance.SetField(pModifiersDebugField, Modifier.GetDebugString(eModifierState));
+                DebugPrinter.Instance.SetField(pModifiersDebugField, "P" + (eId+1) + ": " + Modifier.GetDebugString(eModifierState));
             }
 #endif
         }

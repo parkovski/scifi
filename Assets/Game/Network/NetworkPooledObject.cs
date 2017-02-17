@@ -12,7 +12,7 @@ namespace SciFi.Network {
 
         IPoolNotificationHandler notificationHandler;
 
-        bool isFree = true;
+        bool isFree = false;
 
         void Start() {
             notificationHandler = (IPoolNotificationHandler)notificationHandlerComponent;

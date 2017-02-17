@@ -25,6 +25,7 @@ GameObject:
   - component: {fileID: 58431733497880524}
   - component: {fileID: 114536395684050878}
   - component: {fileID: 114706752919891440}
+  - component: {fileID: 114902910922521254}
   m_Layer: 13
   m_Name: Apple
   m_TagString: Untagged
@@ -122,7 +123,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 261669bf00bc28a42bf52db26d04f2f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  flipX: 0
   explodingApple: {fileID: 1067510251126116, guid: 7d6a37a4da9154edc9a116afb28f4920,
     type: 2}
   damage: 5
@@ -140,6 +140,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf8a20c44550b2e4997a70b4207bd44e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114902910922521254
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1357499644953146}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 367271472a7be064fa49c9a2e5adbfea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  notificationHandlerComponent: {fileID: 114582542024119394}
 --- !u!212 &212658536644460594
 SpriteRenderer:
   m_ObjectHideFlags: 1
