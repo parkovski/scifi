@@ -22,6 +22,9 @@ namespace SciFi.Players.Attacks {
                 ? Quaternion.Euler(0f, 0f, -20f)
                 : Quaternion.Euler(0f, 0f, 20f);
 
+            if (chargingBook != null) {
+                Object.Destroy(chargingBook);
+            }
             chargingBook = Object.Instantiate(
                 book,
                 player.gameObject.transform.position + offset,
@@ -45,11 +48,9 @@ namespace SciFi.Players.Attacks {
         public override void OnKeepCharging(float chargeTime, Direction direction) {
             if (chargeTime > timeToChangeBooks && power == 0) {
                 ++power;
-                Object.Destroy(chargingBook);
                 SpawnChargingBook(books[1]);
             } else if (chargeTime > 2*timeToChangeBooks && power == 1) {
                 ++power;
-                Object.Destroy(chargingBook);
                 SpawnChargingBook(books[2]);
             }
         }
