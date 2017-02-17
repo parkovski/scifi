@@ -80,10 +80,9 @@ namespace SciFi.Items {
         public void SpillJuice(Direction direction) {
             var juice = Instantiate(juicePrefab, transform.position + GetJuiceOffset(direction), Quaternion.identity);
             var pj = juice.GetComponent<PotionJuice>();
-            pj.Enable(netId, eOwner == null ? NetworkInstanceId.Invalid : eOwner.netId, false);
             pj.isRedPotion = isRedPotion;
-            // TODO: Spawn
             NetworkServer.Spawn(juice);
+            pj.Enable(netId, eOwner == null ? NetworkInstanceId.Invalid : eOwner.netId, false);
         }
 
         public override AttackType Type { get { return AttackType.Projectile; } }

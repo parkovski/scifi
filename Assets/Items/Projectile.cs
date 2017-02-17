@@ -47,6 +47,7 @@ namespace SciFi.Items {
 
         /// This also syncs position and rotation, so make sure to
         /// set those before calling this.
+        /// !!! Be sure to spawn before calling this !!!
         [Server]
         public void Enable(NetworkInstanceId spawnedBy, NetworkInstanceId spawnedByExtra, bool flipX) {
             this.spawnedBy = spawnedBy;
@@ -66,7 +67,10 @@ namespace SciFi.Items {
                 Item.IgnoreCollisions(gameObject, ClientScene.FindLocalObject(spawnedByExtra));
             }
 
-            GetComponent<SpriteRenderer>().flipX = flipX;
+            var sr = GetComponent<SpriteRenderer>();
+            if (sr != null) {
+                sr.flipX = flipX;
+            }
 
             // Due to what seems to be a bug in Unity,
             // collisions can be detected before Start is called,

@@ -70,8 +70,8 @@ namespace SciFi.Players {
             var fm = fmObj.GetComponent<FlyingMachine>();
             fm.power = Mathf.Clamp((int)(chargeTime * 7.5f), 1, 10);
             fm.dx = 1.5f.FlipDirection(eDirection);
-            fm.Enable(netId, GetItemNetId(), false);
             NetworkServer.Spawn(fmObj);
+            fm.Enable(netId, GetItemNetId(), false);
         }
     }
 }
