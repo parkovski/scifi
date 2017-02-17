@@ -17,6 +17,7 @@ namespace SciFi.Network {
             RpcSetVelocities(rb.velocity, rb.angularVelocity);
         }
 
+        [ClientRpc]
         void RpcSetVelocities(Vector2 velocity, float angularVelocity) {
             if (isServer) {
                 return;
