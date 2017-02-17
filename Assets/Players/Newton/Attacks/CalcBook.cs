@@ -1,38 +1,33 @@
 using UnityEngine;
 using UnityEngine.Networking;
-using System.Collections.Generic;
 
 using SciFi.Items;
 using SciFi.Environment.Effects;
+using SciFi.Util;
 
 namespace SciFi.Players.Attacks {
     public class CalcBook : MonoBehaviour, IAttack {
         public GameObject spawnedBy;
         public int power;
 
-        [HideInInspector]
-        public bool attacking = false;
+        bool attacking = false;
         AudioSource audioSource;
 
-        HashSet<GameObject> hitObjects;
+        HitSet hits;
         /// Keep track of the objects colliding with the book
         /// before it starts attacking, and issue a hit once
         /// attacking starts - this is because OnTriggerEnter2D
         /// will get called and do nothing, and the object won't get hit.
-        Dictionary<GameObject, int> chargingColliderCount;
+        ColliderCount colliderCount;
+
+        public CalcBook() {
+            hits = new HitSet();
+            colliderCount = new ColliderCount();
+        }
 
         void Start() {
             Item.IgnoreCollisions(gameObject, spawnedBy);
             audioSource = GetComponent<AudioSource>();
-        }
-
-        void InitCollections() {
-            if (hitObjects == null) {
-                hitObjects = new HashSet<GameObject>();
-            }
-            if (chargingColliderCount == null) {
-                chargingColliderCount = new Dictionary<GameObject, int>();
-            }
         }
 
         public void StartAttacking() {
@@ -40,14 +35,8 @@ namespace SciFi.Players.Attacks {
                 return;
             }
 
-            InitCollections();
-            foreach (var pair in chargingColliderCount) {
-                if (pair.Value <= 0) {
-                    continue;
-                }
-                if (pair.Key != null) {
-                    Hit(pair.Key);
-                }
+            foreach (var obj in colliderCount.ObjectsWithPositiveCount) {
+                Hit(obj);
             }
             attacking = true;
         }
@@ -58,10 +47,8 @@ namespace SciFi.Players.Attacks {
         }
 
         void Hit(GameObject obj) {
-            InitCollections();
             var hit = Attack.GetAttackHit(obj.layer);
-            if (hit == AttackHit.HitAndDamage && !hitObjects.Contains(obj)) {
-                hitObjects.Add(obj);
+            if (hit == AttackHit.HitAndDamage && !hits.CheckOrFlag(obj)) {
                 GameController.Instance.Hit(obj, this, spawnedBy, power * 2, power);
                 audioSource.Play();
                 Effects.Star(obj.transform.position);
@@ -76,13 +63,7 @@ namespace SciFi.Players.Attacks {
             }
 
             if (!attacking) {
-                InitCollections();
-                int colliderCount;
-                if (chargingColliderCount.TryGetValue(collider.gameObject, out colliderCount)) {
-                    chargingColliderCount[collider.gameObject] = colliderCount + 1;
-                } else {
-                    chargingColliderCount[collider.gameObject] = 1;
-                }
+                colliderCount.Increase(collider);
                 return;
             }
 
@@ -94,15 +75,10 @@ namespace SciFi.Players.Attacks {
                 return;
             }
 
-            if (attacking || chargingColliderCount == null) {
+            if (attacking) {
                 return;
             }
-            int colliderCount;
-            if (chargingColliderCount.TryGetValue(collider.gameObject, out colliderCount)) {
-                if (colliderCount > 0) {
-                    chargingColliderCount[collider.gameObject] = colliderCount - 1;
-                }
-            }
+            colliderCount.Decrease(collider);
         }
 
         public AttackType Type { get { return AttackType.Melee; } }

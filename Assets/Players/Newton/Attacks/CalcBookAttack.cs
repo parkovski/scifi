@@ -30,6 +30,11 @@ namespace SciFi.Players.Attacks {
             );
             var behavior = chargingBook.GetComponent<CalcBook>();
             behavior.spawnedBy = player.gameObject;
+            if (player.eDirection == Direction.Left) {
+                chargingBook.GetComponent<Animator>().SetTrigger("ChargeBackwards");
+            } else {
+                chargingBook.GetComponent<Animator>().SetTrigger("Charge");
+            }
         }
 
         public override void OnBeginCharging(Direction direction) {
