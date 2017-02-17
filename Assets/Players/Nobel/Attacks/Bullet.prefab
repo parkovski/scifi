@@ -25,6 +25,7 @@ GameObject:
   - component: {fileID: 114760202321868942}
   - component: {fileID: 114368102634575572}
   - component: {fileID: 114141353194544504}
+  - component: {fileID: 114439358738881416}
   m_Layer: 13
   m_Name: Bullet
   m_TagString: Untagged
@@ -101,9 +102,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be558bf2217359647a5f079c876b2e2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  flipX: 0
   damage: 8
   knockback: 8
+--- !u!114 &114439358738881416
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1019900017308746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 367271472a7be064fa49c9a2e5adbfea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  notificationHandlerComponent: {fileID: 114368102634575572}
 --- !u!114 &114760202321868942
 MonoBehaviour:
   m_ObjectHideFlags: 1
