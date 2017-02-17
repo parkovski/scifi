@@ -83,6 +83,7 @@ namespace SciFi.Players.Attacks {
             rb.velocity = Vector2.zero;
             rb.angularVelocity = 0;
             GameController.Instance.GetFromLocalPool(explodingApple, transform.position, transform.rotation);
+            Disable();
         }
     }
 }
