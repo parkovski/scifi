@@ -98,6 +98,7 @@ namespace SciFi.Players {
             var dynamite = dynamiteGo.GetComponent<Dynamite>();
             // Intentionally don't set spawnedBy so the player that
             // created it can push it around.
+            dynamite.Enable(NetworkInstanceId.Invalid, NetworkInstanceId.Invalid, false);
             dynamite.explodeCallback = OnDynamiteExploded;
             dynamite.destroyCallback = OnDynamiteDestroyed;
             NetworkServer.Spawn(dynamiteGo);
@@ -122,8 +123,7 @@ namespace SciFi.Players {
         void OnDynamiteExploded() {
             var fragGo = Object.Instantiate(dynamiteFragmentPrefab, dynamiteGo.transform.position, Quaternion.identity);
             var frag = fragGo.GetComponent<DynamiteFragment>();
-            frag.spawnedBy = netId;
-            frag.spawnedByExtra = GetItemNetId();
+            frag.Enable(netId, GetItemNetId(), false);
             NetworkServer.Spawn(fragGo);
         }
 

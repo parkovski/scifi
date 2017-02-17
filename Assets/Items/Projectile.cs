@@ -11,12 +11,12 @@ namespace SciFi.Items {
         /// The player or other object that spawned the projectile.
         /// Projectiles won't collide with objects that spawned them.
         [HideInInspector]
-        public NetworkInstanceId spawnedBy = NetworkInstanceId.Invalid;
+        protected NetworkInstanceId spawnedBy = NetworkInstanceId.Invalid;
         /// If the player is holding an item, set this so the projectile doesn't hit it.
         [HideInInspector]
-        public NetworkInstanceId spawnedByExtra = NetworkInstanceId.Invalid;
+        protected NetworkInstanceId spawnedByExtra = NetworkInstanceId.Invalid;
         [HideInInspector]
-        public bool flipX;
+        bool flipX;
 
         /// When an object collides, it bounces in the opposite direction
         /// sometimes causing knockback to go in the wrong direction.
