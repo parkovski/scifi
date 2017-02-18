@@ -145,10 +145,10 @@ namespace SciFi {
         }
 
         /// Start the game.
-        /// <param name="countdown">Show the countdown and delay
+        /// <param name="showCountdown">Show the countdown and delay
         ///   the game from starting until it is done.</param>
         [Server]
-        public void StartGame(bool countdown = true) {
+        public void StartGame(bool showCountdown = true) {
             activePlayers = activePlayersGo.Select(p => p.GetComponent<Player>()).ToArray();
 
             for (var i = 0; i < activePlayers.Length; i++) {
@@ -165,10 +165,10 @@ namespace SciFi {
 
             _PlayersInitialized(activePlayers);
 
-            StartCoroutine(StartGameWhenPlayersReady());
+            StartCoroutine(StartGameWhenPlayersReady(showCountdown));
         }
 
-        IEnumerator StartGameWhenPlayersReady() {
+        IEnumerator StartGameWhenPlayersReady(bool showCountdown) {
             yield return new WaitUntil(() => activePlayers.All(p => p.IsInitialized()));
 
             for (var i = 0; i < activePlayers.Length; i++) {
@@ -182,8 +182,8 @@ namespace SciFi {
             RpcCreateCharacterList(activePlayers.Select(p => p.netId).ToArray());
 
             this.countdown = GameObject.Find("Canvas").GetComponent<Countdown>();
-            RpcStartGame(countdown);
-            if (countdown) {
+            RpcStartGame(showCountdown);
+            if (showCountdown) {
                 this.countdown.StartGame();
                 System.GC.Collect();
                 this.countdown.OnFinished += _ => {
@@ -196,6 +196,10 @@ namespace SciFi {
                 };
             } else {
                 this.isPlaying = true;
+                foreach (var p in activePlayers) {
+                    p.RemoveModifier(Modifier.CantMove);
+                    p.RemoveModifier(Modifier.CantAttack);
+                }
                 _GameStarted();
             }
         }
