@@ -59,7 +59,6 @@ namespace SciFi {
         int[] sAILevels;
         /// Is this client the winner? This is always false if the game
         /// is not over yet.
-        bool cIsWinner;
         /// The ID of the player controlled by this client.
         /// <seealso cref="SciFi.Players.Player.eId" />
         int cPlayerId;
@@ -245,13 +244,6 @@ namespace SciFi {
             return winner.eId;
         }
 
-        /// Is this client the winner? Always false
-        /// if the game is still in progress.
-        [Client]
-        public bool IsWinner() {
-            return cIsWinner;
-        }
-
         /// End the game and load the game over scene.
         [Server]
         public void EndGame(int winnerId) {
@@ -270,7 +262,6 @@ namespace SciFi {
         /// call them twice.
         [ClientRpc]
         void RpcStartGame(bool countdown) {
-            cIsWinner = false;
             if (!countdown) {
                 this.isPlaying = true;
                 if (!isServer) {
@@ -294,7 +285,9 @@ namespace SciFi {
         [ClientRpc]
         void RpcEndGame(int winnerId) {
             if (winnerId == cPlayerId) {
-                cIsWinner = true;
+                TransitionParams.isWinner = true;
+            } else {
+                TransitionParams.isWinner = false;
             }
             StartCoroutine(TransitionToGameOver());
         }
@@ -494,8 +487,6 @@ namespace SciFi {
                     player.RemoveModifier(Modifier.CantMove);
                 }
             };
-
-            DontDestroyOnLoad(gameObject);
         }
 
         [Server]

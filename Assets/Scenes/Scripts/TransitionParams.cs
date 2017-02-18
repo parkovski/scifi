@@ -35,6 +35,10 @@ namespace SciFi.Scenes {
 
         #endregion
 
+        #region Main game -> Game over
+        public static bool isWinner = false;
+        #endregion
+
         #region Accessors for private fields
         static TransitionParams() {
             players = new Dictionary<NetworkConnection, string>();
