@@ -424,7 +424,45 @@ namespace SciFi.Players {
         }
 
         [Command]
+        public void CmdSpawnPooledProjectile(
+            int prefabIndex,
+            Vector2 position,
+            Quaternion rotation,
+            Vector2 velocity,
+            float angularVelocity
+        ) {
+            SpawnPooledProjectile(
+                prefabIndex,
+                position,
+                rotation,
+                velocity,
+                angularVelocity,
+                false
+            );
+        }
+
+
+        [Command]
         public void CmdSpawnPooledProjectileFlipped(
+            int prefabIndex,
+            Vector2 position,
+            Quaternion rotation,
+            Vector2 velocity,
+            float angularVelocity,
+            bool flipX
+        ) {
+            SpawnPooledProjectile(
+                prefabIndex,
+                position,
+                rotation,
+                velocity,
+                angularVelocity,
+                flipX
+            );
+        }
+
+        [Server]
+        public GameObject SpawnPooledProjectile(
             int prefabIndex,
             Vector2 position,
             Quaternion rotation,
@@ -445,6 +483,7 @@ namespace SciFi.Players {
             if (sync != null) {
                 sync.Resync();
             }
+            return obj;
         }
 
         public NetworkInstanceId GetItemNetId() {

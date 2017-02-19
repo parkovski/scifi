@@ -430,9 +430,9 @@ MonoBehaviour:
   walkForce: 1300
   jumpForce: 500
   minDoubleJumpVelocity: 2
-  iceBall: {fileID: 1284917634577738, guid: ab2f5738fa6e25b46bcaf4df5013554a, type: 2}
-  fireBall: {fileID: 1029048364040172, guid: 03d7afc17b64a1041b6fd882e9672e95, type: 2}
-  fireBallInactive: {fileID: 1931044926520130, guid: eee7494577489924eb0396574e70e3cf,
+  iceballPrefab: {fileID: 1284917634577738, guid: ab2f5738fa6e25b46bcaf4df5013554a,
+    type: 2}
+  fireballPrefab: {fileID: 1029048364040172, guid: 03d7afc17b64a1041b6fd882e9672e95,
     type: 2}
   telegraph: {fileID: 1889390672998682, guid: 31ca5d793d12ac944bf38b57280d8174, type: 2}
 --- !u!212 &212041284011937294

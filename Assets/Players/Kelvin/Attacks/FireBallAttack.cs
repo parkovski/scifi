@@ -9,50 +9,24 @@ namespace SciFi.Players.Attacks {
     // 3-5 rounds of damage.
     public class FireBallAttack : Attack {
         const float horizontalForce = 20f;
-        GameObject fireBall;
-        GameObject chargingFireBall;
 
-        public FireBallAttack(Player player, GameObject fireBall)
+        public FireBallAttack(Kelvin player)
             : base(player, true)
         {
-            this.fireBall = fireBall;
         }
 
         public override void OnBeginCharging(Direction direction) {
-            player.CmdSpawnProjectile(
-                GameController.PrefabToIndex(fireBall),
-                player.transform.position + new Vector3(1f, .5f).FlipDirection(player.eDirection),
-                Quaternion.identity,
-                Vector2.zero,
-                0f
+            ((Kelvin)player).CmdChargeOrThrowFireball(
+                player.transform.position + new Vector3(1f, 0f).FlipDirection(player.eDirection)
             );
         }
 
-        public override void OnKeepCharging(float chargeTime, Direction direction) {
-            if (chargeTime > 1f) {
-                chargeTime = 1f;
-            }
-            var scale = .25f + chargeTime / 4f;
-            chargingFireBall.transform.localScale = new Vector3(scale, scale, 1f);
-        }
-
         public override void OnEndCharging(float chargeTime, Direction direction) {
-            Vector2 force;
-            if (direction == Direction.Left) {
-                force = new Vector2(-horizontalForce, 0f);
-            } else {
-                force = new Vector2(horizontalForce, 0f);
-            }
-
-            var fb = chargingFireBall.GetComponent<FireBall>();
-            fb.SetInitialVelocity(force);
-            fb.SetCanDestroy(true);
+            ((Kelvin)player).CmdChargeOrThrowFireball(Vector2.zero);
         }
 
         public override void OnCancel() {
-            if (chargingFireBall != null) {
-                Object.Destroy(chargingFireBall);
-            }
+            ((Kelvin)player).CmdStopChargingFireball();
         }
     }
 }
