@@ -42,6 +42,7 @@ GameObject:
   - component: {fileID: 50602325945064242}
   - component: {fileID: 61840882382054656}
   - component: {fileID: 114713940749722514}
+  - component: {fileID: 114769397870759224}
   m_Layer: 13
   m_Name: Gelignite
   m_TagString: Untagged
@@ -185,6 +186,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spriteRenderers:
   - {fileID: 212856541640882862}
+  alpha: 0.3
+--- !u!114 &114769397870759224
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1407248016741874}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 367271472a7be064fa49c9a2e5adbfea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  notificationHandlerComponent: {fileID: 114207713010301774}
 --- !u!212 &212671389270493462
 SpriteRenderer:
   m_ObjectHideFlags: 1

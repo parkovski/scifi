@@ -7,7 +7,7 @@ using SciFi.UI;
 using SciFi.Util.Extensions;
 
 namespace SciFi.Players.Attacks {
-    public class Gelignite : Projectile {
+    public class Gelignite : Projectile, IPoolNotificationHandler {
         public GameObject explosionPrefab;
         Player stuckToPlayer;
         SpriteRenderer spriteRenderer;
@@ -20,10 +20,19 @@ namespace SciFi.Players.Attacks {
         const int fadeSteps = 20;
         const float fadeStepInterval = burnTime / fadeSteps;
 
-        void Start() {
+        IPooledObject pooled;
+
+        void Awake() {
             spriteRenderer = GetComponent<SpriteRenderer>();
             flameSpriteRenderer = transform.GetChild(0).GetComponent<SpriteRenderer>();
+            pooled = PooledObject.Get(gameObject);
+        }
 
+        void Start() {
+            Reinit();
+        }
+
+        void Reinit() {
             var spawnedByPlayer = ClientScene.FindLocalObject(spawnedBy).GetComponent<Player>();
             if (spawnedByPlayer.eTeam != -1) {
                 GetComponent<SpriteOverlay>().SetColor(Player.TeamToColor(spawnedByPlayer.eTeam));
@@ -32,14 +41,10 @@ namespace SciFi.Players.Attacks {
             StartCoroutine(BurnUp());
         }
 
-        void OnDestroy() {
-            // So isServer doesn't work in here, good to know...
-            if (NetworkServer.active && stuckToPlayer != null) {
-                stuckToPlayer.sAttackHit -= PlayerHit;
-            }
-        }
-
         void Update() {
+            if (pooled.IsFree()) {
+                return;
+            }
             if (stuckToPlayer != null) {
                 transform.position = stuckToPlayer.transform.position + GetPlayerOffset(stuckToPlayer.eDirection);
                 if (isServer) {
@@ -54,6 +59,9 @@ namespace SciFi.Players.Attacks {
         IEnumerator BurnUp() {
             int fadeStep = fadeSteps;
             while (fadeStep > 0) {
+                if (pooled.IsFree()) {
+                    yield break;
+                }
                 var alpha = ((float)fadeStep) / fadeSteps;
                 spriteRenderer.color = spriteRenderer.color.WithAlpha(alpha);
                 //flameSpriteRenderer.color = flameSpriteRenderer.color.WithAlpha(alpha);
@@ -62,15 +70,15 @@ namespace SciFi.Players.Attacks {
             }
 
             if (isServer) {
-                Destroy(gameObject);
+                pooled.Release();
             }
         }
 
         Vector3 GetPlayerOffset(Direction direction) {
             if (direction == Direction.Left) {
-                return new Vector3(-.3f, .2f);
+                return new Vector3(-.1f, .2f);
             } else {
-                return new Vector3(.3f, .2f);
+                return new Vector3(.1f, .2f);
             }
         }
 
@@ -97,7 +105,7 @@ namespace SciFi.Players.Attacks {
             explosion.damage = 5;
             explosion.knockback = 5f;
             NetworkServer.Spawn(explosionGo);
-            Destroy(gameObject);
+            pooled.Release();
         }
 
         [Server]
@@ -117,5 +125,32 @@ namespace SciFi.Players.Attacks {
         }
 
         public override AttackProperty Properties { get { return AttackProperty.OnFire; } }
+
+        void IPoolNotificationHandler.OnAcquire() {
+            GetComponent<SpriteRenderer>().enabled = true;
+            var flame = transform.GetChild(0);
+            flame.GetComponent<Animator>().enabled = true;
+            flame.GetComponent<SpriteRenderer>().enabled = true;
+            GetComponent<Collider2D>().enabled = true;
+            GetComponent<Rigidbody2D>().isKinematic = false;
+            Reinit();
+        }
+
+        void IPoolNotificationHandler.OnRelease() {
+            GetComponent<SpriteRenderer>().enabled = false;
+            var flame = transform.GetChild(0);
+            flame.GetComponent<Animator>().enabled = false;
+            flame.GetComponent<SpriteRenderer>().enabled = false;
+            GetComponent<Collider2D>().enabled = false;
+            var rb = GetComponent<Rigidbody2D>();
+            rb.velocity = Vector2.zero;
+            rb.angularVelocity = 0;
+            rb.isKinematic = true;
+            if (NetworkServer.active && stuckToPlayer != null) {
+                stuckToPlayer.sAttackHit -= PlayerHit;
+            }
+            stuckToPlayer = null;
+            Disable();
+        }
     }
 }

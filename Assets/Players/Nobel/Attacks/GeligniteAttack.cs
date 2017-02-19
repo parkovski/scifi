@@ -11,12 +11,13 @@ namespace SciFi.Players.Attacks {
         }
 
         public override void OnEndCharging(float chargeTime, Direction direction) {
-            player.CmdSpawnProjectile(
+            player.CmdSpawnPooledProjectileFlipped(
                 GameController.PrefabToIndex(gelignitePrefab),
                 player.transform.position + GetGeligniteOffset(direction),
                 Quaternion.identity,
                 Vector2.zero,
-                0f
+                0f,
+                false
             );
         }
 
