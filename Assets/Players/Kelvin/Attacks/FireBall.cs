@@ -48,7 +48,6 @@ namespace SciFi.Players.Attacks {
             chargingStartTime = Time.time;
             accumulatedKnockback = 0;
             targetOffset = transform.position;
-            gameObject.layer = Layers.displayOnly;
         }
 
         void Update() {
@@ -120,17 +119,20 @@ namespace SciFi.Players.Attacks {
             if (!isServer) {
                 return;
             }
-            if (isCharging || targetPlayer != null) {
+            if (targetPlayer != null) {
                 return;
             }
 
             var player = collision.gameObject.GetComponent<Player>();
             if (player != null) {
+                if (isCharging) {
+                    Throw(player.eDirection);
+                }
                 targetPlayer = collision.gameObject;
                 targetOffset = gameObject.transform.position - targetPlayer.transform.position;
                 gameObject.layer = Layers.displayOnly;
                 StartAttacking();
-            } else {
+            } else if (!isCharging) {
                 pooled.Release();
             }
         }
