@@ -34,6 +34,7 @@ namespace SciFi.Players.Attacks {
 
         void Reinit() {
             startTime = Time.time;
+            hasHitGround = false;
         }
 
         void Update() {
