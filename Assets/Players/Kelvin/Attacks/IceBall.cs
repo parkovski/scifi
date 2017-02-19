@@ -8,34 +8,24 @@ namespace SciFi.Players.Attacks {
         public bool alwaysFreeze = false;
         public GameObject iceBlockPrefab;
 
-        bool releaseOnUpdate = false;
         IPooledObject pooled;
 
         const int chanceOfFreezing = 10;
 
-        void Start() {
+        void Awake() {
             pooled = PooledObject.Get(gameObject);
+        }
+
+        void Start() {
             Reinit();
         }
 
         void Reinit() {
         }
 
-        void Release() {
-            if (pooled == null) {
-                releaseOnUpdate = true;
-            } else {
-                pooled.Release();
-            }
-        }
-
         void Update() {
             if (pooled.IsFree()) {
                 return;
-            }
-            if (releaseOnUpdate) {
-                releaseOnUpdate = false;
-                pooled.Release();
             }
         }
 
@@ -58,7 +48,7 @@ namespace SciFi.Players.Attacks {
                     }
                 }
             }
-            Release();
+            pooled.Release();
         }
 
         public override AttackProperty Properties {

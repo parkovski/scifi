@@ -11,25 +11,17 @@ namespace SciFi.Players.Attacks {
         public float postGroundKnockback;
         float startTime;
         const float lifetime = 3f;
-        /// Just because Unity calls OnCollisionEnter2D before Start.
-        /// Thanks a lot Unity.
-        bool releaseOnUpdate;
         IPooledObject pooled;
 
         /// After the apple hits the ground, it causes less damage.
         bool hasHitGround = false;
 
-        void Start() {
+        void Awake() {
             pooled = PooledObject.Get(gameObject);
-            Reinit();
         }
 
-        void Release() {
-            if (pooled == null) {
-                releaseOnUpdate = true;
-            } else {
-                pooled.Release();
-            }
+        void Start() {
+            Reinit();
         }
 
         void Reinit() {
@@ -41,13 +33,9 @@ namespace SciFi.Players.Attacks {
             if (pooled.IsFree()) {
                 return;
             }
-            if (releaseOnUpdate) {
-                releaseOnUpdate = false;
-                Release();
-            }
 
             if (Time.time > startTime + lifetime) {
-                Release();
+                pooled.Release();
             }
         }
 
@@ -63,9 +51,9 @@ namespace SciFi.Players.Attacks {
                 var damage = hasHitGround ? postGroundDamage : this.damage;
                 var knockback = hasHitGround ? postGroundKnockback : this.knockback;
                 GameController.Instance.HitNoVelocityReset(collision.gameObject, this, gameObject, damage, knockback);
-                Release();
+                pooled.Release();
             } else if (hit == AttackHit.HitOnly) {
-                Release();
+                pooled.Release();
             }
         }
 
