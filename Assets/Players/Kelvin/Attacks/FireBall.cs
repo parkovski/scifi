@@ -12,6 +12,8 @@ namespace SciFi.Players.Attacks {
         int rounds;
         const int minRounds = 3;
         const int maxRounds = 5;
+        const float minScale = .25f;
+        const float maxScale = .5f;
 
         /// Accumulated knockback dealt on last round.
         float accumulatedKnockback;
@@ -55,7 +57,8 @@ namespace SciFi.Players.Attacks {
             }
 
             if (isCharging) {
-                var scale = Mathf.Clamp(.25f + (Time.time - chargingStartTime) * .16666f, .25f, .5f);
+                var time = Mathf.Clamp(Time.time - chargingStartTime, 0f, 1.5f);
+                var scale = time.Scale(0f, 1f, minScale, maxScale);
                 transform.localScale = new Vector3(scale, scale, 1);
                 transform.position = targetOffset;
             }
@@ -104,12 +107,13 @@ namespace SciFi.Players.Attacks {
                 return;
             }
 
+            var scale = transform.localScale.x.Scale(minScale, maxScale, 1f, 2f);
             float knockback = 0;
-            accumulatedKnockback += 2f;
+            accumulatedKnockback += 1.5f;
             if (--rounds <= 0) {
-                knockback = accumulatedKnockback;
+                knockback = accumulatedKnockback * scale;
             }
-            GameController.Instance.HitNoVelocityReset(targetPlayer, this, gameObject, 3, knockback);
+            GameController.Instance.HitNoVelocityReset(targetPlayer, this, gameObject, (int)(2 * scale), knockback);
         }
 
         void OnCollisionEnter2D(Collision2D collision) {

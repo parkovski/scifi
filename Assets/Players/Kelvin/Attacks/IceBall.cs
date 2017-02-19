@@ -35,8 +35,9 @@ namespace SciFi.Players.Attacks {
             }
 
             if (Attack.GetAttackHit(collision.gameObject.layer) == AttackHit.HitAndDamage) {
-                GameController.Instance.HitNoVelocityReset(collision.gameObject, this, gameObject, 6, 3.5f);
                 var player = collision.gameObject.GetComponent<Player>();
+                var damage = 6;
+                var knockback = 3.5f;
                 if (player != null) {
                     if (Random.Range(0, chanceOfFreezing) == 0
 #if UNITY_EDITOR
@@ -45,8 +46,11 @@ namespace SciFi.Players.Attacks {
                     ) {
                         var iceblock = Instantiate(iceBlockPrefab, Vector3.zero, Quaternion.identity);
                         iceblock.GetComponent<IceBlock>().frozenPlayer = player;
+                        damage = 8;
+                        knockback = 5f;
                     }
                 }
+                GameController.Instance.HitNoVelocityReset(collision.gameObject, this, gameObject, damage, knockback);
             }
             pooled.Release();
         }
