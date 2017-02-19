@@ -16,7 +16,7 @@ process.stdin.on('data', function(text) {
     }
   }
 
-  len = len.toString(16);
+  value |= (len << 5);
   value = value.toString(16);
-  console.log('0x' + len + value);
+  console.log('0x' + value);
 });
