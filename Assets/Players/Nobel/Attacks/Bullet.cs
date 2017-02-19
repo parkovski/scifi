@@ -10,17 +10,18 @@ namespace SciFi.Players.Attacks {
         Vector2 originalPosition;
         IPooledObject pooled;
 
-        public void Start() {
+        void Awake() {
             pooled = PooledObject.Get(gameObject);
+        }
+
+        public void Start() {
             Reinit();
         }
 
         void Reinit() {
             originalPosition = transform.position;
 
-            if (isServer) {
-                Effects.Smoke(transform.position);
-            }
+            Effects.Smoke(transform.position);
         }
 
         void Update() {

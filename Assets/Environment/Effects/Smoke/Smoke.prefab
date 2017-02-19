@@ -22,7 +22,10 @@ GameObject:
   - component: {fileID: 212769428775277430}
   - component: {fileID: 95459568093672744}
   - component: {fileID: 114315089626325324}
-  - component: {fileID: 114313118241906794}
+  - component: {fileID: 114562353586423450}
+  - component: {fileID: 114999424918749490}
+  - component: {fileID: 114637863488418540}
+  - component: {fileID: 114743677454366962}
   m_Layer: 0
   m_Name: Smoke
   m_TagString: Untagged
@@ -60,38 +63,6 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
---- !u!114 &114313118241906794
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1159153422626486}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 372142912, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SceneId:
-    m_Value: 0
-  m_AssetId:
-    i0: 131
-    i1: 171
-    i2: 94
-    i3: 71
-    i4: 93
-    i5: 198
-    i6: 101
-    i7: 180
-    i8: 26
-    i9: 138
-    i10: 180
-    i11: 83
-    i12: 121
-    i13: 126
-    i14: 187
-    i15: 203
-  m_ServerOnly: 0
-  m_LocalPlayerAuthority: 0
 --- !u!114 &114315089626325324
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -101,6 +72,56 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fdded732313fb8b4b8d54b5f7fb8f141, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &114562353586423450
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1159153422626486}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cc79f3b0b0786d4dbdbfddbb9634085, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  notificationHandlerComponent: {fileID: 114743677454366962}
+--- !u!114 &114637863488418540
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1159153422626486}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 571e6f34764b6d94c88e4d42d4632c7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spriteRendererLocation: 1
+  colliderLocation: 0
+--- !u!114 &114743677454366962
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1159153422626486}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa608b2da585315409fe42f0643a5731, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  notificationHandlerComponents:
+  - {fileID: 114637863488418540}
+  - {fileID: 114999424918749490}
+--- !u!114 &114999424918749490
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1159153422626486}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e520c0969529780428161f52517f04f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!212 &212769428775277430

@@ -6,8 +6,7 @@ namespace SciFi.Environment.Effects {
     /// Visual effects that are self-managing.
     public static class Effects {
         public static void Star(Vector3 position) {
-            var star = Object.Instantiate(EffectsEditorParams.Instance.star, position, Quaternion.identity);
-            NetworkServer.Spawn(star);
+            GameController.Instance.GetFromLocalPool(EffectsEditorParams.Instance.star, position, Quaternion.identity);
         }
 
         public static void Explosion(Vector3 position) {
@@ -16,8 +15,7 @@ namespace SciFi.Environment.Effects {
         }
 
         public static void Smoke(Vector3 position) {
-            var smoke = Object.Instantiate(EffectsEditorParams.Instance.smoke, position, Quaternion.identity);
-            NetworkServer.Spawn(smoke);
+            GameController.Instance.GetFromLocalPool(EffectsEditorParams.Instance.smoke, position, Quaternion.identity);
         }
 
         public static void FadeIn() {
