@@ -787,20 +787,6 @@ namespace SciFi.Players {
 
         [Server]
         public void Hit(int damage) {
-            RpcHit(damage);
-            eAttack1.RequestCancel();
-            eAttack2.RequestCancel();
-            eAttack3.RequestCancel();
-        }
-
-        [ClientRpc]
-        void RpcHit(int damage) {
-            if (isServer) {
-                return;
-            }
-            eAttack1.RequestCancel();
-            eAttack2.RequestCancel();
-            eAttack3.RequestCancel();
         }
 
         [Server]
@@ -833,6 +819,9 @@ namespace SciFi.Players {
             if (!hasAuthority) {
                 return;
             }
+            eAttack1.RequestCancel();
+            eAttack2.RequestCancel();
+            eAttack3.RequestCancel();
             if (resetVelocity) {
                 lRb.velocity = Vector2.zero;
             }

@@ -19,7 +19,7 @@ namespace SciFi.Players.Attacks {
 
         /// How long to wait between damage rounds
         float nextDamageTime;
-        const float nextDamageWait = .1f;
+        const float nextDamageWait = .25f;
 
         GameObject targetPlayer;
         Vector3 targetOffset;
@@ -91,9 +91,8 @@ namespace SciFi.Players.Attacks {
         void StartAttacking() {
             rounds = Random.Range(minRounds, maxRounds + 1);
             var player = targetPlayer.GetComponent<Player>();
-            player.AddModifier(Modifier.CantMove);
-            player.AddModifier(Modifier.CantAttack);
             player.AddModifier(Modifier.OnFire);
+            player.AddModifier(Modifier.Fast);
             nextDamageTime = Time.time + nextDamageWait;
             DoAttack();
         }
@@ -101,7 +100,7 @@ namespace SciFi.Players.Attacks {
         [Server]
         void DoAttack() {
             if (rounds <= 0) {
-                StopAttacking();
+                pooled.Release();
                 return;
             }
 
@@ -110,32 +109,24 @@ namespace SciFi.Players.Attacks {
             if (--rounds <= 0) {
                 knockback = accumulatedKnockback;
             }
-            GameController.Instance.Hit(targetPlayer, this, gameObject, 3, knockback);
-        }
-
-        [Server]
-        void StopAttacking() {
-            var player = targetPlayer.GetComponent<Player>();
-            player.RemoveModifier(Modifier.CantMove);
-            player.RemoveModifier(Modifier.CantAttack);
-            player.RemoveModifier(Modifier.OnFire);
-
-            pooled.Release();
+            GameController.Instance.HitNoVelocityReset(targetPlayer, this, gameObject, 3, knockback);
         }
 
         void OnCollisionEnter2D(Collision2D collision) {
             if (!isServer) {
                 return;
             }
-            if (isCharging) {
+            if (isCharging || targetPlayer != null) {
                 return;
             }
 
-            if (Attack.GetAttackHit(collision.gameObject.layer) == AttackHit.HitAndDamage) {
+            var player = collision.gameObject.GetComponent<Player>();
+            if (player != null) {
                 targetPlayer = collision.gameObject;
                 targetOffset = gameObject.transform.position - targetPlayer.transform.position;
+                gameObject.layer = Layers.displayOnly;
                 StartAttacking();
-            } else if (targetPlayer == null) {
+            } else {
                 pooled.Release();
             }
         }
@@ -164,7 +155,12 @@ namespace SciFi.Players.Attacks {
             rb.isKinematic = true;
             rb.velocity = Vector2.zero;
             rb.angularVelocity = 0;
-            targetPlayer = null;
+            if (targetPlayer != null) {
+                var player = targetPlayer.GetComponent<Player>();
+                player.RemoveModifier(Modifier.OnFire);
+                player.RemoveModifier(Modifier.Fast);
+                targetPlayer = null;
+            }
         }
     }
 }

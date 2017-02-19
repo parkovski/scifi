@@ -425,11 +425,13 @@ namespace SciFi {
             if (player.IsModifierEnabled(Modifier.Invincible)) {
                 return;
             }
-            amount *= 50 * player.eDamage;
-            if (amount < 5000 && amount > 0) {
-                amount = 5000;
-            } else if (amount > -5000 && amount < 0) {
-                amount = -5000;
+            if (!Mathf.Approximately(amount, 0f)) {
+                amount *= 50 * player.eDamage;
+                if (amount < 5000 && amount > 0) {
+                    amount = 5000;
+                } else if (amount > -5000 && amount < 0) {
+                    amount = -5000;
+                }
             }
             Vector2 vector;
             var projectile = attackingObject.GetComponent<Projectile>();
