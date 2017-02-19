@@ -20,15 +20,12 @@ namespace SciFi.Players.Attacks {
                 player.gameObject.transform.position + offset,
                 Quaternion.identity
             );
-            var e1 = telegraph.transform.Find("Electricity1");
-            var e2 = telegraph.transform.Find("Electricity2");
+            var e1 = telegraph.transform.Find("Electricity");
             if (direction == Direction.Right) {
                 telegraph.GetComponent<SpriteRenderer>().flipX = true;
             } else {
                 e1.localPosition = -e1.localPosition;
-                e2.localPosition = -e2.localPosition;
                 e1.GetComponent<SpriteRenderer>().flipX = true;
-                e2.GetComponent<SpriteRenderer>().flipX = true;
             }
             telegraph.transform.parent = player.gameObject.transform;
             var behaviour = telegraph.GetComponent<Telegraph>();
