@@ -24,7 +24,8 @@ GameObject:
   - component: {fileID: 58203540000438844}
   - component: {fileID: 114581121180703790}
   - component: {fileID: 114790896274836606}
-  - component: {fileID: 114030133813943794}
+  - component: {fileID: 114829918334454436}
+  - component: {fileID: 114626338728035332}
   m_Layer: 13
   m_Name: IceBall
   m_TagString: Untagged
@@ -59,7 +60,7 @@ Rigidbody2D:
   m_Mass: 0.5
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 2
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -79,26 +80,6 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.36
---- !u!114 &114030133813943794
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1284917634577738}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1768714887, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TransformSyncMode: 2
-  m_SendInterval: 0
-  m_SyncRotationAxis: 3
-  m_RotationSyncCompression: 0
-  m_SyncSpin: 0
-  m_MovementTheshold: 0.001
-  m_SnapThreshold: 5
-  m_InterpolateRotation: 1
-  m_InterpolateMovement: 1
 --- !u!114 &114581121180703790
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -131,6 +112,18 @@ MonoBehaviour:
     i15: 74
   m_ServerOnly: 0
   m_LocalPlayerAuthority: 0
+--- !u!114 &114626338728035332
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1284917634577738}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 367271472a7be064fa49c9a2e5adbfea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  notificationHandlerComponent: {fileID: 114790896274836606}
 --- !u!114 &114790896274836606
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -140,6 +133,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c24a8f1af03a3034f9f248fe708fb463, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  alwaysFreeze: 0
+  iceBlockPrefab: {fileID: 1101762931873934, guid: 0364d16849a41604d97d3e19269e202f,
+    type: 2}
+--- !u!114 &114829918334454436
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1284917634577738}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf8a20c44550b2e4997a70b4207bd44e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!212 &212512660845092946

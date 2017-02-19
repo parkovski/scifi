@@ -425,7 +425,7 @@ MonoBehaviour:
   eDirection: 0
   eTeam: -1
   eShouldFallThroughOneWayPlatform: 0
-  defaultDirection: 0
+  defaultDirection: 1
   maxSpeed: 5.5
   walkForce: 1300
   jumpForce: 500

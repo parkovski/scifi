@@ -38,8 +38,9 @@ GameObject:
   - component: {fileID: 212062409392646208}
   - component: {fileID: 114601263924970740}
   - component: {fileID: 60512758930440668}
+  - component: {fileID: 82573365691126550}
   m_Layer: 0
-  m_Name: TelegraphClosed
+  m_Name: Telegraph
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -89,6 +90,86 @@ PolygonCollider2D:
     - - {x: 0.47787678, y: -0.49595007}
       - {x: -0.45217144, y: 0.04753069}
       - {x: 0.47787654, y: 0.4562215}
+--- !u!82 &82573365691126550
+AudioSource:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1889390672998682}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: c281f10b636d63f458c078fa881f8d2e, type: 3}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
 --- !u!114 &114601263924970740
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -100,6 +181,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b71aec56b6e74374dad96e1262720a2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  openTelegraph: {fileID: 21300000, guid: 1aec3c78ed6f0074398e84fbf0147629, type: 3}
+  closedTelegraph: {fileID: 21300000, guid: 6b064d6ac3a6cef4ea30544751049423, type: 3}
+  electricitySprites:
+  - {fileID: 21300000, guid: 631bcf0d5d451ed4482282f2194f0c6a, type: 3}
+  - {fileID: 21300000, guid: 217e5d394cc75964f8813cbf9332c81b, type: 3}
   spawnedBy: {fileID: 0}
 --- !u!212 &212062409392646208
 SpriteRenderer:
