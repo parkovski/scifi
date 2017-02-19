@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace SciFi.Players.Attacks {
     public class IceBallAttack : Attack {
-        const float verticalVelocity = 4f;
+        const float verticalVelocity = 3f;
         const float horizontalVelocity = 10f;
         const float angularVelocityRange = 3000f;
         int iceBallPrefabIndex;
@@ -25,12 +25,13 @@ namespace SciFi.Players.Attacks {
             }
 
             var angularVelocity = Random.Range(-angularVelocityRange, angularVelocityRange);
-            player.CmdSpawnProjectile(
+            player.CmdSpawnPooledProjectileFlipped(
                 iceBallPrefabIndex,
                 player.gameObject.transform.position,
                 Quaternion.identity,
                 velocity,
-                angularVelocity
+                angularVelocity,
+                false
             );
         }
 
