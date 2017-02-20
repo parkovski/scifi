@@ -58,6 +58,42 @@ namespace SciFi {
             }
             return obj.GetComponent<PooledObject>();
         }
+
+        /// Disables sprite renderers, animators, colliders, and rigid bodies
+        /// attached to the object.
+        public static void Disable(GameObject obj) {
+            foreach (var sr in obj.GetComponentsInChildren<SpriteRenderer>()) {
+                sr.enabled = false;
+            }
+            foreach (var anim in obj.GetComponentsInChildren<Animator>()) {
+                anim.enabled = false;
+            }
+            foreach (var coll in obj.GetComponentsInChildren<Collider2D>()) {
+                coll.enabled = false;
+            }
+            foreach (var rb in obj.GetComponentsInChildren<Rigidbody2D>()) {
+                rb.isKinematic = true;
+                rb.velocity = Vector2.zero;
+                rb.angularVelocity = 0;
+            }
+        }
+
+        /// Enables sprite renderers, animators, colliders, and rigid bodies
+        /// attached to the object.
+        public static void Enable(GameObject obj) {
+            foreach (var sr in obj.GetComponentsInChildren<SpriteRenderer>()) {
+                sr.enabled = true;
+            }
+            foreach (var anim in obj.GetComponentsInChildren<Animator>()) {
+                anim.enabled = true;
+            }
+            foreach (var coll in obj.GetComponentsInChildren<Collider2D>()) {
+                coll.enabled = true;
+            }
+            foreach (var rb in obj.GetComponentsInChildren<Rigidbody2D>()) {
+                rb.isKinematic = false;
+            }
+        }
     }
 
     public interface IPooledObject {

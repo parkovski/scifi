@@ -27,10 +27,8 @@ namespace SciFi.Players.Attacks {
         Vector3 targetOffset;
         bool isCharging;
         float chargingStartTime;
-        /// If the fireball is being held and charging, it can't
-        /// be destroyed - only when it is flying.
-        bool canDestroy = false;
         float destroyTime;
+        float gravityScale;
 
         IPooledObject pooled;
 
@@ -40,6 +38,7 @@ namespace SciFi.Players.Attacks {
         }
 
         void Start() {
+            gravityScale = GetComponent<Rigidbody2D>().gravityScale;
             Reinit();
         }
 
@@ -47,8 +46,8 @@ namespace SciFi.Players.Attacks {
             isCharging = true;
             chargingStartTime = Time.time;
             accumulatedKnockback = 0;
-            targetOffset = transform.position;
             targetPlayer = null;
+            GetComponent<Rigidbody2D>().gravityScale = 0;
         }
 
         void Update() {
@@ -60,14 +59,7 @@ namespace SciFi.Players.Attacks {
                 var time = Mathf.Clamp(Time.time - chargingStartTime, 0f, 1.5f);
                 var scale = time.Scale(0f, 1f, minScale, maxScale);
                 transform.localScale = new Vector3(scale, scale, 1);
-                transform.position = targetOffset;
-            }
-
-            if (!isServer) {
-                return;
-            }
-
-            if (!isCharging && Time.time > destroyTime) {
+            } else if (isServer && Time.time > destroyTime) {
                 pooled.Release();
                 return;
             }
@@ -75,16 +67,19 @@ namespace SciFi.Players.Attacks {
             if (targetPlayer != null) {
                 gameObject.transform.position = targetPlayer.transform.position + targetOffset;
 
-                if (Time.time > nextDamageTime) {
+                if (isServer && Time.time > nextDamageTime) {
                     nextDamageTime = Time.time + nextDamageWait;
                     DoAttack();
                 }
             }
         }
 
+        [Server]
         public void Throw(Direction direction) {
             SetInitialVelocity(new Vector3(5, 2, 0).FlipDirection(direction));
-            GetComponent<Rigidbody2D>().velocity = initialVelocity;
+            var rb = GetComponent<Rigidbody2D>();
+            rb.gravityScale = gravityScale;
+            rb.velocity = initialVelocity;
             RpcThrow(initialVelocity);
             destroyTime = Time.time + 1.5f;
             isCharging = false;
@@ -97,7 +92,9 @@ namespace SciFi.Players.Attacks {
                 return;
             }
 
-            GetComponent<Rigidbody2D>().velocity = velocity;
+            var rb = GetComponent<Rigidbody2D>();
+            rb.gravityScale = gravityScale;
+            rb.velocity = velocity;
             isCharging = false;
             gameObject.layer = Layers.projectiles;
         }
@@ -142,8 +139,8 @@ namespace SciFi.Players.Attacks {
                     Throw(player.eDirection);
                 }
                 targetPlayer = collision.gameObject;
-                RpcSetTargetPlayer(targetPlayer.GetComponent<NetworkIdentity>().netId);
                 targetOffset = gameObject.transform.position - targetPlayer.transform.position;
+                RpcSetTargetPlayer(targetPlayer.GetComponent<NetworkIdentity>().netId, targetOffset);
                 gameObject.layer = Layers.displayOnly;
                 StartAttacking();
             } else if (!isCharging) {
@@ -152,11 +149,12 @@ namespace SciFi.Players.Attacks {
         }
 
         [ClientRpc]
-        void RpcSetTargetPlayer(NetworkInstanceId netId) {
+        void RpcSetTargetPlayer(NetworkInstanceId netId, Vector2 offset) {
             if (netId == NetworkInstanceId.Invalid) {
                 targetPlayer = null;
             } else {
                 targetPlayer = ClientScene.FindLocalObject(netId);
+                targetOffset = offset;
             }
         }
 
@@ -167,23 +165,12 @@ namespace SciFi.Players.Attacks {
         }
 
         void IPoolNotificationHandler.OnAcquire() {
-            for (var i = 0; i < transform.childCount; i++) {
-                transform.GetChild(i).GetComponent<SpriteRenderer>().enabled = true;
-            }
-            GetComponent<Collider2D>().enabled = true;
-            GetComponent<Rigidbody2D>().isKinematic = false;
+            PooledObject.Enable(gameObject);
             Reinit();
         }
 
         void IPoolNotificationHandler.OnRelease() {
-            for (var i = 0; i < transform.childCount; i++) {
-                transform.GetChild(i).GetComponent<SpriteRenderer>().enabled = false;
-            }
-            GetComponent<Collider2D>().enabled = false;
-            var rb = GetComponent<Rigidbody2D>();
-            rb.isKinematic = true;
-            rb.velocity = Vector2.zero;
-            rb.angularVelocity = 0;
+            PooledObject.Disable(gameObject);
             if (targetPlayer != null) {
                 var player = targetPlayer.GetComponent<Player>();
                 player.RemoveModifier(Modifier.OnFire);
