@@ -84,7 +84,19 @@ namespace SciFi.Players.Attacks {
         public void Throw(Direction direction) {
             SetInitialVelocity(new Vector3(5, 2, 0).FlipDirection(direction));
             GetComponent<Rigidbody2D>().velocity = initialVelocity;
+            RpcThrow(initialVelocity);
             destroyTime = Time.time + 1.5f;
+            isCharging = false;
+            gameObject.layer = Layers.projectiles;
+        }
+
+        [ClientRpc]
+        void RpcThrow(Vector2 velocity) {
+            if (isServer) {
+                return;
+            }
+
+            GetComponent<Rigidbody2D>().velocity = velocity;
             isCharging = false;
             gameObject.layer = Layers.projectiles;
         }
@@ -129,12 +141,18 @@ namespace SciFi.Players.Attacks {
                     Throw(player.eDirection);
                 }
                 targetPlayer = collision.gameObject;
+                RpcSetTargetPlayer(targetPlayer.GetComponent<NetworkIdentity>().netId);
                 targetOffset = gameObject.transform.position - targetPlayer.transform.position;
                 gameObject.layer = Layers.displayOnly;
                 StartAttacking();
             } else if (!isCharging) {
                 pooled.Release();
             }
+        }
+
+        [ClientRpc]
+        void RpcSetTargetPlayer(NetworkInstanceId netId) {
+            targetPlayer = ClientScene.FindLocalObject(netId);
         }
 
         public override AttackProperty Properties {
@@ -167,6 +185,7 @@ namespace SciFi.Players.Attacks {
                 player.RemoveModifier(Modifier.Fast);
                 targetPlayer = null;
             }
+            Disable();
         }
     }
 }

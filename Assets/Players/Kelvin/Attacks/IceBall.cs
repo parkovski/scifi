@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Networking;
 
 using SciFi.Items;
 using SciFi.Environment.Effects;
@@ -44,8 +45,7 @@ namespace SciFi.Players.Attacks {
                         || alwaysFreeze
 #endif
                     ) {
-                        var iceblock = Instantiate(iceBlockPrefab, Vector3.zero, Quaternion.identity);
-                        iceblock.GetComponent<IceBlock>().frozenPlayer = player;
+                        RpcCreateIceBlock(player.netId);
                         damage = 8;
                         knockback = 5f;
                     }
@@ -53,6 +53,12 @@ namespace SciFi.Players.Attacks {
                 GameController.Instance.HitNoVelocityReset(collision.gameObject, this, gameObject, damage, knockback);
             }
             pooled.Release();
+        }
+
+        [ClientRpc]
+        void RpcCreateIceBlock(NetworkInstanceId netId) {
+            var iceblock = Instantiate(iceBlockPrefab, Vector3.zero, Quaternion.identity);
+            iceblock.GetComponent<IceBlock>().frozenPlayer = ClientScene.FindLocalObject(netId).GetComponent<Player>();
         }
 
         public override AttackProperty Properties {
