@@ -48,6 +48,7 @@ namespace SciFi.Players.Attacks {
             chargingStartTime = Time.time;
             accumulatedKnockback = 0;
             targetOffset = transform.position;
+            targetPlayer = null;
         }
 
         void Update() {
@@ -152,7 +153,11 @@ namespace SciFi.Players.Attacks {
 
         [ClientRpc]
         void RpcSetTargetPlayer(NetworkInstanceId netId) {
-            targetPlayer = ClientScene.FindLocalObject(netId);
+            if (netId == NetworkInstanceId.Invalid) {
+                targetPlayer = null;
+            } else {
+                targetPlayer = ClientScene.FindLocalObject(netId);
+            }
         }
 
         public override AttackProperty Properties {
@@ -183,7 +188,6 @@ namespace SciFi.Players.Attacks {
                 var player = targetPlayer.GetComponent<Player>();
                 player.RemoveModifier(Modifier.OnFire);
                 player.RemoveModifier(Modifier.Fast);
-                targetPlayer = null;
             }
             Disable();
         }
