@@ -35,7 +35,7 @@ namespace SciFi.Players.Attacks {
         void Reinit() {
             var spawnedByPlayer = ClientScene.FindLocalObject(spawnedBy).GetComponent<Player>();
             if (spawnedByPlayer.eTeam != -1) {
-                GetComponent<SpriteOverlay>().SetColor(Player.TeamToColor(spawnedByPlayer.eTeam));
+                GetComponent<SpriteOverlay>().SetColor(Player.TeamToColor(spawnedByPlayer.eTeam, true));
             }
 
             StartCoroutine(BurnUp());
@@ -62,7 +62,7 @@ namespace SciFi.Players.Attacks {
                 if (pooled.IsFree()) {
                     yield break;
                 }
-                var alpha = ((float)fadeStep) / fadeSteps;
+                var alpha = Mathf.Pow(((float)fadeStep) / fadeSteps, 2);
                 spriteRenderer.color = spriteRenderer.color.WithAlpha(alpha);
                 //flameSpriteRenderer.color = flameSpriteRenderer.color.WithAlpha(alpha);
                 --fadeStep;

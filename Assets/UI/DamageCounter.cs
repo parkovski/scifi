@@ -27,7 +27,7 @@ namespace SciFi.UI {
                 if (p.eTeam == -1) {
                     text.color = Color.black;
                 } else {
-                    text.color = Player.TeamToColor(p.eTeam);
+                    text.color = Player.TeamToColor(p.eTeam, true);
                 }
                 lives = p.eLives;
                 damage = p.eDamage;

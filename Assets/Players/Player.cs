@@ -21,10 +21,14 @@ namespace SciFi.Players {
     }
 
     public abstract class Player : NetworkBehaviour, IInteractable {
-        public static readonly Color blueTeamColor = new Color(0.4f, 0.4f, 1f, 1f);
-        public static readonly Color redTeamColor = new Color(0.6f, 0, 0, 1f);
-        public static readonly Color greenTeamColor = new Color(0, 0.6f, 0, 1f);
-        public static readonly Color yellowTeamColor = new Color(0.6f, 0.6f, 0, 1f);
+        public static readonly Color blueTeamColor = new Color(0.5f, 0.5f, 1f, 1f);
+        public static readonly Color blueTeamColorDark = new Color(0f, 0f, .6f, 1f);
+        public static readonly Color redTeamColor = new Color(1f, .4f, .4f, 1f);
+        public static readonly Color redTeamColorDark = new Color(.6f, 0f, 0f, 1f);
+        public static readonly Color greenTeamColor = new Color(.1f, .6f, .1f, 1f);
+        public static readonly Color greenTeamColorDark = new Color(0, .4f, 0f, 1f);
+        public static readonly Color yellowTeamColor = new Color(1f, 1f, .4f, 1f);
+        public static readonly Color yellowTeamColorDark = new Color(0.6f, 0.6f, 0f, 1f);
 
         public GameObject shieldPrefab;
 
@@ -108,16 +112,16 @@ namespace SciFi.Players {
             }
         }
 
-        public static Color TeamToColor(int team) {
+        public static Color TeamToColor(int team, bool dark = false) {
             switch (team) {
             case 0:
-                return Player.blueTeamColor;
+                return dark ? Player.blueTeamColorDark : Player.blueTeamColor;
             case 1:
-                return Player.redTeamColor;
+                return dark ? Player.redTeamColorDark : Player.redTeamColor;
             case 2:
-                return Player.greenTeamColor;
+                return dark ? Player.greenTeamColorDark : Player.greenTeamColor;
             case 3:
-                return Player.yellowTeamColor;
+                return dark ? Player.yellowTeamColorDark : Player.yellowTeamColor;
             default:
                 return Color.clear;
             }
