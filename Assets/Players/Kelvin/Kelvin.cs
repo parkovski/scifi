@@ -17,7 +17,7 @@ namespace SciFi.Players {
         protected override void OnInitialize() {
             eAttack1 = new IceBallAttack(this, iceballPrefab);
             eAttack2 = new FireBallAttack(this);
-            eAttack3 = new TelegraphAttack(this, telegraph);
+            eAttack3 = new NetworkAttack(new TelegraphAttack(this, telegraph), .1f);
             spriteFlip = new CompoundSpriteFlip(gameObject, defaultDirection);
         }
 

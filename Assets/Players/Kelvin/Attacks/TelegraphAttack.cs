@@ -30,6 +30,7 @@ namespace SciFi.Players.Attacks {
             telegraph.transform.parent = player.gameObject.transform;
             var behaviour = telegraph.GetComponent<Telegraph>();
             behaviour.spawnedBy = player.gameObject;
+            behaviour.SetDirection(direction);
         }
 
         public override void OnEndCharging(float chargeTime, Direction direction) {

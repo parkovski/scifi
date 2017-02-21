@@ -19,6 +19,8 @@ namespace SciFi.Players.Attacks {
 
         AudioSource audioSource;
         SpriteRenderer telegraph;
+        Collider2D rightCollider;
+        Collider2D leftCollider;
         string sentence = "ABSOLUTE ZERO";
         int charIndex;
         int pulseIndex;
@@ -34,6 +36,13 @@ namespace SciFi.Players.Attacks {
             Done,
         }
 
+        void Awake() {
+            var colliders = GetComponents<Collider2D>();
+            rightCollider = colliders[0];
+            leftCollider = colliders[1];
+            leftCollider.enabled = false;
+        }
+
         void Start() {
             Item.IgnoreCollisions(gameObject, spawnedBy);
             electricity = gameObject.transform.Find("Electricity").GetComponent<SpriteRenderer>();
@@ -45,6 +54,11 @@ namespace SciFi.Players.Attacks {
             morseCodeState = MorseCodeState.ShortPause;
             nextStateTime = Time.time;
             UpdateMorseCode();
+        }
+
+        public void SetDirection(Direction direction) {
+            leftCollider.enabled = direction == Direction.Left;
+            rightCollider.enabled = direction == Direction.Right;
         }
 
         void UpdateMorseCode() {
