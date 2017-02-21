@@ -24,13 +24,11 @@ namespace SciFi.Environment.Effects {
         void Update() {
             transform.position = frozenPlayer.transform.position;
 
-            if (!NetworkServer.active) {
-                return;
-            }
-
             if (Time.time > unfreezeTime) {
-                frozenPlayer.RemoveModifier(Modifier.Frozen);
-                frozenPlayer.RemoveModifier(Modifier.Slow);
+                if (NetworkServer.active) {
+                    frozenPlayer.RemoveModifier(Modifier.Frozen);
+                    frozenPlayer.RemoveModifier(Modifier.Slow);
+                }
                 Destroy(gameObject);
             }
         }
