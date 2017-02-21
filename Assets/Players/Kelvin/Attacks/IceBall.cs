@@ -57,7 +57,7 @@ namespace SciFi.Players.Attacks {
 
         [ClientRpc]
         void RpcCreateIceBlock(NetworkInstanceId netId) {
-            var iceblock = Instantiate(iceBlockPrefab, Vector3.zero, Quaternion.identity);
+            var iceblock = GameController.Instance.GetFromLocalPool(iceBlockPrefab, Vector3.zero, Quaternion.identity);
             iceblock.GetComponent<IceBlock>().frozenPlayer = ClientScene.FindLocalObject(netId).GetComponent<Player>();
         }
 
