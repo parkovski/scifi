@@ -55,7 +55,7 @@ namespace SciFi {
         int[] teams;
         /// Connections for each client
         NetworkConnection[] sClientConnections;
-        /// AI Level for each player, or -1 if none.
+        /// AI Level for each player, or 0 if none.
         int[] sAILevels;
         /// Is this client the winner? This is always false if the game
         /// is not over yet.
@@ -187,18 +187,10 @@ namespace SciFi {
                 System.GC.Collect();
                 this.countdown.OnFinished += _ => {
                     this.isPlaying = true;
-                    foreach (var p in activePlayers) {
-                        p.RemoveModifier(ModId.CantMove);
-                        p.RemoveModifier(ModId.CantAttack);
-                    }
                     _GameStarted();
                 };
             } else {
                 this.isPlaying = true;
-                foreach (var p in activePlayers) {
-                    p.RemoveModifier(ModId.CantMove);
-                    p.RemoveModifier(ModId.CantAttack);
-                }
                 _GameStarted();
             }
         }

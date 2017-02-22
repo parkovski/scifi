@@ -778,32 +778,36 @@ namespace SciFi.Players {
 
         [Server]
         public void Knockback(Vector2 force, bool resetVelocity) {
-            if (!eModifiers.Invincible.IsEnabled()) {
-                sKnockbackLockoutEndTime = Time.time + ((float)eDamage).Scale(0f, 1000f, 0.15f, 1.35f);
-                if (!eModifiers.InKnockback.IsEnabled()) {
-                    eModifiers.InKnockback.Add();
-                    eModifiers.CantMove.Add();
-                    eModifiers.CantAttack.Add();
-                    RpcKnockback(force, resetVelocity);
-                } else {
-                    // If we get hit with another attack during the lockout period,
-                    // we should just add a force in the same direction, regardless
-                    // of where the attack came from.
-                    if ((sKnockbackForce.x < 0) != (force.x < 0)) {
-                        force.x = -force.x;
-                    }
-                    if ((sKnockbackForce.y < 0) != (force.y < 0)) {
-                        force.y = -force.y;
-                    }
-                    RpcKnockback(force, false);
-                }
-                sKnockbackForce = force;
+            if (eModifiers.Invincible.IsEnabled()) {
+                return;
             }
+            sKnockbackLockoutEndTime = Time.time + ((float)eDamage).Scale(0f, 1000f, 0.15f, 1.35f);
+            if (!eModifiers.InKnockback.IsEnabled()) {
+                eModifiers.InKnockback.Add();
+                eModifiers.CantMove.Add();
+                eModifiers.CantAttack.Add();
+                RpcKnockback(force, resetVelocity);
+            } else {
+                // If we get hit with another attack during the lockout period,
+                // we should just add a force in the same direction, regardless
+                // of where the attack came from.
+                if ((sKnockbackForce.x < 0) != (force.x < 0)) {
+                    force.x = -force.x;
+                }
+                if ((sKnockbackForce.y < 0) != (force.y < 0)) {
+                    force.y = -force.y;
+                }
+                RpcKnockback(force, false);
+            }
+            sKnockbackForce = force;
         }
 
         [ClientRpc]
         void RpcKnockback(Vector2 force, bool resetVelocity) {
             if (!hasAuthority) {
+                return;
+            }
+            if (eModifiers.Invincible.IsEnabled()) {
                 return;
             }
             eAttack1.RequestCancel();
@@ -812,9 +816,7 @@ namespace SciFi.Players {
             if (resetVelocity) {
                 lRb.velocity = Vector2.zero;
             }
-            if (!eModifiers.Invincible.IsEnabled()) {
-                lRb.AddForce(force);
-            }
+            lRb.AddForce(force);
         }
 
         public void Interact(IAttack attack) {
