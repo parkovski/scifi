@@ -21,8 +21,8 @@ namespace SciFi.Players {
             boneArm = Instantiate(boneArmPrefab, transform.position + GetBoneArmOffset(defaultDirection), Quaternion.identity);
             paintbrush = Instantiate(paintbrushPrefab, transform.position + GetPaintbrushOffset(defaultDirection), Quaternion.identity);
 
-            eAttack1 = new NetworkAttack(new PaintbrushAttack(this, paintbrush.GetComponent<Paintbrush>()), 0.1f);
-            eAttack2 = new NetworkAttack(new BoneArmAttack(this, boneArm.GetComponent<BoneArm>()), 0.1f);
+            eAttack1 = new NetworkAttack(new PaintbrushAttack(this, paintbrush.GetComponent<Paintbrush>()));
+            eAttack2 = new NetworkAttack(new BoneArmAttack(this, boneArm.GetComponent<BoneArm>()));
             eAttack3 = new FlyingMachineAttack(this);
 
             playerFlip = new CompoundSpriteFlip(gameObject, defaultDirection);

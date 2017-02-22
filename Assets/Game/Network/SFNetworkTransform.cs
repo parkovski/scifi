@@ -144,12 +144,11 @@ namespace SciFi.Network {
         /// It represents the local time when the remote object was at the updated position.
         void UpdateStats(float timestamp) {
             /// Local time since the object was at this position
-            float clientDeltaTime = Time.realtimeSinceStartup - timestamp;
-            float serverDeltaTime = timestamp - lastTimestamp;
-            if (clientDeltaTime > interpolationTime) {
+            float deltaTime = Time.realtimeSinceStartup - timestamp;
+            if (deltaTime > interpolationTime) {
                 timeToTarget = interpolationTime;
             } else {
-                timeToTarget = interpolationTime - clientDeltaTime;
+                timeToTarget = interpolationTime - deltaTime;
             }
 
             lastMessageReceivedTime = Time.realtimeSinceStartup;

@@ -84,6 +84,7 @@ namespace SciFi.Players {
         protected Attack eAttack1;
         protected Attack eAttack2;
         protected Attack eAttack3;
+        protected ItemAttack eItemAttack;
         //protected Attack eSpecialAttack;
         protected Shield eShield;
 
@@ -160,6 +161,8 @@ namespace SciFi.Players {
                 }
             }
 
+            eItemAttack = new ItemAttack(this);
+
             if (lRb != null) {
                 OnInitialize();
                 lInitialized = true;
@@ -220,7 +223,7 @@ namespace SciFi.Players {
             eModifiers.FromId(id).Count = count;
         }
 
-        void HandleLeftRightInput(MultiPressControl control, Direction direction, bool backwards) {
+        void HandleLeftRightInput(MultiPressControl control, Direction direction) {
             if (control.IsActive()) {
                 float axisAmount;
                 var presses = control.GetPresses();
@@ -276,14 +279,14 @@ namespace SciFi.Players {
             pLeftControl.Update();
             pRightControl.Update();
 
-            HandleLeftRightInput(pLeftControl, Direction.Left, true);
-            HandleLeftRightInput(pRightControl, Direction.Right, false);
+            HandleLeftRightInput(pLeftControl, Direction.Left);
+            HandleLeftRightInput(pRightControl, Direction.Right);
             if (!pLeftControl.IsActive() && !pRightControl.IsActive()) {
                 // TODO: Only do this when no knockback is active.
                 //AddDampingForce();
             }
 
-            if (pInputManager.IsControlActive(Control.Up) && !eModifiers.CantMove.IsEnabled()) {
+            if (pInputManager.IsControlActive(Control.Up) && !eModifiers.CantMove.IsEnabled() && !eModifiers.CantJump.IsEnabled()) {
                 pInputManager.InvalidateControl(Control.Up);
                 if (pCanJump) {
                     pCanJump = false;
@@ -321,6 +324,7 @@ namespace SciFi.Players {
             eAttack1.UpdateState(pInputManager, Control.Attack1);
             eAttack2.UpdateState(pInputManager, Control.Attack2);
             eAttack3.UpdateState(pInputManager, Control.Attack3);
+            eItemAttack.UpdateState(pInputManager, Control.Item);
 
 #if UNITY_EDITOR
             var modifierState = eModifiers.ToBitfield();
@@ -355,26 +359,6 @@ namespace SciFi.Players {
                 eModifiers.CantMove.Remove();
                 sKnockbackLockoutEndTime = float.PositiveInfinity;
             }
-        }
-
-        /// Spawns a projectile, ignoring collisions
-        /// with the player and his/her item.
-        [Command]
-        public void CmdSpawnProjectile(
-            int prefabIndex,
-            Vector2 position,
-            Quaternion rotation,
-            Vector2 velocity,
-            float angularVelocity
-        ) {
-            SpawnProjectile(
-                GameController.IndexToPrefab(prefabIndex),
-                position,
-                rotation,
-                velocity,
-                angularVelocity,
-                false
-            );
         }
 
         [Command]
@@ -434,7 +418,6 @@ namespace SciFi.Players {
                 false
             );
         }
-
 
         [Command]
         public void CmdSpawnPooledProjectileFlipped(

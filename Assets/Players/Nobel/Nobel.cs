@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 using SciFi.Players.Attacks;
-using SciFi.Players.Modifiers;
 using SciFi.Util;
 using SciFi.Util.Extensions;
 

@@ -16,23 +16,18 @@ namespace SciFi.Players.Attacks {
         /// A unique identifier for each copy, so that
         /// the originator doesn't run twice.
         byte[] guidAsBytes;
-        /// How often to send KeepCharging messages, in seconds.
-        float keepChargingSyncPeriod;
-        /// The last time a KeepCharging message was sent.
-        float lastKeepChargingSendTime;
         float beginChargeTime;
         Direction chargeDirection;
 
         /// Create an attack wrapper that will sync to all players with the same syncId set.
         /// KeepCharging messages will be sent every keepChargingSyncPeriod seconds.
-        public NetworkAttack(Attack attack, float keepChargingSyncPeriod)
+        public NetworkAttack(Attack attack)
             : base(attack.Player, attack.Cooldown, attack.CanCharge)
         {
             this.attack = attack;
             this.canFireDown = attack.CanFireDown;
             this.guidAsBytes = Guid.NewGuid().ToByteArray();
             this.messageId = player.RegisterNetworkAttack(this);
-            this.keepChargingSyncPeriod = keepChargingSyncPeriod;
         }
 
         public override void UpdateStateNonAuthoritative() {
@@ -42,7 +37,6 @@ namespace SciFi.Players.Attacks {
         }
 
         public override void OnBeginCharging(Direction direction) {
-            lastKeepChargingSendTime = 0f;
             attack.IsCharging = true;
             attack.OnBeginCharging(direction);
             this.ShouldCancel = attack.ShouldCancel;
@@ -62,18 +56,6 @@ namespace SciFi.Players.Attacks {
         public override void OnKeepCharging(float chargeTime, Direction direction) {
             attack.OnKeepCharging(chargeTime, direction);
             this.ShouldCancel = attack.ShouldCancel;
-            // TODO: Send this occasionally, and interpolate between the charge time
-            // on the local copy and the one sent here.
-            /*if (chargeTime > lastKeepChargingSendTime + keepChargingSyncPeriod) {
-                lastKeepChargingSendTime = chargeTime;
-                player.NetworkAttackSync(new NetworkAttackMessage {
-                    sender = this.guidAsBytes,
-                    messageId = this.messageId,
-                    function = NetworkAttackFunction.OnKeepCharging,
-                    direction = direction,
-                    chargeTime = chargeTime,
-                });
-            }*/
         }
 
         public override void OnEndCharging(float chargeTime, Direction direction) {
@@ -137,9 +119,6 @@ namespace SciFi.Players.Attacks {
                 attack.IsCharging = true;
                 attack.OnBeginCharging(message.direction);
                 break;
-            case NetworkAttackFunction.OnKeepCharging:
-                attack.OnKeepCharging(message.chargeTime, message.direction);
-                break;
             case NetworkAttackFunction.OnEndCharging:
                 this.IsCharging = false;
                 attack.IsCharging = false;
@@ -158,7 +137,6 @@ namespace SciFi.Players.Attacks {
 
     public enum NetworkAttackFunction : byte {
         OnBeginCharging,
-        OnKeepCharging,
         OnEndCharging,
         OnCancel,
     }
