@@ -734,6 +734,7 @@ namespace SciFi.Players {
         public void RpcYouDeadFool() {
             lRb.isKinematic = true;
             lRb.gravityScale = 0;
+            lRb.velocity = new Vector2(0, 0);
             if (hasAuthority) {
                 GetComponent<SFNetworkTransform>().SnapTo(new Vector2(-1000, -1000));
             }

@@ -10,6 +10,10 @@ namespace SciFi.Util {
         float lastFrameRateUpdateTime;
         int frameRateDebugField;
 
+        void Start() {
+            frameRateDebugField = DebugPrinter.Instance.NewField();
+        }
+
         void Update() {
             if (Time.time > lastFrameRateUpdateTime + frameRateUpdateInterval) {
                 lastFrameRateUpdateTime = Time.time;

@@ -345,9 +345,22 @@ namespace SciFi {
                 rb.gravityScale = 0;
                 player.RpcYouDeadFool();
             } else {
-                player.RpcRespawn(new Vector3(0f, 7f));
+                player.RpcRespawn(new Vector3(0f, 5f));
+                player.AddModifier(ModId.CantMove);
+                player.AddModifier(ModId.CantAttack);
+                player.AddModifier(ModId.Invincible);
+                StartCoroutine(RemoveRespawnModifiers(player));
             }
             EventLifeChanged(player.eId, player.eLives);
+        }
+
+        IEnumerator RemoveRespawnModifiers(Player player) {
+            yield return new WaitForSeconds(0.5f);
+            yield return new WaitUntil(() => player.transform.position.y < 3f);
+            player.RemoveModifier(ModId.CantMove);
+            player.RemoveModifier(ModId.CantAttack);
+            yield return new WaitForSeconds(2f);
+            player.RemoveModifier(ModId.Invincible);
         }
 
         [Server]
