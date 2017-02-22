@@ -234,7 +234,16 @@ namespace SciFi.Players {
                 } else {
                     axisAmount = 1f;
                 }
-                if (hooks.CallMaxSpeedHooks(axisAmount, maxSpeed) > Mathf.Abs(lRb.velocity.x)) {
+                var localMaxSpeed = hooks.CallMaxSpeedHooks(axisAmount, maxSpeed);
+                bool canSpeedUp;
+                if (Mathf.Approximately(localMaxSpeed, 0f)) {
+                    canSpeedUp = false;
+                } else if (direction == Direction.Left) {
+                    canSpeedUp = lRb.velocity.x > -localMaxSpeed;
+                } else {
+                    canSpeedUp = lRb.velocity.x < localMaxSpeed;
+                }
+                if (canSpeedUp) {
                     lRb.AddForce(new Vector2(hooks.CallWalkForceHooks(direction, axisAmount, walkForce), 0f));
                 }
 
