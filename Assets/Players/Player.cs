@@ -6,6 +6,7 @@ using SciFi.Network;
 using SciFi.Environment;
 using SciFi.Players.Attacks;
 using SciFi.Players.Modifiers;
+using SciFi.Players.Hooks;
 using SciFi.Items;
 using SciFi.UI;
 using SciFi.Util;
@@ -57,8 +58,8 @@ namespace SciFi.Players {
         protected GameObject eItemGo;
         protected Item eItem;
         private OneWayPlatform sCurrentOneWayPlatform;
-        private List<uint> eModifiers;
-        private uint eModifierState;
+        private HookCollection hooks;
+        protected ModifierCollection eModifiers;
         private int pModifiersDebugField;
         private uint pOldModifierState;
         private List<NetworkAttack> lNetworkAttacks;
@@ -99,11 +100,12 @@ namespace SciFi.Players {
 
             lNetworkAttacks = new List<NetworkAttack>();
 
-            eModifiers = new List<uint>();
-            Modifier.Initialize(eModifiers);
+            hooks = new HookCollection();
+            eModifiers = new ModifierCollection(hooks);
             // GameController will remove these when the game starts.
-            AddModifier(Modifier.CantAttack);
-            AddModifier(Modifier.CantMove);
+            eModifiers.CantAttack.Add();
+            eModifiers.CantMove.Add();
+            StandardHooks.Install(hooks, eModifiers);
             pModifiersDebugField = DebugPrinter.Instance.NewField();
 
             if (pInputManager != null) {
@@ -193,62 +195,49 @@ namespace SciFi.Players {
 
         /// The server will set the real state of these, but clients
         /// may speculatively add/remove them when appropriate.
-        public void AddModifier(Modifier modifier) {
-            modifier.Add(eModifiers, ref eModifierState);
+        public void AddModifier(ModId id) {
+            var mod = eModifiers.FromId(id);
+            mod.Add();
             if (isServer) {
-                RpcSetModifier(modifier.Id, eModifiers[(int)modifier.Id]);
+                RpcSetModifier(id, mod.Count);
             }
         }
 
-        public void RemoveModifier(Modifier modifier) {
-            modifier.Remove(eModifiers, ref eModifierState);
+        public void RemoveModifier(ModId id) {
+            var mod = eModifiers.FromId(id);
+            mod.Remove();
             if (isServer) {
-                RpcSetModifier(modifier.Id, eModifiers[(int)modifier.Id]);
+                RpcSetModifier(id, mod.Count);
             }
         }
 
-        public bool IsModifierEnabled(Modifier modifier) {
-            return modifier.IsEnabled(eModifierState);
+        public bool IsModifierEnabled(ModId id) {
+            return eModifiers.FromId(id).IsEnabled();
         }
 
         [ClientRpc]
         void RpcSetModifier(ModId id, uint count) {
-            eModifiers[(int)id] = count;
-            if (count == 0) {
-                eModifierState &= ~(1u << (int)id);
-            } else {
-                eModifierState |= 1u << (int)id;
-            }
+            eModifiers.FromId(id).Count = count;
         }
 
         void HandleLeftRightInput(MultiPressControl control, Direction direction, bool backwards) {
-            bool canSpeedUp;
-            Vector3 force;
-            bool halfForce = control.GetPresses() == 1;
-            float localMaxSpeed = maxSpeed;
-            float localWalkForce = walkForce;
-            if (halfForce) {
-                localMaxSpeed /= 1.5f;
-                localWalkForce /= 1.5f;
-            }
-            Modifier.Slow.Modify(eModifierState, ref localMaxSpeed, ref localWalkForce);
-            Modifier.Fast.Modify(eModifierState, ref localMaxSpeed, ref localWalkForce);
-
-            if (backwards) {
-                canSpeedUp = lRb.velocity.x > -localMaxSpeed;
-                force = new Vector2(-localWalkForce, 0f);
-            } else {
-                canSpeedUp = lRb.velocity.x < localMaxSpeed;
-                force = new Vector2(localWalkForce, 0f);
-            }
-
             if (control.IsActive()) {
-                if (canSpeedUp) {
-                    Modifier.CantMove.TryMove(eModifierState, lRb, force);
+                float axisAmount;
+                var presses = control.GetPresses();
+                if (presses == 0) {
+                    axisAmount = 0;
+                } else if (presses == 1) {
+                    axisAmount = 0.5f;
+                } else {
+                    axisAmount = 1f;
                 }
+                if (hooks.CallMaxSpeedHooks(axisAmount, maxSpeed) > Mathf.Abs(lRb.velocity.x)) {
+                    lRb.AddForce(new Vector2(hooks.CallWalkForceHooks(direction, axisAmount, walkForce), 0f));
+                }
+
                 // Without the cached parameter, this will get triggered
                 // multiple times until the direction has had a chance to sync.
-                if (this.eDirection != direction && !Modifier.CantMove.IsEnabled(eModifierState)) {
+                if (this.eDirection != direction && !eModifiers.CantMove.IsEnabled()) {
                     this.eDirection = direction;
                     CmdChangeDirection(direction);
                 }
@@ -294,7 +283,7 @@ namespace SciFi.Players {
                 //AddDampingForce();
             }
 
-            if (pInputManager.IsControlActive(Control.Up) && !Modifier.CantMove.IsEnabled(eModifierState)) {
+            if (pInputManager.IsControlActive(Control.Up) && !eModifiers.CantMove.IsEnabled()) {
                 pInputManager.InvalidateControl(Control.Up);
                 if (pCanJump) {
                     pCanJump = false;
@@ -309,7 +298,7 @@ namespace SciFi.Players {
                 }
             }
 
-            if (pInputManager.IsControlActive(Control.Down) && !Modifier.CantMove.IsEnabled(eModifierState)) {
+            if (pInputManager.IsControlActive(Control.Down) && !eModifiers.CantMove.IsEnabled()) {
                 if (!eShouldFallThroughOneWayPlatform) {
                     eShouldFallThroughOneWayPlatform = true;
                     CmdFallThroughOneWayPlatform();
@@ -334,9 +323,10 @@ namespace SciFi.Players {
             eAttack3.UpdateState(pInputManager, Control.Attack3);
 
 #if UNITY_EDITOR
-            if (eModifierState != pOldModifierState) {
-                pOldModifierState = eModifierState;
-                DebugPrinter.Instance.SetField(pModifiersDebugField, "P" + (eId+1) + ": " + Modifier.GetDebugString(eModifierState));
+            var modifierState = eModifiers.ToBitfield();
+            if (modifierState != pOldModifierState) {
+                pOldModifierState = modifierState;
+                DebugPrinter.Instance.SetField(pModifiersDebugField, "P" + (eId+1) + ": " + eModifiers.GetDebugString());
             }
 #endif
         }
@@ -359,10 +349,10 @@ namespace SciFi.Players {
                 return;
             }
 
-            if (Modifier.InKnockback.IsEnabled(eModifierState) && Time.time > sKnockbackLockoutEndTime) {
-                RemoveModifier(Modifier.InKnockback);
-                RemoveModifier(Modifier.CantAttack);
-                RemoveModifier(Modifier.CantMove);
+            if (eModifiers.InKnockback.IsEnabled() && Time.time > sKnockbackLockoutEndTime) {
+                eModifiers.InKnockback.Remove();
+                eModifiers.CantAttack.Remove();
+                eModifiers.CantMove.Remove();
                 sKnockbackLockoutEndTime = float.PositiveInfinity;
             }
         }
@@ -549,18 +539,18 @@ namespace SciFi.Players {
                         pInputManager.InvalidateControl(Control.Item);
                         eItem.Cancel();
                         UpdateItemControlGraphic();
-                        RemoveModifier(Modifier.CantAttack);
-                        RemoveModifier(Modifier.CantMove);
+                        eModifiers.CantAttack.Remove();
+                        eModifiers.CantMove.Remove();
                     } else {
                         eItem.KeepCharging(pInputManager.GetControlHoldTime(Control.Item));
                     }
                 } else {
                     eItem.EndCharging(pInputManager.GetControlHoldTime(Control.Item));
                     UpdateItemControlGraphic();
-                    RemoveModifier(Modifier.CantAttack);
-                    RemoveModifier(Modifier.CantMove);
+                    eModifiers.CantAttack.Remove();
+                    eModifiers.CantMove.Remove();
                 }
-            } else if (active && !Modifier.CantAttack.IsEnabled(eModifierState)) {
+            } else if (active && !eModifiers.CantAttack.IsEnabled()) {
                 var direction = GetControlDirection();
                 var control = GetDirectionControl(direction);
                 var holdTime = GetDirectionHoldTime(direction);
@@ -570,8 +560,8 @@ namespace SciFi.Players {
                     CmdLoseOwnershipOfItem(direction);
                     eItemGo = null;
                 } else if (eItem.ShouldCharge()) {
-                    AddModifier(Modifier.CantAttack);
-                    AddModifier(Modifier.CantMove);
+                    eModifiers.CantAttack.Add();
+                    eModifiers.CantMove.Add();
                     eItem.BeginCharging();
                 } else if (eItem.ShouldThrow()) {
                     pInputManager.InvalidateControl(Control.Item);
@@ -795,12 +785,12 @@ namespace SciFi.Players {
 
         [Server]
         public void Knockback(Vector2 force, bool resetVelocity) {
-            if (!Modifier.Invincible.IsEnabled(eModifierState)) {
+            if (!eModifiers.Invincible.IsEnabled()) {
                 sKnockbackLockoutEndTime = Time.time + ((float)eDamage).Scale(0f, 1000f, 0.15f, 1.35f);
-                if (!Modifier.InKnockback.IsEnabled(eModifierState)) {
-                    AddModifier(Modifier.InKnockback);
-                    AddModifier(Modifier.CantMove);
-                    AddModifier(Modifier.CantAttack);
+                if (!eModifiers.InKnockback.IsEnabled()) {
+                    eModifiers.InKnockback.Add();
+                    eModifiers.CantMove.Add();
+                    eModifiers.CantAttack.Add();
                     RpcKnockback(force, resetVelocity);
                 } else {
                     // If we get hit with another attack during the lockout period,
@@ -829,7 +819,9 @@ namespace SciFi.Players {
             if (resetVelocity) {
                 lRb.velocity = Vector2.zero;
             }
-            Modifier.Invincible.TryAddKnockback(eModifierState, lRb, force);
+            if (!eModifiers.Invincible.IsEnabled()) {
+                lRb.AddForce(force);
+            }
         }
 
         public void Interact(IAttack attack) {

@@ -24,8 +24,8 @@ namespace SciFi.Environment.Effects {
 
         void Reinit() {
             if (NetworkServer.active) {
-                frozenPlayer.AddModifier(Modifier.Frozen);
-                frozenPlayer.AddModifier(Modifier.Slow);
+                frozenPlayer.AddModifier(ModId.Frozen);
+                frozenPlayer.AddModifier(ModId.Slow);
             }
             unfreezeTime = Time.time + freezeTime;
             transform.position = frozenPlayer.transform.position;
@@ -40,8 +40,8 @@ namespace SciFi.Environment.Effects {
 
             if (Time.time > unfreezeTime) {
                 if (NetworkServer.active) {
-                    frozenPlayer.RemoveModifier(Modifier.Frozen);
-                    frozenPlayer.RemoveModifier(Modifier.Slow);
+                    frozenPlayer.RemoveModifier(ModId.Frozen);
+                    frozenPlayer.RemoveModifier(ModId.Slow);
                 }
                 pooled.Release();
             }

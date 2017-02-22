@@ -48,8 +48,8 @@ namespace SciFi.Players.Attacks {
             this.ShouldCancel = attack.ShouldCancel;
             // Speculatively add these. Two will get added/removed on a host client,
             // but this is ok.
-            player.AddModifier(Modifier.CantMove);
-            player.AddModifier(Modifier.CantAttack);
+            player.AddModifier(ModId.CantMove);
+            player.AddModifier(ModId.CantAttack);
             player.NetworkAttackSync(new NetworkAttackMessage {
                 sender = this.guidAsBytes,
                 messageId = this.messageId,
@@ -79,8 +79,8 @@ namespace SciFi.Players.Attacks {
         public override void OnEndCharging(float chargeTime, Direction direction) {
             attack.IsCharging = false;
             attack.OnEndCharging(chargeTime, direction);
-            player.RemoveModifier(Modifier.CantAttack);
-            player.RemoveModifier(Modifier.CantMove);
+            player.RemoveModifier(ModId.CantAttack);
+            player.RemoveModifier(ModId.CantMove);
             player.NetworkAttackSync(new NetworkAttackMessage {
                 sender = this.guidAsBytes,
                 messageId = this.messageId,
@@ -93,8 +93,8 @@ namespace SciFi.Players.Attacks {
         public override void OnCancel() {
             attack.OnCancel();
             if (IsCharging) {
-                player.RemoveModifier(Modifier.CantAttack);
-                player.RemoveModifier(Modifier.CantMove);
+                player.RemoveModifier(ModId.CantAttack);
+                player.RemoveModifier(ModId.CantMove);
             }
             player.NetworkAttackSync(new NetworkAttackMessage {
                 sender = this.guidAsBytes,
@@ -118,11 +118,11 @@ namespace SciFi.Players.Attacks {
         public void ReceiveMessage(NetworkAttackMessage message) {
             if (NetworkServer.active) {
                 if (message.function == NetworkAttackFunction.OnBeginCharging) {
-                    player.AddModifier(Modifier.CantAttack);
-                    player.AddModifier(Modifier.CantMove);
+                    player.AddModifier(ModId.CantAttack);
+                    player.AddModifier(ModId.CantMove);
                 } else if (message.function == NetworkAttackFunction.OnEndCharging || message.function == NetworkAttackFunction.OnCancel) {
-                    player.RemoveModifier(Modifier.CantAttack);
-                    player.RemoveModifier(Modifier.CantMove);
+                    player.RemoveModifier(ModId.CantAttack);
+                    player.RemoveModifier(ModId.CantMove);
                 }
             }
             if (GuidArraysEqual(this.guidAsBytes, message.sender)) {
@@ -143,8 +143,8 @@ namespace SciFi.Players.Attacks {
             case NetworkAttackFunction.OnEndCharging:
                 this.IsCharging = false;
                 attack.IsCharging = false;
-                player.RemoveModifier(Modifier.CantAttack);
-                player.RemoveModifier(Modifier.CantMove);
+                player.RemoveModifier(ModId.CantAttack);
+                player.RemoveModifier(ModId.CantMove);
                 attack.OnEndCharging(message.chargeTime, message.direction);
                 break;
             case NetworkAttackFunction.OnCancel:

@@ -103,8 +103,8 @@ namespace SciFi.Players.Attacks {
         void StartAttacking() {
             rounds = Random.Range(minRounds, maxRounds + 1);
             var player = targetPlayer.GetComponent<Player>();
-            player.AddModifier(Modifier.OnFire);
-            player.AddModifier(Modifier.Fast);
+            player.AddModifier(ModId.OnFire);
+            player.AddModifier(ModId.Fast);
             nextDamageTime = Time.time + nextDamageWait;
             DoAttack();
         }
@@ -173,8 +173,8 @@ namespace SciFi.Players.Attacks {
             PooledObject.Disable(gameObject);
             if (targetPlayer != null) {
                 var player = targetPlayer.GetComponent<Player>();
-                player.RemoveModifier(Modifier.OnFire);
-                player.RemoveModifier(Modifier.Fast);
+                player.RemoveModifier(ModId.OnFire);
+                player.RemoveModifier(ModId.Fast);
             }
             Disable();
         }

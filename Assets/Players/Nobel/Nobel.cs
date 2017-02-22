@@ -90,8 +90,8 @@ namespace SciFi.Players {
                 velocity = dynamiteGo.GetComponent<Rigidbody2D>().velocity;
                 Destroy(dynamiteGo);
             } else {
-                AddModifier(Modifier.CantMove);
-                AddModifier(Modifier.CantAttack);
+                eModifiers.CantMove.Add();
+                eModifiers.CantAttack.Add();
             }
             dynamiteGo = Object.Instantiate(prefab, position, Quaternion.identity);
             dynamiteGo.GetComponent<Rigidbody2D>().velocity = velocity;
@@ -108,8 +108,8 @@ namespace SciFi.Players {
         [Command]
         public void CmdEndDynamiteCharging() {
             // TODO: Check if dynamite was charging to close this potential hack.
-            RemoveModifier(Modifier.CantMove);
-            RemoveModifier(Modifier.CantAttack);
+            eModifiers.CantMove.Remove();
+            eModifiers.CantAttack.Remove();
         }
 
         [Server]

@@ -66,7 +66,7 @@ namespace SciFi.Items {
             boostForce = eOwnerGo.GetComponent<Rigidbody2D>().mass * 2f;
 
             // Turn movement back on while the jetpack is active
-            eOwner.RemoveModifier(Modifier.CantMove);
+            eOwner.RemoveModifier(ModId.CantMove);
         }
 
         protected override void OnKeepCharging(float chargeTime) {
@@ -88,14 +88,14 @@ namespace SciFi.Items {
             lastTotalBoostTime = totalBoostTime;
 
             // Return feature flags to their previous state
-            eOwner.AddModifier(Modifier.CantMove);
+            eOwner.AddModifier(ModId.CantMove);
         }
 
         protected override void OnCancel() {
             if (IsCharging()) {
                 Destroy(fire);
                 fire = null;
-                eOwner.AddModifier(Modifier.CantMove);
+                eOwner.AddModifier(ModId.CantMove);
             }
         }
 

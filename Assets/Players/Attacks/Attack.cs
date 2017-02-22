@@ -102,26 +102,26 @@ namespace SciFi.Players.Attacks {
                             // TODO: Speculatively add/remove these on the client
                             // and check them on the server when the player tries
                             // to attack or move.
-                            //player.RemoveModifier(Modifier.CantAttack);
-                            //player.RemoveModifier(Modifier.CantMove);
+                            //player.RemoveModifier(ModId.CantAttack);
+                            //player.RemoveModifier(ModId.CantMove);
                         } else {
                             OnKeepCharging(inputManager.GetControlHoldTime(control), direction);
                         }
                     } else {
                         // Not charging but button pressed, begin charging.
-                        if (!player.IsModifierEnabled(Modifier.CantAttack) && cooldownOver) {
+                        if (!player.IsModifierEnabled(ModId.CantAttack) && cooldownOver) {
                             isCharging = true;
                             shouldCancel = false;
                             lastFireTime = Time.time;
-                            //player.AddModifier(Modifier.CantAttack);
-                            //player.AddModifier(Modifier.CantMove);
+                            //player.AddModifier(ModId.CantAttack);
+                            //player.AddModifier(ModId.CantMove);
                             OnBeginCharging(direction);
                         }
                     }
                 } else {
                     // Attack doesn't charge, fire immediately.
                     inputManager.InvalidateControl(control);
-                    if (!player.IsModifierEnabled(Modifier.CantAttack) && cooldownOver) {
+                    if (!player.IsModifierEnabled(ModId.CantAttack) && cooldownOver) {
                         lastFireTime = Time.time;
                         OnEndCharging(0f, direction);
                     }
@@ -131,8 +131,8 @@ namespace SciFi.Players.Attacks {
                     // Charging but button released, fire the attack.
                     isCharging = false;
                     OnEndCharging(inputManager.GetControlHoldTime(control), direction);
-                    //player.RemoveModifier(Modifier.CantAttack);
-                    //player.RemoveModifier(Modifier.CantMove);
+                    //player.RemoveModifier(ModId.CantAttack);
+                    //player.RemoveModifier(ModId.CantMove);
                 }
             }
         }

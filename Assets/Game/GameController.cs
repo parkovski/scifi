@@ -188,16 +188,16 @@ namespace SciFi {
                 this.countdown.OnFinished += _ => {
                     this.isPlaying = true;
                     foreach (var p in activePlayers) {
-                        p.RemoveModifier(Modifier.CantMove);
-                        p.RemoveModifier(Modifier.CantAttack);
+                        p.RemoveModifier(ModId.CantMove);
+                        p.RemoveModifier(ModId.CantAttack);
                     }
                     _GameStarted();
                 };
             } else {
                 this.isPlaying = true;
                 foreach (var p in activePlayers) {
-                    p.RemoveModifier(Modifier.CantMove);
-                    p.RemoveModifier(Modifier.CantAttack);
+                    p.RemoveModifier(ModId.CantMove);
+                    p.RemoveModifier(ModId.CantAttack);
                 }
                 _GameStarted();
             }
@@ -397,7 +397,7 @@ namespace SciFi {
         /// Inflict damage on a player.
         [Server]
         void PlayerTakeDamage(Player player, IAttack attack, int amount) {
-            if (player.IsModifierEnabled(Modifier.Invincible)) {
+            if (player.IsModifierEnabled(ModId.Invincible)) {
                 return;
             }
             player.eDamage += amount;
@@ -422,7 +422,7 @@ namespace SciFi {
             if (player == null) {
                 return;
             }
-            if (player.IsModifierEnabled(Modifier.Invincible)) {
+            if (player.IsModifierEnabled(ModId.Invincible)) {
                 return;
             }
             if (!Mathf.Approximately(amount, 0f)) {
@@ -485,8 +485,8 @@ namespace SciFi {
 
             GameStarted += () => {
                 foreach (var player in activePlayers) {
-                    player.RemoveModifier(Modifier.CantAttack);
-                    player.RemoveModifier(Modifier.CantMove);
+                    player.RemoveModifier(ModId.CantAttack);
+                    player.RemoveModifier(ModId.CantMove);
                 }
             };
         }
