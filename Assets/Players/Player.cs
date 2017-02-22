@@ -828,10 +828,10 @@ namespace SciFi.Players {
         }
 
         public void NetworkAttackSync(NetworkAttackMessage message) {
-            if (isClient && hasAuthority) {
-                CmdNetworkAttackSync(message);
-            } else if (isServer) {
+            if (isServer) {
                 RpcNetworkAttackSync(message);
+            } else if (isClient && hasAuthority) {
+                CmdNetworkAttackSync(message);
             }
         }
 
