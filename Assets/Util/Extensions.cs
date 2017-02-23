@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 using SciFi.Players;
 
@@ -111,6 +112,30 @@ namespace SciFi.Util.Extensions {
         /// Changes the color but leaves the alpha the same.
         public static Color WithColor(this Color c, float red, float green, float blue) {
             return new Color(red, green, blue, c.a);
+        }
+    }
+
+    public static class ArrayExtensions {
+        public static bool EqualsArray<T>(this T[] arr1, T[] arr2, EqualityComparer<T> comparer) {
+            if (ReferenceEquals(arr1, arr2)) {
+                return true;
+            }
+            if ((arr1 == null) != (arr2 == null)) {
+                return false;
+            }
+            if (arr1.Length != arr2.Length) {
+                return false;
+            }
+            for (int i = 0; i < arr1.Length; i++) {
+                if (!comparer.Equals(arr1[i], arr2[i])) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public static bool EqualsArray<T>(this T[] arr1, T[] arr2) {
+            return arr1.EqualsArray(arr2, EqualityComparer<T>.Default);
         }
     }
 }

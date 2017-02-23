@@ -58,7 +58,7 @@ namespace SciFi.Players {
         protected GameObject eItemGo;
         protected Item eItem;
         private OneWayPlatform sCurrentOneWayPlatform;
-        private HookCollection hooks;
+        private HookCollection lHooks;
         protected ModifierCollection eModifiers;
         private int pModifiersDebugField;
         private uint pOldModifierState;
@@ -84,7 +84,7 @@ namespace SciFi.Players {
         protected Attack eAttack1;
         protected Attack eAttack2;
         protected Attack eAttack3;
-        protected ItemAttack eItemAttack;
+        private ItemAttack eItemAttack;
         //protected Attack eSpecialAttack;
         protected Shield eShield;
 
@@ -101,16 +101,16 @@ namespace SciFi.Players {
 
             lNetworkAttacks = new List<NetworkAttack>();
 
-            hooks = new HookCollection();
-            eModifiers = new ModifierCollection(hooks);
+            lHooks = new HookCollection();
+            eModifiers = new ModifierCollection(lHooks);
             // GameController will remove these when the game starts.
             eModifiers.CantAttack.Add();
             eModifiers.CantMove.Add();
-            StandardHooks.Install(hooks, eModifiers);
+            StandardHooks.Install(lHooks, eModifiers);
             pModifiersDebugField = DebugPrinter.Instance.NewField();
 
             if (pInputManager != null) {
-                OnInitialize();
+                Initialize();
                 lInitialized = true;
             }
         }
@@ -128,6 +128,11 @@ namespace SciFi.Players {
             default:
                 return Color.clear;
             }
+        }
+
+        private void Initialize() {
+            eItemAttack = new ItemAttack(this, pInputManager, throwItemHoldTime);
+            OnInitialize();
         }
 
         protected abstract void OnInitialize();
@@ -151,9 +156,6 @@ namespace SciFi.Players {
             pLeftControl = new MultiPressControl(pInputManager, Control.Left, .4f);
             pRightControl = new MultiPressControl(pInputManager, Control.Right, .4f);
 
-            pInputManager.ObjectSelected += ObjectSelected;
-            pInputManager.ControlCanceled += ControlCanceled;
-
             if (isLocalPlayer) {
                 var leftButton = GameObject.Find("LeftButton");
                 if (leftButton != null) {
@@ -161,10 +163,8 @@ namespace SciFi.Players {
                 }
             }
 
-            eItemAttack = new ItemAttack(this);
-
             if (lRb != null) {
-                OnInitialize();
+                Initialize();
                 lInitialized = true;
             }
         }
@@ -223,6 +223,21 @@ namespace SciFi.Players {
             eModifiers.FromId(id).Count = count;
         }
 
+        [Server]
+        void SetModifiersForMessage(NetworkAttackFunction function) {
+            switch (function) {
+            case NetworkAttackFunction.OnBeginCharging:
+                eModifiers.CantMove.Add();
+                eModifiers.CantAttack.Add();
+                break;
+            case NetworkAttackFunction.OnEndCharging:
+            case NetworkAttackFunction.OnCancel:
+                eModifiers.CantMove.Remove();
+                eModifiers.CantAttack.Remove();
+                break;
+            }
+        }
+
         void HandleLeftRightInput(MultiPressControl control, Direction direction) {
             if (control.IsActive()) {
                 float axisAmount;
@@ -234,7 +249,7 @@ namespace SciFi.Players {
                 } else {
                     axisAmount = 1f;
                 }
-                var localMaxSpeed = hooks.CallMaxSpeedHooks(axisAmount, maxSpeed);
+                var localMaxSpeed = lHooks.CallMaxSpeedHooks(axisAmount, maxSpeed);
                 bool canSpeedUp;
                 if (Mathf.Approximately(localMaxSpeed, 0f)) {
                     canSpeedUp = false;
@@ -244,7 +259,7 @@ namespace SciFi.Players {
                     canSpeedUp = lRb.velocity.x < localMaxSpeed;
                 }
                 if (canSpeedUp) {
-                    lRb.AddForce(new Vector2(hooks.CallWalkForceHooks(direction, axisAmount, walkForce), 0f));
+                    lRb.AddForce(new Vector2(lHooks.CallWalkForceHooks(direction, axisAmount, walkForce), 0f));
                 }
 
                 // Without the cached parameter, this will get triggered
@@ -282,6 +297,7 @@ namespace SciFi.Players {
                 eAttack1.UpdateStateNonAuthoritative();
                 eAttack2.UpdateStateNonAuthoritative();
                 eAttack3.UpdateStateNonAuthoritative();
+                eItemAttack.UpdateStateNonAuthoritative();
                 return;
             }
 
@@ -327,8 +343,6 @@ namespace SciFi.Players {
                     eShield.Deactivate();
                 }
             }
-
-            UpdateItemControl(pInputManager.IsControlActive(Control.Item));
 
             eAttack1.UpdateState(pInputManager, Control.Attack1);
             eAttack2.UpdateState(pInputManager, Control.Attack2);
@@ -476,119 +490,14 @@ namespace SciFi.Players {
             return eItem == null ? NetworkInstanceId.Invalid : eItem.netId;
         }
 
-        Direction GetControlDirection() {
-            if (pInputManager.IsControlActive(Control.Down)) {
-                return Direction.Down;
-            }
-            if (pInputManager.IsControlActive(Control.Up)) {
-                return Direction.Up;
-            }
-            if (pInputManager.IsControlActive(Control.Left)) {
-                return Direction.Left;
-            }
-            if (pInputManager.IsControlActive(Control.Right)) {
-                return Direction.Right;
-            }
-            return Direction.Invalid;
-        }
-
-        float GetDirectionHoldTime(Direction direction) {
-            var control = GetDirectionControl(direction);
-            if (control == -1) {
-                return 0f;
-            }
-
-            return pInputManager.GetControlHoldTime(control);
-        }
-
-        int GetDirectionControl(Direction direction) {
-            switch (direction) {
-            case Direction.Left:
-                return Control.Left;
-            case Direction.Right:
-                return Control.Right;
-            case Direction.Up:
-                return Control.Up;
-            case Direction.Down:
-                return Control.Down;
-            default:
-                return -1;
-            }
-        }
-
-        void UpdateItemControl(bool active) {
-            if (eItemGo == null) {
-                if (active) {
-                    pInputManager.InvalidateControl(Control.Item);
-                    PickUpItem();
-                }
-                return;
-            }
-
-            if (eItem.IsCharging()) {
-                if (active) {
-                    if (eItem.ShouldCancel()) {
-                        pInputManager.InvalidateControl(Control.Item);
-                        eItem.Cancel();
-                        UpdateItemControlGraphic();
-                        eModifiers.CantAttack.Remove();
-                        eModifiers.CantMove.Remove();
-                    } else {
-                        eItem.KeepCharging(pInputManager.GetControlHoldTime(Control.Item));
-                    }
-                } else {
-                    eItem.EndCharging(pInputManager.GetControlHoldTime(Control.Item));
-                    UpdateItemControlGraphic();
-                    eModifiers.CantAttack.Remove();
-                    eModifiers.CantMove.Remove();
-                }
-            } else if (active && !eModifiers.CantAttack.IsEnabled()) {
-                var direction = GetControlDirection();
-                var control = GetDirectionControl(direction);
-                var holdTime = GetDirectionHoldTime(direction);
-                if (direction != Direction.Invalid && holdTime < throwItemHoldTime) {
-                    pInputManager.InvalidateControl(Control.Item);
-                    pInputManager.InvalidateControl(control);
-                    CmdLoseOwnershipOfItem(direction);
-                    eItemGo = null;
-                } else if (eItem.ShouldCharge()) {
-                    eModifiers.CantAttack.Add();
-                    eModifiers.CantMove.Add();
-                    eItem.BeginCharging();
-                } else if (eItem.ShouldThrow()) {
-                    pInputManager.InvalidateControl(Control.Item);
-                    CmdLoseOwnershipOfItem(eDirection);
-                    eItemGo = null;
-                } else {
-                    pInputManager.InvalidateControl(Control.Item);
-                    eItem.Use();
-                    UpdateItemControlGraphic();
-                }
-                // If none of the above conditions were true, the item
-                // is chargeable, but it can't charge right now (in cooldown)
-                // so we just do nothing.
-            }
-        }
-
-        void UseItem() {
-            if (eItem.ShouldThrow()) {
-                CmdLoseOwnershipOfItem(eDirection);
-                eItemGo = null;
-            } else if (eItem.ShouldCharge()) {
-                // TODO: begin charging item
-                // TODO: run this on server
-                eItem.BeginCharging();
-                eItem.Use();
-            } else {
-                eItem.Use();
-            }
-        }
-
-        void PickUpItem(GameObject item = null) {
-            item = CircleCastForItem(item);
+        public void PickUpItem() {
+            var item = CircleCastForItem();
             if (item != null) {
                 if (item.GetComponent<Item>() == null) {
                     item = item.transform.parent.gameObject;
+                    if (item.GetComponent<Item>() == null) {
+                        return;
+                    }
                 }
                 CmdTakeOwnershipOfItem(item);
             }
@@ -599,7 +508,7 @@ namespace SciFi.Players {
             UpdateItemControlGraphic();
         }
 
-        void UpdateItemControlGraphic() {
+        public void UpdateItemControlGraphic() {
             if (!hasAuthority) {
                 return;
             }
@@ -628,6 +537,7 @@ namespace SciFi.Players {
             }
             this.eItemGo = itemGo;
             this.eItem = item;
+            eItemAttack.SetItem(item);
             RpcSetItem(itemGo);
             RpcUpdateItemControlGraphic();
 
@@ -636,11 +546,12 @@ namespace SciFi.Players {
         }
 
         [Command]
-        void CmdLoseOwnershipOfItem(Direction direction) {
+        public void CmdLoseOwnershipOfItem(Direction direction) {
             var itemGo = this.eItemGo;
             var item = this.eItem;
             this.eItemGo = null;
             this.eItem = null;
+            eItemAttack.SetItem(null);
             RpcSetItem(null);
 
             item.SetOwner(null);
@@ -657,8 +568,10 @@ namespace SciFi.Players {
             this.eItemGo = itemGo;
             if (itemGo == null) {
                 this.eItem = null;
+                eItemAttack.SetItem(null);
             } else {
                 this.eItem = itemGo.GetComponent<Item>();
+                eItemAttack.SetItem(eItem);
             }
         }
 
@@ -667,13 +580,10 @@ namespace SciFi.Players {
             eItem.ChangeDirection(direction);
         }
 
-        /// If an item is passed, this function will return it
-        /// only if it falls in the circle cast.
-        /// If no item was passed, it will return the first item
-        /// hit by the circle cast.
+        /// Returns the first item hit by the circle cast.
         /// For some items this may return a child GameObject.
         /// The caller is expected to check this.
-        GameObject CircleCastForItem(GameObject item) {
+        GameObject CircleCastForItem() {
             var hits = Physics2D.CircleCastAll(
                 gameObject.transform.position,
                 1f,
@@ -684,37 +594,7 @@ namespace SciFi.Players {
                 return null;
             }
 
-            if (item == null) {
-                return hits[0].collider.gameObject;
-            }
-
-            foreach (var hit in hits) {
-                if (hit.collider.gameObject == item) {
-                    return item;
-                }
-            }
-            return null;
-        }
-
-        void ObjectSelected(GameObject gameObject) {
-            if (gameObject == this.eItemGo) {
-                UseItem();
-                return;
-            }
-
-            // We can only hold one item at a time.
-            if (eItemGo != null) {
-                return;
-            }
-            if (gameObject.layer == Layers.items || gameObject.layer == Layers.noncollidingItems) {
-                if (CircleCastForItem(gameObject) == gameObject) {
-                    PickUpItem(gameObject);
-                }
-            }
-        }
-
-        void ControlCanceled(int control) {
-            //
+            return hits[0].collider.gameObject;
         }
 
         [ClientRpc]
@@ -770,8 +650,6 @@ namespace SciFi.Players {
             }
         }
 
-        public virtual void SetColor(Color color) {}
-
         [Server]
         public void Hit(int damage) {
         }
@@ -813,6 +691,7 @@ namespace SciFi.Players {
             eAttack1.RequestCancel();
             eAttack2.RequestCancel();
             eAttack3.RequestCancel();
+            eItemAttack.RequestCancel();
             if (resetVelocity) {
                 lRb.velocity = Vector2.zero;
             }
@@ -833,6 +712,7 @@ namespace SciFi.Players {
         public void NetworkAttackSync(NetworkAttackMessage message) {
             if (isServer) {
                 RpcNetworkAttackSync(message);
+                SetModifiersForMessage(message.function);
             } else if (isClient && hasAuthority) {
                 CmdNetworkAttackSync(message);
             }
@@ -841,6 +721,7 @@ namespace SciFi.Players {
         [Command]
         void CmdNetworkAttackSync(NetworkAttackMessage message) {
             RpcNetworkAttackSync(message);
+            SetModifiersForMessage(message.function);
             lNetworkAttacks[message.messageId].ReceiveMessage(message);
         }
 
@@ -855,6 +736,30 @@ namespace SciFi.Players {
             }
 
             lNetworkAttacks[message.messageId].ReceiveMessage(message);
+        }
+
+        public void ItemAttackSync(ItemAttackMessage message) {
+            if (isServer) {
+                RpcItemAttackSync(message);
+                SetModifiersForMessage(message.function);
+            } else if (isClient && hasAuthority) {
+                CmdItemAttackSync(message);
+            }
+        }
+
+        [Command]
+        void CmdItemAttackSync(ItemAttackMessage message) {
+            RpcItemAttackSync(message);
+            SetModifiersForMessage(message.function);
+            eItemAttack.ReceiveMessage(message);
+        }
+
+        [ClientRpc]
+        void RpcItemAttackSync(ItemAttackMessage message) {
+            if (isServer) {
+                return;
+            }
+            eItemAttack.ReceiveMessage(message);
         }
     }
 }

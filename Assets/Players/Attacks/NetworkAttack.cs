@@ -1,8 +1,7 @@
 using UnityEngine;
-using UnityEngine.Networking;
 using System;
 
-using SciFi.Players.Modifiers;
+using SciFi.Util.Extensions;
 
 namespace SciFi.Players.Attacks {
     /// This is a wrapper class that will mirror the enclosed attack's
@@ -40,10 +39,6 @@ namespace SciFi.Players.Attacks {
             attack.IsCharging = true;
             attack.OnBeginCharging(direction);
             this.ShouldCancel = attack.ShouldCancel;
-            // Speculatively add these. Two will get added/removed on a host client,
-            // but this is ok.
-            player.AddModifier(ModId.CantMove);
-            player.AddModifier(ModId.CantAttack);
             player.NetworkAttackSync(new NetworkAttackMessage {
                 sender = this.guidAsBytes,
                 messageId = this.messageId,
@@ -59,10 +54,8 @@ namespace SciFi.Players.Attacks {
         }
 
         public override void OnEndCharging(float chargeTime, Direction direction) {
-            attack.IsCharging = false;
             attack.OnEndCharging(chargeTime, direction);
-            player.RemoveModifier(ModId.CantAttack);
-            player.RemoveModifier(ModId.CantMove);
+            attack.IsCharging = false;
             player.NetworkAttackSync(new NetworkAttackMessage {
                 sender = this.guidAsBytes,
                 messageId = this.messageId,
@@ -74,10 +67,7 @@ namespace SciFi.Players.Attacks {
 
         public override void OnCancel() {
             attack.OnCancel();
-            if (IsCharging) {
-                player.RemoveModifier(ModId.CantAttack);
-                player.RemoveModifier(ModId.CantMove);
-            }
+            attack.IsCharging = false;
             player.NetworkAttackSync(new NetworkAttackMessage {
                 sender = this.guidAsBytes,
                 messageId = this.messageId,
@@ -87,27 +77,8 @@ namespace SciFi.Players.Attacks {
             });
         }
 
-        /// This assumes these arrays are Guids, and their lengths are equal.
-        bool GuidArraysEqual(byte[] guid1, byte[] guid2) {
-            for (var i = 0; i < guid1.Length; i++) {
-                if (guid1[i] != guid2[i]) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
         public void ReceiveMessage(NetworkAttackMessage message) {
-            if (NetworkServer.active) {
-                if (message.function == NetworkAttackFunction.OnBeginCharging) {
-                    player.AddModifier(ModId.CantAttack);
-                    player.AddModifier(ModId.CantMove);
-                } else if (message.function == NetworkAttackFunction.OnEndCharging || message.function == NetworkAttackFunction.OnCancel) {
-                    player.RemoveModifier(ModId.CantAttack);
-                    player.RemoveModifier(ModId.CantMove);
-                }
-            }
-            if (GuidArraysEqual(this.guidAsBytes, message.sender)) {
+            if (this.guidAsBytes.EqualsArray(message.sender)) {
                 return;
             }
 
@@ -120,11 +91,9 @@ namespace SciFi.Players.Attacks {
                 attack.OnBeginCharging(message.direction);
                 break;
             case NetworkAttackFunction.OnEndCharging:
+                attack.OnEndCharging(message.chargeTime, message.direction);
                 this.IsCharging = false;
                 attack.IsCharging = false;
-                player.RemoveModifier(ModId.CantAttack);
-                player.RemoveModifier(ModId.CantMove);
-                attack.OnEndCharging(message.chargeTime, message.direction);
                 break;
             case NetworkAttackFunction.OnCancel:
                 attack.OnCancel();

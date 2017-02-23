@@ -265,6 +265,7 @@ namespace SciFi {
                 | 1 << LayerMask.NameToLayer("Items");
             activeTouches = new Dictionary<int, string>();
 
+#if !UNITY_EDITOR
             if (!Input.touchSupported) {
                 Destroy(GameObject.Find("LeftButton"));
                 Destroy(GameObject.Find("RightButton"));
@@ -275,6 +276,7 @@ namespace SciFi {
                 Destroy(GameObject.Find("AttackButton3"));
                 Destroy(GameObject.Find("UpButton"));
             }
+#endif
         }
 
         /// Update keyboard and mouse state.

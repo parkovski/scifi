@@ -465,7 +465,6 @@ namespace SciFi {
 
         /// Initialize fields that other objects depend on.
         void Awake() {
-            Instance = this;
             activePlayersGo = new GameObject[0];
             displayNames = new string[0];
             teams = new int[0];
@@ -494,6 +493,15 @@ namespace SciFi {
                     player.RemoveModifier(ModId.CantMove);
                 }
             };
+
+            if (TransitionParams.gameType == GameType.Single) {
+                spawnPrefabList = new JitList<GameObject>();
+            } else {
+                spawnPrefabList = NetworkManager.singleton.spawnPrefabs;
+            }
+            gameObjectPool = new GameObjectPool();
+
+            Instance = this;
         }
 
         [Server]
@@ -504,15 +512,6 @@ namespace SciFi {
 
             var ai = player.AddComponent<DumbAI>();
             ai.inputManager = inputManager;
-        }
-
-        void Start() {
-            if (TransitionParams.gameType == GameType.Single) {
-                spawnPrefabList = new JitList<GameObject>();
-            } else {
-                spawnPrefabList = NetworkManager.singleton.spawnPrefabs;
-            }
-            gameObjectPool = new GameObjectPool();
         }
 
         public override void OnStartServer() {
