@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 50827655759425786}
   - component: {fileID: 61750660196358218}
   - component: {fileID: 114851866113576784}
-  - component: {fileID: 114556603700186806}
+  - component: {fileID: 114639946462141508}
   m_Layer: 14
   m_Name: MagnifyingGlass
   m_TagString: Untagged
@@ -79,7 +79,7 @@ BoxCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Size: {x: 0.26, y: 0.6}
---- !u!114 &114556603700186806
+--- !u!114 &114639946462141508
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -87,18 +87,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1218551076657844}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1768714887, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
+  m_Script: {fileID: 11500000, guid: cf8a20c44550b2e4997a70b4207bd44e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_TransformSyncMode: 2
-  m_SendInterval: 0.1
-  m_SyncRotationAxis: 3
-  m_RotationSyncCompression: 0
-  m_SyncSpin: 0
-  m_MovementTheshold: 0.001
-  m_SnapThreshold: 5
-  m_InterpolateRotation: 1
-  m_InterpolateMovement: 1
 --- !u!114 &114851866113576784
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -110,6 +101,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65fb29bb13672ce4c9c45ab6dfa2bf92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  itemButtonGraphic: {fileID: 0}
   litSprite: {fileID: 21300000, guid: 7e47a1240ffd7454696bba49bcaff28c, type: 3}
   unlitSprite: {fileID: 21300000, guid: 3363cc897d421aa448cbd49b5763ed5c, type: 3}
   lightBeam: {fileID: 1128246335146808, guid: 8d0323bb479050b46884181d5e934948, type: 2}

@@ -22,8 +22,8 @@ GameObject:
   - component: {fileID: 114628979506186906}
   - component: {fileID: 114031917912205254}
   - component: {fileID: 50358223474032214}
-  - component: {fileID: 114403487812258050}
   - component: {fileID: 82736369989596136}
+  - component: {fileID: 114332030822795812}
   m_Layer: 14
   m_Name: StandardSword
   m_TagString: Untagged
@@ -178,7 +178,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 4
+    m_RotationOrder: 0
   reverbZoneMixCustomCurve:
     serializedVersion: 2
     m_Curve:
@@ -221,7 +221,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemButtonGraphic: {fileID: 0}
   swordType: 0
---- !u!114 &114403487812258050
+--- !u!114 &114332030822795812
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -229,18 +229,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1626657230172018}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1768714887, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
+  m_Script: {fileID: 11500000, guid: cf8a20c44550b2e4997a70b4207bd44e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_TransformSyncMode: 2
-  m_SendInterval: 0.1
-  m_SyncRotationAxis: 3
-  m_RotationSyncCompression: 0
-  m_SyncSpin: 0
-  m_MovementTheshold: 0.001
-  m_SnapThreshold: 5
-  m_InterpolateRotation: 1
-  m_InterpolateMovement: 1
 --- !u!114 &114628979506186906
 MonoBehaviour:
   m_ObjectHideFlags: 1

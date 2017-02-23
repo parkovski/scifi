@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 114689362940942408}
   - component: {fileID: 50328262987527552}
   - component: {fileID: 61236541102737234}
-  - component: {fileID: 114946421568915490}
+  - component: {fileID: 114619244718135178}
   m_Layer: 14
   m_Name: Jetpack
   m_TagString: Untagged
@@ -111,6 +111,17 @@ MonoBehaviour:
     i15: 1
   m_ServerOnly: 0
   m_LocalPlayerAuthority: 0
+--- !u!114 &114619244718135178
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1419765194862828}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf8a20c44550b2e4997a70b4207bd44e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114689362940942408
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -122,27 +133,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b2005dc800cedf4c8c673fe6cf80de1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  itemButtonGraphic: {fileID: 0}
   firePrefab: {fileID: 1648301760456158, guid: 8e6e07b634643a646b5812e3a8d83063, type: 2}
---- !u!114 &114946421568915490
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1419765194862828}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1768714887, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TransformSyncMode: 2
-  m_SendInterval: 0.1
-  m_SyncRotationAxis: 3
-  m_RotationSyncCompression: 0
-  m_SyncSpin: 0
-  m_MovementTheshold: 0.001
-  m_SnapThreshold: 5
-  m_InterpolateRotation: 1
-  m_InterpolateMovement: 1
 --- !u!212 &212590448003277946
 SpriteRenderer:
   m_ObjectHideFlags: 1

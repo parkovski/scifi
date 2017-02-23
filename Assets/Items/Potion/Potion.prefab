@@ -26,7 +26,7 @@ GameObject:
   - component: {fileID: 50397143459590670}
   - component: {fileID: 61257414840971138}
   - component: {fileID: 58588381412554892}
-  - component: {fileID: 114259332966265338}
+  - component: {fileID: 114165739672820652}
   m_Layer: 10
   m_Name: Potion
   m_TagString: Item
@@ -112,7 +112,7 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
---- !u!114 &114259332966265338
+--- !u!114 &114165739672820652
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -120,18 +120,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1541472850479400}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1768714887, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
+  m_Script: {fileID: 11500000, guid: cf8a20c44550b2e4997a70b4207bd44e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_TransformSyncMode: 2
-  m_SendInterval: 0.1
-  m_SyncRotationAxis: 3
-  m_RotationSyncCompression: 0
-  m_SyncSpin: 0
-  m_MovementTheshold: 0.001
-  m_SnapThreshold: 5
-  m_InterpolateRotation: 1
-  m_InterpolateMovement: 1
 --- !u!114 &114276236041267642
 MonoBehaviour:
   m_ObjectHideFlags: 1

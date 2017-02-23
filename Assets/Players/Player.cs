@@ -542,7 +542,10 @@ namespace SciFi.Players {
             RpcUpdateItemControlGraphic();
 
             item.ChangeDirection(eDirection);
-            itemGo.GetComponent<NetworkTransform>().enabled = false;
+            var networkTransform = itemGo.GetComponent<SFNetworkTransform>();
+            if (networkTransform != null) {
+                networkTransform.enabled = false;
+            }
         }
 
         [Command]
@@ -559,8 +562,10 @@ namespace SciFi.Players {
 
             RpcUpdateItemControlGraphic();
 
-            var networkTransform = itemGo.GetComponent<NetworkTransform>();
-            networkTransform.enabled = true;
+            var networkTransform = itemGo.GetComponent<SFNetworkTransform>();
+            if (networkTransform != null) {
+                networkTransform.enabled = true;
+            }
         }
 
         [ClientRpc]

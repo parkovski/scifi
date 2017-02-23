@@ -41,8 +41,8 @@ GameObject:
   - component: {fileID: 114233922747571472}
   - component: {fileID: 114013395379817250}
   - component: {fileID: 50637440831323160}
-  - component: {fileID: 114742268899278748}
   - component: {fileID: 82407398231274938}
+  - component: {fileID: 114231408714801086}
   m_Layer: 14
   m_Name: IceSword
   m_TagString: Untagged
@@ -233,6 +233,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sword: {fileID: 114013395379817250}
+--- !u!114 &114231408714801086
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1839298632866804}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf8a20c44550b2e4997a70b4207bd44e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114233922747571472
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -265,26 +276,6 @@ MonoBehaviour:
     i15: 164
   m_ServerOnly: 0
   m_LocalPlayerAuthority: 0
---- !u!114 &114742268899278748
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1839298632866804}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1768714887, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TransformSyncMode: 2
-  m_SendInterval: 0.1
-  m_SyncRotationAxis: 3
-  m_RotationSyncCompression: 0
-  m_SyncSpin: 0
-  m_MovementTheshold: 0.001
-  m_SnapThreshold: 5
-  m_InterpolateRotation: 1
-  m_InterpolateMovement: 1
 --- !u!212 &212512025013572034
 SpriteRenderer:
   m_ObjectHideFlags: 1
