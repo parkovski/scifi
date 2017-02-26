@@ -9,6 +9,9 @@ namespace SciFi.Players.Attacks {
     // 3-5 rounds of damage.
     public class FireBallAttack : Attack {
         const float horizontalForce = 20f;
+        bool hasActiveFireball = false;
+        bool cancelRequested = false;
+        float lastFireTime;
 
         public FireBallAttack(Kelvin player)
             : base(player, true)
@@ -16,17 +19,28 @@ namespace SciFi.Players.Attacks {
         }
 
         public override void OnBeginCharging(Direction direction) {
-            ((Kelvin)player).CmdChargeOrThrowFireball(
-                player.transform.position + new Vector3(1f, 0f).FlipDirection(player.eDirection)
-            );
+            if (hasActiveFireball) {
+                ((Kelvin)player).CmdThrowFireball(direction);
+                cancelRequested = true;
+                RequestCancel();
+            } else {
+                ((Kelvin)player).CmdStartChargingFireball(
+                    player.transform.position + new Vector3(1f, 0f).FlipDirection(player.eDirection)
+                );
+                cancelRequested = false;
+            }
         }
 
         public override void OnEndCharging(float chargeTime, Direction direction) {
-            ((Kelvin)player).CmdChargeOrThrowFireball(Vector2.zero);
+            ((Kelvin)player).CmdEndChargingFireball(direction);
         }
 
         public override void OnCancel() {
-            ((Kelvin)player).CmdStopChargingFireball();
+            ((Kelvin)player).CmdCancelFireball(cancelRequested);
+        }
+
+        public void SetHasActiveFireball(bool isActive) {
+            hasActiveFireball = isActive;
         }
     }
 }

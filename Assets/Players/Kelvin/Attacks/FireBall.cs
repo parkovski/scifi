@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Networking;
+using System;
 using Random = UnityEngine.Random;
 
 using SciFi.Items;
@@ -8,46 +9,68 @@ using SciFi.Util.Extensions;
 
 namespace SciFi.Players.Attacks {
     public class FireBall : Projectile, IPoolNotificationHandler {
+        public Action<GameObject> destroyCallback;
+
         /// How many times the player gets hit by this attack
         int rounds;
         const int minRounds = 3;
         const int maxRounds = 5;
         const float minScale = .25f;
         const float maxScale = .5f;
+        /// The max scale hit while charging.
+        float scale;
 
         /// Accumulated knockback dealt on last round.
         float accumulatedKnockback;
         const float knockbackPerRound = 2f;
 
         /// How long to wait between damage rounds
-        float nextDamageTime;
         const float nextDamageWait = .25f;
+        const float destroyAfterFadeTime = 4.5f;
+        const float maxChargeTime = 1.5f;
+        const float destroyAfterThrowTime = 1.5f;
+
+        SpriteRenderer spriteRenderer;
 
         GameObject targetPlayer;
         Vector3 targetOffset;
-        bool isCharging;
-        float chargingStartTime;
-        float destroyTime;
-        float gravityScale;
+        const float gravityScale = 0.5f;
 
         IPooledObject pooled;
 
+        State state;
+        float stateStartTime;
+
+        enum State {
+            Charging,
+            Fading,
+            Throwing,
+            Attacking,
+        }
+
         void Awake() {
             pooled = PooledObject.Get(gameObject);
-            isCharging = true;
+            state = State.Charging;
+            spriteRenderer = transform.Find("FireBall").GetComponent<SpriteRenderer>();
         }
 
         void Start() {
-            gravityScale = GetComponent<Rigidbody2D>().gravityScale;
             Reinit();
         }
 
         void Reinit() {
-            isCharging = true;
-            chargingStartTime = Time.time;
+            ChangeState(State.Charging);
             accumulatedKnockback = 0;
             targetPlayer = null;
+            scale = minScale;
             GetComponent<Rigidbody2D>().gravityScale = 0;
+            transform.localScale = new Vector3(scale, scale, 1);
+            spriteRenderer.color = spriteRenderer.color.WithAlpha(1f);
+        }
+
+        void ChangeState(State newState) {
+            state = newState;
+            stateStartTime = Time.time;
         }
 
         void Update() {
@@ -55,34 +78,81 @@ namespace SciFi.Players.Attacks {
                 return;
             }
 
-            if (isCharging) {
-                var time = Mathf.Clamp(Time.time - chargingStartTime, 0f, 1.5f);
-                var scale = time.Scale(0f, 1f, minScale, maxScale);
-                transform.localScale = new Vector3(scale, scale, 1);
-            } else if (isServer && Time.time > destroyTime) {
+            switch (state) {
+            case State.Charging:
+                UpdateCharging();
+                break;
+            case State.Fading:
+                UpdateFading();
+                break;
+            case State.Throwing:
+                UpdateThrowing();
+                break;
+            case State.Attacking:
+                UpdateAttacking();
+                break;
+            }
+        }
+
+        /// Grow the fireball.
+        void UpdateCharging() {
+            var time = Time.time - stateStartTime;
+            time = Mathf.Clamp(time, 0f, maxChargeTime);
+            scale = time.Scale(0f, maxChargeTime, minScale, maxScale);
+            transform.localScale = new Vector3(scale, scale, 1);
+        }
+
+        /// Shrink and fade the fireball.
+        void UpdateFading() {
+            var time = Mathf.Clamp(Time.time - stateStartTime, 0f, destroyAfterFadeTime);
+            if (isServer && time >= destroyAfterFadeTime) {
                 pooled.Release();
                 return;
             }
+            var fadeScale = time.Scale(0f, destroyAfterFadeTime, scale, minScale);
+            var alpha = time.Scale(0f, destroyAfterFadeTime, 1f, .5f);
+            transform.localScale = new Vector3(fadeScale, fadeScale, 1);
+            spriteRenderer.color = spriteRenderer.color.WithAlpha(alpha);
+        }
 
-            if (targetPlayer != null) {
-                gameObject.transform.position = targetPlayer.transform.position + targetOffset;
+        /// Destroy the fireball after the time limit.
+        void UpdateThrowing() {
+            if (isServer && Time.time > stateStartTime + destroyAfterThrowTime) {
+                pooled.Release();
+            }
+        }
 
-                if (isServer && Time.time > nextDamageTime) {
-                    nextDamageTime = Time.time + nextDamageWait;
-                    DoAttack();
-                }
+        /// Give damage to the target player.
+        void UpdateAttacking() {
+            gameObject.transform.position = targetPlayer.transform.position + targetOffset;
+
+            if (isServer && Time.time > stateStartTime + nextDamageWait) {
+                stateStartTime = Time.time;
+                DoAttack();
             }
         }
 
         [Server]
+        public void StopCharging() {
+            if (state == State.Fading || state == State.Attacking) {
+                return;
+            }
+            ChangeState(State.Fading);
+            GetComponent<Rigidbody2D>().gravityScale = 0.01f;
+        }
+
+        [Server]
         public void Throw(Direction direction) {
+            if (state == State.Attacking) {
+                return;
+            }
+
             SetInitialVelocity(new Vector3(5, 2, 0).FlipDirection(direction));
             var rb = GetComponent<Rigidbody2D>();
-            rb.gravityScale = gravityScale;
             rb.velocity = initialVelocity;
+            rb.gravityScale = gravityScale;
             RpcThrow(initialVelocity);
-            destroyTime = Time.time + 1.5f;
-            isCharging = false;
+            ChangeState(State.Throwing);
             gameObject.layer = Layers.projectiles;
         }
 
@@ -95,7 +165,7 @@ namespace SciFi.Players.Attacks {
             var rb = GetComponent<Rigidbody2D>();
             rb.gravityScale = gravityScale;
             rb.velocity = velocity;
-            isCharging = false;
+            ChangeState(State.Throwing);
             gameObject.layer = Layers.projectiles;
         }
 
@@ -105,7 +175,7 @@ namespace SciFi.Players.Attacks {
             var player = targetPlayer.GetComponent<Player>();
             player.AddModifier(ModId.OnFire);
             player.AddModifier(ModId.Fast);
-            nextDamageTime = Time.time + nextDamageWait;
+            ChangeState(State.Attacking);
             DoAttack();
         }
 
@@ -135,15 +205,13 @@ namespace SciFi.Players.Attacks {
 
             var player = collision.gameObject.GetComponent<Player>();
             if (player != null) {
-                if (isCharging) {
-                    Throw(player.eDirection);
-                }
+                Throw(player.eDirection);
                 targetPlayer = collision.gameObject;
                 targetOffset = gameObject.transform.position - targetPlayer.transform.position;
                 RpcSetTargetPlayer(targetPlayer.GetComponent<NetworkIdentity>().netId, targetOffset);
                 gameObject.layer = Layers.displayOnly;
                 StartAttacking();
-            } else if (!isCharging) {
+            } else {
                 pooled.Release();
             }
         }
@@ -155,6 +223,7 @@ namespace SciFi.Players.Attacks {
             } else {
                 targetPlayer = ClientScene.FindLocalObject(netId);
                 targetOffset = offset;
+                ChangeState(State.Attacking);
             }
         }
 
@@ -177,6 +246,10 @@ namespace SciFi.Players.Attacks {
                 player.RemoveModifier(ModId.Fast);
             }
             Disable();
+            if (destroyCallback != null) {
+                destroyCallback(gameObject);
+                destroyCallback = null;
+            }
         }
     }
 }

@@ -426,9 +426,9 @@ MonoBehaviour:
   eTeam: -1
   eShouldFallThroughOneWayPlatform: 0
   defaultDirection: 1
-  maxSpeed: 5.5
-  walkForce: 1300
-  jumpForce: 500
+  maxSpeed: 6
+  walkForce: 1500
+  jumpForce: 550
   minDoubleJumpVelocity: 2
   iceballPrefab: {fileID: 1284917634577738, guid: ab2f5738fa6e25b46bcaf4df5013554a,
     type: 2}

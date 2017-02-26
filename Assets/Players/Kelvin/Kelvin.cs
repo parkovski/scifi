@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 using SciFi.Players.Attacks;
+using SciFi.Players.Modifiers;
 using SciFi.Util;
 
 namespace SciFi.Players {
@@ -38,7 +39,7 @@ namespace SciFi.Players {
         }
 
         [Command]
-        public void CmdChargeOrThrowFireball(Vector2 position) {
+        public void CmdStartChargingFireball(Vector2 position) {
             if (chargingFireball == null) {
                 chargingFireball = SpawnPooledProjectile(
                     GameController.PrefabToIndex(fireballPrefab),
@@ -48,17 +49,49 @@ namespace SciFi.Players {
                     0,
                     false
                 );
-            } else {
-                chargingFireball.GetComponent<FireBall>().Throw(eDirection);
-                chargingFireball = null;
+                chargingFireball.GetComponent<FireBall>().destroyCallback = OnFireballDestroyed;
+                RpcSetFireballActive(true);
+                AddModifier(ModId.CantMove);
+                AddModifier(ModId.CantAttack);
             }
         }
 
         [Command]
-        public void CmdStopChargingFireball() {
+        public void CmdEndChargingFireball(Direction direction) {
+            if (chargingFireball != null) {
+                chargingFireball.GetComponent<FireBall>().StopCharging();
+            }
+            RemoveModifier(ModId.CantMove);
+            RemoveModifier(ModId.CantAttack);
+        }
+
+        [Command]
+        public void CmdThrowFireball(Direction direction) {
+            if (chargingFireball != null) {
+                chargingFireball.GetComponent<FireBall>().Throw(direction);
+            }
+        }
+
+        [Server]
+        void OnFireballDestroyed(GameObject objectBeingDestroyed) {
+            RpcSetFireballActive(false);
+            chargingFireball = null;
+        }
+
+        [ClientRpc]
+        void RpcSetFireballActive(bool isActive) {
+            ((FireBallAttack)eAttack2).SetHasActiveFireball(isActive);
+        }
+
+        [Command]
+        public void CmdCancelFireball(bool onPurpose) {
+            RemoveModifier(ModId.CantAttack);
+            RemoveModifier(ModId.CantMove);
+            if (onPurpose) {
+                return;
+            }
             if (chargingFireball != null) {
                 PooledObject.Get(chargingFireball).Release();
-                chargingFireball = null;
             }
         }
     }
