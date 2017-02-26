@@ -6,7 +6,7 @@ using SciFi.Environment.Effects;
 using SciFi.Util;
 
 namespace SciFi.Players.Attacks {
-    public class CalcBook : MonoBehaviour, IAttack {
+    public class CalcBook : MonoBehaviour, IAttackSource {
         public GameObject spawnedBy;
         public int power;
 

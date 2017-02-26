@@ -87,7 +87,7 @@ namespace SciFi.Items {
 
         public override AttackType Type { get { return AttackType.Projectile; } }
 
-        public override void Interact(IAttack attack) {
+        public override void Interact(IAttackSource attack) {
             if (isRedPotion) {
                 return;
             }

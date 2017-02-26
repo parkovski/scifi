@@ -3,7 +3,7 @@ using UnityEngine;
 using SciFi.Items;
 
 namespace SciFi.Players.Attacks {
-    public class Telegraph : MonoBehaviour, IAttack {
+    public class Telegraph : MonoBehaviour, IAttackSource {
         public Sprite openTelegraph;
         public Sprite closedTelegraph;
 

@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Linq;
 
 namespace SciFi.Players.Attacks {
-    public class GravityWellAttack : Attack, IAttack {
+    public class GravityWellAttack : Attack, IAttackSource {
         GameObject gravityWellPrefab;
         GameObject gravityWellObj;
         GravityWell gravityWell;

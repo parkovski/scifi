@@ -703,7 +703,7 @@ namespace SciFi.Players {
             lRb.AddForce(force);
         }
 
-        public void Interact(IAttack attack) {
+        public void Interact(IAttackSource attack) {
             if (sAttackHit != null) {
                 sAttackHit(attack.Type, attack.Properties);
             }

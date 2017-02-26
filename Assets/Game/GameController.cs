@@ -356,22 +356,22 @@ namespace SciFi {
         }
 
         [Server]
-        public void Hit(GameObject obj, IAttack attack, int damage) {
+        public void Hit(GameObject obj, IAttackSource attack, int damage) {
             Hit(obj, attack, null, damage, 0f, false);
         }
 
         [Server]
-        public void HitNoVelocityReset(GameObject obj, IAttack attack, GameObject attackingObject, int damage, float knockback) {
+        public void HitNoVelocityReset(GameObject obj, IAttackSource attack, GameObject attackingObject, int damage, float knockback) {
             Hit(obj, attack, attackingObject, damage, knockback, false);
         }
 
         [Server]
-        public void Hit(GameObject obj, IAttack attack, GameObject attackingObject, int damage, float knockback) {
+        public void Hit(GameObject obj, IAttackSource attack, GameObject attackingObject, int damage, float knockback) {
             Hit(obj, attack, attackingObject, damage, knockback, true);
         }
 
         [Server]
-        private void Hit(GameObject obj, IAttack attack, GameObject attackingObject, int damage, float knockback, bool resetVelocity) {
+        private void Hit(GameObject obj, IAttackSource attack, GameObject attackingObject, int damage, float knockback, bool resetVelocity) {
             if (damage != 0) {
                 TakeDamage(obj, attack, damage);
             }
@@ -382,7 +382,7 @@ namespace SciFi {
 
         /// Inflict damage on a player or item.
         [Server]
-        void TakeDamage(GameObject obj, IAttack attack, int amount) {
+        void TakeDamage(GameObject obj, IAttackSource attack, int amount) {
             var player = obj.GetComponent<Player>();
             if (player == null) {
                 var item = obj.GetComponent<Item>();
@@ -401,7 +401,7 @@ namespace SciFi {
 
         /// Inflict damage on a player.
         [Server]
-        void PlayerTakeDamage(Player player, IAttack attack, int amount) {
+        void PlayerTakeDamage(Player player, IAttackSource attack, int amount) {
             if (player.IsModifierEnabled(ModId.Invincible)) {
                 return;
             }
@@ -413,7 +413,7 @@ namespace SciFi {
 
         /// Inflict damage on an item.
         [Server]
-        void ItemTakeDamage(Item item, IAttack attack, int amount) {
+        void ItemTakeDamage(Item item, IAttackSource attack, int amount) {
             item.TakeDamage(amount);
             item.Interact(attack);
         }

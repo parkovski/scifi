@@ -5,7 +5,7 @@ using SciFi.Environment.Effects;
 using SciFi.Util.Extensions;
 
 namespace SciFi.Players.Attacks {
-    public class BoneArm : MonoBehaviour, IAttack {
+    public class BoneArm : MonoBehaviour, IAttackSource {
         public GameObject boneHandPrefab;
         public GameObject attachedHand;
         public bool alwaysThrowHand = false;

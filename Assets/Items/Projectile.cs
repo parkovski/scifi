@@ -7,7 +7,7 @@ namespace SciFi.Items {
     /// A projectile, spawned by either a player or an item,
     /// which cannot be held but otherwise interacts with players
     /// and other items.
-    public class Projectile : NetworkBehaviour, IAttack, IInteractable {
+    public class Projectile : NetworkBehaviour, IAttackSource, IInteractable {
         /// The player or other object that spawned the projectile.
         /// Projectiles won't collide with objects that spawned them.
         [HideInInspector]
@@ -101,6 +101,6 @@ namespace SciFi.Items {
         public AttackType Type { get { return AttackType.Projectile; } }
         public virtual AttackProperty Properties { get { return AttackProperty.None; } }
 
-        public virtual void Interact(IAttack attack) {}
+        public virtual void Interact(IAttackSource attack) {}
     }
 }

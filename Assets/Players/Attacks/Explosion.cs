@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using SciFi.Util.Extensions;
 
 namespace SciFi.Players.Attacks {
-    public class Explosion : NetworkBehaviour, IAttack {
+    public class Explosion : NetworkBehaviour, IAttackSource {
         [SyncVar, HideInInspector]
         public float scale = 1;
         [SyncVar, HideInInspector]

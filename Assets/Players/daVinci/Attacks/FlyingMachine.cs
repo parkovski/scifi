@@ -220,7 +220,7 @@ namespace SciFi.Players.Attacks {
 
         /// When the machine is hit while in the initial flying state,
         /// it becomes broken where it can be used as a throwable item.
-        public override void Interact(IAttack attack) {
+        public override void Interact(IAttackSource attack) {
             if (state == State.Flying) {
                 state = State.Broken;
                 spriteRenderer.sprite = unmovingProp;

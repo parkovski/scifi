@@ -3,7 +3,7 @@ using UnityEngine;
 using SciFi.Players.Attacks;
 
 namespace SciFi.Items {
-    public class LightBeam : MonoBehaviour, IAttack {
+    public class LightBeam : MonoBehaviour, IAttackSource {
         float startTime;
         float stopTime;
         bool hasSetStopTime = false;

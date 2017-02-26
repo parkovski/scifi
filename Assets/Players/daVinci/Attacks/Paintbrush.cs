@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using SciFi.Util.Extensions;
 
 namespace SciFi.Players.Attacks {
-    public class Paintbrush : MonoBehaviour, IAttack {
+    public class Paintbrush : MonoBehaviour, IAttackSource {
         public GameObject paintStreakPrefab;
         Direction direction = Direction.Left;
         int power = 1;

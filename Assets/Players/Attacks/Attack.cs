@@ -30,7 +30,7 @@ namespace SciFi.Players.Attacks {
         Electric       = 0x20,
     }
 
-    public interface IAttack {
+    public interface IAttackSource {
         AttackType Type { get; }
         AttackProperty Properties { get; }
     }
