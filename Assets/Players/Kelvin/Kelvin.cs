@@ -51,8 +51,8 @@ namespace SciFi.Players {
                 );
                 chargingFireball.GetComponent<FireBall>().destroyCallback = OnFireballDestroyed;
                 RpcSetFireballActive(true);
-                AddModifier(ModId.CantMove);
-                AddModifier(ModId.CantAttack);
+                //AddModifier(ModId.CantMove);
+                //AddModifier(ModId.CantAttack);
             }
         }
 
@@ -61,8 +61,8 @@ namespace SciFi.Players {
             if (chargingFireball != null) {
                 chargingFireball.GetComponent<FireBall>().StopCharging();
             }
-            RemoveModifier(ModId.CantMove);
-            RemoveModifier(ModId.CantAttack);
+            //RemoveModifier(ModId.CantMove);
+            //RemoveModifier(ModId.CantAttack);
         }
 
         [Command]
@@ -85,8 +85,8 @@ namespace SciFi.Players {
 
         [Command]
         public void CmdCancelFireball(bool onPurpose) {
-            RemoveModifier(ModId.CantAttack);
-            RemoveModifier(ModId.CantMove);
+            //RemoveModifier(ModId.CantAttack);
+            //RemoveModifier(ModId.CantMove);
             if (onPurpose) {
                 return;
             }
