@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.IO;
 
 namespace SciFi.Scenes {
     /// <brief>Multiplayer lobby.</brief>
@@ -20,9 +21,9 @@ namespace SciFi.Scenes {
                     TransitionParams.displayName = n;
                 }
             });
-#if UNITY_EDITOR
-            hostName.text = "localhost";
-#endif
+            using (var stream = new StreamReader(Application.streamingAssetsPath + "/default-server.txt")) {
+                hostName.text = stream.ReadToEnd().Trim();
+            }
         }
 
         /// Set this client as the game host.
