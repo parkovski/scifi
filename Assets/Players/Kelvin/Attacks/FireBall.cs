@@ -71,6 +71,17 @@ namespace SciFi.Players.Attacks {
         void ChangeState(State newState) {
             state = newState;
             stateStartTime = Time.time;
+            if (isServer) {
+                RpcChangeState(newState);
+            }
+        }
+
+        [ClientRpc]
+        void RpcChangeState(State newState) {
+            if (isServer) {
+                return;
+            }
+            ChangeState(newState);
         }
 
         void Update() {
@@ -165,6 +176,7 @@ namespace SciFi.Players.Attacks {
             var rb = GetComponent<Rigidbody2D>();
             rb.gravityScale = gravityScale;
             rb.velocity = velocity;
+            SetInitialVelocity(velocity);
             ChangeState(State.Throwing);
             gameObject.layer = Layers.projectiles;
         }
