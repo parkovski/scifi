@@ -50,7 +50,7 @@ namespace SciFi.Scenes {
         /// Add a player for <c>conn</c> with prefab <c>name</c>.
         public static void AddPlayer(NetworkConnection conn, string name) {
             lock(threadLock) {
-                players.Add(conn, name);
+                players[conn] = name;
             }
         }
 
@@ -66,7 +66,7 @@ namespace SciFi.Scenes {
         /// Add a display name (<c>name</c>) for player <c>conn</c>.
         public static void AddDisplayName(NetworkConnection conn, string name) {
             lock(threadLock) {
-                displayNames.Add(conn, name);
+                displayNames[conn] = name;
             }
         }
 
@@ -81,7 +81,7 @@ namespace SciFi.Scenes {
 
         public static void AddTeam(NetworkConnection conn, int team) {
             lock(threadLock) {
-                teams.Add(conn, team);
+                teams[conn] = team;
             }
         }
 
