@@ -5,7 +5,7 @@ using SciFi.Players;
 
 namespace SciFi.UI {
     /// Displays each player's lives and damage on the screen.
-    public class DamageCounter : MonoBehaviour {
+    public class DamageCounter : MonoBehaviour, IEnablableUIComponent {
         /// The ID of the player that this counter is tracking.
         /// <seealso cref="SciFi.Players.Player.eId" />
         public int player;
@@ -15,6 +15,11 @@ namespace SciFi.UI {
         Text text;
 
         void Start() {
+            enabled = false;
+            FindObjectOfType<EnableUI>().Register(this);
+        }
+
+        public void Enable() {
             text = GetComponent<Text>();
             GameController.Instance.EventLifeChanged += PlayerLifeChanged;
             GameController.Instance.EventDamageChanged += PlayerDamageChanged;

@@ -472,6 +472,7 @@ namespace SciFi {
             sAILevels = new int[0];
             Layers.Init();
             PlayersInitialized += players => {
+                FindObjectOfType<EnableUI>().Enable();
                 foreach (var player in players) {
                     IInputManager playerInputManager;
                     if (isClient && player.eId == cPlayerId) {

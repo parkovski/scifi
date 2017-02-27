@@ -987,7 +987,6 @@ GameObject:
   - component: {fileID: 604265326}
   - component: {fileID: 604265325}
   - component: {fileID: 604265324}
-  - component: {fileID: 604265327}
   - component: {fileID: 604265328}
   m_Layer: 5
   m_Name: P2Text
@@ -1065,38 +1064,6 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 604265322}
---- !u!114 &604265327
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 604265322}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 372142912, guid: 870353891bb340e2b2a9c8707e7419ba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SceneId:
-    m_Value: 0
-  m_AssetId:
-    i0: 0
-    i1: 0
-    i2: 0
-    i3: 0
-    i4: 0
-    i5: 0
-    i6: 0
-    i7: 0
-    i8: 0
-    i9: 0
-    i10: 0
-    i11: 0
-    i12: 0
-    i13: 0
-    i14: 0
-    i15: 0
-  m_ServerOnly: 0
-  m_LocalPlayerAuthority: 0
 --- !u!114 &604265328
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2097,7 +2064,6 @@ GameObject:
   - component: {fileID: 897942742}
   - component: {fileID: 897942741}
   - component: {fileID: 897942740}
-  - component: {fileID: 897942743}
   - component: {fileID: 897942744}
   m_Layer: 5
   m_Name: P4Text
@@ -2175,38 +2141,6 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 897942738}
---- !u!114 &897942743
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 897942738}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 372142912, guid: 870353891bb340e2b2a9c8707e7419ba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SceneId:
-    m_Value: 0
-  m_AssetId:
-    i0: 0
-    i1: 0
-    i2: 0
-    i3: 0
-    i4: 0
-    i5: 0
-    i6: 0
-    i7: 0
-    i8: 0
-    i9: 0
-    i10: 0
-    i11: 0
-    i12: 0
-    i13: 0
-    i14: 0
-    i15: 0
-  m_ServerOnly: 0
-  m_LocalPlayerAuthority: 0
 --- !u!114 &897942744
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3205,7 +3139,6 @@ GameObject:
   - component: {fileID: 1582085803}
   - component: {fileID: 1582085802}
   - component: {fileID: 1582085801}
-  - component: {fileID: 1582085804}
   - component: {fileID: 1582085805}
   m_Layer: 5
   m_Name: P3Text
@@ -3283,38 +3216,6 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1582085799}
---- !u!114 &1582085804
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1582085799}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 372142912, guid: 870353891bb340e2b2a9c8707e7419ba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SceneId:
-    m_Value: 0
-  m_AssetId:
-    i0: 0
-    i1: 0
-    i2: 0
-    i3: 0
-    i4: 0
-    i5: 0
-    i6: 0
-    i7: 0
-    i8: 0
-    i9: 0
-    i10: 0
-    i11: 0
-    i12: 0
-    i13: 0
-    i14: 0
-    i15: 0
-  m_ServerOnly: 0
-  m_LocalPlayerAuthority: 0
 --- !u!114 &1582085805
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3821,6 +3722,7 @@ GameObject:
   - component: {fileID: 1797291752}
   - component: {fileID: 1797291754}
   - component: {fileID: 1797291755}
+  - component: {fileID: 1797291756}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -3967,6 +3869,17 @@ MonoBehaviour:
   dropdown: {fileID: 2103981366}
   spawnButton: {fileID: 266046796}
   showItemSpawn: 0
+--- !u!114 &1797291756
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1797291747}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8653d087ac4c981468e731a8148ee659, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1927503418
 GameObject:
   m_ObjectHideFlags: 0
@@ -4305,7 +4218,6 @@ GameObject:
   - component: {fileID: 2070651869}
   - component: {fileID: 2070651868}
   - component: {fileID: 2070651870}
-  - component: {fileID: 2070651871}
   - component: {fileID: 2070651872}
   m_Layer: 5
   m_Name: P1Text
@@ -4383,38 +4295,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: 0
---- !u!114 &2070651871
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2070651866}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 372142912, guid: 870353891bb340e2b2a9c8707e7419ba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SceneId:
-    m_Value: 0
-  m_AssetId:
-    i0: 0
-    i1: 0
-    i2: 0
-    i3: 0
-    i4: 0
-    i5: 0
-    i6: 0
-    i7: 0
-    i8: 0
-    i9: 0
-    i10: 0
-    i11: 0
-    i12: 0
-    i13: 0
-    i14: 0
-    i15: 0
-  m_ServerOnly: 0
-  m_LocalPlayerAuthority: 0
 --- !u!114 &2070651872
 MonoBehaviour:
   m_ObjectHideFlags: 0

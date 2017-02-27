@@ -7,7 +7,7 @@ using SciFi.Util.Extensions;
 namespace SciFi.UI {
     /// A label above the player, by default showing "P1", etc. but
     /// may be overridden by setting a nickname.
-    public class PlayerLabels : MonoBehaviour {
+    public class PlayerLabels : MonoBehaviour, IEnablableUIComponent {
         RectTransform[] panels;
         Text[] labels;
         Player[] players;
@@ -15,6 +15,7 @@ namespace SciFi.UI {
         /// Callback when the game is started and player display names are set.
         void Init(Player[] players) {
             this.players = players;
+            print(players.Length);
             var i = 0;
             while (i < players.Length) {
                 if (players[i].eTeam == -1) {
@@ -33,6 +34,11 @@ namespace SciFi.UI {
         }
 
         void Start() {
+            this.enabled = false;
+            FindObjectOfType<EnableUI>().Register(this);
+        }
+
+        public void Enable() {
             panels = new RectTransform[4];
             labels = new Text[4];
 
@@ -41,18 +47,12 @@ namespace SciFi.UI {
                 labels[i] = transform.Find("P" + (i+1) + "Label").GetComponent<Text>();
             }
 
-            // Hack: GameController is only null when the main game scene is started
-            // from the editor - a hack immediately loads the lobby scene where it
-            // is initialized.
             players = new Player[0];
-            if (GameController.Instance != null) {
-                GameController.Instance.PlayersInitialized += Init;
-            }
+            GameController.Instance.PlayersInitialized += Init;
         }
 
         void LateUpdate() {
-            // Hack - see above about GameController
-            if (GameController.Instance == null || !GameController.Instance.IsPlaying()) {
+            if (!GameController.Instance.IsPlaying()) {
                 return;
             }
 
