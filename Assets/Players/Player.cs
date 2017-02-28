@@ -21,6 +21,13 @@ namespace SciFi.Players {
         Invalid,
     }
 
+    public enum JumpBehaviour {
+        /// You get one regular jump and one double jump.
+        Standard,
+        /// You get an unlimited number of double jumps.
+        Unlimited,
+    }
+
     public abstract class Player : NetworkBehaviour, IInteractable {
         public static readonly Color blueTeamColor = new Color(0.5f, 0.5f, 1f, 1f);
         public static readonly Color blueTeamColorDark = new Color(0f, 0f, .6f, 1f);
@@ -53,12 +60,13 @@ namespace SciFi.Players {
         protected Rigidbody2D lRb;
         protected IInputManager pInputManager;
         private int pGroundCollisions;
-        protected bool pCanJump;
-        protected bool pCanDoubleJump;
+        private int pNumJumps;
+        private bool pIsTouchingGround;
         protected GameObject eItemGo;
         protected Item eItem;
         private OneWayPlatform sCurrentOneWayPlatform;
         private HookCollection lHooks;
+        private JumpForceHook lJumpForceHook;
         protected ModifierCollection eModifiers;
         private int pModifiersDebugField;
         private uint pOldModifierState;
@@ -107,6 +115,8 @@ namespace SciFi.Players {
             eModifiers.CantAttack.Add();
             eModifiers.CantMove.Add();
             StandardHooks.Install(lHooks, eModifiers);
+            lJumpForceHook = new StandardJumpForce();
+            lJumpForceHook.Install(lHooks);
             pModifiersDebugField = DebugPrinter.Instance.NewField();
 
             if (pInputManager != null) {
@@ -172,8 +182,8 @@ namespace SciFi.Players {
         protected void BaseCollisionEnter2D(Collision2D collision) {
             if (collision.gameObject.tag == "Ground") {
                 ++pGroundCollisions;
-                pCanJump = true;
-                pCanDoubleJump = false;
+                pNumJumps = 0;
+                pIsTouchingGround = true;
 
                 var oneWay = collision.gameObject.GetComponent<OneWayPlatform>();
                 if (oneWay != null) {
@@ -185,8 +195,7 @@ namespace SciFi.Players {
         protected void BaseCollisionExit2D(Collision2D collision) {
             if (collision.gameObject.tag == "Ground") {
                 if (--pGroundCollisions == 0) {
-                    pCanJump = false;
-                    pCanDoubleJump = true;
+                    pIsTouchingGround = false;
                 }
 
                 var oneWay = collision.gameObject.GetComponent<OneWayPlatform>();
@@ -236,6 +245,16 @@ namespace SciFi.Players {
                 eModifiers.CantAttack.Remove();
                 break;
             }
+        }
+
+        public void SetJumpBehaviour(JumpBehaviour jumpBehaviour) {
+            lJumpForceHook.Remove(lHooks);
+            if (jumpBehaviour == JumpBehaviour.Standard) {
+                lJumpForceHook = new StandardJumpForce();
+            } else {
+                lJumpForceHook = new UnlimitedJumps();
+            }
+            lJumpForceHook.Install(lHooks);
         }
 
         void HandleLeftRightInput(MultiPressControl control, Direction direction) {
@@ -313,16 +332,12 @@ namespace SciFi.Players {
 
             if (pInputManager.IsControlActive(Control.Up) && !eModifiers.CantMove.IsEnabled() && !eModifiers.CantJump.IsEnabled()) {
                 pInputManager.InvalidateControl(Control.Up);
-                if (pCanJump) {
-                    pCanJump = false;
-                    pCanDoubleJump = true;
-                    lRb.AddForce(new Vector2(0f, jumpForce), ForceMode2D.Impulse);
-                } else if (pCanDoubleJump) {
-                    pCanDoubleJump = false;
-                    if (lRb.velocity.y < minDoubleJumpVelocity) {
+                var jf = lHooks.CallJumpForceHooks(pIsTouchingGround, pNumJumps++, jumpForce);
+                if (!Mathf.Approximately(jf, 0f)) {
+                    if (pNumJumps > 0 && lRb.velocity.y < minDoubleJumpVelocity) {
                         lRb.velocity = new Vector2(lRb.velocity.x, minDoubleJumpVelocity);
                     }
-                    lRb.AddForce(new Vector2(0f, jumpForce / 2), ForceMode2D.Impulse);
+                    lRb.AddForce(new Vector2(0f, jf), ForceMode2D.Impulse);
                 }
             }
 
