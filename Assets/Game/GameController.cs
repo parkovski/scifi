@@ -499,6 +499,9 @@ namespace SciFi {
                 foreach (var player in activePlayers) {
                     player.RemoveModifier(ModId.CantAttack);
                     player.RemoveModifier(ModId.CantMove);
+                    if (player.isLocalPlayer) {
+                        FindObjectOfType<CameraScroll>().playerToFollow = player;
+                    }
                 }
             };
 
