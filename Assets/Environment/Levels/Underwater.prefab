@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 4546054260854128}
   - component: {fileID: 212721490995743748}
   - component: {fileID: 60740442081387090}
+  - component: {fileID: 114089860606432856}
   m_Layer: 0
   m_Name: Underwater
   m_TagString: Ground
@@ -67,6 +68,19 @@ PolygonCollider2D:
       - {x: -9.375, y: -6.67}
       - {x: 9.375, y: -6.67}
       - {x: 9.375, y: -4.442404}
+--- !u!114 &114089860606432856
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1091322413729092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d64c0ebfb9785748ba3808779fd0068, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  overrideGravity: 1
+  gravity: 7
 --- !u!212 &212721490995743748
 SpriteRenderer:
   m_ObjectHideFlags: 1
