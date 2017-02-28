@@ -70,6 +70,10 @@ namespace SciFi {
         /// when sReadyClients == sNumClients.
         int sNumClients;
 
+        int pDbgLagField = -1;
+        float nextPingUpdateTime;
+        const float pingUpdateTime = 1f;
+
         /// Event emitted when a player's damage changes.
         [SyncEvent]
         public event DamageChangedHandler EventDamageChanged;
@@ -181,7 +185,7 @@ namespace SciFi {
 
             RpcCreateCharacterList(activePlayers.Select(p => p.netId).ToArray());
 
-            this.countdown = GameObject.Find("Canvas").GetComponent<Countdown>();
+            this.countdown = GameObject.Find("StaticCanvas").GetComponent<Countdown>();
             RpcStartGame(showCountdown);
             if (showCountdown) {
                 this.countdown.StartGame();
@@ -256,22 +260,21 @@ namespace SciFi {
         /// call them twice.
         [ClientRpc]
         void RpcStartGame(bool countdown) {
+            if (isServer) {
+                return;
+            }
             if (!countdown) {
                 this.isPlaying = true;
-                if (!isServer) {
-                    _GameStarted();
-                }
+                _GameStarted();
                 return;
             }
 
-            this.countdown = GameObject.Find("Canvas").GetComponent<Countdown>();
+            this.countdown = GameObject.Find("StaticCanvas").GetComponent<Countdown>();
             this.countdown.StartGame();
             System.GC.Collect();
             this.countdown.OnFinished += _ => {
                 this.isPlaying = true;
-                if (!isServer) {
-                    _GameStarted();
-                }
+                _GameStarted();
             };
         }
 
@@ -553,6 +556,14 @@ namespace SciFi {
 
         /// Spawn items when they are due.
         void Update() {
+            if (Time.time > nextPingUpdateTime) {
+                if (pDbgLagField == -1) {
+                    pDbgLagField = DebugPrinter.Instance.NewField();
+                }
+                nextPingUpdateTime = Time.time + pingUpdateTime;
+                DebugPrinter.Instance.SetField(pDbgLagField, "Ping: " + 0);
+            }
+
             if (!isServer) {
                 return;
             }

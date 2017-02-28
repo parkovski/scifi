@@ -21,13 +21,6 @@ namespace SciFi.Players {
         Invalid,
     }
 
-    public enum JumpBehaviour {
-        /// You get one regular jump and one double jump.
-        Standard,
-        /// You get an unlimited number of double jumps.
-        Unlimited,
-    }
-
     public abstract class Player : NetworkBehaviour, IInteractable {
         public static readonly Color blueTeamColor = new Color(0.5f, 0.5f, 1f, 1f);
         public static readonly Color blueTeamColorDark = new Color(0f, 0f, .6f, 1f);
@@ -247,14 +240,10 @@ namespace SciFi.Players {
             }
         }
 
-        public void SetJumpBehaviour(JumpBehaviour jumpBehaviour) {
+        public void SetJumpBehaviour(JumpForceHook hook) {
             lJumpForceHook.Remove(lHooks);
-            if (jumpBehaviour == JumpBehaviour.Standard) {
-                lJumpForceHook = new StandardJumpForce();
-            } else {
-                lJumpForceHook = new UnlimitedJumps();
-            }
-            lJumpForceHook.Install(lHooks);
+            hook.Install(lHooks);
+            lJumpForceHook = hook;
         }
 
         void HandleLeftRightInput(MultiPressControl control, Direction direction) {
