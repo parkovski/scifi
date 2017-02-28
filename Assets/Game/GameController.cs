@@ -43,6 +43,7 @@ namespace SciFi {
         /// When will the next item appear?
         float nextItemTime;
 
+        public int startingLives;
         /// Active players, even if dead. Null if no game is running,
         /// guaranteed not null if a game is running.
         Player[] activePlayers;
@@ -159,7 +160,7 @@ namespace SciFi {
                     player.eDisplayName = displayNames[i];
                 }
                 player.eTeam = teams[i];
-                player.eLives = 5;
+                player.eLives = startingLives;
             }
 
             _PlayersInitialized(activePlayers);
@@ -205,6 +206,7 @@ namespace SciFi {
 
         IEnumerator WaitForPlayersToSync() {
             yield return new WaitWhile(() => activePlayers.Count(p => p.eId == 0) > 1);
+            yield return new WaitUntil(() => activePlayers.Any(p => p.hasAuthority));
             cPlayerId = activePlayers.First(p => p.hasAuthority).eId;
             // If this copy is both client and server, the server
             // side will already have called this.
@@ -293,6 +295,11 @@ namespace SciFi {
             activePlayersGo = new GameObject[0];
             activePlayers = new Player[0];
             SceneManager.LoadScene("GameOver");
+            if (TransitionParams.gameType == GameType.Single) {
+                var netMan = FindObjectOfType<SinglePlayerNetworkManager>();
+                netMan.StopHost();
+                Destroy(netMan);
+            }
         }
 
         /// Convert a prefab object to its index in the spawnable prefabs list.

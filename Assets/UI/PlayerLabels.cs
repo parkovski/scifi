@@ -15,7 +15,6 @@ namespace SciFi.UI {
         /// Callback when the game is started and player display names are set.
         void Init(Player[] players) {
             this.players = players;
-            print(players.Length);
             var i = 0;
             while (i < players.Length) {
                 if (players[i].eTeam == -1) {

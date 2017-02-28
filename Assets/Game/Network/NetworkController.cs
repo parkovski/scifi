@@ -29,6 +29,8 @@ namespace SciFi.Network {
         public static ConnectionClockOffset serverClock = new ConnectionClockOffset();
         Dictionary<NetworkConnection, ConnectionClockOffset> clientClocks;
 
+        public static NetworkController Instance { get { return (NetworkController)singleton; } }
+
         /// Set up message handlers.
         public override void OnStartServer() {
             base.OnStartServer();
@@ -152,6 +154,10 @@ namespace SciFi.Network {
             base.OnLobbyServerSceneChanged(sceneName);
             if (sceneName == "MainGame") {
                 StartCoroutine(InitializeWhenGameControllerReady());
+            } else if (sceneName == "Lobby") {
+                playersToRegister.Clear();
+                displayNames.Clear();
+                clientConnections.Clear();
             }
         }
 
@@ -173,7 +179,7 @@ namespace SciFi.Network {
         /// Destroy the lobby player.
         public override bool OnLobbyServerSceneLoadedForPlayer(GameObject lobbyPlayer, GameObject gamePlayer) {
             base.OnLobbyServerSceneLoadedForPlayer(lobbyPlayer, gamePlayer);
-            Destroy(lobbyPlayer);
+            //Destroy(lobbyPlayer);
             return true;
         }
     }
