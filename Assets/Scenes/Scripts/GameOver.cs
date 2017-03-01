@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 using SciFi.Network;
@@ -11,14 +12,17 @@ namespace SciFi.Scenes {
         public Sprite winScreen;
         public Sprite loseScreen;
         public InputManager inputManager;
+        public Text text;
 
         void Start() {
             var spriteRenderer = GetComponent<SpriteRenderer>();
 
             if (TransitionParams.isWinner) {
                 spriteRenderer.sprite = winScreen;
+                text.text = "You win!";
             } else {
                 spriteRenderer.sprite = loseScreen;
+                text.text = "You lose.";
             }
 
             inputManager.ObjectSelected += ObjectSelected;
