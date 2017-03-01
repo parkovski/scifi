@@ -33,6 +33,7 @@ namespace SciFi.Players.Attacks {
         SpriteRenderer spriteRenderer;
 
         GameObject targetPlayer;
+        GameObject owner;
         Vector3 targetOffset;
         const float gravityScale = 0.5f;
 
@@ -62,6 +63,8 @@ namespace SciFi.Players.Attacks {
             ChangeState(State.Charging);
             accumulatedKnockback = 0;
             targetPlayer = null;
+            owner = ClientScene.FindLocalObject(spawnedBy);
+            targetOffset = transform.position - owner.transform.position;
             scale = minScale;
             GetComponent<Rigidbody2D>().gravityScale = 0;
             transform.localScale = new Vector3(scale, scale, 1);
@@ -111,6 +114,7 @@ namespace SciFi.Players.Attacks {
             time = Mathf.Clamp(time, 0f, maxChargeTime);
             scale = time.Scale(0f, maxChargeTime, minScale, maxScale);
             transform.localScale = new Vector3(scale, scale, 1);
+            transform.position = owner.transform.position + targetOffset;
         }
 
         /// Shrink and fade the fireball.
