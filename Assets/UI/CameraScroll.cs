@@ -59,7 +59,7 @@ namespace SciFi.UI {
             var newCameraPosition = targetPosition;
             var dx = targetPosition.x - camera.transform.position.x;
             var dy = targetPosition.y - camera.transform.position.y;
-            var dmax = maxDelta * Time.deltaTime / 0.016667f;
+            var dmax = maxDelta * Time.deltaTime * 60f;
             if (dx > dmax) {
                 newCameraPosition.x = camera.transform.position.x + dmax;
                 if (dx > refocusThreshold) {
