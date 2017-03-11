@@ -24,7 +24,6 @@ namespace SciFi.UI {
             if (cameraPosition == oldCameraPosition) {
                 return;
             }
-            var cameraDelta = oldCameraPosition - cameraPosition;
             oldCameraPosition = cameraPosition;
 
             for (int i = 0; i < background.Length; i++) {
