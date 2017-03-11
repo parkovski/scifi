@@ -40,6 +40,7 @@ GameObject:
   - component: {fileID: 4266795922780678}
   - component: {fileID: 212452038523032020}
   - component: {fileID: 61041695599845922}
+  - component: {fileID: 114406725321725114}
   m_Layer: 0
   m_Name: ScienceArena
   m_TagString: Ground
@@ -231,6 +232,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ec3fc4ba7e585a4580a12111ce669d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114406725321725114
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1384894769461676}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d64c0ebfb9785748ba3808779fd0068, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  song: {fileID: 8300000, guid: 2f96250d019434c6f94d5ba6a6599e1d, type: 3}
+  songBpm: 112
+  songStartAtBeat: 12
+  overrideGravity: 0
+  gravity: 0
+  overrideJumps: 0
+  maxJumps: 0
 --- !u!114 &114636679918439546
 MonoBehaviour:
   m_ObjectHideFlags: 1

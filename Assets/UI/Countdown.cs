@@ -10,14 +10,14 @@ namespace SciFi.UI {
         public Cues cues;
         public Text text;
 
-        /// The battle song is 112bpm - sync the text changes to the beat.
-        const float beat = 0.5357f;
-
         public delegate void OnFinishedHandler(object sender);
         public event OnFinishedHandler OnFinished;
 
-        void Start() {
-            GameObject.Find("Music").GetComponent<AudioSource>().time = beat * 12;
+        public void Setup(AudioClip song, uint bpm, uint beatOffset) {
+            float beat = 60f / bpm;
+            var music = GameObject.Find("Music").GetComponent<AudioSource>();
+            music.clip = song;
+            music.time = beat * beatOffset;
             cues.Add(beat,     () => ChangeText("3"));
             cues.Add(beat * 2, () => ChangeText("2"));
             cues.Add(beat * 3, () => ChangeText("1"));
@@ -32,6 +32,7 @@ namespace SciFi.UI {
         public void StartGame() {
             cues.Reset();
             cues.Resume();
+            GameObject.Find("Music").GetComponent<AudioSource>().Play();
         }
 
         void ChangeText(string newText) {
