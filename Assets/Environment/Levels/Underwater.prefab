@@ -221,6 +221,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d64c0ebfb9785748ba3808779fd0068, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  song: {fileID: 8300000, guid: 2f96250d019434c6f94d5ba6a6599e1d, type: 3}
+  songBpm: 120
+  songStartAtBeat: 0
   overrideGravity: 1
   gravity: 7
   overrideJumps: 1

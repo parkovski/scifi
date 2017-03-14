@@ -47,11 +47,7 @@ namespace SciFi.Network {
             GameController.Instance.RegisterNewComputerPlayer(p, "COM", -1, cpuLevel);
             NetworkServer.Spawn(p);
 
-            GameController.Instance.StartGame(
-#if UNITY_EDITOR
-                false
-#endif
-            );
+            GameController.Instance.StartGame();
         }
     }
 }

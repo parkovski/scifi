@@ -55,6 +55,7 @@ namespace SciFi.Players {
         private int pGroundCollisions;
         private int pNumJumps;
         private bool pIsTouchingGround;
+        private bool pExtraGravityFlag;
         protected GameObject eItemGo;
         protected Item eItem;
         private OneWayPlatform sCurrentOneWayPlatform;
@@ -280,8 +281,8 @@ namespace SciFi.Players {
         }
 
         void AddDampingForce() {
-            if (lRb.velocity.x < .1f && lRb.velocity.x > -.1f) {
-                lRb.velocity = new Vector2(0f, lRb.velocity.y);
+            if (lRb.velocity.x < .25f && lRb.velocity.x > -.25f) {
+                //lRb.velocity = new Vector2(0f, lRb.velocity.y);
                 return;
             }
 
@@ -292,6 +293,15 @@ namespace SciFi.Players {
                 force = -walkForce / 2;
             }
             lRb.AddForce(new Vector3(force, 0f));
+        }
+
+        /// Make the players fall faster than they would
+        /// with just regular gravity.
+        void AddExtraGravity() {
+            if (lRb.velocity.y < 0f && !pIsTouchingGround) {
+                var force = Mathf.Clamp(lRb.velocity.y, -5f, 0f).Scale(0f, -5f, -1000f, 0f);
+                lRb.AddForce(new Vector3(0f, force, 0f));
+            }
         }
 
         protected void BaseInput() {
@@ -314,10 +324,10 @@ namespace SciFi.Players {
 
             HandleLeftRightInput(pLeftControl, Direction.Left);
             HandleLeftRightInput(pRightControl, Direction.Right);
-            if (!pLeftControl.IsActive() && !pRightControl.IsActive()) {
-                // TODO: Only do this when no knockback is active.
-                //AddDampingForce();
+            if (!pLeftControl.IsActive() && !pRightControl.IsActive() && !IsModifierEnabled(ModId.InKnockback)) {
+                AddDampingForce();
             }
+            AddExtraGravity();
 
             if (pInputManager.IsControlActive(Control.Up) && !eModifiers.CantMove.IsEnabled() && !eModifiers.CantJump.IsEnabled()) {
                 pInputManager.InvalidateControl(Control.Up);
@@ -474,7 +484,31 @@ namespace SciFi.Players {
             float angularVelocity,
             bool flipX
         ) {
+            return SpawnPooledProjectileScaled(
+                prefabIndex,
+                position,
+                null,
+                rotation,
+                velocity,
+                angularVelocity,
+                flipX
+            );
+        }
+
+        [Server]
+        public GameObject SpawnPooledProjectileScaled(
+            int prefabIndex,
+            Vector2 position,
+            Vector3? scale,
+            Quaternion rotation,
+            Vector2 velocity,
+            float angularVelocity,
+            bool flipX
+        ) {
             var obj = GameController.Instance.GetFromNetPool(prefabIndex, position, rotation);
+            if (scale != null) {
+                obj.transform.localScale = scale.Value;
+            }
             var projectile = obj.GetComponent<Projectile>();
             projectile.Enable(netId, GetItemNetId(), flipX);
             var rb = obj.GetComponent<Rigidbody2D>();

@@ -203,6 +203,9 @@ namespace SciFi {
         /// Initialize the list of players on the client.
         [ClientRpc]
         void RpcCreateCharacterList(NetworkInstanceId[] ids) {
+            if (isServer) {
+                return;
+            }
             activePlayersGo = ids.Select(id => ClientScene.FindLocalObject(id)).ToArray();
             activePlayers = activePlayersGo.Select(p => p.GetComponent<Player>()).ToArray();
             StartCoroutine(WaitForPlayersToSync());
