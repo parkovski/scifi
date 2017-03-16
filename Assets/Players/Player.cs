@@ -436,6 +436,10 @@ namespace SciFi.Players {
             }
             NetworkServer.Spawn(obj);
             projectile.Enable(netId, GetItemNetId(), flipX);
+            var sync = obj.GetComponent<InitialStateSync>();
+            if (sync != null) {
+                sync.Resync();
+            }
         }
 
         [Command]
