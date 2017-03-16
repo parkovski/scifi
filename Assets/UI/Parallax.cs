@@ -9,32 +9,46 @@ namespace SciFi.UI {
         public GameObject foreground;
         public GameObject[] background;
         public float[] backgroundDistance;
+        
+        float[] xOffset;
+        float[] yOffset;
 
         Vector3 oldCameraPosition;
 
         void Start() {
+            xOffset = new float[backgroundDistance.Length];
+            yOffset = new float[backgroundDistance.Length];
             for (int i = 0; i < background.Length; i++) {
                 backgroundDistance[i] = 1 / backgroundDistance[i];
+                xOffset[i] = background[i].transform.position.x;
+                yOffset[i] = background[i].transform.position.y;
             }
             oldCameraPosition = camera.transform.position;
         }
 
-        void Update() {
+        void LateUpdate() {
             var cameraPosition = camera.transform.position;
             if (cameraPosition == oldCameraPosition) {
                 return;
             }
+            var deltaCamera = cameraPosition - oldCameraPosition;
             oldCameraPosition = cameraPosition;
 
             for (int i = 0; i < background.Length; i++) {
                 var scale = backgroundDistance[i];
 
                 Vector2 position = background[i].transform.position;
+                var xscale = background[i].transform.lossyScale.x;
+                var yscale = background[i].transform.lossyScale.y;
                 if (scrollX) {
-                    position.x = cameraPosition.x * scale;
+                    position.x = xOffset[i] + cameraPosition.x * scale;
+                } else {
+                    position.x = xOffset[i] + cameraPosition.x;
                 }
                 if (scrollY) {
-                    position.y = cameraPosition.y * scale;
+                    position.y = yOffset[i] + cameraPosition.y * scale;
+                } else {
+                    position.y = yOffset[i] + cameraPosition.y;
                 }
                 background[i].transform.position = position;
             }
