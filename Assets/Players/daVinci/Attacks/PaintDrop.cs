@@ -1,6 +1,8 @@
 using UnityEngine;
+using UnityEngine.Networking;
 
 using SciFi.Items;
+using SciFi.UI;
 using SciFi.Util.Extensions;
 
 namespace SciFi.Players.Attacks {
@@ -30,8 +32,8 @@ namespace SciFi.Players.Attacks {
         void OnCollisionEnter2D(Collision2D collision) {
             var projectile = collision.gameObject.GetComponent<Projectile>();
             if (Attack.GetAttackHit(collision.gameObject.layer) == AttackHit.HitAndDamage) {
-                var knockback = transform.localScale.x.Scale(.25f, .5f, 1f, 3f);
-                var damage = (int)knockback;
+                var knockback = transform.localScale.x.Scale(.25f, .5f, .1f, .5f);
+                var damage = knockback > 0.375f ? 2 : 1;
                 GameController.Instance.HitNoVelocityReset(collision.gameObject, this, gameObject, damage, knockback);
                 pooled.Release();
             } else {
@@ -39,6 +41,19 @@ namespace SciFi.Players.Attacks {
                     pooled.Release();
                 }
             }
+        }
+
+        public void SetColor(Color color) {
+            GetComponent<SpriteOverlay>().SetColor(color);
+            RpcSetColor(color);
+        }
+
+        [ClientRpc]
+        void RpcSetColor(Color color) {
+            if (isServer) {
+                return;
+            }
+            GetComponent<SpriteOverlay>().SetColor(color);
         }
 
         void IPoolNotificationHandler.OnAcquire() {

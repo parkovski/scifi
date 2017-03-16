@@ -94,7 +94,7 @@ namespace SciFi.Players {
                     0,
                     false
                 );
-                paintDrop.GetComponent<SpriteOverlay>().SetColor(color);
+                paintDrop.GetComponent<PaintDrop>().SetColor(color);
             }
         }
     }
