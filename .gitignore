@@ -36,3 +36,6 @@ sysinfo.txt
 
 # Ignore local updates to this file
 /Assets/StreamingAssets/default-server.txt
+
+.DS_Store
+
