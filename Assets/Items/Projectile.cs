@@ -25,13 +25,31 @@ namespace SciFi.Items {
         [SyncVar]
         protected Vector3 initialVelocity;
 
+        public bool HasSameOwner(Projectile other) {
+            if (spawnedBy == other.spawnedBy) {
+                return true;
+            }
+            if (spawnedBy == other.spawnedByExtra) {
+                return true;
+            }
+            if (spawnedByExtra == other.spawnedByExtra) {
+                return true;
+            }
+            if (spawnedByExtra == other.spawnedBy) {
+                return true;
+            }
+
+            return false;
+        }
+
         [ClientRpc]
         void RpcInitialize(
             NetworkInstanceId spawnedBy,
             NetworkInstanceId spawnedByExtra,
             bool flipX,
             Vector3 position,
-            Quaternion rotation
+            Quaternion rotation,
+            Vector3 scale
         ) {
             if (isServer) {
                 return;
@@ -42,6 +60,7 @@ namespace SciFi.Items {
             this.flipX = flipX;
             this.transform.position = position;
             this.transform.rotation = rotation;
+            this.transform.localScale = scale;
             Initialize();
         }
 
@@ -54,7 +73,7 @@ namespace SciFi.Items {
             this.spawnedByExtra = spawnedByExtra;
             this.flipX = flipX;
             Initialize();
-            RpcInitialize(spawnedBy, spawnedByExtra, flipX, transform.position, transform.rotation);
+            RpcInitialize(spawnedBy, spawnedByExtra, flipX, transform.position, transform.rotation, transform.localScale);
         }
 
         void Initialize() {

@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 using SciFi.Players.Attacks;
+using SciFi.UI;
 using SciFi.Util;
 using SciFi.Util.Extensions;
 
@@ -10,7 +11,8 @@ namespace SciFi.Players {
         public GameObject boneArmPrefab;
         public GameObject flyingMachinePrefab;
         public GameObject paintbrushPrefab;
-        public GameObject paintStreak;
+        public GameObject paintDropPrefab;
+        int paintDropPrefabIndex;
         GameObject boneArm;
         GameObject paintbrush;
 
@@ -20,6 +22,7 @@ namespace SciFi.Players {
         protected override void OnInitialize() {
             boneArm = Instantiate(boneArmPrefab, transform.position + GetBoneArmOffset(defaultDirection), Quaternion.identity);
             paintbrush = Instantiate(paintbrushPrefab, transform.position + GetPaintbrushOffset(defaultDirection), Quaternion.identity);
+            paintDropPrefabIndex = GameController.PrefabToIndex(paintDropPrefab);
 
             eAttack1 = new NetworkAttack(new PaintbrushAttack(this, paintbrush.GetComponent<Paintbrush>()));
             eAttack2 = new NetworkAttack(new BoneArmAttack(this, boneArm.GetComponent<BoneArm>()));
@@ -72,6 +75,27 @@ namespace SciFi.Players {
             fm.dx = 1.5f.FlipDirection(eDirection);
             NetworkServer.Spawn(fmObj);
             fm.Enable(netId, GetItemNetId(), false);
+        }
+
+        [Command]
+        public void CmdSpawnPaintDrops(Color color) {
+            var n = Random.Range(3, 6);
+            var baseVelocity = new Vector2(7f, 4f).FlipDirection(eDirection);
+            var positionOffset = new Vector3(.4f, .2f, 0f).FlipDirection(eDirection);
+            for (int i = 0; i < n; i++) {
+                var scale = Random.Range(.25f, .5f);
+                var velocity = baseVelocity + new Vector2(Random.Range(-2f, 2f), Random.Range(-1.5f, 1.5f));
+                var paintDrop = SpawnPooledProjectileScaled(
+                    paintDropPrefabIndex,
+                    paintbrush.transform.position + positionOffset,
+                    new Vector3(scale, scale, 1),
+                    Quaternion.identity,
+                    velocity,
+                    0,
+                    false
+                );
+                paintDrop.GetComponent<SpriteOverlay>().SetColor(color);
+            }
         }
     }
 }

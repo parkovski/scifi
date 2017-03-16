@@ -425,6 +425,8 @@ MonoBehaviour:
     type: 2}
   paintStreak: {fileID: 1803598983150488, guid: af0c869939c6e99489efdab96ac54731,
     type: 2}
+  paintDropPrefab: {fileID: 1352384182832448, guid: 11623f97895158c4fa1f6c3d36ce911d,
+    type: 2}
 --- !u!114 &114720902299148154
 MonoBehaviour:
   m_ObjectHideFlags: 1

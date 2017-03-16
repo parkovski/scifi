@@ -85,8 +85,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9b2cae38b441114eb8d39d0cb47dc4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  paintStreakPrefab: {fileID: 1803598983150488, guid: af0c869939c6e99489efdab96ac54731,
+  paintDropPrefab: {fileID: 1352384182832448, guid: 11623f97895158c4fa1f6c3d36ce911d,
     type: 2}
+  player: {fileID: 0}
 --- !u!212 &212987930918234968
 SpriteRenderer:
   m_ObjectHideFlags: 1

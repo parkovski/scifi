@@ -78,7 +78,7 @@ namespace SciFi.Players.Attacks {
         public bool CanFireDown { get { return canFireDown; } }
         public bool ShouldCancel {
             get { return shouldCancel; }
-            protected set { shouldCancel = value; }
+            set { shouldCancel = value; }
         }
 
         /// This function is called on every frame for non-authoritative
@@ -88,40 +88,45 @@ namespace SciFi.Players.Attacks {
         public void UpdateState(IInputManager inputManager, int control) {
             var direction = player.eDirection;
             bool cooldownOver = Time.time > lastFireTime + cooldown;
+            if (!cooldownOver && !isCharging) {
+                inputManager.InvalidateControl(control);
+                return;
+            }
             if (canFireDown && inputManager.IsControlActive(Control.Down)) {
                 direction = Direction.Down;
             }
+            Func<bool> checkCancel = () => {
+                if (shouldCancel) {
+                    inputManager.InvalidateControl(control);
+                    Cancel();
+                    return true;
+                } else {
+                    return false;
+                }
+            };
             if (inputManager.IsControlActive(control)) {
                 if (canCharge) {
                     if (isCharging) {
                         // Charging, continue.
-                        if (shouldCancel) {
-                            inputManager.InvalidateControl(control);
-                            shouldCancel = false;
-                            Cancel();
-                            // TODO: Speculatively add/remove these on the client
-                            // and check them on the server when the player tries
-                            // to attack or move.
-                            //player.RemoveModifier(ModId.CantAttack);
-                            //player.RemoveModifier(ModId.CantMove);
-                        } else {
+                        if (!checkCancel()) {
                             OnKeepCharging(inputManager.GetControlHoldTime(control), direction);
                         }
                     } else {
                         // Not charging but button pressed, begin charging.
-                        if (!player.IsModifierEnabled(ModId.CantAttack) && cooldownOver) {
+                        if (!player.IsModifierEnabled(ModId.CantAttack)) {
                             isCharging = true;
                             shouldCancel = false;
                             lastFireTime = Time.time;
                             //player.AddModifier(ModId.CantAttack);
                             //player.AddModifier(ModId.CantMove);
                             OnBeginCharging(direction);
+                            checkCancel();
                         }
                     }
                 } else {
                     // Attack doesn't charge, fire immediately.
                     inputManager.InvalidateControl(control);
-                    if (!player.IsModifierEnabled(ModId.CantAttack) && cooldownOver) {
+                    if (!player.IsModifierEnabled(ModId.CantAttack)) {
                         lastFireTime = Time.time;
                         OnEndCharging(0f, direction);
                     }
@@ -130,7 +135,9 @@ namespace SciFi.Players.Attacks {
                 if (isCharging) {
                     // Charging but button released, fire the attack.
                     isCharging = false;
-                    OnEndCharging(inputManager.GetControlHoldTime(control), direction);
+                    if (!checkCancel()) {
+                        OnEndCharging(inputManager.GetControlHoldTime(control), direction);
+                    }
                     //player.RemoveModifier(ModId.CantAttack);
                     //player.RemoveModifier(ModId.CantMove);
                 }

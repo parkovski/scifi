@@ -28,6 +28,10 @@ namespace SciFi.Util {
             }
         }
 
+        public void Clear() {
+            counts.Clear();
+        }
+
         public uint GetCount(Collider2D collider) {
             uint count;
             if (counts.TryGetValue(collider.gameObject, out count)) {

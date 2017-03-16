@@ -1,18 +1,15 @@
 using UnityEngine;
-using System.Collections.Generic;
 
-using SciFi.Util.Extensions;
+using SciFi.UI;
 
 namespace SciFi.Players.Attacks {
     public class Paintbrush : MonoBehaviour, IAttackSource {
-        public GameObject paintStreakPrefab;
+        public GameObject paintDropPrefab;
+        [HideInInspector]
+        public daVinci player;
+        int paintDropPrefabIndex;
         Direction direction = Direction.Left;
-        int power = 1;
-        bool isAttacking = false;
-        HashSet<GameObject> hitObjects = new HashSet<GameObject>();
         SpriteRenderer spriteRenderer;
-        Collider2D brushCollider;
-        Vector3 paintHeightOffset;
 
         static readonly Color[] colors = new[] {
             new Color(0.0980f, 0.1019f, 0.6392f, 1f),
@@ -27,69 +24,23 @@ namespace SciFi.Players.Attacks {
         void Start() {
             spriteRenderer = GetComponent<SpriteRenderer>();
             spriteRenderer.enabled = false;
-            brushCollider = GetComponent<Collider2D>();
-            paintHeightOffset = new Vector3(0f, -paintStreakPrefab.GetComponent<SpriteRenderer>().bounds.extents.y);
+            paintDropPrefabIndex = GameController.PrefabToIndex(paintDropPrefab);
         }
 
-        public void StartAttacking() {
-            isAttacking = true;
+        public void Show() {
             spriteRenderer.enabled = true;
-        }
-
-        public void StopAttacking() {
-            isAttacking = false;
-            hitObjects.Clear();
         }
 
         public void Hide() {
             spriteRenderer.enabled = false;
         }
 
+        public void ThrowPaint() {
+            player.CmdSpawnPaintDrops(colors[Random.Range(0, colors.Length)]);
+        }
+
         public void SetDirection(Direction direction) {
             this.direction = direction;
-        }
-
-        /// Power is from 0-10.
-        public void SetPower(int power) {
-            this.power = power;
-        }
-
-        public Quaternion GetStreakRotation() {
-            if (direction == Direction.Left) {
-                return Quaternion.Euler(0f, 0f, -30f);
-            } else {
-                return Quaternion.Euler(0f, 0f, 30f);
-            }
-        }
-
-        Vector3 GetPaintbrushTipOffset() {
-            return new Vector3(.2f, 0f).FlipDirection(direction);
-        }
-
-        void OnTriggerEnter2D(Collider2D collider) {
-            if (!isAttacking) {
-                return;
-            }
-
-            if (hitObjects.Contains(collider.gameObject)) {
-                return;
-            }
-            hitObjects.Add(collider.gameObject);
-
-            var point = brushCollider.bounds.center + paintHeightOffset + GetPaintbrushTipOffset();
-            var streak = Instantiate(paintStreakPrefab, point, GetStreakRotation());
-            streak.GetComponent<PaintStreak>().paintedObject = collider.gameObject;
-            var material = streak.GetComponent<SpriteRenderer>().material;
-            material.SetColor("_Color", colors[Random.Range(0, colors.Length)]);
-            material.SetFloat("_StartTime", Time.timeSinceLevelLoad);
-            material.SetFloat("_Width", .025f * power + .05f);
-            if (power < 4) {
-                material.SetInt("_Peaks", 3);
-            } else if (power > 6) {
-                material.SetInt("_Peaks", 7);
-            }
-
-            GameController.Instance.Hit(collider.gameObject, this, gameObject, power * 3 / 2, power * 1.5f);
         }
 
         public AttackType Type { get { return AttackType.Melee; } }

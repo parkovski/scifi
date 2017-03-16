@@ -1,7 +1,7 @@
 using UnityEngine;
-using System.Collections.Generic;
 
 using SciFi.Environment.Effects;
+using SciFi.Util;
 using SciFi.Util.Extensions;
 
 namespace SciFi.Players.Attacks {
@@ -16,12 +16,16 @@ namespace SciFi.Players.Attacks {
         Collider2D attachedHandCollider;
         SpriteRenderer[] spriteRenderers;
         bool isActive;
-        HashSet<GameObject> hitObjects;
+        bool isAttacking;
+        int power;
+        HitSet hits;
+        ColliderCount colliderCount;
 
         void Start() {
             spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
             attachedHandCollider = attachedHand.GetComponent<Collider2D>();
-            hitObjects = new HashSet<GameObject>();
+            hits = new HitSet();
+            colliderCount = new ColliderCount();
             Hide();
         }
 
@@ -44,8 +48,17 @@ namespace SciFi.Players.Attacks {
             }
         }
 
+        public void StartAttacking(int power) {
+            this.power = power;
+            isAttacking = true;
+            foreach (var obj in colliderCount.ObjectsWithPositiveCount) {
+                Hit(obj);
+            }
+        }
+
         public void Show() {
-            hitObjects.Clear();
+            hits.Clear();
+            colliderCount.Clear();
             attachedHandCollider.enabled = true;
             ShowHide(true);
         }
@@ -56,8 +69,20 @@ namespace SciFi.Players.Attacks {
 
         void ShowHide(bool show) {
             isActive = show;
+            if (!show) {
+                isAttacking = false;
+            }
             foreach (var sr in spriteRenderers) {
                 sr.enabled = show;
+            }
+        }
+
+        void Hit(GameObject obj) {
+            var hit = Attack.GetAttackHit(obj.layer);
+            if (hit == AttackHit.HitAndDamage && !hits.CheckOrFlag(obj)) {
+                var knockback = ((float)power).Scale(1, 10, 5, 10);
+                GameController.Instance.Hit(obj, this, player.gameObject, (int)knockback, knockback);
+                Effects.Star(obj.transform.position);
             }
         }
 
@@ -70,13 +95,17 @@ namespace SciFi.Players.Attacks {
                 return;
             }
 
-            if (Attack.GetAttackHit(collider.gameObject.layer) != AttackHit.None) {
-                if (hitObjects.Contains(collider.gameObject)) {
-                    return;
-                }
-                hitObjects.Add(collider.gameObject);
-                Effects.Star(collider.bounds.ClosestPoint(collider.gameObject.transform.position));
-                GameController.Instance.Hit(collider.gameObject, this, player.gameObject, 5, 5f);
+            if (!isAttacking) {
+                colliderCount.Increase(collider);
+                return;
+            }
+
+            Hit(collider.gameObject);
+        }
+
+        public void ChildEndCollide(GameObject child, Collider2D collider) {
+            if (!isAttacking) {
+                colliderCount.Decrease(collider);
             }
         }
 

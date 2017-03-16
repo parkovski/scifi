@@ -68,6 +68,7 @@ namespace SciFi.Players.Attacks {
         public override void OnCancel() {
             attack.OnCancel();
             attack.IsCharging = false;
+            attack.ShouldCancel = false;
             player.NetworkAttackSync(new NetworkAttackMessage {
                 sender = this.guidAsBytes,
                 messageId = this.messageId,

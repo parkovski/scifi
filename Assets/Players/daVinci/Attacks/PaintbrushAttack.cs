@@ -6,15 +6,15 @@ namespace SciFi.Players.Attacks {
         Animator animator;
 
         public PaintbrushAttack(Player player, Paintbrush paintbrush)
-            : base(player, true)
+            : base(player, false)
         {
+            paintbrush.GetComponent<Paintbrush>().player = (daVinci)player;
             this.paintbrush = paintbrush;
             this.animator = paintbrush.GetComponent<Animator>();
         }
 
         public override void OnEndCharging(float chargeTime, Direction direction) {
             paintbrush.SetDirection(direction);
-            paintbrush.SetPower(Mathf.Clamp((int)(chargeTime * 10f), 1, 10));
             if (direction == Direction.Left) {
                 animator.SetTrigger("SwingLeft");
             } else {
