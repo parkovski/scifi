@@ -32,9 +32,8 @@ namespace SciFi.Players.Attacks {
         void OnCollisionEnter2D(Collision2D collision) {
             var projectile = collision.gameObject.GetComponent<Projectile>();
             if (Attack.GetAttackHit(collision.gameObject.layer) == AttackHit.HitAndDamage) {
-                var knockback = transform.localScale.x.Scale(.25f, .5f, .01f, .05f);
-                var damage = knockback > 0.0375f ? 2 : 1;
-                GameController.Instance.HitNoVelocityReset(collision.gameObject, this, gameObject, damage, knockback);
+                var damage = transform.localScale.x > 0.375f ? 2 : 1;
+                GameController.Instance.HitNoVelocityReset(collision.gameObject, this, gameObject, damage, 0f);
                 pooled.Release();
             } else {
                 if (projectile == null || !projectile.HasSameOwner(this)) {
