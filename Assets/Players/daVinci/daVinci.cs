@@ -79,7 +79,7 @@ namespace SciFi.Players {
 
         [Command]
         public void CmdSpawnPaintDrops(Color color) {
-            var n = Random.Range(3, 6);
+            var n = Random.Range(2, 4);
             var baseVelocity = new Vector2(7f, 4f).FlipDirection(eDirection);
             var positionOffset = new Vector3(.4f, .2f, 0f).FlipDirection(eDirection);
             for (int i = 0; i < n; i++) {

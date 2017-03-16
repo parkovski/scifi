@@ -6,7 +6,7 @@ namespace SciFi.Players.Attacks {
         Animator animator;
 
         public PaintbrushAttack(Player player, Paintbrush paintbrush)
-            : base(player, false)
+            : base(player, 1f, false)
         {
             paintbrush.GetComponent<Paintbrush>().player = (daVinci)player;
             this.paintbrush = paintbrush;
