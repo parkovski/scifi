@@ -324,7 +324,11 @@ namespace SciFi.Players {
 
             HandleLeftRightInput(pLeftControl, Direction.Left);
             HandleLeftRightInput(pRightControl, Direction.Right);
-            if (!pLeftControl.IsActive() && !pRightControl.IsActive() && !IsModifierEnabled(ModId.InKnockback)) {
+            if (!pLeftControl.IsActive()
+                && !pRightControl.IsActive()
+                && !IsModifierEnabled(ModId.InKnockback)
+                && pIsTouchingGround
+            ) {
                 AddDampingForce();
             }
             AddExtraGravity();
