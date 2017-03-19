@@ -9,7 +9,7 @@ namespace SciFi.Players.Attacks {
         SpriteRenderer[] spriteRenderers;
 
         public BoneArmAttack(Player player, BoneArm boneArm)
-            : base(player, 0.5f, true)
+            : base(player, 1f, true)
         {
             boneArm.player = player;
             this.boneArm = boneArm;

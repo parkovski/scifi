@@ -1,7 +1,7 @@
 namespace SciFi.Players.Attacks {
     public class FlyingMachineAttack : Attack {
         public FlyingMachineAttack(daVinci player)
-            : base(player, true)
+            : base(player, 2f, true)
         {
         }
 

@@ -79,11 +79,12 @@ namespace SciFi.Players {
 
         [Command]
         public void CmdSpawnPaintDrops(Color color) {
-            var n = Random.Range(2, 4);
-            var baseVelocity = new Vector2(7f, 4f).FlipDirection(eDirection);
+            var n = Random.Range(2, 5);
+            var baseVelocity = new Vector2(7f, 2.5f).FlipDirection(eDirection);
             var positionOffset = new Vector3(.4f, .2f, 0f).FlipDirection(eDirection);
+            var sharedHitSet = new HitSet();
             for (int i = 0; i < n; i++) {
-                var scale = Random.Range(.25f, .5f);
+                var scale = Random.Range(PaintDrop.minScale, PaintDrop.maxScale);
                 var velocity = baseVelocity + new Vector2(Random.Range(-2f, 2f), Random.Range(-1.5f, 1.5f));
                 var paintDrop = SpawnPooledProjectileScaled(
                     paintDropPrefabIndex,
@@ -94,7 +95,9 @@ namespace SciFi.Players {
                     0,
                     false
                 );
-                paintDrop.GetComponent<PaintDrop>().SetColor(color);
+                var pd = paintDrop.GetComponent<PaintDrop>();
+                pd.SetColor(color);
+                pd.sSharedHitSet = sharedHitSet;
             }
         }
     }
