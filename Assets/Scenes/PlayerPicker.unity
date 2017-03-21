@@ -249,9 +249,9 @@ BoxCollider2D:
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_UsedByEffector: 0
-  m_Offset: {x: 0.09, y: 0}
+  m_Offset: {x: 0.023884773, y: 0}
   serializedVersion: 2
-  m_Size: {x: 1.4, y: 1.5}
+  m_Size: {x: 1.2677695, y: 1.5}
 --- !u!114 &244797656
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -653,9 +653,9 @@ BoxCollider2D:
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_UsedByEffector: 0
-  m_Offset: {x: -0, y: -0.12}
+  m_Offset: {x: 0.05289209, y: -0.08033097}
   serializedVersion: 2
-  m_Size: {x: 1.01, y: 1.5}
+  m_Size: {x: 1.1157842, y: 1.5793381}
 --- !u!1 &854189639
 GameObject:
   m_ObjectHideFlags: 0
@@ -934,6 +934,7 @@ Prefab:
     - {fileID: 114363502111511214, guid: 503121c237150cf489949a815d7ac7b8, type: 2}
     - {fileID: 114269370132421514, guid: 503121c237150cf489949a815d7ac7b8, type: 2}
     - {fileID: 114720902299148154, guid: 503121c237150cf489949a815d7ac7b8, type: 2}
+    - {fileID: 60132884074973598, guid: 503121c237150cf489949a815d7ac7b8, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: 503121c237150cf489949a815d7ac7b8, type: 2}
   m_IsPrefabParent: 0
 --- !u!1 &905198257 stripped
@@ -965,6 +966,20 @@ Halo:
     serializedVersion: 2
     rgba: 4280043083
   m_Size: 1
+--- !u!61 &905198260
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 905198257}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_Offset: {x: 0.026446044, y: 0.059503317}
+  serializedVersion: 2
+  m_Size: {x: 1.2380146, y: 1.5685906}
 --- !u!1 &920850530
 GameObject:
   m_ObjectHideFlags: 0

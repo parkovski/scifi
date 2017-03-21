@@ -26,19 +26,13 @@ namespace SciFi.UI {
 
         void Start() {
             buttons = new Dictionary<string, SpriteRenderer>();
-            Add("LeftButton");
-            Add("RightButton");
             Add("ItemButton");
-            Add("DownButton");
             Add("AttackButton1");
             Add("AttackButton2");
             Add("AttackButton3");
             Add("UpButton");
 
             buttonGraphics = new Dictionary<string, SpriteRenderer>();
-            AddGfx("LeftButton", "LeftArrow");
-            AddGfx("RightButton", "RightArrow");
-            AddGfx("DownButton", "DownArrow");
             AddGfx("AttackButton1", "Attack1");
             AddGfx("AttackButton2", "Attack2");
             AddGfx("AttackButton3", "Attack3");

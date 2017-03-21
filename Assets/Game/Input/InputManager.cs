@@ -32,7 +32,7 @@ namespace SciFi {
         public const int Attack1 = 4;
         public const int Attack2 = 5;
         public const int Attack3 = 6;
-        public const int SuperAttack = 7;
+        public const int SpecialAttack = 7;
         public const int Item = 8;
         /// Not used in game - player may set a mouse button
         /// as one of the other controls - these are used
@@ -44,8 +44,10 @@ namespace SciFi {
         public const int MouseButton2 = 10;
         public const int DodgeLeft = 11;
         public const int DodgeRight = 12;
+        public const int Jump = 13;
+        public const int Block = 14;
         /// The total number of controls.
-        public const int ArrayLength = 13;
+        public const int ArrayLength = 15;
     }
 
     /// Updates state based on input events.
@@ -152,15 +154,8 @@ namespace SciFi {
 
         /// Update touch state for <c>activeAxis</c>, setting <c>inactiveAxis</c> to 0.
         public void TouchUpdateAxis(int activeAxis, int inactiveAxis, float amount) {
-            // On touch, you can press both buttons at the same time, unlike with Input.GetAxis.
-            // If the opposite axis is already active, do what Unity does and ignore the most recent one.
-            if (states[inactiveAxis].isTouched || states[inactiveAxis].isPressed) {
-                ForceReset(activeAxis);
-                return;
-            } else {
-                TouchUpdateButton(activeAxis, true, amount);
-            }
             ForceReset(inactiveAxis);
+            TouchUpdateButton(activeAxis, true, amount);
         }
 
         /// Update touch state for <c>button</c>.
@@ -222,6 +217,10 @@ namespace SciFi {
         string firstComboButton;
         /// The second button in a combo, if a combo is active.
         string secondComboButton;
+        Vector2 joystickTouchOffset;
+        GameObject joystickInner;
+        GameObject joystickOuter;
+        float joystickOuterRadius;
 
         /// Is <c>control</c> currently pressed or touched?
         public bool IsControlActive(int control) {
@@ -267,10 +266,9 @@ namespace SciFi {
 
 #if !UNITY_EDITOR
             if (!Input.touchSupported) {
-                Destroy(GameObject.Find("LeftButton"));
-                Destroy(GameObject.Find("RightButton"));
+                Destroy(GameObject.Find("JoyStickOuter"));
+                Destroy(GameObject.Find("JoyStickInner"));
                 Destroy(GameObject.Find("ItemButton"));
-                Destroy(GameObject.Find("DownButton"));
                 Destroy(GameObject.Find("AttackButton1"));
                 Destroy(GameObject.Find("AttackButton2"));
                 Destroy(GameObject.Find("AttackButton3"));
@@ -355,15 +353,8 @@ namespace SciFi {
         /// <see cref="Control" /> class.
         int GetTouchControl(string controlName) {
             switch (controlName) {
-            case "LeftButton":
-                return Control.Left;
-            case "RightButton":
-                return Control.Right;
             case "UpButton":
-            case "UpButton2":
                 return Control.Up;
-            case "DownButton":
-                return Control.Down;
             case "AttackButton1":
                 return Control.Attack1;
             case "AttackButton2":
@@ -384,17 +375,8 @@ namespace SciFi {
         /// Update <c>control</c> setting its touch value to true.
         void BeginTouch(int control) {
             switch (control) {
-            case Control.Left:
-                state.TouchUpdateAxis(Control.Left, Control.Right, 1f);
-                break;
-            case Control.Right:
-                state.TouchUpdateAxis(Control.Right, Control.Left, 1f);
-                break;
             case Control.Up:
                 state.TouchUpdateAxis(Control.Up, Control.Down, 1f);
-                break;
-            case Control.Down:
-                state.TouchUpdateAxis(Control.Down, Control.Up, 1f);
                 break;
             case Control.Attack1:
                 state.TouchUpdateButton(Control.Attack1, true);
@@ -420,15 +402,8 @@ namespace SciFi {
         /// Update <c>control</c> setting its touch value to false.
         void EndTouch(int control) {
             switch (control) {
-            case Control.Left:
-            case Control.Right:
-                state.TouchReset(Control.Left);
-                state.TouchReset(Control.Right);
-                break;
             case Control.Up:
-            case Control.Down:
                 state.TouchReset(Control.Up);
-                state.TouchReset(Control.Down);
                 break;
             case Control.Attack1:
                 state.TouchReset(Control.Attack1);
@@ -497,6 +472,196 @@ namespace SciFi {
             return false;
         }
 
+        Vector3 CircleClamp(Vector3 point, Vector3 center, float radius) {
+            var dx = point.x - center.x;
+            var dy = point.y - center.y;
+            var xsq = dx * dx;
+            var ysq = dy * dy;
+            var rsq = radius * radius;
+            if (Mathf.Sqrt(xsq + ysq) > radius) {
+                var angle = Mathf.Atan2(dy, dx);
+                var x = Mathf.Cos(angle) * radius;
+                var y = Mathf.Sin(angle) * radius;
+                return new Vector3(
+                    center.x + x,
+                    center.y + y,
+                    center.z
+                );
+            }
+            point.z = center.z;
+            return point;
+        }
+
+        void GetJoystickInputPercent(out float x, out float y) {
+            var inner = joystickInner.transform.position;
+            var outer = joystickOuter.transform.position;
+            var dx = inner.x - outer.x;
+            var dy = inner.y - outer.y;
+            var angle = Mathf.Atan2(dy, dx);
+            var unitX = Mathf.Cos(angle);
+            var unitY = Mathf.Sin(angle);
+            var maxX = unitX * joystickOuterRadius;
+            var maxY = unitY * joystickOuterRadius;
+            x = dx / maxX;
+            y = dy / maxY;
+            if (dx < 0) {
+                x = -x;
+            }
+            if (dy < 0) {
+                y = -y;
+            }
+            print(string.Format("x:{0} y:{1}", x*100, y*100));
+        }
+
+        void JoystickInput(Touch touch) {
+            if (joystickInner == null) {
+                joystickInner = GameObject.Find("JoyStickInner");
+                joystickOuter = GameObject.Find("JoyStickOuter");
+                joystickOuterRadius
+                    = joystickOuter.GetComponent<SpriteRenderer>().bounds.extents.x
+                    - joystickInner.GetComponent<SpriteRenderer>().bounds.extents.x * 0.25f;
+            }
+            switch (touch.phase) {
+            case TouchPhase.Began:
+                joystickTouchOffset = Camera.main.ScreenToWorldPoint(touch.position) - joystickInner.transform.position;
+                break;
+            case TouchPhase.Moved:
+                joystickInner.transform.position = CircleClamp(
+                    Camera.main.ScreenToWorldPoint(touch.position) - (Vector3)joystickTouchOffset,
+                    joystickOuter.transform.position,
+                    joystickOuterRadius
+                );
+                float x, y;
+                GetJoystickInputPercent(out x, out y);
+                if (x < -.2f) {
+                    state.TouchUpdateAxis(Control.Left, Control.Right, -x);
+                } else if (x > 0.2f) {
+                    state.TouchUpdateAxis(Control.Right, Control.Left, x);
+                } else {
+                    state.TouchReset(Control.Left);
+                    state.TouchReset(Control.Right);
+                }
+                // Uncomment this when jump/block use their controls
+                // instead of up/down.
+                /*if (y < -0.2f) {
+                    state.TouchUpdateAxis(Control.Down, Control.Up, -y);
+                } else if (y > 0.2f) {
+                    state.TouchUpdateAxis(Control.Up, Control.Down, y);
+                } else {
+                    state.TouchReset(Control.Up);
+                    state.TouchReset(Control.Down);
+                }*/
+                break;
+            case TouchPhase.Stationary:
+                break;
+            case TouchPhase.Ended:
+            case TouchPhase.Canceled:
+                state.TouchReset(Control.Left);
+                state.TouchReset(Control.Right);
+                state.TouchReset(Control.Up);
+                state.TouchReset(Control.Down);
+                joystickInner.transform.position = joystickOuter.transform.position;
+                break;
+            }
+        }
+
+        void TouchBegan(Touch touch) {
+            var obj = GetObjectAtPosition(touch.position);
+            var controlName = obj == null ? null : obj.name;
+            if (controlName == null) {
+                return;
+            }
+            if (controlName == "JoyStickInner") {
+                activeTouches.Add(touch.fingerId, controlName);
+                JoystickInput(touch);
+                return;
+            }
+            var control = GetTouchControl(controlName);
+            if (control == -1) {
+                if (ObjectSelected != null) {
+                    ObjectSelected(obj);
+                }
+                return;
+            }
+            BeginTouch(control);
+            activeTouches.Add(touch.fingerId, controlName);
+            if (TouchControlStateChanged != null) {
+                TouchControlStateChanged(controlName, true);
+            }
+        }
+
+        void TouchMoved(Touch touch) {
+            string currentControlName;
+            if (!activeTouches.TryGetValue(touch.fingerId, out currentControlName)) {
+                return;
+            }
+            if (currentControlName == "JoyStickInner") {
+                JoystickInput(touch);
+                return;
+            }
+            var currentControl = GetTouchControl(currentControlName);
+            UpdateTouchTime(currentControl);
+            var newObj = GetObjectAtPosition(touch.position);
+            var newControlName = newObj == null ? null : newObj.name;
+            if (newControlName == null) {
+                return;
+            }
+            var newControl = GetTouchControl(newControlName);
+            if (newControl == -1) {
+                return;
+            }
+            var combo = GetTouchCombo(currentControl, newControl);
+            if (combo != -1) {
+                InvalidateControl(currentControl);
+                EndTouch(currentControl);
+                ControlCanceled(currentControl);
+                firstComboButton = currentControlName;
+                secondComboButton = newControlName;
+                activeTouches[touch.fingerId] = GetComboName(combo);
+                BeginTouch(combo);
+                if (TouchControlStateChanged != null) {
+                    TouchControlStateChanged(newControlName, true);
+                }
+            }
+        }
+
+        void TouchStationary(Touch touch) {
+            string control;
+            if (activeTouches.TryGetValue(touch.fingerId, out control)) {
+                if (control == "JoyStickInner") {
+                    JoystickInput(touch);
+                    return;
+                }
+                UpdateTouchTime(GetTouchControl(control));
+            }
+        }
+
+        void TouchEnded(Touch touch) {
+            string control;
+            if (activeTouches.TryGetValue(touch.fingerId, out control)) {
+                if (control == "JoyStickInner") {
+                    JoystickInput(touch);
+                    activeTouches.Remove(touch.fingerId);
+                    return;
+                }
+                var controlValue = GetTouchControl(control);
+                EndTouch(controlValue);
+                activeTouches.Remove(touch.fingerId);
+                if (TouchControlStateChanged != null) {
+                    if (IsCombo(controlValue)) {
+                        TouchControlStateChanged(firstComboButton, false);
+                        TouchControlStateChanged(secondComboButton, false);
+                    } else {
+                        TouchControlStateChanged(control, false);
+                    }
+                }
+            }
+        }
+
+        void TouchCanceled(Touch touch) {
+            TouchEnded(touch);
+        }
+
         /// Handle touch input and update state.
         void CheckTouchInput() {
             if (Input.touchCount == 0) {
@@ -505,72 +670,15 @@ namespace SciFi {
 
             foreach (var touch in Input.touches) {
                 if (touch.phase == TouchPhase.Began) {
-                    var obj = GetObjectAtPosition(touch.position);
-                    var controlName = obj == null ? null : obj.name;
-                    if (controlName == null) {
-                        continue;
-                    }
-                    var control = GetTouchControl(controlName);
-                    if (control == -1) {
-                        if (ObjectSelected != null) {
-                            ObjectSelected(obj);
-                        }
-                        continue;
-                    }
-                    BeginTouch(control);
-                    activeTouches.Add(touch.fingerId, controlName);
-                    if (TouchControlStateChanged != null) {
-                        TouchControlStateChanged(controlName, true);
-                    }
+                    TouchBegan(touch);
                 } else if (touch.phase == TouchPhase.Moved) {
-                    string currentControlName;
-                    if (!activeTouches.TryGetValue(touch.fingerId, out currentControlName)) {
-                        continue;
-                    }
-                    var currentControl = GetTouchControl(currentControlName);
-                    UpdateTouchTime(currentControl);
-                    var newObj = GetObjectAtPosition(touch.position);
-                    var newControlName = newObj == null ? null : newObj.name;
-                    if (newControlName == null) {
-                        continue;
-                    }
-                    var newControl = GetTouchControl(newControlName);
-                    if (newControl == -1) {
-                        continue;
-                    }
-                    var combo = GetTouchCombo(currentControl, newControl);
-                    if (combo != -1) {
-                        InvalidateControl(currentControl);
-                        EndTouch(currentControl);
-                        ControlCanceled(currentControl);
-                        firstComboButton = currentControlName;
-                        secondComboButton = newControlName;
-                        activeTouches[touch.fingerId] = GetComboName(combo);
-                        BeginTouch(combo);
-                        if (TouchControlStateChanged != null) {
-                            TouchControlStateChanged(newControlName, true);
-                        }
-                    }
+                    TouchMoved(touch);
                 } else if (touch.phase == TouchPhase.Stationary) {
-                    string control;
-                    if (activeTouches.TryGetValue(touch.fingerId, out control)) {
-                        UpdateTouchTime(GetTouchControl(control));
-                    }
-                } else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled) {
-                    string control;
-                    if (activeTouches.TryGetValue(touch.fingerId, out control)) {
-                        var controlValue = GetTouchControl(control);
-                        EndTouch(controlValue);
-                        activeTouches.Remove(touch.fingerId);
-                        if (TouchControlStateChanged != null) {
-                            if (IsCombo(controlValue)) {
-                                TouchControlStateChanged(firstComboButton, false);
-                                TouchControlStateChanged(secondComboButton, false);
-                            } else {
-                                TouchControlStateChanged(control, false);
-                            }
-                        }
-                    }
+                    TouchStationary(touch);
+                } else if (touch.phase == TouchPhase.Ended) {
+                    TouchEnded(touch);
+                } else if (touch.phase == TouchPhase.Canceled) {
+                    TouchCanceled(touch);
                 }
             }
         }
@@ -581,57 +689,6 @@ namespace SciFi {
             if (Input.touchSupported) {
                 CheckTouchInput();
             }
-        }
-    }
-
-    /// Tracks a control that can be pressed multiple times 
-    /// in a small amount of time.
-    public class MultiPressControl {
-        IInputManager inputManager;
-        int control;
-        float timeout;
-        float lastPressTime;
-        bool active;
-        int presses;
-
-        /// <param name="inputManager">The InputManager to poll for control values</param>
-        /// <param name="control">The control to track</param>
-        /// <param name="timeout">How long to wait for another press</param>
-        public MultiPressControl(IInputManager inputManager, int control, float timeout) {
-            this.inputManager = inputManager;
-            this.control = control;
-            this.timeout = timeout;
-        }
-
-        /// Update multi-press state.
-        public void Update() {
-            if (inputManager.IsControlActive(control)) {
-                if (!active) {
-                    active = true;
-                    lastPressTime = Time.realtimeSinceStartup;
-                    if (Time.realtimeSinceStartup < lastPressTime + timeout) {
-                        ++presses;
-                    }
-                }
-            } else {
-                active = false;
-                if (Time.realtimeSinceStartup > lastPressTime + timeout) {
-                    presses = 0;
-                }
-            }
-        }
-
-        /// Is the control currently down?
-        /// This may be false even though a multi-press is in progress.
-        public bool IsActive() {
-            return active;
-        }
-
-        /// How many times was this control pressed?
-        /// If this is positive, the control may not be currently pressed,
-        /// but the timeout hasn't elapsed yet.
-        public int GetPresses() {
-            return presses;
         }
     }
 }
