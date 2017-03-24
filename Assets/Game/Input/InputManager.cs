@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+using SciFi.Util.Extensions;
+
 // Types of input we need to handle:
 // - Immediate button down/button up response.
 // - On button up, we need to know how long it was held down.
@@ -510,7 +512,6 @@ namespace SciFi {
             if (dy < 0) {
                 y = -y;
             }
-            print(string.Format("x:{0} y:{1}", x*100, y*100));
         }
 
         void JoystickInput(Touch touch) {
@@ -533,10 +534,10 @@ namespace SciFi {
                 );
                 float x, y;
                 GetJoystickInputPercent(out x, out y);
-                if (x < -.2f) {
-                    state.TouchUpdateAxis(Control.Left, Control.Right, -x);
+                if (x < -0.2f) {
+                    state.TouchUpdateAxis(Control.Left, Control.Right, (-x).Scale(0.2f, 1, 0, 1));
                 } else if (x > 0.2f) {
-                    state.TouchUpdateAxis(Control.Right, Control.Left, x);
+                    state.TouchUpdateAxis(Control.Right, Control.Left, x.Scale(0.2f, 1, 0, 1));
                 } else {
                     state.TouchReset(Control.Left);
                     state.TouchReset(Control.Right);
@@ -544,9 +545,9 @@ namespace SciFi {
                 // Uncomment this when jump/block use their controls
                 // instead of up/down.
                 /*if (y < -0.2f) {
-                    state.TouchUpdateAxis(Control.Down, Control.Up, -y);
+                    state.TouchUpdateAxis(Control.Down, Control.Up, (-y).Scale(0.2f, 1, 0, 1));
                 } else if (y > 0.2f) {
-                    state.TouchUpdateAxis(Control.Up, Control.Down, y);
+                    state.TouchUpdateAxis(Control.Up, Control.Down, y.Scale(0.2f, 1, 0, 1));
                 } else {
                     state.TouchReset(Control.Up);
                     state.TouchReset(Control.Down);
