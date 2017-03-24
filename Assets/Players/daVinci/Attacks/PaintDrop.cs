@@ -49,7 +49,6 @@ namespace SciFi.Players.Attacks {
                 } else {
                     knockback = 5f;
                 }
-                print(knockback);
                 GameController.Instance.HitNoVelocityReset(collision.gameObject, this, gameObject, damage, knockback);
                 pooled.Release();
             } else {

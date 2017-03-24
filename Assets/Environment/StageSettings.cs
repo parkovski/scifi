@@ -36,7 +36,6 @@ namespace SciFi.Environment {
 
         void SetupDeathZone(GameObject deathZone) {
             var bgExtent = GetComponent<SpriteRenderer>().bounds.extents;
-            print(bgExtent);
             var colliders = deathZone.GetComponents<BoxCollider2D>();
             var colliderSize = 10;
             var horizontalOffset = 2;
