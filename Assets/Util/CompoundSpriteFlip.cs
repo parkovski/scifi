@@ -26,6 +26,12 @@ namespace SciFi.Util {
             var sr = transform.GetComponent<SpriteRenderer>();
             if (sr != null) {
                 sr.flipX = !sr.flipX;
+                if (sr.sprite.pivot.x != 0 || sr.sprite.pivot.y != 0) {
+                    var colliders = transform.GetComponents<Collider2D>();
+                    foreach (var collider in colliders) {
+                        collider.offset = collider.offset.FlipX();
+                    }
+                }
             }
             // Don't change the root transform's position.
             if (index != 0) {
