@@ -30,7 +30,8 @@ namespace SciFi.UI {
             Add("AttackButton1");
             Add("AttackButton2");
             Add("AttackButton3");
-            Add("UpButton");
+            Add("JumpButton");
+            Add("ShieldButton");
 
             buttonGraphics = new Dictionary<string, SpriteRenderer>();
             AddGfx("AttackButton1", "Attack1");

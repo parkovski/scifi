@@ -222,7 +222,9 @@ namespace SciFi {
         Vector2 joystickTouchOffset;
         GameObject joystickInner;
         GameObject joystickOuter;
+        float joystickInnerRadius;
         float joystickOuterRadius;
+        const float joystickDeadZonePercent = 0.3f;
 
         /// Is <c>control</c> currently pressed or touched?
         public bool IsControlActive(int control) {
@@ -274,7 +276,8 @@ namespace SciFi {
                 Destroy(GameObject.Find("AttackButton1"));
                 Destroy(GameObject.Find("AttackButton2"));
                 Destroy(GameObject.Find("AttackButton3"));
-                Destroy(GameObject.Find("UpButton"));
+                Destroy(GameObject.Find("JumpButton"));
+                Destroy(GameObject.Find("ShieldButton"));
             }
 #endif
         }
@@ -300,10 +303,16 @@ namespace SciFi {
             }
 
             if (vertical > 0f) {
+                state.UpdateButton(Control.Jump, true, 1f);
+                state.Reset(Control.Block);
                 state.UpdateAxis(Control.Up, Control.Down, vertical);
             } else if (vertical < 0f) {
+                state.UpdateButton(Control.Block, true, 1f);
+                state.Reset(Control.Jump);
                 state.UpdateAxis(Control.Down, Control.Up, -vertical);
             } else {
+                state.Reset(Control.Jump);
+                state.Reset(Control.Block);
                 state.Reset(Control.Up);
                 state.Reset(Control.Down);
             }
@@ -355,8 +364,10 @@ namespace SciFi {
         /// <see cref="Control" /> class.
         int GetTouchControl(string controlName) {
             switch (controlName) {
-            case "UpButton":
-                return Control.Up;
+            case "JumpButton":
+                return Control.Jump;
+            case "ShieldButton":
+                return Control.Block;
             case "AttackButton1":
                 return Control.Attack1;
             case "AttackButton2":
@@ -376,56 +387,12 @@ namespace SciFi {
 
         /// Update <c>control</c> setting its touch value to true.
         void BeginTouch(int control) {
-            switch (control) {
-            case Control.Up:
-                state.TouchUpdateAxis(Control.Up, Control.Down, 1f);
-                break;
-            case Control.Attack1:
-                state.TouchUpdateButton(Control.Attack1, true);
-                break;
-            case Control.Attack2:
-                state.TouchUpdateButton(Control.Attack2, true);
-                break;
-            case Control.Item:
-                state.TouchUpdateButton(Control.Item, true);
-                break;
-            case Control.Attack3:
-                state.TouchUpdateButton(Control.Attack3, true);
-                break;
-            case Control.DodgeLeft:
-                state.TouchUpdateButton(Control.DodgeLeft, true);
-                break;
-            case Control.DodgeRight:
-                state.TouchUpdateButton(Control.DodgeRight, true);
-                break;
-            }
+            state.TouchUpdateButton(control, true);
         }
 
         /// Update <c>control</c> setting its touch value to false.
         void EndTouch(int control) {
-            switch (control) {
-            case Control.Up:
-                state.TouchReset(Control.Up);
-                break;
-            case Control.Attack1:
-                state.TouchReset(Control.Attack1);
-                break;
-            case Control.Attack2:
-                state.TouchReset(Control.Attack2);
-                break;
-            case Control.Item:
-                state.TouchReset(Control.Item);
-                break;
-            case Control.Attack3:
-                state.TouchReset(Control.Attack3);
-                break;
-            case Control.DodgeLeft:
-                state.TouchReset(Control.DodgeLeft);
-                break;
-            case Control.DodgeRight:
-                state.TouchReset(Control.DodgeRight);
-                break;
-            }
+            state.TouchReset(control);
         }
 
         /// Update the time the control has been held.
@@ -518,9 +485,10 @@ namespace SciFi {
             if (joystickInner == null) {
                 joystickInner = GameObject.Find("JoyStickInner");
                 joystickOuter = GameObject.Find("JoyStickOuter");
+                joystickInnerRadius = joystickInner.GetComponent<SpriteRenderer>().bounds.extents.x;
                 joystickOuterRadius
                     = joystickOuter.GetComponent<SpriteRenderer>().bounds.extents.x
-                    - joystickInner.GetComponent<SpriteRenderer>().bounds.extents.x * 0.25f;
+                    - joystickInnerRadius * 0.25f;
             }
             switch (touch.phase) {
             case TouchPhase.Began:
@@ -534,24 +502,22 @@ namespace SciFi {
                 );
                 float x, y;
                 GetJoystickInputPercent(out x, out y);
-                if (x < -0.2f) {
-                    state.TouchUpdateAxis(Control.Left, Control.Right, (-x).Scale(0.2f, 1, 0, 1));
-                } else if (x > 0.2f) {
-                    state.TouchUpdateAxis(Control.Right, Control.Left, x.Scale(0.2f, 1, 0, 1));
+                if (x < -joystickDeadZonePercent) {
+                    state.TouchUpdateAxis(Control.Left, Control.Right, (-x).Scale(joystickDeadZonePercent, 1, 0, 1));
+                } else if (x > joystickDeadZonePercent) {
+                    state.TouchUpdateAxis(Control.Right, Control.Left, x.Scale(joystickDeadZonePercent, 1, 0, 1));
                 } else {
                     state.TouchReset(Control.Left);
                     state.TouchReset(Control.Right);
                 }
-                // Uncomment this when jump/block use their controls
-                // instead of up/down.
-                /*if (y < -0.2f) {
-                    state.TouchUpdateAxis(Control.Down, Control.Up, (-y).Scale(0.2f, 1, 0, 1));
-                } else if (y > 0.2f) {
-                    state.TouchUpdateAxis(Control.Up, Control.Down, y.Scale(0.2f, 1, 0, 1));
+                if (y < -joystickDeadZonePercent) {
+                    state.TouchUpdateAxis(Control.Down, Control.Up, (-y).Scale(joystickDeadZonePercent, 1, 0, 1));
+                } else if (y > joystickDeadZonePercent) {
+                    state.TouchUpdateAxis(Control.Up, Control.Down, y.Scale(joystickDeadZonePercent, 1, 0, 1));
                 } else {
                     state.TouchReset(Control.Up);
                     state.TouchReset(Control.Down);
-                }*/
+                }
                 break;
             case TouchPhase.Stationary:
                 break;
@@ -574,6 +540,21 @@ namespace SciFi {
             }
             if (controlName == "JoyStickInner") {
                 activeTouches.Add(touch.fingerId, controlName);
+                JoystickInput(touch);
+                return;
+            } else if (controlName == "JoyStickOuter") {
+                controlName = "JoyStickInner";
+                activeTouches.Add(touch.fingerId, controlName);
+                var position = touch.position;
+                touch.position //= Camera.main.WorldToScreenPoint(joystickInner.transform.position);
+                    = Camera.main.WorldToScreenPoint(CircleClamp(
+                        Camera.main.ScreenToWorldPoint(touch.position),
+                        joystickOuter.transform.position,
+                        joystickInnerRadius * (joystickDeadZonePercent + 0.1f)
+                    ));
+                JoystickInput(touch);
+                touch.position = position;
+                touch.phase = TouchPhase.Moved;
                 JoystickInput(touch);
                 return;
             }

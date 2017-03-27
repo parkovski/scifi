@@ -333,8 +333,8 @@ namespace SciFi.Players {
             }
             AddExtraGravity();
 
-            if (pInputManager.IsControlActive(Control.Up) && !eModifiers.CantMove.IsEnabled() && !eModifiers.CantJump.IsEnabled()) {
-                pInputManager.InvalidateControl(Control.Up);
+            if (pInputManager.IsControlActive(Control.Jump) && !eModifiers.CantMove.IsEnabled() && !eModifiers.CantJump.IsEnabled()) {
+                pInputManager.InvalidateControl(Control.Jump);
                 var jf = lHooks.CallJumpForceHooks(pIsTouchingGround, pNumJumps++, jumpForce);
                 if (!Mathf.Approximately(jf, 0f)) {
                     if (pNumJumps > 0 && lRb.velocity.y < minDoubleJumpVelocity) {
@@ -349,14 +349,18 @@ namespace SciFi.Players {
                     eShouldFallThroughOneWayPlatform = true;
                     CmdFallThroughOneWayPlatform();
                 }
-                if (!eShield.IsActive()) {
-                    eShield.Activate();
-                }
             } else {
                 if (eShouldFallThroughOneWayPlatform) {
                     eShouldFallThroughOneWayPlatform = false;
                     CmdStopFallingThroughOneWayPlatform();
                 }
+            }
+
+            if (pInputManager.IsControlActive(Control.Block)) {
+                if (!eShield.IsActive()) {
+                    eShield.Activate();
+                }
+            } else {
                 if (eShield.IsActive()) {
                     eShield.Deactivate();
                 }
