@@ -42,6 +42,12 @@ namespace SciFi.Players.Attacks {
         bool canCharge;
         bool isCharging;
         bool shouldCancel;
+        ModifierMultiStateChange modifierStateChange;
+
+        private static readonly ModId[] chargingModifiers = {
+            ModId.CantMove,
+            ModId.CantAttack,
+        };
 
         // Extra parameters for child classes
         protected bool canFireDown = false;
@@ -55,6 +61,7 @@ namespace SciFi.Players.Attacks {
             this.player = player;
             this.cooldown = cooldown;
             this.canCharge = canCharge;
+            this.modifierStateChange = new ModifierMultiStateChange(player, chargingModifiers, ShouldEndLockout);
         }
 
         public Player Player { get { return player; } }
@@ -81,6 +88,14 @@ namespace SciFi.Players.Attacks {
             set { shouldCancel = value; }
         }
 
+        bool ShouldEndLockout() {
+            return !isCharging;
+        }
+
+        void EndLockout() {
+            modifierStateChange.End();
+        }
+
         /// This function is called on every frame for non-authoritative
         /// attacks, so that network attacks can call OnKeepCharging on every frame.
         public virtual void UpdateStateNonAuthoritative() {}
@@ -99,6 +114,7 @@ namespace SciFi.Players.Attacks {
                 if (shouldCancel) {
                     inputManager.InvalidateControl(control);
                     Cancel();
+                    EndLockout();
                     return true;
                 } else {
                     return false;
@@ -117,8 +133,7 @@ namespace SciFi.Players.Attacks {
                             isCharging = true;
                             shouldCancel = false;
                             lastFireTime = Time.time;
-                            //player.AddModifier(ModId.CantAttack);
-                            //player.AddModifier(ModId.CantMove);
+                            modifierStateChange.Start();
                             OnBeginCharging(direction);
                             checkCancel();
                         }
@@ -137,9 +152,8 @@ namespace SciFi.Players.Attacks {
                     isCharging = false;
                     if (!checkCancel()) {
                         OnEndCharging(inputManager.GetControlHoldTime(control), direction);
+                        EndLockout();
                     }
-                    //player.RemoveModifier(ModId.CantAttack);
-                    //player.RemoveModifier(ModId.CantMove);
                 }
             }
         }
