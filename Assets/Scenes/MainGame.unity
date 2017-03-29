@@ -2850,21 +2850,6 @@ Prefab:
       propertyPath: camera
       value: 
       objectReference: {fileID: 166321932}
-    - target: {fileID: 114971949180155680, guid: 725a8f5e7a33c854291f94b1862bdca1,
-        type: 2}
-      propertyPath: song
-      value: 
-      objectReference: {fileID: 8300000, guid: 2f96250d019434c6f94d5ba6a6599e1d, type: 3}
-    - target: {fileID: 114971949180155680, guid: 725a8f5e7a33c854291f94b1862bdca1,
-        type: 2}
-      propertyPath: songBpm
-      value: 112
-      objectReference: {fileID: 0}
-    - target: {fileID: 114971949180155680, guid: 725a8f5e7a33c854291f94b1862bdca1,
-        type: 2}
-      propertyPath: songStartAtBeat
-      value: 12
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 725a8f5e7a33c854291f94b1862bdca1, type: 2}
   m_IsPrefabParent: 0
