@@ -15,8 +15,11 @@ namespace SciFi.UI {
         float minY;
         float maxY;
         /// At 60fps
-        const float maxDelta = 0.1f;
+        const float maxDelta = 0.2f;
         const float refocusThreshold = 1f;
+        /// If the background is within this much of the screen size,
+        /// we won't allow scrolling in that direction.
+        const float screenSizeTolerance = 0.1f;
 
         /// If this is true, the camera will aim for a smaller window
         /// to fit the player into.
@@ -25,10 +28,20 @@ namespace SciFi.UI {
         void Start() {
             float screenHeight = camera.orthographicSize * 2;
             float screenWidth = screenHeight * Screen.width / Screen.height;
-            maxX = backgroundRenderer.bounds.extents.x - screenWidth / 2;
-            minX = -maxX;
-            maxY = backgroundRenderer.bounds.extents.y - screenHeight / 2;
-            minY = -maxY;
+            var bgExtents = backgroundRenderer.bounds.extents;
+            var screenExtents = new Vector2(screenWidth, screenHeight) / 2;
+            if (Mathf.Abs(bgExtents.x - screenExtents.x) < screenSizeTolerance) {
+                maxX = minX = 0;
+            } else {
+                maxX = bgExtents.x - screenExtents.x;
+                minX = -maxX;
+            }
+            if (Mathf.Abs(bgExtents.y - screenExtents.y) < screenSizeTolerance) {
+                maxY = minY = 0;
+            } else {
+                maxY = bgExtents.y - screenExtents.y;
+                minY = -maxY;
+            }
         }
 
         const float xwin = 2f;
