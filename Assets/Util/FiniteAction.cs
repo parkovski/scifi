@@ -6,14 +6,14 @@ namespace SciFi.Util {
     /// An action with a definite end condition.
     /// Checks periodically whether the condition
     /// has been met so you can't forget to end it.
-    public abstract class FiniteAction {
+    public abstract class FiniteAction<T> where T : MonoBehaviour {
         bool active;
         Func<bool> shouldEnd;
         float checkInterval;
-        MonoBehaviour coroutineRunner;
+        protected T coroutineRunner;
         Coroutine checkToEnd;
 
-        public FiniteAction(MonoBehaviour coroutineRunner, float checkInterval, Func<bool> shouldEnd) {
+        public FiniteAction(T coroutineRunner, float checkInterval, Func<bool> shouldEnd) {
             this.coroutineRunner = coroutineRunner;
             this.checkInterval = checkInterval;
             this.shouldEnd = shouldEnd;
