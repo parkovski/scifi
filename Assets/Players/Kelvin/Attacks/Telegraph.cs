@@ -1,6 +1,9 @@
 using UnityEngine;
+using UnityEngine.Networking;
+using System.Collections.Generic;
 
 using SciFi.Items;
+using SciFi.Players.Modifiers;
 
 namespace SciFi.Players.Attacks {
     public class Telegraph : MonoBehaviour, IAttackSource {
@@ -26,6 +29,17 @@ namespace SciFi.Players.Attacks {
         int pulseIndex;
         float nextStateTime;
         MorseCodeState morseCodeState;
+        const float dotLength = 0.1f;
+        const float dashLength = 3 * dotLength;
+        const float pauseBetweenPulses = dotLength;
+        const float pauseBetweenLetters = 3 * pauseBetweenPulses;
+        const float pauseBetweenWords = 7 * pauseBetweenPulses;
+
+        List<GameObject> attackingObjects;
+        List<ModifierStateChange> attackingModifierStateChanges;
+        float nextDamageTime;
+        const float damageInterval = 0.25f;
+        int hits;
 
         enum MorseCodeState {
             PlayingPulse,
@@ -41,6 +55,8 @@ namespace SciFi.Players.Attacks {
             rightCollider = colliders[0];
             leftCollider = colliders[1];
             leftCollider.enabled = false;
+            attackingObjects = new List<GameObject>();
+            attackingModifierStateChanges = new List<ModifierStateChange>();
         }
 
         void Start() {
@@ -54,6 +70,15 @@ namespace SciFi.Players.Attacks {
             morseCodeState = MorseCodeState.ShortPause;
             nextStateTime = Time.time;
             UpdateMorseCode();
+        }
+
+        void OnDestroy() {
+            foreach (var stateChange in attackingModifierStateChanges) {
+                if (stateChange == null) {
+                    continue;
+                }
+                stateChange.End();
+            }
         }
 
         public void SetDirection(Direction direction) {
@@ -78,15 +103,15 @@ namespace SciFi.Players.Attacks {
                         } else {
                             if (sentence[charIndex] == ' ') {
                                 morseCodeState = MorseCodeState.LongPause;
-                                nextStateTime += .25f;
+                                nextStateTime += pauseBetweenWords;
                             } else {
                                 morseCodeState = MorseCodeState.ShortPause;
-                                nextStateTime += .1f;
+                                nextStateTime += pauseBetweenLetters;
                             }
                         }
                     } else {
                         morseCodeState = MorseCodeState.ShortPause;
-                        nextStateTime += .1f;
+                        nextStateTime += pauseBetweenPulses;
                     }
                     break;
                 case MorseCodeState.LongPause:
@@ -94,7 +119,7 @@ namespace SciFi.Players.Attacks {
                     goto case MorseCodeState.ShortPause;
                 case MorseCodeState.ShortPause:
                     morseCodeState = MorseCodeState.PlayingPulse;
-                    nextStateTime += MorseCode.IsDash(sentence[charIndex], pulseIndex) ? .25f : .1f;
+                    nextStateTime += MorseCode.IsDash(sentence[charIndex], pulseIndex) ? dashLength : dotLength;
                     audioSource.time = 0;
                     audioSource.Play();
                     telegraph.sprite = closedTelegraph;
@@ -112,11 +137,45 @@ namespace SciFi.Players.Attacks {
                 electricity.sprite = electricitySprites[electricitySpriteIndex];
             }
             UpdateMorseCode();
+
+            if (NetworkServer.active && nextDamageTime > 0f) {
+                if (Time.time > nextDamageTime && hits < 4) {
+                    nextDamageTime = Time.time + damageInterval;
+                    var knockback = 0f;
+                    if (++hits == 4) {
+                        knockback = 10f;
+                        foreach (var stateChange in attackingModifierStateChanges) {
+                            if (stateChange == null) {
+                                continue;
+                            }
+                            stateChange.End();
+                        }
+                    }
+                    foreach (var obj in attackingObjects) {
+                        GameController.Instance.Hit(obj, this, gameObject, 5, knockback);
+                    }
+                }
+            }
         }
 
         void OnTriggerEnter2D(Collider2D collider) {
+            if (!NetworkServer.active) {
+                return;
+            }
+
             if (Attack.GetAttackHit(collider.gameObject.layer) == AttackHit.HitAndDamage) {
-                GameController.Instance.Hit(collider.gameObject, this, gameObject, 5, 0.1f);
+                attackingObjects.Add(collider.gameObject);
+                var player = collider.gameObject.GetComponent<Player>();
+                if (player != null) {
+                    var stateChange = new ModifierStateChange(player, ModId.CantMove, () => gameObject == null);
+                    stateChange.Start();
+                    attackingModifierStateChanges.Add(stateChange);
+                } else {
+                    attackingModifierStateChanges.Add(null);
+                }
+                if (nextDamageTime == 0f) {
+                    nextDamageTime = Time.time;
+                }
             }
         }
 

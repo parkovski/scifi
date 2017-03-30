@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 using SciFi.Players.Attacks;
-using SciFi.Players.Modifiers;
 using SciFi.Util;
 
 namespace SciFi.Players {
@@ -51,8 +50,6 @@ namespace SciFi.Players {
                 );
                 chargingFireball.GetComponent<FireBall>().destroyCallback = OnFireballDestroyed;
                 RpcSetFireballActive(true);
-                //AddModifier(ModId.CantMove);
-                //AddModifier(ModId.CantAttack);
             }
         }
 
@@ -61,8 +58,6 @@ namespace SciFi.Players {
             if (chargingFireball != null) {
                 chargingFireball.GetComponent<FireBall>().StopCharging();
             }
-            //RemoveModifier(ModId.CantMove);
-            //RemoveModifier(ModId.CantAttack);
         }
 
         [Command]
@@ -85,8 +80,6 @@ namespace SciFi.Players {
 
         [Command]
         public void CmdCancelFireball(bool onPurpose) {
-            //RemoveModifier(ModId.CantAttack);
-            //RemoveModifier(ModId.CantMove);
             if (onPurpose) {
                 return;
             }

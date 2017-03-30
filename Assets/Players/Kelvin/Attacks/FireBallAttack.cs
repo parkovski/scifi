@@ -8,10 +8,10 @@ namespace SciFi.Players.Attacks {
     // and latches onto the player it hits, doing between
     // 3-5 rounds of damage.
     public class FireBallAttack : Attack {
-        const float horizontalForce = 20f;
         bool hasActiveFireball = false;
+        /// Was the cancel on purpose, because we are just throwing
+        /// the fireball, or not - ex. getting hit while charging it?
         bool cancelRequested = false;
-        float lastFireTime;
 
         public FireBallAttack(Kelvin player)
             : base(player, true)

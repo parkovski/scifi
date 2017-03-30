@@ -221,7 +221,13 @@ namespace SciFi.Players.Attacks {
 
             var player = collision.gameObject.GetComponent<Player>();
             if (player != null) {
-                Throw(player.eDirection);
+                Direction throwDirection;
+                if (transform.position.x < player.transform.position.x) {
+                    throwDirection = Direction.Right;
+                } else {
+                    throwDirection = Direction.Left;
+                }
+                Throw(throwDirection);
                 targetPlayer = collision.gameObject;
                 targetOffset = gameObject.transform.position - targetPlayer.transform.position;
                 RpcSetTargetPlayer(targetPlayer.GetComponent<NetworkIdentity>().netId, targetOffset);
