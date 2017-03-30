@@ -79,7 +79,7 @@ namespace SciFi.Players.Attacks {
 
         void Hit(GameObject obj) {
             var hit = Attack.GetAttackHit(obj.layer);
-            if (hit == AttackHit.HitAndDamage && !hits.CheckOrFlag(obj)) {
+            if (hit != AttackHit.None && !hits.CheckOrFlag(obj)) {
                 var knockback = ((float)power).Scale(1, 10, 5, 10);
                 GameController.Instance.Hit(obj, this, player.gameObject, (int)knockback, knockback);
                 Effects.Star(obj.transform.position);

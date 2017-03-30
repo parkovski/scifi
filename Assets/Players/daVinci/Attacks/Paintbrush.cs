@@ -1,7 +1,5 @@
 using UnityEngine;
 
-using SciFi.UI;
-
 namespace SciFi.Players.Attacks {
     public class Paintbrush : MonoBehaviour, IAttackSource {
         public GameObject paintDropPrefab;

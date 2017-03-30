@@ -40,8 +40,8 @@ namespace SciFi.Players.Attacks {
         }
 
         void OnCollisionEnter2D(Collision2D collision) {
-            var projectile = collision.gameObject.GetComponent<Projectile>();
-            if (Attack.GetAttackHit(collision.gameObject.layer) == AttackHit.HitAndDamage) {
+            var attackHit = Attack.GetAttackHit(collision.gameObject.layer);
+            if (attackHit == AttackHit.HitAndDamage) {
                 var damage = (int)transform.localScale.x.Scale(minScale, maxScale, 1.5f, 5.5f);
                 float knockback;
                 if (sSharedHitSet == null || sSharedHitSet.CheckOrFlag(collision.gameObject)) {
@@ -51,10 +51,29 @@ namespace SciFi.Players.Attacks {
                 }
                 GameController.Instance.HitNoVelocityReset(collision.gameObject, this, gameObject, damage, knockback);
                 pooled.Release();
+            } else if (attackHit == AttackHit.HitOnly) {
+                NoDamageCollision(collision.gameObject);
             } else {
-                if (projectile == null || !projectile.HasSameOwner(this)) {
-                    pooled.Release();
+                pooled.Release();
+            }
+        }
+
+        void OnTriggerEnter2D(Collider2D collider) {
+            NoDamageCollision(collider.gameObject);
+        }
+
+        void NoDamageCollision(GameObject obj) {
+            if (Attack.GetAttackHit(obj.layer) != AttackHit.None) {
+                var projectile = obj.GetComponent<Projectile>();
+                if (projectile != null && projectile.HasSameOwner(this)) {
+                    // Don't hit other paint drops, but do hit other projectiles
+                    // created by this player (the flying machine).
+                    if (projectile is PaintDrop) {
+                        return;
+                    }
                 }
+                GameController.Instance.HitNoVelocityReset(obj, this, gameObject, 1, 1);
+                pooled.Release();
             }
         }
 

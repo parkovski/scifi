@@ -3,6 +3,7 @@ using UnityEngine.Networking;
 
 using SciFi.Items;
 using SciFi.Environment.Effects;
+using SciFi.Players.Modifiers;
 
 namespace SciFi.Players.Attacks {
     public class FlyingMachine : Projectile {
@@ -22,6 +23,7 @@ namespace SciFi.Players.Attacks {
         float initialHoldStateTime;
         Vector3 heldPlayerOffset;
         Player heldPlayer;
+        ModifierStateChange heldPlayerCantMove;
 
         Rigidbody2D rb;
 
@@ -89,6 +91,11 @@ namespace SciFi.Players.Attacks {
             }
         }
 
+        /// Is the state one of the ones where the player should have a lockout applied?
+        bool IsInLockoutState() {
+            return state == State.CarryingPlayer || state == State.HoldingPlayer;
+        }
+
         void AnimateProp() {
             if (Time.time > changePropSpriteTime) {
                 changePropSpriteTime = Time.time + movingPropSpriteTime;
@@ -145,6 +152,8 @@ namespace SciFi.Players.Attacks {
             if (xOk && yOk) {
                 state = State.CarryingPlayer;
                 heldPlayerOffset = transform.position - heldPlayer.transform.position;
+                heldPlayerCantMove = new ModifierStateChange(heldPlayer, ModId.CantMove, () => this == null || !IsInLockoutState());
+                heldPlayerCantMove.Start();
             }
             rb.velocity = new Vector2(newXVelocity, newYVelocity);
 
@@ -176,6 +185,7 @@ namespace SciFi.Players.Attacks {
                 initialTime = Time.time;
                 state = State.Finished;
                 rb.isKinematic = false;
+                heldPlayerCantMove.End();
             }
 
             AnimateProp();
