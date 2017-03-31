@@ -595,8 +595,8 @@ GameObject:
   m_Component:
   - component: {fileID: 241391962}
   - component: {fileID: 241391965}
-  - component: {fileID: 241391964}
   - component: {fileID: 241391963}
+  - component: {fileID: 241391964}
   m_Layer: 8
   m_Name: ShieldButton
   m_TagString: Untagged
@@ -611,8 +611,8 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 241391961}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 167.1111, y: -128.46666, z: -5640}
-  m_LocalScale: {x: 62.66604, y: 62.66604, z: 0.010026666}
+  m_LocalPosition: {x: 153.6235, y: -129.24942, z: -5640}
+  m_LocalScale: {x: 70.500404, y: 70.500404, z: 0.010026666}
   m_Children:
   - {fileID: 1597137014}
   m_Father: {fileID: 31478549}
@@ -640,11 +640,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 241391961}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e51c735ef12f5b4aadcf5ab1658f86d, type: 3}
+  m_Script: {fileID: 11500000, guid: 15736098c02f8b84ab63f55a789b6da2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  anchorType: 2
-  anchorOffset: {x: -4, y: 1.7, z: 0}
+  reference: {fileID: 1099738249}
+  anchor: 3
+  autoWidth: 1
+  percentWidth: 0
+  autoHeight: 0
+  percentHeight: 0.15
+  marginMode: 0
+  margin: {x: 0, y: 0}
 --- !u!212 &241391965
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -874,8 +880,8 @@ GameObject:
   m_Component:
   - component: {fileID: 336553022}
   - component: {fileID: 336553021}
-  - component: {fileID: 336553023}
   - component: {fileID: 336553024}
+  - component: {fileID: 336553023}
   m_Layer: 8
   m_Name: AttackButton3
   m_TagString: Untagged
@@ -925,8 +931,8 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 336553020}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 355.1111, y: -128.46666, z: -5640}
-  m_LocalScale: {x: 62.666, y: 62.666, z: 0.01}
+  m_LocalPosition: {x: 365.1247, y: -129.24942, z: -5640}
+  m_LocalScale: {x: 70.500404, y: 70.500404, z: 0.01}
   m_Children:
   - {fileID: 616034190}
   m_Father: {fileID: 31478549}
@@ -940,11 +946,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 336553020}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e51c735ef12f5b4aadcf5ab1658f86d, type: 3}
+  m_Script: {fileID: 11500000, guid: 15736098c02f8b84ab63f55a789b6da2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  anchorType: 2
-  anchorOffset: {x: -1, y: 1.7, z: 0}
+  reference: {fileID: 2134407078}
+  anchor: 1
+  autoWidth: 1
+  percentWidth: 0
+  autoHeight: 0
+  percentHeight: 0.15
+  marginMode: 0
+  margin: {x: 0, y: 0}
 --- !u!61 &336553024
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1266,7 +1278,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.47794116, g: 0, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -1474,7 +1486,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -1598,7 +1610,7 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 140
+    m_FontSize: 160
     m_FontStyle: 1
     m_BestFit: 0
     m_MinSize: 0
@@ -1625,8 +1637,8 @@ GameObject:
   m_Component:
   - component: {fileID: 771726741}
   - component: {fileID: 771726740}
-  - component: {fileID: 771726742}
   - component: {fileID: 771726743}
+  - component: {fileID: 771726742}
   m_Layer: 8
   m_Name: ItemButton
   m_TagString: Untagged
@@ -1676,8 +1688,8 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 771726739}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 167.1111, y: -191.13333, z: -5640}
-  m_LocalScale: {x: 62.666, y: 62.666, z: 0.01}
+  m_LocalPosition: {x: 153.6235, y: -199.74983, z: -5640}
+  m_LocalScale: {x: 70.500404, y: 70.500404, z: 0.01}
   m_Children:
   - {fileID: 1061302015}
   m_Father: {fileID: 31478549}
@@ -1691,11 +1703,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 771726739}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e51c735ef12f5b4aadcf5ab1658f86d, type: 3}
+  m_Script: {fileID: 11500000, guid: 15736098c02f8b84ab63f55a789b6da2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  anchorType: 2
-  anchorOffset: {x: -4, y: 0.7, z: 0}
+  reference: {fileID: 988461237}
+  anchor: 3
+  autoWidth: 1
+  percentWidth: 0
+  autoHeight: 0
+  percentHeight: 0.15
+  marginMode: 0
+  margin: {x: 0, y: 0}
 --- !u!61 &771726743
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1861,8 +1879,8 @@ GameObject:
   m_Component:
   - component: {fileID: 822711271}
   - component: {fileID: 822711273}
-  - component: {fileID: 822711272}
   - component: {fileID: 822711274}
+  - component: {fileID: 822711272}
   m_Layer: 8
   m_Name: JoyStickOuter
   m_TagString: Untagged
@@ -1877,8 +1895,8 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 822711270}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -323.77777, y: -141, z: -5640}
-  m_LocalScale: {x: 62.666, y: 62.666, z: 1}
+  m_LocalPosition: {x: -347.5003, y: -164.5003, z: -5640}
+  m_LocalScale: {x: 46.9998, y: 46.9998, z: 1}
   m_Children: []
   m_Father: {fileID: 31478549}
   m_RootOrder: 6
@@ -1891,11 +1909,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 822711270}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e51c735ef12f5b4aadcf5ab1658f86d, type: 3}
+  m_Script: {fileID: 11500000, guid: 15736098c02f8b84ab63f55a789b6da2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  anchorType: 0
-  anchorOffset: {x: 1.5, y: 1.5, z: 0}
+  reference: {fileID: 0}
+  anchor: 6
+  autoWidth: 1
+  percentWidth: 0
+  autoHeight: 0
+  percentHeight: 0.3
+  marginMode: 0
+  margin: {x: 0, y: 0}
 --- !u!212 &822711273
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2203,7 +2227,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.5294118, g: 0.44908726, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -2273,8 +2297,8 @@ GameObject:
   m_Component:
   - component: {fileID: 988461236}
   - component: {fileID: 988461235}
-  - component: {fileID: 988461237}
   - component: {fileID: 988461238}
+  - component: {fileID: 988461237}
   m_Layer: 8
   m_Name: AttackButton1
   m_TagString: Untagged
@@ -2324,8 +2348,8 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 988461234}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 261.1111, y: -191.13333, z: -5640}
-  m_LocalScale: {x: 62.666, y: 62.666, z: 0.01}
+  m_LocalPosition: {x: 259.3741, y: -199.74982, z: -5640}
+  m_LocalScale: {x: 70.500404, y: 70.500404, z: 0.01}
   m_Children:
   - {fileID: 1944449355}
   m_Father: {fileID: 31478549}
@@ -2339,11 +2363,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 988461234}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e51c735ef12f5b4aadcf5ab1658f86d, type: 3}
+  m_Script: {fileID: 11500000, guid: 15736098c02f8b84ab63f55a789b6da2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  anchorType: 2
-  anchorOffset: {x: -2.5, y: 0.7, z: 0}
+  reference: {fileID: 2134407078}
+  anchor: 3
+  autoWidth: 1
+  percentWidth: 0
+  autoHeight: 0
+  percentHeight: 0.15
+  marginMode: 0
+  margin: {x: 0, y: 0}
 --- !u!61 &988461238
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2531,8 +2561,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1099738248}
   - component: {fileID: 1099738247}
-  - component: {fileID: 1099738249}
   - component: {fileID: 1099738250}
+  - component: {fileID: 1099738249}
   m_Layer: 8
   m_Name: JumpButton
   m_TagString: Untagged
@@ -2582,8 +2612,8 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1099738246}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 261.1111, y: -128.46666, z: -5640}
-  m_LocalScale: {x: 62.666, y: 62.666, z: 0.01}
+  m_LocalPosition: {x: 259.3741, y: -129.24942, z: -5640}
+  m_LocalScale: {x: 70.500404, y: 70.500404, z: 0.01}
   m_Children:
   - {fileID: 524429608}
   m_Father: {fileID: 31478549}
@@ -2597,11 +2627,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 1099738246}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e51c735ef12f5b4aadcf5ab1658f86d, type: 3}
+  m_Script: {fileID: 11500000, guid: 15736098c02f8b84ab63f55a789b6da2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  anchorType: 2
-  anchorOffset: {x: -2.5, y: 1.7, z: 0}
+  reference: {fileID: 2134407078}
+  anchor: 0
+  autoWidth: 1
+  percentWidth: 0
+  autoHeight: 0
+  percentHeight: 0.15
+  marginMode: 0
+  margin: {x: 0, y: 0}
 --- !u!61 &1099738250
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -3153,7 +3189,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.05481749, g: 0.3455882, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -3863,6 +3899,7 @@ GameObject:
   - component: {fileID: 1959001586}
   - component: {fileID: 1959001585}
   - component: {fileID: 1959001587}
+  - component: {fileID: 1959001588}
   m_Layer: 8
   m_Name: JoyStickInner
   m_TagString: Untagged
@@ -3877,8 +3914,8 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1959001583}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -326, y: -142, z: -5640}
-  m_LocalScale: {x: 62.66667, y: 62.66667, z: 62.666668}
+  m_LocalPosition: {x: -347.5003, y: -164.5003, z: -5640}
+  m_LocalScale: {x: 46.9998, y: 46.9998, z: 62.666668}
   m_Children: []
   m_Father: {fileID: 31478549}
   m_RootOrder: 7
@@ -3944,6 +3981,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   positionSource: {fileID: 822711270}
+--- !u!114 &1959001588
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1959001583}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15736098c02f8b84ab63f55a789b6da2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  reference: {fileID: 822711272}
+  anchor: 4
+  autoWidth: 1
+  percentWidth: 0
+  autoHeight: 0
+  percentHeight: 0.3
+  marginMode: 0
+  margin: {x: 0, y: 0}
 --- !u!1 &1963055515
 GameObject:
   m_ObjectHideFlags: 0
@@ -4198,7 +4254,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.030679265, g: 0, b: 0.8897059, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -4509,8 +4565,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2134407077}
   - component: {fileID: 2134407076}
-  - component: {fileID: 2134407078}
   - component: {fileID: 2134407079}
+  - component: {fileID: 2134407078}
   m_Layer: 8
   m_Name: AttackButton2
   m_TagString: Untagged
@@ -4560,8 +4616,8 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2134407075}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 355.1111, y: -191.13333, z: -5640}
-  m_LocalScale: {x: 62.666, y: 62.666, z: 0.01}
+  m_LocalPosition: {x: 365.1247, y: -199.7498, z: -5640}
+  m_LocalScale: {x: 70.500404, y: 70.500404, z: 0.01}
   m_Children:
   - {fileID: 1437276352}
   m_Father: {fileID: 31478549}
@@ -4575,11 +4631,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 2134407075}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e51c735ef12f5b4aadcf5ab1658f86d, type: 3}
+  m_Script: {fileID: 11500000, guid: 15736098c02f8b84ab63f55a789b6da2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  anchorType: 2
-  anchorOffset: {x: -1, y: 0.7, z: 0}
+  reference: {fileID: 0}
+  anchor: 8
+  autoWidth: 1
+  percentWidth: 0
+  autoHeight: 0
+  percentHeight: 0.15
+  marginMode: 0
+  margin: {x: 0, y: 0}
 --- !u!61 &2134407079
 BoxCollider2D:
   m_ObjectHideFlags: 0

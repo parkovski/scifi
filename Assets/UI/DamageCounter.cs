@@ -30,9 +30,9 @@ namespace SciFi.UI {
                 }
                 var p = players[player];
                 if (p.eTeam == -1) {
-                    text.color = Color.black;
+                    text.color = Color.white;
                 } else {
-                    text.color = Player.TeamToColor(p.eTeam, true);
+                    text.color = Player.TeamToColor(p.eTeam, false);
                 }
                 lives = p.eLives;
                 damage = p.eDamage;
