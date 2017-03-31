@@ -4,6 +4,7 @@ using UnityEngine.Networking;
 using SciFi.Items;
 using SciFi.Environment.Effects;
 using SciFi.Players.Modifiers;
+using SciFi.Util.Extensions;
 
 namespace SciFi.Players.Attacks {
     public class FlyingMachine : Projectile {
@@ -186,6 +187,10 @@ namespace SciFi.Players.Attacks {
                 state = State.Finished;
                 rb.isKinematic = false;
                 heldPlayerCantMove.End();
+                if (isServer) {
+                    var damage = power.Scale(1, 10, 5, 15);
+                    GameController.Instance.Hit(heldPlayer.gameObject, this, gameObject, damage, damage);
+                }
             }
 
             AnimateProp();
