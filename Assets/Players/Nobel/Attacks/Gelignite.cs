@@ -11,7 +11,6 @@ namespace SciFi.Players.Attacks {
         public GameObject explosionPrefab;
         Player stuckToPlayer;
         SpriteRenderer spriteRenderer;
-        SpriteRenderer flameSpriteRenderer;
 
         float lastBurnTime;
 
@@ -24,7 +23,6 @@ namespace SciFi.Players.Attacks {
 
         void Awake() {
             spriteRenderer = GetComponent<SpriteRenderer>();
-            flameSpriteRenderer = transform.GetChild(0).GetComponent<SpriteRenderer>();
             pooled = PooledObject.Get(gameObject);
         }
 

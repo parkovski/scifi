@@ -446,7 +446,6 @@ namespace SciFi {
             var dy = point.y - center.y;
             var xsq = dx * dx;
             var ysq = dy * dy;
-            var rsq = radius * radius;
             if (Mathf.Sqrt(xsq + ysq) > radius) {
                 var angle = Mathf.Atan2(dy, dx);
                 var x = Mathf.Cos(angle) * radius;

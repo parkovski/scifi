@@ -30,7 +30,7 @@ namespace SciFi.Scenes {
                     TransitionParams.displayName = n;
                 }
             });
-            hostName.text = Config.GetKey("multiplayer-host");
+            hostName.text = Config.GetKey("multiplayer server");
         }
 
         [Conditional("UNITY_STANDALONE_LINUX")]

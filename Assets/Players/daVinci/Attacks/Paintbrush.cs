@@ -5,8 +5,6 @@ namespace SciFi.Players.Attacks {
         public GameObject paintDropPrefab;
         [HideInInspector]
         public daVinci player;
-        int paintDropPrefabIndex;
-        Direction direction = Direction.Left;
         SpriteRenderer spriteRenderer;
 
         static readonly Color[] colors = new[] {
@@ -22,7 +20,6 @@ namespace SciFi.Players.Attacks {
         void Start() {
             spriteRenderer = GetComponent<SpriteRenderer>();
             spriteRenderer.enabled = false;
-            paintDropPrefabIndex = GameController.PrefabToIndex(paintDropPrefab);
         }
 
         public void Show() {
@@ -35,10 +32,6 @@ namespace SciFi.Players.Attacks {
 
         public void ThrowPaint() {
             player.CmdSpawnPaintDrops(colors[Random.Range(0, colors.Length)]);
-        }
-
-        public void SetDirection(Direction direction) {
-            this.direction = direction;
         }
 
         public AttackType Type { get { return AttackType.Melee; } }

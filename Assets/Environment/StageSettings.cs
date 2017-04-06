@@ -45,16 +45,16 @@ namespace SciFi.Environment {
             var colliderHeight = bgExtent.y * 2 + colliderSize + topOffset + bottomOffset;
             // Left
             colliders[0].offset = new Vector2(-bgExtent.x - colliderSize / 2 - horizontalOffset, 0);
-            colliders[0].size = new Vector2(colliderSize, bgExtent.y * 2 + colliderSize * 2 + topOffset + bottomOffset);
+            colliders[0].size = new Vector2(colliderSize, colliderHeight);
             // Right
             colliders[1].offset = new Vector2(bgExtent.x + colliderSize / 2 + horizontalOffset, 0);
-            colliders[1].size = new Vector2(colliderSize, bgExtent.y * 2 + colliderSize * 2 + topOffset + bottomOffset);
+            colliders[1].size = new Vector2(colliderSize, colliderHeight);
             // Bottom
             colliders[2].offset = new Vector2(0, -bgExtent.y - colliderSize / 2 - bottomOffset);
-            colliders[2].size = new Vector2(bgExtent.x * 2 + colliderSize * 2 + horizontalOffset * 2, colliderSize);
+            colliders[2].size = new Vector2(colliderWidth, colliderSize);
             // Top
             colliders[3].offset = new Vector2(0, bgExtent.y + colliderSize / 2 + topOffset);
-            colliders[3].size = new Vector2(bgExtent.x * 2 + colliderSize * 2 + horizontalOffset * 2, colliderSize);
+            colliders[3].size = new Vector2(colliderWidth, colliderSize);
         }
     }
 }

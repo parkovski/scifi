@@ -31,15 +31,12 @@ namespace SciFi.UI {
             if (cameraPosition == oldCameraPosition) {
                 return;
             }
-            var deltaCamera = cameraPosition - oldCameraPosition;
             oldCameraPosition = cameraPosition;
 
             for (int i = 0; i < background.Length; i++) {
                 var scale = backgroundDistance[i];
 
                 Vector2 position = background[i].transform.position;
-                var xscale = background[i].transform.lossyScale.x;
-                var yscale = background[i].transform.lossyScale.y;
                 if (scrollX) {
                     position.x = xOffset[i] + cameraPosition.x * scale;
                 } else {
