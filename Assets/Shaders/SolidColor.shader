@@ -1,3 +1,5 @@
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
 Shader "SciFi/Effects/SolidColor" {
     Properties {
         _Color("Color", Color) = (0, 0, 0, 1)
@@ -33,7 +35,7 @@ Shader "SciFi/Effects/SolidColor" {
             v2f vert(appdata_base v) {
                 v2f o;
 
-                o.pos = mul(UNITY_MATRIX_MVP, v.vertex);
+                o.pos = UnityObjectToClipPos(v.vertex);
                 o.uv = v.texcoord.xy;
 
                 return o;

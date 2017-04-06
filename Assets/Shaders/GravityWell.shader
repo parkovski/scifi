@@ -1,3 +1,5 @@
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
 // http://answers.unity3d.com/questions/521984/how-do-you-draw-2d-circles-and-primitives.html
 
 Shader "SciFi/Attacks/GravityWell" {
@@ -37,7 +39,7 @@ Shader "SciFi/Attacks/GravityWell" {
             fragmentInput vert(appdata_base v) {
                 fragmentInput o;
 
-                o.pos = mul(UNITY_MATRIX_MVP, v.vertex);
+                o.pos = UnityObjectToClipPos(v.vertex);
                 o.uv = v.texcoord.xy - fixed2(0.5, 0.5);
 
                 return o;

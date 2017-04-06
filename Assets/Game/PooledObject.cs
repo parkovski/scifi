@@ -62,11 +62,11 @@ namespace SciFi {
         /// Disables sprite renderers, animators, colliders, and rigid bodies
         /// attached to the object.
         public static void Disable(GameObject obj) {
-            foreach (var sr in obj.GetComponentsInChildren<SpriteRenderer>()) {
-                sr.enabled = false;
-            }
             foreach (var anim in obj.GetComponentsInChildren<Animator>()) {
                 anim.enabled = false;
+            }
+            foreach (var sr in obj.GetComponentsInChildren<SpriteRenderer>()) {
+                sr.enabled = false;
             }
             foreach (var coll in obj.GetComponentsInChildren<Collider2D>()) {
                 coll.enabled = false;
@@ -86,6 +86,8 @@ namespace SciFi {
             }
             foreach (var anim in obj.GetComponentsInChildren<Animator>()) {
                 anim.enabled = true;
+                anim.Rebind();
+                anim.Play(anim.GetCurrentAnimatorStateInfo(0).fullPathHash, 0, 0);
             }
             foreach (var coll in obj.GetComponentsInChildren<Collider2D>()) {
                 coll.enabled = true;
