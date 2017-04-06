@@ -237,9 +237,8 @@ namespace SciFi {
         /// Find the winner and report it to the clients.
         int FindWinner() {
             Player winner;
-            try {
-                winner = activePlayers.Single(p => p.eLives > 0);
-            } catch {
+            winner = activePlayers.SingleOrDefault(p => p.eLives > 0);
+            if (winner == null) {
                 return -1;
             }
             return winner.eId;
