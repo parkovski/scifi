@@ -2,7 +2,9 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.Rendering;
 using System.IO;
+using System.Diagnostics;
 
 namespace SciFi.Scenes {
     /// <brief>Multiplayer lobby.</brief>
@@ -14,6 +16,11 @@ namespace SciFi.Scenes {
         public InputField nickname;
 
         void Start() {
+            if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null) {
+                StartHeadlessServer();
+                return;
+            }
+
             nickname.onValueChanged.AddListener(n => {
                 if (string.IsNullOrEmpty(n)) {
                     TransitionParams.displayName = null;
@@ -24,6 +31,11 @@ namespace SciFi.Scenes {
             using (var stream = new StreamReader(Application.streamingAssetsPath + "/default-server.txt")) {
                 hostName.text = stream.ReadToEnd().Trim();
             }
+        }
+
+        [Conditional("UNITY_STANDALONE_LINUX")]
+        void StartHeadlessServer() {
+            lobbyManager.StartServer();
         }
 
         /// Set this client as the game host.
