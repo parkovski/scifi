@@ -1,0 +1,2 @@
+multiplayer-host = 192.168.1.102
+leaderboard-server = localhost

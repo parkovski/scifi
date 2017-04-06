@@ -6,6 +6,8 @@ using UnityEngine.Rendering;
 using System.IO;
 using System.Diagnostics;
 
+using SciFi.Util;
+
 namespace SciFi.Scenes {
     /// <brief>Multiplayer lobby.</brief>
     /// Handles host/join controls and
@@ -28,9 +30,7 @@ namespace SciFi.Scenes {
                     TransitionParams.displayName = n;
                 }
             });
-            using (var stream = new StreamReader(Application.streamingAssetsPath + "/default-server.txt")) {
-                hostName.text = stream.ReadToEnd().Trim();
-            }
+            hostName.text = Config.GetKey("multiplayer-host");
         }
 
         [Conditional("UNITY_STANDALONE_LINUX")]
