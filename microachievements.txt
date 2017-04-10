@@ -1,0 +1,25 @@
+Successful phone games have microachievements that are addictive.
+
+To do this in SciFighters, we can use damage inflicted and kills.
+These stats should be tracked in the leaderboard, and abilities
+can be given based on these. Some example abilities are:
+- Decreased attack cooldowns
+- More powerful attacks
+- Faster charging attacks
+- Longer ranged attacks
+- Stronger shield
+
+These are cards that are earned by getting kills in a game, or purchased.
+They are activated in the game by inflicting a certain amount of damage,
+and only one can be used at a time. They are specialized per-player and
+per-attack, and earned per-player - you must play as Newton to earn Newton
+cards, but getting kills with the calc book will not necessarily earn
+calc book cards. The exception is the shield - these apply to any player.
+Each card may require a different amount of damage to activate, and a few
+from your stash for the current player can be shown on the screen, greyed
+out with a colored uncovering indicating when they will become available.
+These can either be picked at random or chosen by the player before the
+match.
+
+After the match, based on the kills you got, you will be shown any cards
+that you earned and they will be available next match.
