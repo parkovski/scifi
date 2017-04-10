@@ -15,6 +15,7 @@ using SciFi.UI;
 using SciFi.Environment.Effects;
 using SciFi.Scenes;
 using SciFi.Network;
+using SciFi.Network.Web;
 using SciFi.AI;
 using SciFi.Util;
 
@@ -246,9 +247,32 @@ namespace SciFi {
 
         /// End the game and load the game over scene.
         [Server]
-        public void EndGame(int winnerId) {
+        public void EndGame() {
+            var result = new MatchResult {
+                winner = FindWinner(),
+                players = activePlayers.Select(p => new PlayerMatchInfo {
+                    id = p.sLeaderboardPlayerId,
+                    kills = p.sKills,
+                    deaths = p.sDeaths,
+                }).ToArray(),
+            };
+            foreach (var p in activePlayersGo) {
+                Destroy(p);
+            }
             StartCoroutine(TransitionToGameOver());
-            RpcEndGame(winnerId);
+            StartCoroutine(ReportMatchResult(result));
+            RpcEndGame(result.winner);
+        }
+
+        IEnumerator ReportMatchResult(MatchResult result) {
+            var request = Leaderboard.PostMatchResultsRequest(result);
+            if (request == null) {
+                yield break;
+            }
+            yield return request;
+            if (request.isError) {
+                print("Error reporting match result: " + request.error);
+            }
         }
 
         /// Is the game currently in progress?
@@ -331,14 +355,12 @@ namespace SciFi {
         public void Die(GameObject playerObject) {
             var player = playerObject.GetComponent<Player>();
             --player.eLives;
+            ++player.sDeaths;
+            if (player.sLastAttacker != null) {
+                ++player.sLastAttacker.sKills;
+            }
             if (activePlayers.Count(p => p.eLives > 0) == 1) {
-                int winnerId = FindWinner();
-
-                foreach (var go in activePlayersGo) {
-                    Destroy(go);
-                }
-
-                EndGame(winnerId);
+                EndGame();
                 return;
             }
 

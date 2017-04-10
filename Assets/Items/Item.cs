@@ -364,6 +364,7 @@ namespace SciFi.Items {
 
         public abstract AttackType Type { get; }
         public virtual AttackProperty Properties { get { return AttackProperty.None; } }
+        public Player Owner { get { return eOwner; } }
 
         public virtual void Interact(IAttackSource attack) {}
     }

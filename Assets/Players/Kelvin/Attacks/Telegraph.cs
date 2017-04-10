@@ -181,5 +181,6 @@ namespace SciFi.Players.Attacks {
 
         public AttackType Type { get { return AttackType.Melee; } }
         public AttackProperty Properties { get { return AttackProperty.Electric; } }
+        public Player Owner { get { return spawnedBy.GetComponent<Player>(); } }
     }
 }

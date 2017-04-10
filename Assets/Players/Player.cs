@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections.Generic;
 
@@ -48,6 +48,17 @@ namespace SciFi.Players {
         public int eTeam = -1;
         [SyncVar, HideInInspector]
         public bool eShouldFallThroughOneWayPlatform;
+
+        [HideInInspector]
+        public int sLeaderboardPlayerId = -1;
+        [HideInInspector]
+        public int sKills;
+        [HideInInspector]
+        public int sDeaths;
+        [HideInInspector]
+        public int sDamageDealt;
+        [HideInInspector]
+        public Player sLastAttacker;
 
         private bool lInitialized = false;
         protected Rigidbody2D lRb;
@@ -754,9 +765,13 @@ namespace SciFi.Players {
         }
 
         public void Interact(IAttackSource attack) {
+            if (!isServer) {
+                return;
+            }
             if (sAttackHit != null) {
                 sAttackHit(attack.Type, attack.Properties);
             }
+            sLastAttacker = attack.Owner;
         }
 
         public int RegisterNetworkAttack(NetworkAttack attack) {

@@ -1,7 +1,7 @@
 using UnityEngine;
 
 namespace SciFi.Players.Attacks {
-    public class Paintbrush : MonoBehaviour, IAttackSource {
+    public class Paintbrush : MonoBehaviour {
         public GameObject paintDropPrefab;
         [HideInInspector]
         public daVinci player;
@@ -33,8 +33,5 @@ namespace SciFi.Players.Attacks {
         public void ThrowPaint() {
             player.CmdSpawnPaintDrops(colors[Random.Range(0, colors.Length)]);
         }
-
-        public AttackType Type { get { return AttackType.Melee; } }
-        public AttackProperty Properties { get { return AttackProperty.None; } }
     }
 }

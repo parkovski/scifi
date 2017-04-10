@@ -1,5 +1,6 @@
 using UnityEngine;
 
+using SciFi.Players;
 using SciFi.Players.Attacks;
 
 namespace SciFi.Items {
@@ -69,5 +70,6 @@ namespace SciFi.Items {
 
         public AttackType Type { get { return AttackType.Melee; } }
         public AttackProperty Properties { get { return AttackProperty.LightBeam; } }
+        public Player Owner { get { return null; } }
     }
 }

@@ -112,5 +112,6 @@ namespace SciFi.Players.Attacks {
         // IAttack implementation
         public AttackType Type { get { return AttackType.Melee; } }
         public AttackProperty Properties { get { return AttackProperty.None; } }
+        public Player Owner { get { return player; } }
     }
 }

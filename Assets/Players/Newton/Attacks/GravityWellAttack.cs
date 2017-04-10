@@ -69,5 +69,6 @@ namespace SciFi.Players.Attacks {
 
         public AttackType Type { get { return AttackType.Melee; } }
         public AttackProperty Properties { get { return AttackProperty.AffectsGravity; } }
+        public Player Owner { get { return player; } }
     }
 }

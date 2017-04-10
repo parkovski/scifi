@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Networking;
 
+using SciFi.Players;
 using SciFi.Players.Attacks;
 
 namespace SciFi.Items {
@@ -119,6 +120,24 @@ namespace SciFi.Items {
 
         public AttackType Type { get { return AttackType.Projectile; } }
         public virtual AttackProperty Properties { get { return AttackProperty.None; } }
+        public Player Owner {
+            get {
+                Player p = null;
+                if (spawnedBy == NetworkInstanceId.Invalid) {
+                    var go = ClientScene.FindLocalObject(spawnedBy);
+                    if (go != null) {
+                        p = go.GetComponent<Player>();
+                    }
+                    if (p == null && spawnedByExtra != NetworkInstanceId.Invalid) {
+                        go = ClientScene.FindLocalObject(spawnedByExtra);
+                        if (go != null) {
+                            p = go.GetComponent<Player>();
+                        }
+                    }
+                }
+                return p;
+            }
+        }
 
         public virtual void Interact(IAttackSource attack) {}
     }

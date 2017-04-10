@@ -3,7 +3,6 @@ using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.Rendering;
-using System.IO;
 using System.Diagnostics;
 
 using SciFi.Util;

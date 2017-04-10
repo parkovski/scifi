@@ -33,6 +33,8 @@ namespace SciFi.Players.Attacks {
     public interface IAttackSource {
         AttackType Type { get; }
         AttackProperty Properties { get; }
+        /// Can be null if no player owns this attack.
+        Player Owner { get; }
     }
 
     public abstract class Attack {

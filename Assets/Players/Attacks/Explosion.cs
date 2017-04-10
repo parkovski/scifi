@@ -13,6 +13,8 @@ namespace SciFi.Players.Attacks {
         [SyncVar, HideInInspector]
         public float knockback;
 
+        public Player creator;
+
         const float aliveTime = 0.25f;
         float startTime;
         HashSet<GameObject> hitObjects;
@@ -50,5 +52,6 @@ namespace SciFi.Players.Attacks {
 
         public AttackType Type { get { return AttackType.Projectile; } }
         public AttackProperty Properties { get { return AttackProperty.Explosive; } }
+        public Player Owner { get { return creator; } }
     }
 }

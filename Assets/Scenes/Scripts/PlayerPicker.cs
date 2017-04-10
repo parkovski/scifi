@@ -25,6 +25,13 @@ namespace SciFi.Scenes {
 
             goButton.onClick.AddListener(GoClicked);
             backButton.onClick.AddListener(BackClicked);
+
+            var isFirstRun = PlayerPrefs.HasKey("has opened player picker");
+#if !UNITY_EDITOR
+            if (isFirstRun) {
+                PlayerPrefs.SetInt("has opened player picker", 1);
+            }
+#endif
         }
 
         /// A different player was selected.

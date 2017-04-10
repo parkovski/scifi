@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.Diagnostics;
 
 #if UNITY_IOS && !UNITY_EDITOR
 using System.Runtime.InteropServices;
@@ -30,12 +29,13 @@ namespace SciFi.Scenes {
         }
 #endif
 
+#if UNITY_STANDALONE_LINUX && !UNITY_EDITOR
         /// For Linux standalone/headless, start the server.
-        [Conditional("UNITY_STANDALONE_LINUX")]
         void Start() {
             TransitionParams.gameType = GameType.Multi;
             SceneManager.LoadScene("Lobby");
         }
+#endif
 
         /// Start a single player game and go to player picker.
         public void SinglePlayer() {
