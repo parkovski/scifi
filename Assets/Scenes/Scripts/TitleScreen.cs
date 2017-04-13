@@ -32,8 +32,10 @@ namespace SciFi.Scenes {
 #if UNITY_STANDALONE_LINUX && !UNITY_EDITOR
         /// For Linux standalone/headless, start the server.
         void Start() {
-            TransitionParams.gameType = GameType.Multi;
-            SceneManager.LoadScene("Lobby");
+            if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null) {
+                TransitionParams.gameType = GameType.Multi;
+                SceneManager.LoadScene("Lobby");
+            }
         }
 #endif
 

@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4328555844574372}
   - component: {fileID: 212663036200160206}
   m_Layer: 11
-  m_Name: GreenAppleBroken_2
+  m_Name: AppleBroken_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -37,7 +37,7 @@ GameObject:
   - component: {fileID: 4371683604544208}
   - component: {fileID: 212899044621270328}
   m_Layer: 11
-  m_Name: GreenAppleBroken_1
+  m_Name: AppleBroken_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -53,7 +53,7 @@ GameObject:
   - component: {fileID: 4392332056227750}
   - component: {fileID: 212542504413809436}
   m_Layer: 11
-  m_Name: GreenAppleBroken_4
+  m_Name: AppleBroken_4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -88,7 +88,7 @@ GameObject:
   - component: {fileID: 4133367152325056}
   - component: {fileID: 212565853371223984}
   m_Layer: 11
-  m_Name: GreenAppleBroken_0
+  m_Name: AppleBroken_0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -104,7 +104,7 @@ GameObject:
   - component: {fileID: 4573302185652386}
   - component: {fileID: 212851195453084062}
   m_Layer: 11
-  m_Name: GreenAppleBroken_3
+  m_Name: AppleBroken_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -202,7 +202,7 @@ Animator:
   m_GameObject: {fileID: 1844964400331752}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: c838069d860744076b64ef81a236fb8e, type: 2}
+  m_Controller: {fileID: 9100000, guid: c6ca6df0df902439cb32ccbb0494c51a, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

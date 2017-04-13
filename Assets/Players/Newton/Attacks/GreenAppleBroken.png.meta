@@ -1,14 +1,14 @@
 fileFormatVersion: 2
 guid: 07f6e8522904446499b23bd810ac9130
-timeCreated: 1483385540
+timeCreated: 1492043809
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
-    21300000: GreenAppleBroken_0
-    21300002: GreenAppleBroken_1
-    21300004: GreenAppleBroken_2
-    21300006: GreenAppleBroken_3
-    21300008: GreenAppleBroken_4
+    21300000: AppleBroken_0
+    21300002: AppleBroken_1
+    21300004: AppleBroken_2
+    21300006: AppleBroken_3
+    21300008: AppleBroken_4
   serializedVersion: 4
   mipmaps:
     mipMapMode: 0
@@ -87,11 +87,27 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
+  - buildTarget: Windows Store Apps
+    maxTextureSize: 2048
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+  - buildTarget: WebGL
+    maxTextureSize: 2048
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: GreenAppleBroken_0
+      name: AppleBroken_0
       rect:
         serializedVersion: 2
         x: 52
@@ -104,7 +120,7 @@ TextureImporter:
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: GreenAppleBroken_1
+      name: AppleBroken_1
       rect:
         serializedVersion: 2
         x: 35
@@ -117,7 +133,7 @@ TextureImporter:
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: GreenAppleBroken_2
+      name: AppleBroken_2
       rect:
         serializedVersion: 2
         x: 211
@@ -130,7 +146,7 @@ TextureImporter:
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: GreenAppleBroken_3
+      name: AppleBroken_3
       rect:
         serializedVersion: 2
         x: 154
@@ -143,7 +159,7 @@ TextureImporter:
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: GreenAppleBroken_4
+      name: AppleBroken_4
       rect:
         serializedVersion: 2
         x: 214

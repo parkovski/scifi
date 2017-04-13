@@ -60,7 +60,7 @@ namespace SciFi.Scenes {
             if (request == null) {
                 yield break;
             }
-            yield return request;
+            yield return request.Send();
             var result = Leaderboard.GetCompetitorStatsResult(request);
             if (result == null) {
                 yield break;
