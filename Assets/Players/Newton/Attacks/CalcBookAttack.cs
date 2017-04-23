@@ -1,9 +1,10 @@
 using UnityEngine;
+using SciFi.Util.Extensions;
 
 namespace SciFi.Players.Attacks {
     public class CalcBookAttack : Attack {
         GameObject[] books;
-        GameObject chargingBook;
+        int activeBookIndex;
         int power;
 
         const float timeToChangeBooks = 0.5f;
@@ -12,62 +13,58 @@ namespace SciFi.Players.Attacks {
             : base(player, true)
         {
             this.books = books;
+            activeBookIndex = -1;
+            foreach (var book in books) {
+                ShowBook(book, false);
+            }
         }
 
-        void SpawnChargingBook(GameObject book) {
-            var offset = player.eDirection == Direction.Left
-                ? new Vector3(-1f, .5f)
-                : new Vector3(1f, .5f);
-            var rotation = player.eDirection == Direction.Left
-                ? Quaternion.Euler(0f, 0f, -20f)
-                : Quaternion.Euler(0f, 0f, 20f);
+        void StartCharging(int index) {
+            float animationTime = 0;
+            GameObject activeBook;
+            if (activeBookIndex != -1) {
+                activeBook = books[activeBookIndex];
+                animationTime = activeBook.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime;
+                ShowBook(activeBook, false);
+            }
+            activeBook = books[index];
+            var chargeAnim = player.eDirection == Direction.Right ? "CalcBookCharge" : "CalcBookChargeBackwards";
+            ShowBook(activeBook, true);
+            activeBookIndex = index;
+            activeBook.GetComponent<Animator>().Play(chargeAnim, 0, animationTime);
+        }
 
-            if (chargingBook != null) {
-                Object.Destroy(chargingBook);
-            }
-            chargingBook = Object.Instantiate(
-                book,
-                player.gameObject.transform.position + offset,
-                rotation,
-                player.gameObject.transform
-            );
-            var behavior = chargingBook.GetComponent<CalcBook>();
-            behavior.spawnedBy = player.gameObject;
-            if (player.eDirection == Direction.Left) {
-                chargingBook.GetComponent<Animator>().SetTrigger("ChargeBackwards");
-            } else {
-                chargingBook.GetComponent<Animator>().SetTrigger("Charge");
-            }
+        void ShowBook(GameObject book, bool show) {
+            book.GetComponent<CalcBook>().Show(show);
         }
 
         public override void OnBeginCharging(Direction direction) {
             power = 0;
-            SpawnChargingBook(books[0]);
+            StartCharging(0);
         }
 
         public override void OnKeepCharging(float chargeTime, Direction direction) {
             if (chargeTime > timeToChangeBooks && power == 0) {
                 ++power;
-                SpawnChargingBook(books[1]);
+                StartCharging(1);
             } else if (chargeTime > 2*timeToChangeBooks && power == 1) {
                 ++power;
-                SpawnChargingBook(books[2]);
+                StartCharging(2);
             }
         }
 
         public override void OnEndCharging(float chargeTime, Direction direction) {
-            chargingBook.GetComponent<CalcBook>().StartAttacking();
+            books[activeBookIndex].GetComponent<CalcBook>().StartAttacking();
             if (direction == Direction.Left) {
-                chargingBook.GetComponent<Animator>().SetTrigger("SwingBackwards");
+                books[activeBookIndex].GetComponent<Animator>().SetTrigger("SwingBackwards");
             } else {
-                chargingBook.GetComponent<Animator>().SetTrigger("Swing");
+                books[activeBookIndex].GetComponent<Animator>().SetTrigger("Swing");
             }
         }
 
         public override void OnCancel() {
-            if (chargingBook != null) {
-                Object.Destroy(chargingBook);
-            }
+            ShowBook(books[activeBookIndex], false);
+            activeBookIndex = -1;
         }
     }
 }

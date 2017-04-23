@@ -18,10 +18,24 @@ namespace SciFi.Players {
 
         protected override void OnInitialize() {
             eAttack1 = new AppleAttack(this, apple, greenApple);
-            eAttack2 = new NetworkAttack(new CalcBookAttack(this, new [] { calc1, calc2, calc3 }));
+            eAttack2 = new NetworkAttack(new CalcBookAttack(this, InstantiateBooks()));
             eAttack3 = new NetworkAttack(new GravityWellAttack(this, gravityWell));
             animator = GetComponent<Animator>();
             spriteFlip = new CompoundSpriteFlip(gameObject, defaultDirection);
+        }
+
+        GameObject[] InstantiateBooks() {
+            return new [] {
+                InstantiateBook(calc1),
+                InstantiateBook(calc2),
+                InstantiateBook(calc3),
+            };
+        }
+
+        GameObject InstantiateBook(GameObject prefab) {
+            var book = Instantiate(prefab, transform.position, Quaternion.identity, transform);
+            book.GetComponent<CalcBook>().spawnedBy = gameObject;
+            return book;
         }
 
         public override void OnStartLocalPlayer() {
