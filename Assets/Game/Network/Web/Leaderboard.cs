@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEngine.Networking;
 using System;
 
+using Facebook.Unity;
+
 using SciFi.Util;
 
 namespace SciFi.Network.Web {
@@ -18,6 +20,18 @@ namespace SciFi.Network.Web {
                 url = url.Substring(0, url.Length - 1);
             }
             return url;
+        }
+
+        static bool CheckFinishedRequest(UnityWebRequest request) {
+            if (!request.isDone) {
+                Debug.LogWarning("Unfinished request");
+                return false;
+            }
+            if (request.isError) {
+                Debug.LogWarning("Request error: " + request.error);
+                return false;
+            }
+            return true;
         }
 
         static UnityWebRequest CreateRequest(string path, string method = "GET") {
@@ -40,13 +54,10 @@ namespace SciFi.Network.Web {
 
         /// Returns null on error.
         public static PlayerStats[] GetCompetitorStatsResult(UnityWebRequest finishedRequest) {
-            if (!finishedRequest.isDone) {
+            if (!CheckFinishedRequest(finishedRequest)) {
                 return null;
             }
-            if (finishedRequest.isError) {
-                return null;
-            }
-            return JsonArray.From<PlayerStats>(finishedRequest.downloadHandler.text);
+            return JsonArray.FromJson<PlayerStats>(finishedRequest.downloadHandler.text);
         }
 
         public static UnityWebRequest PostMatchResultsRequest(MatchResult matchResult) {
@@ -55,10 +66,59 @@ namespace SciFi.Network.Web {
                     "/match/new?auth={0}&winner={1}&players={2}",
                     "secret",
                     matchResult.winner,
-                    JsonUtility.ToJson(matchResult.players)
+                    JsonArray.ToJson(matchResult.players)
                 )),
                 "POST"
             );
+        }
+
+        public static UnityWebRequest GetPlayerIdForNameRequest(string name) {
+            return CreateRequest("/player/id-for-name/" + Uri.EscapeDataString(name));
+        }
+
+        public static int GetPlayerIdForNameResult(UnityWebRequest finishedRequest) {
+            if (!CheckFinishedRequest(finishedRequest)) {
+                return -1;
+            }
+            int id;
+            if (!int.TryParse(finishedRequest.downloadHandler.text, out id)) {
+                return -1;
+            }
+            return id;
+        }
+
+        public static YieldPromise<ulong, string> GetFacebookIdForAccessToken(string accessToken) {
+            var query = "/me?access_token=" + Uri.EscapeDataString(accessToken);
+            var promise = new YieldPromise<ulong, string>();
+            FB.API(query, HttpMethod.GET, result => {
+                if (string.IsNullOrEmpty(result.Error)) {
+                    promise.Reject(result.Error);
+                } else {
+                    var fbUserIdStr = result.ResultDictionary["id"].ToString();
+                    ulong fbUserId;
+                    if (ulong.TryParse(fbUserIdStr, out fbUserId)) {
+                        promise.Resolve(fbUserId);
+                    } else {
+                        promise.Reject("Couldn't parse Facebook user ID");
+                    }
+                }
+            });
+            return promise;
+        }
+
+        public static UnityWebRequest GetPlayerIdForFacebookIdRequest(ulong fbid) {
+            return CreateRequest("/player/id-for-fbid/" + fbid);
+        }
+
+        public static int GetPlayerIdForFacebookIdResult(UnityWebRequest finishedRequest) {
+            if (!CheckFinishedRequest(finishedRequest)) {
+                return -1;
+            }
+            int id;
+            if (!int.TryParse(finishedRequest.downloadHandler.text, out id)) {
+                return -1;
+            }
+            return id;
         }
     }
 }

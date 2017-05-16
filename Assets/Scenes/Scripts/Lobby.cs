@@ -6,6 +6,7 @@ using UnityEngine.Rendering;
 using System.Diagnostics;
 
 using SciFi.Util;
+using SciFi.Network;
 
 namespace SciFi.Scenes {
     /// <brief>Multiplayer lobby.</brief>
@@ -30,6 +31,8 @@ namespace SciFi.Scenes {
                 }
             });
             hostName.text = Config.GetKey("multiplayer server");
+
+            //new SciFi.Network.Web.FacebookLogin(new [] { "public_profile" });
         }
 
         [Conditional("UNITY_STANDALONE_LINUX")]

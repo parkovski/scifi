@@ -63,6 +63,7 @@ namespace SciFi.Players.Attacks {
             foreach (var obj in colliderCount.ObjectsWithPositiveCount) {
                 Hit(obj);
             }
+            colliderCount.Clear();
             attacking = true;
         }
 

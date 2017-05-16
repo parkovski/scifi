@@ -36,6 +36,9 @@ sysinfo.txt
 
 # Ignore local updates to this file
 /Assets/StreamingAssets/default-server.txt
+# Play data log
+/Assets/StreamingAssets/pdl.txt
 
 .DS_Store
 
+ThirdParty/

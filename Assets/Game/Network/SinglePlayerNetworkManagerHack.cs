@@ -10,6 +10,7 @@ namespace SciFi.Network {
         public GameObject[] playerPrefabs;
         public string humanPlayer;
         public string computerPlayer;
+        [Range(0, 2)]
         public int cpuLevel;
 
         void Start() {

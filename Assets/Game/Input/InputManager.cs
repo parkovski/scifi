@@ -1,3 +1,9 @@
+#if (UNITY_IOS || UNITY_ANDROID) && !UNITY_EDITOR
+#    define INPUT_TOUCHONLY
+#else
+#    define INPUT_MIXED
+#endif
+
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -27,6 +33,7 @@ namespace SciFi {
 
     /// Control IDs.
     public static class Control {
+        public const int None = -1;
         public const int Left = 0;
         public const int Right = 1;
         public const int Up = 2;
@@ -666,10 +673,14 @@ namespace SciFi {
 
         /// Update input state.
         void Update() {
+#if INPUT_TOUCHONLY
+            CheckTouchInput();
+#else
             CheckUnityInput();
             if (Input.touchSupported) {
                 CheckTouchInput();
             }
+#endif
         }
     }
 }

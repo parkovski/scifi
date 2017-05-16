@@ -1,8 +1,10 @@
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.Networking.NetworkSystem;
+using System.Collections;
 
 using SciFi.Scenes;
+using SciFi.Network.Web;
 
 namespace SciFi.Network {
     /// The dummy NetworkManager that handles single player games.
@@ -39,7 +41,10 @@ namespace SciFi.Network {
             }
 
             var p = Instantiate(FindPrefab(humanPlayer), Vector3.zero, Quaternion.identity);
-            GameController.Instance.RegisterNewPlayer(p, "P1", TransitionParams.team, conn);
+            var playerId = GameController.Instance.RegisterNewPlayer(p, "P1", TransitionParams.team, conn);
+#if UNITY_EDITOR
+            StartCoroutine(SetLeaderboardIdForFacebookId(playerId));
+#endif
             NetworkServer.AddPlayerForConnection(conn, p, playerControllerId);
 
             p = Instantiate(FindPrefab(computerPlayer), Vector3.zero, Quaternion.identity);
@@ -48,6 +53,26 @@ namespace SciFi.Network {
             NetworkServer.Spawn(p);
 
             GameController.Instance.StartGame();
+        }
+
+        IEnumerator SetLeaderboardIdForFacebookId(int playerId) {
+            if (FacebookLogin.globalLogin == null) {
+                yield return new FacebookLogin(new [] { "public_profile" });
+                if (FacebookLogin.globalLogin == null) {
+                    yield break;
+                }
+                if (!string.IsNullOrEmpty(FacebookLogin.globalLogin.loginResult.Error)) {
+                    print("facebook login error");
+                    yield break;
+                }
+            }
+            var request = Leaderboard.GetPlayerIdForFacebookIdRequest(FacebookLogin.globalLogin.fbid);
+            yield return request.Send();
+            var leaderboardId = Leaderboard.GetPlayerIdForFacebookIdResult(request);
+            if (leaderboardId != -1) {
+                print(string.Format("Set player {0} to leaderboard ID {1}", playerId, leaderboardId));
+                GameController.Instance.SetLeaderboardId(playerId, leaderboardId);
+            }
         }
     }
 }

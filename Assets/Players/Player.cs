@@ -50,8 +50,6 @@ namespace SciFi.Players {
         public bool eShouldFallThroughOneWayPlatform;
 
         [HideInInspector]
-        public int sLeaderboardPlayerId = -1;
-        [HideInInspector]
         public int sKills;
         [HideInInspector]
         public int sDeaths;

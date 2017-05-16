@@ -74,7 +74,7 @@ namespace SciFi.Util {
             return backingList.GetEnumerator();
         }
 
-        IEnumerator<T> IEnumerable<T>.GetEnumerator() {
+        public IEnumerator<T> GetEnumerator() {
             return backingList.GetEnumerator();
         }
     }

@@ -30,9 +30,9 @@ namespace SciFi.UI {
         }
 
 #if UNITY_EDITOR
-        void Update() {
-            CalculateLayoutRecursive();
-        }
+        /*void Update() {
+            CalculateLayout();
+        }*/
 #endif
 
         void CalculateLayoutRecursive() {

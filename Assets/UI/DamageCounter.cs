@@ -48,12 +48,12 @@ namespace SciFi.UI {
             UpdateInfo();
         }
 
-        void PlayerLifeChanged(int playerId, int newLives) {
+        void PlayerLifeChanged(int playerId, int newLives, int newDamage) {
             if (playerId != player) {
                 return;
             }
             lives = newLives;
-            damage = 0;
+            damage = newDamage;
             UpdateInfo();
         }
 

@@ -1,9 +1,9 @@
 using UnityEngine;
-using SciFi.Util.Extensions;
+using System.Linq;
 
 namespace SciFi.Players.Attacks {
     public class CalcBookAttack : Attack {
-        GameObject[] books;
+        CalcBook[] books;
         int activeBookIndex;
         int power;
 
@@ -12,30 +12,30 @@ namespace SciFi.Players.Attacks {
         public CalcBookAttack(Player player, GameObject[] books)
             : base(player, true)
         {
-            this.books = books;
+            this.books = books.Select(b => b.GetComponent<CalcBook>()).ToArray();
             activeBookIndex = -1;
-            foreach (var book in books) {
-                ShowBook(book, false);
+            for (int i = 0; i < books.Length; i++) {
+                ShowBook(i, false);
             }
         }
 
         void StartCharging(int index) {
             float animationTime = 0;
-            GameObject activeBook;
+            CalcBook activeBook;
             if (activeBookIndex != -1) {
                 activeBook = books[activeBookIndex];
                 animationTime = activeBook.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime;
-                ShowBook(activeBook, false);
+                ShowBook(activeBookIndex, false);
             }
             activeBook = books[index];
             var chargeAnim = player.eDirection == Direction.Right ? "CalcBookCharge" : "CalcBookChargeBackwards";
-            ShowBook(activeBook, true);
+            ShowBook(index, true);
             activeBookIndex = index;
             activeBook.GetComponent<Animator>().Play(chargeAnim, 0, animationTime);
         }
 
-        void ShowBook(GameObject book, bool show) {
-            book.GetComponent<CalcBook>().Show(show);
+        void ShowBook(int index, bool show) {
+            books[index].GetComponent<CalcBook>().Show(show);
         }
 
         public override void OnBeginCharging(Direction direction) {
@@ -63,7 +63,7 @@ namespace SciFi.Players.Attacks {
         }
 
         public override void OnCancel() {
-            ShowBook(books[activeBookIndex], false);
+            books[activeBookIndex].GetComponent<CalcBook>().Hide();
             activeBookIndex = -1;
         }
     }

@@ -15,13 +15,23 @@ namespace SciFi.AI {
         }
 
         public void Press(int control) {
+            if (control <= Control.None) {
+                return;
+            }
+            if (state[control].isPressed) {
+                return;
+            }
             state[control].isPressed = true;
             state[control].axisAmount = 1f;
             state[control].startHoldTime = Time.time;
         }
 
         public void Release(int control) {
+            if (control <= Control.None) {
+                return;
+            }
             state[control].isPressed = false;
+            state[control].axisAmount = 0f;
         }
 
         public bool IsControlActive(int control) {

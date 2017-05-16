@@ -22,6 +22,7 @@ namespace SciFi.Util {
             var kvPairs = reader
                 .ReadToEnd()
                 .Split('\n')
+                .Where(line => !line.TrimStart().StartsWith("#"))
                 .Select(line => {
                     var firstEq = line.IndexOf('=');
                     string left, right;

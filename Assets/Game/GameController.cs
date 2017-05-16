@@ -26,6 +26,10 @@ namespace SciFi {
         /// Is the game currently active?
         private bool isPlaying;
 
+        private StateChangeListenerFactory stateChangeListenerFactory;
+        private IStateChangeListener stateChangeListener;
+        private PlayDataLogger playDataLogger;
+
         /// Set on scene change to the countdown in the main game scene.
         private Countdown countdown;
 
@@ -45,20 +49,9 @@ namespace SciFi {
         float nextItemTime;
 
         public int startingLives;
-        /// Active players, even if dead. Null if no game is running,
-        /// guaranteed not null if a game is running.
-        Player[] activePlayers;
-        /// GameObjects for active players.
-        GameObject[] activePlayersGo;
-        /// Each player's nickname, only valid before the game starts.
-        /// To access these during the game, use <see cref="SciFi.Players.Player.eDisplayName" />.
-        string[] displayNames;
-        /// Teams/colors
-        int[] teams;
-        /// Connections for each client
-        NetworkConnection[] sClientConnections;
-        /// AI Level for each player, or 0 if none.
-        int[] sAILevels;
+        public int startingDamage = 0;
+        /// Player data for the active players.
+        List<ServerPlayerData> sPlayerData;
         /// Is this client the winner? This is always false if the game
         /// is not over yet.
         /// The ID of the player controlled by this client.
@@ -74,6 +67,7 @@ namespace SciFi {
         int pDbgLagField = -1;
         float nextPingUpdateTime;
         const float pingUpdateTime = 1f;
+        ManualSampler playerPositionSampler;
 
         /// Event emitted when a player's damage changes.
         [SyncEvent]
@@ -99,6 +93,7 @@ namespace SciFi {
             }
         }
 
+        private bool playersInitialized = false;
         private event PlayersInitializedHandler _PlayersInitialized;
         /// Event emitted when players are initialized. If they are already
         /// initialized when you subscribe to this event, the callback will
@@ -106,8 +101,8 @@ namespace SciFi {
         public event PlayersInitializedHandler PlayersInitialized {
             add {
                 _PlayersInitialized += value;
-                if (activePlayers != null) {
-                    value(activePlayers);
+                if (playersInitialized) {
+                    value(sPlayerData.Select(d => d.player).ToArray());
                 }
             }
             remove {
@@ -122,31 +117,53 @@ namespace SciFi {
         /// <param name="playerObject">A pre-spawned player object.</param>
         /// <param name="displayName">May be null to get the default display name ("P1", etc.).</param>
         [Server]
-        public void RegisterNewPlayer(GameObject playerObject, string displayName, int team, NetworkConnection conn) {
-            activePlayersGo = activePlayersGo.Concat(new[] { playerObject }).ToArray();
-            displayNames = displayNames.Concat(new[] { displayName }).ToArray();
-            teams = teams.Concat(new[] { team }).ToArray();
-            sClientConnections = sClientConnections.Concat(new[] { conn }).ToArray();
-            sAILevels = sAILevels.Concat(new[] { 0 }).ToArray();
+        public int RegisterNewPlayer(GameObject playerObject, string displayName, int team, NetworkConnection conn) {
+            sPlayerData.Add(new ServerPlayerData {
+                playerGo = playerObject,
+                displayName = displayName,
+                team = team,
+                clientConnection = conn,
+                aiLevel = 0,
+                leaderboardPlayerId = -1,
+            });
+            return sPlayerData.Count - 1;
         }
 
         /// Adds a new computer player. Only AI level 1 is supported right now. Level 0 does nothing.
-        public void RegisterNewComputerPlayer(GameObject playerObject, string displayName, int team, int aiLevel) {
-            activePlayersGo = activePlayersGo.Concat(new[] { playerObject }).ToArray();
-            displayNames = displayNames.Concat(new[] { displayName }).ToArray();
-            teams = teams.Concat(new[] { team }).ToArray();
-            sClientConnections = sClientConnections.Concat(new NetworkConnection[] { null }).ToArray();
-            sAILevels = sAILevels.Concat(new[] { aiLevel }).ToArray();
+        [Server]
+        public int RegisterNewComputerPlayer(GameObject playerObject, string displayName, int team, int aiLevel) {
+            sPlayerData.Add(new ServerPlayerData {
+                playerGo = playerObject,
+                displayName = displayName,
+                team = team,
+                clientConnection = null,
+                aiLevel = aiLevel,
+                leaderboardPlayerId = -1,
+            });
+            return sPlayerData.Count - 1;
+        }
+
+        [Server]
+        public void SetLeaderboardId(int playerId, int leaderboardId) {
+            if (playerId >= sPlayerData.Count) {
+                return;
+            }
+            sPlayerData[playerId].leaderboardPlayerId = leaderboardId;
+        }
+
+        void InitializePlayers() {
+            playersInitialized = true;
+            _PlayersInitialized(sPlayerData.Select(d => d.player).ToArray());
         }
 
         /// A null return value means this player is either not valid
         /// or is controlled by the server.
         [Server]
         public NetworkConnection ConnectionForPlayer(int playerId) {
-            if (playerId > sClientConnections.Length) {
+            if (playerId > sPlayerData.Count) {
                 return null;
             }
-            return sClientConnections[playerId];
+            return sPlayerData[playerId].clientConnection;
         }
 
         /// Start the game.
@@ -154,37 +171,42 @@ namespace SciFi {
         ///   the game from starting until it is done.</param>
         [Server]
         public void StartGame(bool showCountdown = true) {
-            activePlayers = activePlayersGo.Select(p => p.GetComponent<Player>()).ToArray();
-
-            for (var i = 0; i < activePlayers.Length; i++) {
-                var player = activePlayers[i];
+            stateChangeListener = stateChangeListenerFactory.Get();
+            for (var i = 0; i < sPlayerData.Count; i++) {
+                var data = sPlayerData[i];
+                var player = data.player;
                 player.eId = i;
-                if (string.IsNullOrEmpty(displayNames[i])) {
+                if (string.IsNullOrEmpty(data.displayName)) {
                     player.eDisplayName = "P" + (i + 1);
                 } else {
-                    player.eDisplayName = displayNames[i];
+                    player.eDisplayName = data.displayName;
                 }
-                player.eTeam = teams[i];
+                player.eTeam = data.team;
                 player.eLives = startingLives;
+                player.eDamage = startingDamage;
+                data.positionSampler = new ManualCacheSampler<Vector2>(.25f, () => {
+                    stateChangeListener.PlayerPositionChanged(i, player.transform.position);
+                });
             }
 
-            _PlayersInitialized(activePlayers);
+            InitializePlayers();
 
             StartCoroutine(StartGameWhenPlayersReady(showCountdown));
         }
 
         IEnumerator StartGameWhenPlayersReady(bool showCountdown) {
-            yield return new WaitUntil(() => activePlayers.All(p => p.IsInitialized()));
+            yield return new WaitUntil(() => sPlayerData.All(d => d.player.IsInitialized()));
 
-            for (var i = 0; i < activePlayers.Length; i++) {
-                var player = activePlayers[i];
-                EventLifeChanged(player.eId, player.eLives);
+            stateChangeListener = stateChangeListenerFactory.Get();
+            stateChangeListener.GameStarted();
+            for (var i = 0; i < sPlayerData.Count; i++) {
+                var player = sPlayerData[i].player;
+                EventLifeChanged(player.eId, player.eLives, player.eDamage);
+                stateChangeListener.LifeChanged(player.eId, player.eLives);
+                stateChangeListener.DamageChanged(player.eId, player.eDamage);
             }
 
-            displayNames = null;
-            teams = null;
-
-            RpcCreateCharacterList(activePlayers.Select(p => p.netId).ToArray());
+            RpcCreateCharacterList(sPlayerData.Select(d => d.player.netId).ToArray());
 
             this.countdown = GameObject.Find("StaticCanvas").GetComponent<Countdown>();
             RpcStartGame(showCountdown);
@@ -194,10 +216,12 @@ namespace SciFi {
                 this.countdown.OnFinished += _ => {
                     this.isPlaying = true;
                     _GameStarted();
+                    stateChangeListener.GameStarted();
                 };
             } else {
                 this.isPlaying = true;
                 _GameStarted();
+                stateChangeListener.GameStarted();
             }
         }
 
@@ -207,38 +231,40 @@ namespace SciFi {
             if (isServer) {
                 return;
             }
-            activePlayersGo = ids.Select(id => ClientScene.FindLocalObject(id)).ToArray();
-            activePlayers = activePlayersGo.Select(p => p.GetComponent<Player>()).ToArray();
+            sPlayerData = ids.Select(id => new ServerPlayerData {
+                playerGo = ClientScene.FindLocalObject(id),
+            }).ToList();
             StartCoroutine(WaitForPlayersToSync());
         }
 
         IEnumerator WaitForPlayersToSync() {
-            yield return new WaitWhile(() => activePlayers.Count(p => p.eId == 0) > 1);
-            yield return new WaitUntil(() => activePlayers.Any(p => p.hasAuthority));
-            cPlayerId = activePlayers.First(p => p.hasAuthority).eId;
+            yield return new WaitWhile(() => sPlayerData.Count(d => d.player.eId == 0) > 1);
+            yield return new WaitUntil(() => sPlayerData.Any(d => d.player.hasAuthority));
+            cPlayerId = sPlayerData.First(d => d.player.hasAuthority).player.eId;
+            foreach (var pd in sPlayerData) {
+                stateChangeListener.LifeChanged(pd.player.eId, pd.player.eLives);
+                stateChangeListener.DamageChanged(pd.player.eId, pd.player.eDamage);
+            }
             // If this copy is both client and server, the server
             // side will already have called this.
             if (!isServer) {
-                _PlayersInitialized(activePlayers);
+                InitializePlayers();
             }
         }
 
         /// Find the active player with ID <c>id</c>.
         public Player GetPlayer(int id) {
-            if (activePlayers == null) {
-                return null;
-            }
-            if (id >= activePlayers.Length) {
+            if (id >= sPlayerData.Count) {
                 return null;
             }
 
-            return activePlayers[id];
+            return sPlayerData[id].player;
         }
 
         /// Find the winner and report it to the clients.
         int FindWinner() {
             Player winner;
-            winner = activePlayers.SingleOrDefault(p => p.eLives > 0);
+            winner = sPlayerData.SingleOrDefault(d => d.player.eLives > 0).player;
             if (winner == null) {
                 return -1;
             }
@@ -248,20 +274,29 @@ namespace SciFi {
         /// End the game and load the game over scene.
         [Server]
         public void EndGame() {
+            isPlaying = false;
+            stateChangeListener.GameEnded();
+            var winner = FindWinner();
+            RpcEndGame(winner);
             var result = new MatchResult {
-                winner = FindWinner(),
-                players = activePlayers.Select(p => new PlayerMatchInfo {
-                    id = p.sLeaderboardPlayerId,
-                    kills = p.sKills,
-                    deaths = p.sDeaths,
+                winner = sPlayerData[winner].leaderboardPlayerId,
+                players = sPlayerData.Select(d => new PlayerMatchInfo {
+                    id = d.leaderboardPlayerId,
+                    kills = d.player.sKills,
+                    deaths = d.player.sDeaths,
                 }).ToArray(),
             };
-            foreach (var p in activePlayersGo) {
-                Destroy(p);
+            foreach (var d in sPlayerData) {
+                Destroy(d.playerGo);
             }
             StartCoroutine(TransitionToGameOver());
-            StartCoroutine(ReportMatchResult(result));
-            RpcEndGame(result.winner);
+#if !UNITY_EDITOR
+            if (TransitionParams.gameType == GameType.Multi) {
+#endif
+                StartCoroutine(ReportMatchResult(result));
+#if !UNITY_EDITOR
+            }
+#endif
         }
 
         IEnumerator ReportMatchResult(MatchResult result) {
@@ -269,9 +304,11 @@ namespace SciFi {
             if (request == null) {
                 yield break;
             }
-            yield return request;
+            yield return request.Send();
             if (request.isError) {
                 print("Error reporting match result: " + request.error);
+            } else {
+                print("match creation: " + request.downloadHandler.text);
             }
         }
 
@@ -285,13 +322,14 @@ namespace SciFi {
         /// when a client/server copy is running, and we don't want to
         /// call them twice.
         [ClientRpc]
-        void RpcStartGame(bool countdown) {
+        void RpcStartGame(bool showCountdown) {
             if (isServer) {
                 return;
             }
-            if (!countdown) {
+            if (!showCountdown) {
                 this.isPlaying = true;
                 _GameStarted();
+                stateChangeListener.GameStarted();
                 return;
             }
 
@@ -301,28 +339,30 @@ namespace SciFi {
             this.countdown.OnFinished += _ => {
                 this.isPlaying = true;
                 _GameStarted();
+                stateChangeListener.GameStarted();
             };
         }
 
         /// End the game on the client and load the game over scene.
         [ClientRpc]
         void RpcEndGame(int winnerId) {
+            isPlaying = false;
             if (winnerId == cPlayerId) {
                 TransitionParams.isWinner = true;
             } else {
                 TransitionParams.isWinner = false;
             }
-            StartCoroutine(TransitionToGameOver());
+            if (!isServer) {
+                StartCoroutine(TransitionToGameOver());
+            }
         }
 
         IEnumerator TransitionToGameOver() {
             var music = GameObject.Find("Music").GetComponent<AudioSource>();
-            isPlaying = false;
             Effects.FadeOut();
             Effects.FadeOutAudio(music, .9f, 20);
             yield return new WaitForSeconds(1f);
-            activePlayersGo = new GameObject[0];
-            activePlayers = new Player[0];
+            sPlayerData.Clear();
             SceneManager.LoadScene("GameOver");
             if (TransitionParams.gameType == GameType.Single) {
                 var netMan = FindObjectOfType<SinglePlayerNetworkManager>();
@@ -359,12 +399,12 @@ namespace SciFi {
             if (player.sLastAttacker != null) {
                 ++player.sLastAttacker.sKills;
             }
-            if (activePlayers.Count(p => p.eLives > 0) == 1) {
+            if (sPlayerData.Count(d => d.player.eLives > 0) == 1) {
                 EndGame();
                 return;
             }
 
-            player.eDamage = 0;
+            player.eDamage = startingDamage;
             if (player.eLives <= 0) {
                 var rb = player.GetComponent<Rigidbody2D>();
                 rb.isKinematic = true;
@@ -377,7 +417,9 @@ namespace SciFi {
                 player.AddModifier(ModId.Invincible);
                 StartCoroutine(RemoveRespawnModifiers(player));
             }
-            EventLifeChanged(player.eId, player.eLives);
+            EventLifeChanged(player.eId, player.eLives, player.eDamage);
+            stateChangeListener.LifeChanged(player.eId, player.eLives);
+            stateChangeListener.DamageChanged(player.eId, player.eDamage);
         }
 
         IEnumerator RemoveRespawnModifiers(Player player) {
@@ -443,6 +485,7 @@ namespace SciFi {
             player.Hit(amount);
             player.Interact(attack);
             EventDamageChanged(player.eId, player.eDamage);
+            stateChangeListener.DamageChanged(player.eId, player.eDamage);
         }
 
         /// Inflict damage on an item.
@@ -499,11 +542,12 @@ namespace SciFi {
 
         /// Initialize fields that other objects depend on.
         void Awake() {
-            activePlayersGo = new GameObject[0];
-            displayNames = new string[0];
-            teams = new int[0];
-            sClientConnections = new NetworkConnection[0];
-            sAILevels = new int[0];
+            stateChangeListenerFactory = new StateChangeListenerFactory();
+#if UNITY_EDITOR
+            playDataLogger = new PlayDataLogger(Application.streamingAssetsPath + "/pdl.txt");
+            stateChangeListenerFactory.Add(playDataLogger);
+#endif
+            sPlayerData = new List<ServerPlayerData>();
             Layers.Init();
             PlayersInitialized += players => {
                 FindObjectOfType<EnableUI>().Enable();
@@ -511,19 +555,20 @@ namespace SciFi {
                     IInputManager playerInputManager;
                     if (isClient && player.eId == cPlayerId) {
                         playerInputManager = GetComponent<InputManager>();
-                    } else if (isServer && sAILevels[player.eId] > 0) {
+                    } else if (isServer && sPlayerData[player.eId].aiLevel > 0) {
                         var aiim = new AIInputManager();
-                        AddAI(player.gameObject, aiim, sAILevels[player.eId]);
+                        AddAI(player.gameObject, aiim, sPlayerData[player.eId].aiLevel);
                         playerInputManager = aiim;
                     } else {
-                        playerInputManager = new NullInputManager();
+                        playerInputManager = NullInputManager.Instance;
                     }
                     player.GameControllerReady(this, playerInputManager);
                 }
             };
 
             GameStarted += () => {
-                foreach (var player in activePlayers) {
+                foreach (var data in sPlayerData) {
+                    var player = data.player;
                     player.RemoveModifier(ModId.CantAttack);
                     player.RemoveModifier(ModId.CantMove);
                     if (player.isLocalPlayer) {
@@ -539,16 +584,36 @@ namespace SciFi {
             }
             gameObjectPool = new GameObjectPool();
 
+            playerPositionSampler = new ManualSampler(.25f, BroadcastPlayerPositions);
+
             Instance = this;
+        }
+
+        void OnApplicationPause(bool pause) {
+        }
+
+        void OnApplicationQuit() {
+            if (playDataLogger != null) {
+                playDataLogger.Dispose();
+            }
+        }
+
+        void BroadcastPlayerPositions() {
+            foreach (var pd in sPlayerData) {
+                stateChangeListener.PlayerPositionChanged(pd.player.eId, pd.player.transform.position);
+            }
         }
 
         [Server]
         void AddAI(GameObject player, AIInputManager inputManager, int level) {
-            if (level < 1 || level > 1) {
+            AIBase ai;
+            if (level == 1) {
+                ai = player.AddComponent<DumbAI>();
+            } else if (level == 2) {
+                ai = player.AddComponent<StrategyAI>();
+            } else {
                 throw new System.ArgumentOutOfRangeException("level");
             }
-
-            var ai = player.AddComponent<DumbAI>();
             ai.inputManager = inputManager;
         }
 
@@ -586,6 +651,14 @@ namespace SciFi {
                 }
                 nextPingUpdateTime = Time.time + pingUpdateTime;
                 DebugPrinter.Instance.SetField(pDbgLagField, "Ping: " + 0);
+            }
+
+            for (int i = 0; i < sPlayerData.Count; i++) {
+                var data = sPlayerData[i];
+                if (data.positionSampler == null) {
+                    continue;
+                }
+                data.positionSampler.Run(data.playerGo.transform.position);
             }
 
             if (!isServer) {
@@ -644,7 +717,7 @@ namespace SciFi {
     }
 
     public delegate void DamageChangedHandler(int playerId, int newDamage);
-    public delegate void LifeChangedHandler(int playerId, int newLives);
+    public delegate void LifeChangedHandler(int playerId, int newLives, int newDamage);
     public delegate void StartGameHandler();
     public delegate void PlayersInitializedHandler(Player[] players);
 

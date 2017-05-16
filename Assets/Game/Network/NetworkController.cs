@@ -38,6 +38,7 @@ namespace SciFi.Network {
             NetworkServer.RegisterHandler(NetworkMessages.SetPlayerDisplayName, SetPlayerDisplayName);
             NetworkServer.RegisterHandler(NetworkMessages.SetPlayerTeam, SetPlayerTeam);
             NetworkServer.RegisterHandler(NetworkMessages.SyncClock, ServerSyncClock);
+            NetworkServer.RegisterHandler(NetworkMessages.SetPlayerLeaderboardId, SetPlayerLeaderboardId);
 
             playersToRegister = new List<GameObject>();
             displayNames = new List<string>();
@@ -72,6 +73,13 @@ namespace SciFi.Network {
                 writer.Write(TransitionParams.team);
                 writer.FinishMessage();
                 conn.SendWriter(writer, 0);
+            }
+
+            if (TransitionParams.leaderboardId != -1) {
+                writer.StartMessage(NetworkMessages.SetPlayerLeaderboardId);
+                writer.Write(TransitionParams.leaderboardId);
+                writer.FinishMessage();
+                NetworkController.clientConnectionToServer.SendWriter(writer, 0);
             }
 
             this.client.connection.RegisterHandler(NetworkMessages.SyncClock, ClientSyncClock);
@@ -133,6 +141,10 @@ namespace SciFi.Network {
             TransitionParams.AddTeam(msg.conn, msg.reader.ReadInt32());
         }
 
+        void SetPlayerLeaderboardId(NetworkMessage msg) {
+            TransitionParams.AddLeaderboardId(msg.conn, msg.reader.ReadInt32());
+        }
+
         /// Create the player for <c>conn</c> and register it with <see cref="GameController" />.
         public override GameObject OnLobbyServerCreateGamePlayer(NetworkConnection conn, short playerControllerId) {
             string playerName;
@@ -171,7 +183,11 @@ namespace SciFi.Network {
                     var displayName = displayNames[i];
                     var conn = clientConnections[i];
                     var team = TransitionParams.GetTeam(conn);
-                    GameController.Instance.RegisterNewPlayer(player, displayName, team, conn);
+                    var leaderboardId = TransitionParams.GetLeaderboardId(conn);
+                    var playerId = GameController.Instance.RegisterNewPlayer(player, displayName, team, conn);
+                    if (leaderboardId != -1) {
+                        GameController.Instance.SetLeaderboardId(playerId, leaderboardId);
+                    }
                 }
             }
         }

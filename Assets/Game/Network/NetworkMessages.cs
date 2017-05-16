@@ -16,5 +16,9 @@ namespace SciFi.Network {
         public static short SetPlayerTeam = MsgType.Highest + 5;
         /// Clock synchronization for movements.
         public static short SyncClock = MsgType.Highest + 6;
+        /// Set the player's leaderboard ID.
+        /// TODO: This is easily hackable, how to verify?
+        public static short SetPlayerLeaderboardId = MsgType.Highest + 7;
+        public static short StateChangeBroadcast = MsgType.Highest + 8;
     }
 }

@@ -40,20 +40,19 @@
   - Paintbrush - cause these hurt so much.
 
 ## Tools used to create this game
-Most of these are free. For a free alternative
-to FL Studio, I've heard Reaper is good.
+Most of these are free. For free music
+software, I've heard Reaper is good.
 
 - Unity3D
 - Visual Studio Code
 - FL Studio
+- Logic Pro X
 - Akai MPK249 & MPK225
 - Audacity
 - Paint.NET
 - The Gimp
 - Pixelmator
-- Whatever other drawing app Hayden has
+- Adobe Illustrator and Photoshop
 - git
 - BitBucket
 - Doxygen
-- Vim
-- ffmpeg

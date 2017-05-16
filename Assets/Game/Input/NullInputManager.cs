@@ -2,6 +2,19 @@ using UnityEngine;
 
 namespace SciFi {
     public class NullInputManager : IInputManager {
+        private NullInputManager() {}
+
+        static NullInputManager _instance;
+
+        public static NullInputManager Instance {
+            get {
+                if (_instance == null) {
+                    _instance = new NullInputManager();
+                }
+                return _instance;
+            }
+        }
+
         public bool IsControlActive(int control) {
             return false;
         }

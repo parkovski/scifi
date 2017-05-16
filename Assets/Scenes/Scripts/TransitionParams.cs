@@ -23,6 +23,8 @@ namespace SciFi.Scenes {
         public static string displayName = null;
         /// Currently just sets the player's color.
         public static int team = -1;
+        /// Leaderboard ID - TODO: make this not so easily hackable.
+        public static int leaderboardId = -1;
 
         /// The prefab name of each player connected to the server.
         private static Dictionary<NetworkConnection, string> players;
@@ -30,6 +32,8 @@ namespace SciFi.Scenes {
         private static Dictionary<NetworkConnection, string> displayNames;
         /// The teams of each connected player, or -1 for none.
         private static Dictionary<NetworkConnection, int> teams;
+        /// The leaderboard player IDs of each player, -1 for none.
+        private static Dictionary<NetworkConnection, int> leaderboardIds;
         /// Thread-safety
         private static object threadLock;
 
@@ -44,6 +48,7 @@ namespace SciFi.Scenes {
             players = new Dictionary<NetworkConnection, string>();
             displayNames = new Dictionary<NetworkConnection, string>();
             teams = new Dictionary<NetworkConnection, int>();
+            leaderboardIds = new Dictionary<NetworkConnection, int>();
             threadLock = new object();
         }
 
@@ -90,6 +95,22 @@ namespace SciFi.Scenes {
                 int team;
                 if (teams.TryGetValue(conn, out team)) {
                     return team;
+                }
+                return -1;
+            }
+        }
+
+        public static void AddLeaderboardId(NetworkConnection conn, int id) {
+            lock(threadLock) {
+                leaderboardIds[conn] = id;
+            }
+        }
+
+        public static int GetLeaderboardId(NetworkConnection conn) {
+            lock(threadLock) {
+                int id;
+                if (leaderboardIds.TryGetValue(conn, out id)) {
+                    return id;
                 }
                 return -1;
             }
