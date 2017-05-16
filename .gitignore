@@ -38,6 +38,7 @@ sysinfo.txt
 /Assets/StreamingAssets/default-server.txt
 # Play data log
 /Assets/StreamingAssets/pdl.txt
+/Assets/StreamingAssets/pdl.txt.meta
 
 .DS_Store
 
