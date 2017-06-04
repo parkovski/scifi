@@ -67,7 +67,6 @@ namespace SciFi {
         int pDbgLagField = -1;
         float nextPingUpdateTime;
         const float pingUpdateTime = 1f;
-        ManualSampler playerPositionSampler;
 
         /// Event emitted when a player's damage changes.
         [SyncEvent]
@@ -584,8 +583,6 @@ namespace SciFi {
             }
             gameObjectPool = new GameObjectPool();
 
-            playerPositionSampler = new ManualSampler(.25f, BroadcastPlayerPositions);
-
             Instance = this;
         }
 
@@ -595,12 +592,6 @@ namespace SciFi {
         void OnApplicationQuit() {
             if (playDataLogger != null) {
                 playDataLogger.Dispose();
-            }
-        }
-
-        void BroadcastPlayerPositions() {
-            foreach (var pd in sPlayerData) {
-                stateChangeListener.PlayerPositionChanged(pd.player.eId, pd.player.transform.position);
             }
         }
 

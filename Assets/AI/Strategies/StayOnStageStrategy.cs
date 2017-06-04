@@ -4,12 +4,17 @@ using SciFi.Players;
 
 namespace SciFi.AI.Strategies {
     /// Don't let the player run off the stage.
+    [StrategyType(StrategyType.Movement)]
+    [StrategyList(0)]
     public class StayOnStageStrategy : Strategy {
         Player me;
         float min, max;
         const float buffer = 2f;
 
-        public StayOnStageStrategy(Player player, GameObject ground) {
+        public StayOnStageStrategy(
+            [StrategyParam(StrategyParamType.Me)] Player player,
+            [StrategyParam(StrategyParamType.Ground)] GameObject ground
+        ) {
             this.me = player;
             max = ground.GetComponent<BoxCollider2D>().bounds.extents.x - buffer;
             min = -max;

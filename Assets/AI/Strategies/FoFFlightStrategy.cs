@@ -5,13 +5,18 @@ using SciFi.Util.Extensions;
 
 namespace SciFi.AI.Strategies {
     /// Flight strategy - run away from a player.
+    [StrategyType(StrategyType.Movement)]
+    [StrategyList(0)]
     public class FoFFlightStrategy : Strategy {
         Player me;
         Player opponent;
 
         const float targetDistance = 5f;
 
-        public FoFFlightStrategy(Player me, Player opponent) {
+        public FoFFlightStrategy(
+            [StrategyParam(StrategyParamType.Me)] Player me,
+            [StrategyParam(StrategyParamType.Opponent)] Player opponent
+        ) {
             this.me = me;
             this.opponent = opponent;
         }

@@ -2,11 +2,16 @@ using SciFi.Players;
 
 namespace SciFi.AI.Strategies {
     /// Fight strategy - run towards a player.
+    [StrategyType(StrategyType.Movement)]
+    [StrategyList(0)]
     public class FoFFightStrategy : Strategy {
         Player me;
         Player opponent;
 
-        public FoFFightStrategy(Player me, Player opponent) {
+        public FoFFightStrategy(
+            [StrategyParam(StrategyParamType.Me)] Player me,
+            [StrategyParam(StrategyParamType.Opponent)] Player opponent
+        ) {
             this.me = me;
             this.opponent = opponent;
         }
