@@ -11,9 +11,16 @@ namespace SciFi.AI {
         const float evaluateStrategyInteval = .25f;
         float evaluateNextStrategyTime;
 
-        StrategyPicker<Strategy> moveStrategyPicker;
-        Strategy moveStrategy;
-        int lastMoveControl = Control.None;
+        struct StrategyInfo {
+            public StrategyPicker strategyPicker;
+            public Strategy strategy;
+            public int lastControl;
+        }
+
+        StrategyInfo moveStrategyInfo;
+        StrategyInfo attackStrategyInfo;
+        StrategyInfo jumpStrategyInfo;
+        StrategyInfo blockStrategyInfo;
 
         // Strategy params
         struct StrategyParams {
@@ -23,6 +30,8 @@ namespace SciFi.AI {
         }
         StrategyParams strategyParams;
 
+        const int strategyListIndex = 0;
+
         void Start() {
             strategyParams = new StrategyParams {
                 me = GetComponent<Player>(),
@@ -30,32 +39,60 @@ namespace SciFi.AI {
                 ground = GameObject.Find("FinalDest"),
             };
 
-            moveStrategyPicker = new StrategyPicker<Strategy>(GetStrategiesOfType(0, StrategyType.Movement));
+            var strategyList = GetStrategyList(strategyListIndex);
+
+            moveStrategyInfo = new StrategyInfo {
+                strategyPicker = new StrategyPicker(GetStrategiesOfType(strategyList, StrategyType.Movement)),
+            };
+            attackStrategyInfo = new StrategyInfo {
+                strategyPicker = new StrategyPicker(GetStrategiesOfType(strategyList, StrategyType.Attack)),
+            };
+            jumpStrategyInfo = new StrategyInfo {
+                strategyPicker = new StrategyPicker(GetStrategiesOfType(strategyList, StrategyType.Jump)),
+            };
+            blockStrategyInfo = new StrategyInfo {
+                strategyPicker = new StrategyPicker(GetStrategiesOfType(strategyList, StrategyType.Block)),
+            };
         }
 
         void Update() {
             if (Time.time > evaluateNextStrategyTime) {
                 evaluateNextStrategyTime = Time.time + evaluateStrategyInteval;
-                moveStrategy = moveStrategyPicker.Pick();
+                moveStrategyInfo.strategy = moveStrategyInfo.strategyPicker.Pick();
+                attackStrategyInfo.strategy = attackStrategyInfo.strategyPicker.Pick();
+                jumpStrategyInfo.strategy = jumpStrategyInfo.strategyPicker.Pick();
+                blockStrategyInfo.strategy = blockStrategyInfo.strategyPicker.Pick();
             }
 
-            int moveControl = moveStrategy.Step();
-            if (moveControl != lastMoveControl) {
-                inputManager.Release(lastMoveControl);
-                inputManager.Press(moveControl);
-            }
-            lastMoveControl = moveControl;
+            UseStrategy(ref moveStrategyInfo);
+            UseStrategy(ref attackStrategyInfo);
+            UseStrategy(ref jumpStrategyInfo);
+            UseStrategy(ref blockStrategyInfo);
         }
 
-        Strategy[] GetStrategiesOfType(int list, StrategyType type) {
+        void UseStrategy(ref StrategyInfo info) {
+            if (info.strategy == null) {
+                return;
+            }
+            int control = info.strategy.GetControl();
+            if (control != info.lastControl) {
+                inputManager.Release(info.lastControl);
+                inputManager.Press(control);
+            }
+            info.lastControl = control;
+        }
+
+        Strategy[] GetStrategyList(int list) {
             return Assembly.GetExecutingAssembly().GetTypes()
                 .Where(t => t.IsSubclassOf(typeof(Strategy)))
-                .Where(t => {
-                    var attrs = t.GetCustomAttributes(false);
-                    return attrs.Any(a => (a is StrategyListAttribute) && (((StrategyListAttribute)a).list == list))
-                        && attrs.Any(a => (a is StrategyTypeAttribute) && (((StrategyTypeAttribute)a).type == type));
-                })
+                .Where(t => t.GetCustomAttributes(false).Any(a => (a is StrategyListAttribute) && (((StrategyListAttribute)a).list == list)))
                 .Select(t => InitializeStrategy(t))
+                .ToArray();
+        }
+
+        static Strategy[] GetStrategiesOfType(Strategy[] list, StrategyType type) {
+            return list
+                .Where(t => t.GetType().GetCustomAttributes(false).Any(a => (a is StrategyTypeAttribute) && (((StrategyTypeAttribute)a).type == type)))
                 .ToArray();
         }
 

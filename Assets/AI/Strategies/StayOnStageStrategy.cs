@@ -1,9 +1,11 @@
 using UnityEngine;
+using UnityEngine.Scripting;
 
 using SciFi.Players;
 
 namespace SciFi.AI.Strategies {
     /// Don't let the player run off the stage.
+    [Preserve]
     [StrategyType(StrategyType.Movement)]
     [StrategyList(0)]
     public class StayOnStageStrategy : Strategy {
@@ -31,7 +33,7 @@ namespace SciFi.AI.Strategies {
             }
         }
 
-        public override int Step() {
+        public override int GetControl() {
             if (me.transform.position.x < min) {
                 return Control.Right;
             } else if (me.transform.position.x > max) {

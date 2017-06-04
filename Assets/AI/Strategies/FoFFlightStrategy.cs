@@ -1,10 +1,12 @@
 using UnityEngine;
+using UnityEngine.Scripting;
 
 using SciFi.Players;
 using SciFi.Util.Extensions;
 
 namespace SciFi.AI.Strategies {
     /// Flight strategy - run away from a player.
+    [Preserve]
     [StrategyType(StrategyType.Movement)]
     [StrategyList(0)]
     public class FoFFlightStrategy : Strategy {
@@ -31,7 +33,7 @@ namespace SciFi.AI.Strategies {
             }
         }
 
-        public override int Step() {
+        public override int GetControl() {
             if (me.transform.position.x < opponent.transform.position.x) {
                 return Control.Left;
             } else {

@@ -1,7 +1,10 @@
+using UnityEngine.Scripting;
+
 using SciFi.Players;
 
 namespace SciFi.AI.Strategies {
     /// Fight strategy - run towards a player.
+    [Preserve]
     [StrategyType(StrategyType.Movement)]
     [StrategyList(0)]
     public class FoFFightStrategy : Strategy {
@@ -22,7 +25,7 @@ namespace SciFi.AI.Strategies {
             }
         }
 
-        public override int Step() {
+        public override int GetControl() {
             if (me.transform.position.x < opponent.transform.position.x) {
                 return Control.Right;
             } else {

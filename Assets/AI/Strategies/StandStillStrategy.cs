@@ -1,5 +1,8 @@
+using UnityEngine.Scripting;
+
 namespace SciFi.AI.Strategies {
     /// Stand still strategy - do nothing.
+    [Preserve]
     [StrategyType(StrategyType.Movement)]
     [StrategyList(0)]
     public class StandStillStrategy : Strategy {
@@ -9,7 +12,7 @@ namespace SciFi.AI.Strategies {
             }
         }
 
-        public override int Step() {
+        public override int GetControl() {
             return Control.None;
         }
     }

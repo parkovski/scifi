@@ -1,14 +1,17 @@
 using UnityEngine;
 
 namespace SciFi.AI.Strategies {
-    public class StrategyPicker<TStrategy> where TStrategy : Strategy {
-        TStrategy[] strategies;
+    public class StrategyPicker {
+        Strategy[] strategies;
 
-        public StrategyPicker(TStrategy[] strategies) {
+        public StrategyPicker(Strategy[] strategies) {
             this.strategies = strategies;
         }
 
-        public TStrategy Pick() {
+        public Strategy Pick() {
+            if (strategies.Length == 0) {
+                return null;
+            }
             int index = 0;
             float maxAdvantage = strategies[0].advantage;
             if (maxAdvantage > 1 || maxAdvantage < -1) {
