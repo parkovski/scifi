@@ -16,5 +16,11 @@ namespace SciFi.AI.Strategies {
         public virtual float GetAxisAmount() {
             return 1;
         }
+
+        /// Called when this strategy becomes active.
+        public virtual void OnActivate() {}
+
+        /// Called when this strategy becomes inactive.
+        public virtual void OnDeactivate() {}
     }
 }

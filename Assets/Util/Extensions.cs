@@ -103,6 +103,13 @@ namespace SciFi.Util.Extensions {
         }
     }
 
+    public static class PlayerExtensions {
+        public static bool IsFacing(this Player player, GameObject obj) {
+            var delta = player.transform.position.x - obj.transform.position.x;
+            return (delta > 0) == (player.eDirection == Direction.Left);
+        }
+    }
+
     public static class ColorExtensions {
         /// Changes the alpha value for a color, leaving the color values the same.
         public static Color WithAlpha(this Color c, float alpha) {

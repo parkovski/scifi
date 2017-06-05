@@ -36,6 +36,9 @@ namespace SciFi.AI.Strategies {
                 }
             }
 
+            if (maxAdvantage == -1) {
+                return null;
+            }
             return strategies[index];
         }
     }

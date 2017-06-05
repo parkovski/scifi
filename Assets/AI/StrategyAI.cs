@@ -58,10 +58,10 @@ namespace SciFi.AI {
         void Update() {
             if (Time.time > evaluateNextStrategyTime) {
                 evaluateNextStrategyTime = Time.time + evaluateStrategyInteval;
-                moveStrategyInfo.strategy = moveStrategyInfo.strategyPicker.Pick();
-                attackStrategyInfo.strategy = attackStrategyInfo.strategyPicker.Pick();
-                jumpStrategyInfo.strategy = jumpStrategyInfo.strategyPicker.Pick();
-                blockStrategyInfo.strategy = blockStrategyInfo.strategyPicker.Pick();
+                PickStrategy(ref moveStrategyInfo);
+                PickStrategy(ref attackStrategyInfo);
+                PickStrategy(ref jumpStrategyInfo);
+                PickStrategy(ref blockStrategyInfo);
             }
 
             UseStrategy(ref moveStrategyInfo);
@@ -70,8 +70,26 @@ namespace SciFi.AI {
             UseStrategy(ref blockStrategyInfo);
         }
 
+        void PickStrategy(ref StrategyInfo info) {
+            var newStrategy = info.strategyPicker.Pick();
+            if (ReferenceEquals(newStrategy, info.strategy)) {
+                return;
+            }
+            if (info.strategy != null) {
+                info.strategy.OnDeactivate();
+            }
+            if (newStrategy != null) {
+                newStrategy.OnActivate();
+            }
+            info.strategy = newStrategy;
+        }
+
         void UseStrategy(ref StrategyInfo info) {
             if (info.strategy == null) {
+                if (info.lastControl != Control.None) {
+                    inputManager.Release(info.lastControl);
+                    info.lastControl = Control.None;
+                }
                 return;
             }
             int control = info.strategy.GetControl();
