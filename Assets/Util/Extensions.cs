@@ -66,12 +66,32 @@ namespace SciFi.Util.Extensions {
             return toMin + (int)((toMax - toMin) * percent);
         }
 
+        public static int ScaleClamped(this int value, int fromMin, int fromMax, int toMin, int toMax) {
+            if (value > fromMax) {
+                return toMax;
+            }
+            if (value < fromMin) {
+                return toMin;
+            }
+            return value.Scale(fromMin, fromMax, toMin, toMax);
+        }
+
         /// Returns a number that represents the same point in the "to" scale as
         /// value is in the "from" scale - for example, 5.Scale(0, 10, 0, 100) => 50.
         /// It is expected that <c>value</c> is between <c>fromMin</c> and <c>fromMax</c>.
         public static float Scale(this float value, float fromMin, float fromMax, float toMin, float toMax) {
             float percent = (value - fromMin) / (fromMax - fromMin);
             return toMin + (toMax - toMin) * percent;
+        }
+
+        public static float ScaleClamped(this float value, float fromMin, float fromMax, float toMin, float toMax) {
+            if (value > fromMax) {
+                return toMax;
+            }
+            if (value < fromMin) {
+                return toMin;
+            }
+            return value.Scale(fromMin, fromMax, toMin, toMax);
         }
     }
 
