@@ -108,7 +108,7 @@ namespace SciFi.AI {
 
         static Strategy[] GetStrategiesOfType(Strategy[] list, StrategyType type) {
             return list
-                .Where(t => t.GetType().GetCustomAttributes(false).Any(a => (a is StrategyTypeAttribute) && (((StrategyTypeAttribute)a).type == type)))
+                .Where(t => t.GetType().GetCustomAttributes(true).Any(a => (a is StrategyTypeAttribute) && (((StrategyTypeAttribute)a).type == type)))
                 .ToArray();
         }
 
