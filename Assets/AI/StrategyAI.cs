@@ -16,11 +16,7 @@ namespace SciFi.AI {
             public Strategy strategy;
             public int lastControl;
         }
-
-        StrategyInfo moveStrategyInfo;
-        StrategyInfo attackStrategyInfo;
-        StrategyInfo jumpStrategyInfo;
-        StrategyInfo blockStrategyInfo;
+        StrategyInfo[] strategyInfos;
 
         // Strategy params
         struct StrategyParams {
@@ -40,34 +36,32 @@ namespace SciFi.AI {
             };
 
             var strategyList = GetStrategyList(strategyListIndex);
+            Func<StrategyType, StrategyInfo> makeStrategyInfo = (type) => {
+                return new StrategyInfo {
+                    strategyPicker = new StrategyPicker(GetStrategiesOfType(strategyList, type)),
+                };
+            };
 
-            moveStrategyInfo = new StrategyInfo {
-                strategyPicker = new StrategyPicker(GetStrategiesOfType(strategyList, StrategyType.Movement)),
-            };
-            attackStrategyInfo = new StrategyInfo {
-                strategyPicker = new StrategyPicker(GetStrategiesOfType(strategyList, StrategyType.Attack)),
-            };
-            jumpStrategyInfo = new StrategyInfo {
-                strategyPicker = new StrategyPicker(GetStrategiesOfType(strategyList, StrategyType.Jump)),
-            };
-            blockStrategyInfo = new StrategyInfo {
-                strategyPicker = new StrategyPicker(GetStrategiesOfType(strategyList, StrategyType.Block)),
+            // Important: These must be in the same order as the StrategyType enum.
+            strategyInfos = new [] {
+                makeStrategyInfo(StrategyType.Movement),
+                makeStrategyInfo(StrategyType.Jump),
+                makeStrategyInfo(StrategyType.Attack),
+                makeStrategyInfo(StrategyType.Block),
             };
         }
 
         void Update() {
             if (Time.time > evaluateNextStrategyTime) {
                 evaluateNextStrategyTime = Time.time + evaluateStrategyInteval;
-                PickStrategy(ref moveStrategyInfo);
-                PickStrategy(ref attackStrategyInfo);
-                PickStrategy(ref jumpStrategyInfo);
-                PickStrategy(ref blockStrategyInfo);
+                for (var i = 0; i < strategyInfos.Length; i++) {
+                    PickStrategy(ref strategyInfos[i]);
+                }
             }
 
-            UseStrategy(ref moveStrategyInfo);
-            UseStrategy(ref attackStrategyInfo);
-            UseStrategy(ref jumpStrategyInfo);
-            UseStrategy(ref blockStrategyInfo);
+            for (var i = 0; i < strategyInfos.Length; i++) {
+                UseStrategy(ref strategyInfos[i]);
+            }
         }
 
         void PickStrategy(ref StrategyInfo info) {
@@ -98,6 +92,10 @@ namespace SciFi.AI {
                 inputManager.Press(control);
             }
             info.lastControl = control;
+        }
+
+        Strategy GetActiveStrategy(StrategyType type) {
+            return strategyInfos[(int)type].strategy;
         }
 
         Strategy[] GetStrategyList(int list) {
@@ -138,6 +136,9 @@ namespace SciFi.AI {
                             break;
                         case StrategyParamType.Ground:
                             val = strategyParams.ground;
+                            break;
+                        case StrategyParamType.GetActiveStrategy:
+                            val = (Func<StrategyType, Strategy>)GetActiveStrategy;
                             break;
                         default:
                             val = null;

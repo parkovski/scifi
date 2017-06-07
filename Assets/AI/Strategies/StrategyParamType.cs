@@ -3,5 +3,6 @@ namespace SciFi.AI {
         Me,
         Opponent,
         Ground,
+        GetActiveStrategy,
     }
 }
