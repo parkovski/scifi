@@ -48,5 +48,13 @@
 		"ProjectSettings/":true,
 		"temp/":true,
 		"Temp/":true
+	},
+	"files.associations": {
+		"*.unity": "yaml",
+		"*.prefab": "yaml",
+		"*.meta": "yaml",
+		"*.anim": "yaml",
+		"*.controller": "yaml",
+		"*.mat": "yaml"
 	}
 }

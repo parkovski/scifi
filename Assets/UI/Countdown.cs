@@ -29,7 +29,7 @@ namespace SciFi.UI {
         }
 
         /// Begins the countdown.
-        public void StartGame() {
+        public void Start() {
             cues.Reset();
             cues.Resume();
             GameObject.Find("Music").GetComponent<AudioSource>().Play();

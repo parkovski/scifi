@@ -210,7 +210,7 @@ namespace SciFi {
             this.countdown = GameObject.Find("StaticCanvas").GetComponent<Countdown>();
             RpcStartGame(showCountdown);
             if (showCountdown) {
-                this.countdown.StartGame();
+                this.countdown.Start();
                 System.GC.Collect();
                 this.countdown.OnFinished += _ => {
                     this.isPlaying = true;
@@ -304,7 +304,7 @@ namespace SciFi {
                 yield break;
             }
             yield return request.Send();
-            if (request.isError) {
+            if (request.isNetworkError) {
                 print("Error reporting match result: " + request.error);
             } else {
                 print("match creation: " + request.downloadHandler.text);
@@ -333,7 +333,7 @@ namespace SciFi {
             }
 
             this.countdown = GameObject.Find("StaticCanvas").GetComponent<Countdown>();
-            this.countdown.StartGame();
+            this.countdown.Start();
             System.GC.Collect();
             this.countdown.OnFinished += _ => {
                 this.isPlaying = true;

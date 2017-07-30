@@ -27,7 +27,7 @@ namespace SciFi.Network.Web {
                 Debug.LogWarning("Unfinished request");
                 return false;
             }
-            if (request.isError) {
+            if (request.isNetworkError) {
                 Debug.LogWarning("Request error: " + request.error);
                 return false;
             }

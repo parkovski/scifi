@@ -1,0 +1,3 @@
+[submodule "Assets/scifikit"]
+	path = Assets/scifikit
+	url = git@github.com:parkovski/scifikit.git
