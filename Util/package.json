@@ -4,7 +4,8 @@
   "description": "",
   "dependencies": {
     "js-yaml": "^3.7.0",
-    "node-fetch": "^1.6.3"
+    "node-fetch": "^1.6.3",
+    "vis": "^4.20.1"
   },
   "devDependencies": {},
   "scripts": {

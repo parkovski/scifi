@@ -43,7 +43,7 @@ namespace SciFi.Network {
             var p = Instantiate(FindPrefab(humanPlayer), Vector3.zero, Quaternion.identity);
             var playerId = GameController.Instance.RegisterNewPlayer(p, "P1", TransitionParams.team, conn);
 #if UNITY_EDITOR
-            StartCoroutine(SetLeaderboardIdForFacebookId(playerId));
+            //StartCoroutine(SetLeaderboardIdForFacebookId(playerId));
 #endif
             NetworkServer.AddPlayerForConnection(conn, p, playerControllerId);
 

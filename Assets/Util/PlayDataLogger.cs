@@ -5,40 +5,6 @@ using System.Text;
 
 namespace SciFi.Util {
     public sealed class PlayDataLogger : IStateChangeListener, IDisposable {
-        private class DebugLogAdapter : TextWriter {
-            StringBuilder currentLine;
-
-            public DebugLogAdapter() {
-                currentLine = new StringBuilder();
-            }
-
-            private void ClearLine() {
-                currentLine.Length = 0;
-            }
-
-            public override System.Text.Encoding Encoding { get { throw new NotImplementedException(); } }
-
-            public override void Write(char c) {
-                if (c == '\n') {
-                    Debug.Log(currentLine.ToString());
-                    ClearLine();
-                } else {
-                    currentLine.Append(c);
-                }
-            }
-
-            public override void Write(string s) {
-                currentLine.Append(s);
-            }
-
-            public override void WriteLine(string s) {
-                if (currentLine.Length > 0) {
-                    s = currentLine.ToString() + s;
-                    ClearLine();
-                }
-                Debug.Log(s);
-            }
-        }
 
         TextWriter outs;
 
@@ -46,7 +12,7 @@ namespace SciFi.Util {
             outs = new StreamWriter(filename);
         }
 
-        private PlayDataLogger() {} 
+        private PlayDataLogger() {}
 
         public static PlayDataLogger ToDebugLog() {
             var logger = new PlayDataLogger();
@@ -107,6 +73,41 @@ namespace SciFi.Util {
 
         public void ObjectWillBeDestroyed(GameObject obj) {
             WriteLine("ObjectDestroyed {0}", obj.name);
+        }
+    }
+
+    public class DebugLogAdapter : TextWriter {
+        StringBuilder currentLine;
+
+        public DebugLogAdapter() {
+            currentLine = new StringBuilder();
+        }
+
+        private void ClearLine() {
+            currentLine.Length = 0;
+        }
+
+        public override System.Text.Encoding Encoding => Encoding.UTF8;
+
+        public override void Write(char c) {
+            if (c == '\n') {
+                Debug.Log(currentLine.ToString());
+                ClearLine();
+            } else {
+                currentLine.Append(c);
+            }
+        }
+
+        public override void Write(string s) {
+            currentLine.Append(s);
+        }
+
+        public override void WriteLine(string s) {
+            if (currentLine.Length > 0) {
+                s = currentLine.ToString() + s;
+                ClearLine();
+            }
+            Debug.Log(s);
         }
     }
 }
