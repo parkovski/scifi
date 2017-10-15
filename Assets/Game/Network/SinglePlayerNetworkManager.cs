@@ -69,7 +69,7 @@ namespace SciFi.Network {
                 }
             }
             var request = Leaderboard.GetPlayerIdForFacebookIdRequest(FacebookLogin.globalLogin.fbid);
-            yield return request.Send();
+            yield return request.SendWebRequest();
             var leaderboardId = Leaderboard.GetPlayerIdForFacebookIdResult(request);
             if (leaderboardId != -1) {
                 print(string.Format("Set player {0} to leaderboard ID {1}", playerId, leaderboardId));

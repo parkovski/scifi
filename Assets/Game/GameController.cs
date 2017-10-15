@@ -310,7 +310,7 @@ namespace SciFi {
             if (request == null) {
                 yield break;
             }
-            yield return request.Send();
+            yield return request.SendWebRequest();
             if (request.isNetworkError) {
                 print("Error reporting match result: " + request.error);
             } else {
