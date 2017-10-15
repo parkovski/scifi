@@ -13,16 +13,22 @@ using SciFi.Players.Modifiers;
 using SciFi.Items;
 using SciFi.UI;
 using SciFi.Environment.Effects;
+using SciFi.Environment.State;
 using SciFi.Scenes;
 using SciFi.Network;
 using SciFi.Network.Web;
 using SciFi.AI;
+using SciFi.AI.S2;
 using SciFi.Util;
 
 namespace SciFi {
     /// Handles "bookkeeping" for the game - which players are active,
     /// when is the game over, who won, when should an item spawn, etc.
-    public class GameController : NetworkBehaviour {
+    public class GameController
+      : NetworkBehaviour,
+        IStateSnapshotProvider<StageState>,
+        IStateSnapshotProvider<GameSnapshot>
+    {
         /// Is the game currently active?
         private bool isPlaying;
 
@@ -63,6 +69,7 @@ namespace SciFi {
         /// Total number of clients - game starts
         /// when sReadyClients == sNumClients.
         int sNumClients;
+        S2AI s2ai;
 
         int pDbgLagField = -1;
         float nextPingUpdateTime;
@@ -563,6 +570,7 @@ namespace SciFi {
                     }
                     player.GameControllerReady(this, playerInputManager);
                 }
+                //s2ai.Ready()
             };
 
             GameStarted += () => {
@@ -602,10 +610,21 @@ namespace SciFi {
                 ai = player.AddComponent<DumbAI>();
             } else if (level == 2) {
                 ai = player.AddComponent<StrategyAI>();
+            } else if (level == 3) {
+                if (s2ai == null) {
+                    InitS2();
+                }
+                s2ai.AddInputManager(inputManager);
+                return;
             } else {
                 throw new System.ArgumentOutOfRangeException("level");
             }
             ai.inputManager = inputManager;
+        }
+
+        [Server]
+        void InitS2() {
+            s2ai = new S2AI(threads: 4, blockSize: 8);
         }
 
         public override void OnStartServer() {
@@ -660,6 +679,7 @@ namespace SciFi {
                 return;
             }
 
+            //s2ai.ExecAndMoveNext();
             if (itemFrequency != ItemFrequency.None && Time.time > nextItemTime) {
                 nextItemTime = Time.time + GetNextItemSpawnTime();
                 SpawnItem();
@@ -704,6 +724,16 @@ namespace SciFi {
             var prefab = items[Random.Range(0, items.Count)];
             var item = Instantiate(prefab, new Vector2(Random.Range(-6f, 6f), 5f), Quaternion.identity);
             NetworkServer.Spawn(item);
+        }
+
+        public void GetStateSnapshot(ref StageState snapshot) {
+            // TODO: Remove hard-coded values when additional stages are added.
+            snapshot.leftEdge = -12;
+            snapshot.rightEdge = 12;
+        }
+
+        public void GetStateSnapshot(ref GameSnapshot snapshot) {
+            // TODO: Not currently used.
         }
     }
 

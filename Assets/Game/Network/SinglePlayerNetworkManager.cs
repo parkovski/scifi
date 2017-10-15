@@ -41,7 +41,9 @@ namespace SciFi.Network {
             }
 
             var p = Instantiate(FindPrefab(humanPlayer), Vector3.zero, Quaternion.identity);
+#pragma warning disable 0219 // Unused variable
             var playerId = GameController.Instance.RegisterNewPlayer(p, "P1", TransitionParams.team, conn);
+#pragma warning restore 0219
 #if UNITY_EDITOR
             //StartCoroutine(SetLeaderboardIdForFacebookId(playerId));
 #endif

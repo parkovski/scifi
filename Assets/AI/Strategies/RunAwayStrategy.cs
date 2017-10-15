@@ -9,13 +9,13 @@ namespace SciFi.AI.Strategies {
     [Preserve]
     [StrategyType(StrategyType.Movement)]
     [StrategyList(0)]
-    public class FoFFlightStrategy : Strategy {
+    public class RunAwayStrategy : Strategy {
         Player me;
         Player opponent;
 
         const float targetDistance = 5f;
 
-        public FoFFlightStrategy(
+        public RunAwayStrategy(
             [StrategyParam(StrategyParamType.Me)] Player me,
             [StrategyParam(StrategyParamType.Opponent)] Player opponent
         ) {

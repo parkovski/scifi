@@ -1,4 +1,5 @@
 using UnityEngine;
+using SciFi.Util;
 
 namespace SciFi.AI.Strategies {
     public class StrategyPicker {
@@ -6,6 +7,12 @@ namespace SciFi.AI.Strategies {
 
         public StrategyPicker(Strategy[] strategies) {
             this.strategies = strategies;
+        }
+
+        public void LogStrategies(DataLogger logger) {
+            foreach (var s in strategies) {
+                logger.AddProvider(s);
+            }
         }
 
         public Strategy Pick() {

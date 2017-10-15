@@ -67,11 +67,20 @@ namespace SciFi.Util.Extensions {
         }
 
         public static int ScaleClamped(this int value, int fromMin, int fromMax, int toMin, int toMax) {
-            if (value > fromMax) {
-                return toMax;
-            }
-            if (value < fromMin) {
-                return toMin;
+            if (fromMax > fromMin) {
+                if (value > fromMax) {
+                    return toMax;
+                }
+                if (value < fromMin) {
+                    return toMin;
+                }
+            } else {
+                if (value > fromMin) {
+                    return toMin;
+                }
+                if (value < fromMax) {
+                    return toMax;
+                }
             }
             return value.Scale(fromMin, fromMax, toMin, toMax);
         }
@@ -85,11 +94,20 @@ namespace SciFi.Util.Extensions {
         }
 
         public static float ScaleClamped(this float value, float fromMin, float fromMax, float toMin, float toMax) {
-            if (value > fromMax) {
-                return toMax;
-            }
-            if (value < fromMin) {
-                return toMin;
+            if (fromMax > fromMin) {
+                if (value > fromMax) {
+                    return toMax;
+                }
+                if (value < fromMin) {
+                    return toMin;
+                }
+            } else {
+                if (value > fromMin) {
+                    return toMin;
+                }
+                if (value < fromMax) {
+                    return toMax;
+                }
             }
             return value.Scale(fromMin, fromMax, toMin, toMax);
         }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 using SciFi.Network;
 using SciFi.Environment;
+using SciFi.Environment.State;
 using SciFi.Players.Attacks;
 using SciFi.Players.Modifiers;
 using SciFi.Players.Hooks;
@@ -21,7 +22,11 @@ namespace SciFi.Players {
         Invalid,
     }
 
-    public abstract class Player : NetworkBehaviour, IInteractable {
+    public abstract class Player
+      : NetworkBehaviour,
+        IInteractable,
+        IStateSnapshotProvider<PlayerSnapshot>
+    {
         public static readonly Color blueTeamColor = new Color(0.5f, 0.5f, 1f, 1f);
         public static readonly Color blueTeamColorDark = new Color(0f, 0f, .6f, 1f);
         public static readonly Color redTeamColor = new Color(1f, .4f, .4f, 1f);
@@ -308,7 +313,7 @@ namespace SciFi.Players {
         /// with just regular gravity.
         void AddExtraGravity() {
             if (lRb.velocity.y < 0f && !pIsTouchingGround) {
-                var force = Mathf.Clamp(lRb.velocity.y, -5f, 0f).Scale(0f, -5f, -1000f, 0f);
+                var force = lRb.velocity.y.ScaleClamped(0f, -5f, -1000f, 0f);
                 lRb.AddForce(new Vector3(0f, force, 0f));
             }
         }
@@ -828,6 +833,14 @@ namespace SciFi.Players {
                 return;
             }
             eItemAttack.ReceiveMessage(message);
+        }
+
+        public void GetStateSnapshot(ref PlayerSnapshot snapshot) {
+            snapshot.lives = (short)eLives;
+            snapshot.damage = (short)eDamage;
+            snapshot.magic = 0;
+            snapshot.position = transform.position;
+            snapshot.velocity = lRb.velocity;
         }
     }
 }

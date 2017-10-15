@@ -1,5 +1,11 @@
+using SciFi.Util;
+
 namespace SciFi.AI.Strategies {
-    public abstract class Strategy {
+    public abstract class Strategy: IDataPointProvider {
+        public Strategy() {
+            this.tag = GetType().Name;
+        }
+
         /// The estimated advantage to using this strategy.
         /// From -1 to 1, where -1 means absolutely do not use this,
         /// 1 means absolutely crucial to use this, and 0 means
@@ -22,5 +28,9 @@ namespace SciFi.AI.Strategies {
 
         /// Called when this strategy becomes inactive.
         public virtual void OnDeactivate() {}
+
+        // IDataPointProvider
+        public string tag { get; }
+        public string GetLogValue() => advantage.ToString();
     }
 }

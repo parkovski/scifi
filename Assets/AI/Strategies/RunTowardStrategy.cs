@@ -10,7 +10,7 @@ namespace SciFi.AI.Strategies {
     [Preserve]
     [StrategyType(StrategyType.Movement)]
     [StrategyList(0)]
-    public class FoFFightStrategy : Strategy {
+    public class RunTowardStrategy : Strategy {
         Player me;
         Player opponent;
 
@@ -18,7 +18,7 @@ namespace SciFi.AI.Strategies {
 
         bool reachedTarget;
 
-        public FoFFightStrategy(
+        public RunTowardStrategy(
             [StrategyParam(StrategyParamType.Me)] Player me,
             [StrategyParam(StrategyParamType.Opponent)] Player opponent,
             [StrategyParam(StrategyParamType.GetActiveStrategy)] Func<StrategyType, Strategy> getActiveStrategy

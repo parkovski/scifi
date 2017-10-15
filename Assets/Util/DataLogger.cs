@@ -1,10 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 
 namespace SciFi.Util {
     public interface IDataPointProvider {
         string tag { get; }
-        float GetCurrentPoint();
+        string GetLogValue();
     }
 
     public class DataLogger {
@@ -18,17 +19,19 @@ namespace SciFi.Util {
             this.writer = writer;
         }
 
+        public void AddProvider(IDataPointProvider provider) {
+            this.providers.Add(provider);
+        }
+
         public void Tick() {
             timer.Run();
         }
 
         private void LogPoints() {
             foreach (var p in providers) {
-                writer.WriteLine(
-                    "{{\"tag\":\"{0}\",\"value\":{1}}}",
-                    p.tag,
-                    p.GetCurrentPoint()
-                );
+                var text = p.GetLogValue();
+                if (text == null) { continue; }
+                writer.WriteLine("{{\"tag\":\"{0}\",\"value\":{1}}}", p.tag, text);
             }
         }
     }

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Graph</title>
+    <script src="./node_modules/vis/dist/vis.js"></script>
+    <link href="./node_modules/vis/dist/vis.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div id="vis"></div>
+    <pre id="test"></pre>
+    <script>
+        const container = document.getElementById('vis');
+        const items = [
+            {x: 0, y: 0},
+            {x: 1, y: .5},
+            {x: 2, y: .75},
+            {x: 3, y: .9},
+            {x: 4, y: .6},
+            {x: 5, y: .25},
+            {x: 6, y: -.25},
+            {x: 7, y: -.7},
+            {x: 8, y: -.95},
+            {x: 9, y: -.9},
+            {x: 10, y: -.85}
+        ];
+
+        const dataset = new vis.DataSet(items);
+        const options = {start: 0, end: 10};
+        new vis.Graph2d(container, dataset, options);
+
+        fetch('./morsecode.js').then(r => r.text()).then(v =>
+            document.getElementById('test').textContent = v
+        );
+    </script>
+</body>
+</html>
