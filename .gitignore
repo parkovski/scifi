@@ -39,6 +39,7 @@ sysinfo.txt
 # Play data log
 /Assets/StreamingAssets/pdl.txt
 /Assets/StreamingAssets/pdl.txt.meta
+/Assets/Editor/VSCode
 
 .DS_Store
 
