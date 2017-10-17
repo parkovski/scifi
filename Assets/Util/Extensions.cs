@@ -139,6 +139,21 @@ namespace SciFi.Util.Extensions {
                 return Direction.Invalid;
             }
         }
+
+        public static int AsControl(this Direction direction) {
+            switch (direction) {
+            case Direction.Left:
+                return Control.Left;
+            case Direction.Right:
+                return Control.Right;
+            case Direction.Up:
+                return Control.Up;
+            case Direction.Down:
+                return Control.Down;
+            default:
+                return Control.None;
+            }
+        }
     }
 
     public static class PlayerExtensions {

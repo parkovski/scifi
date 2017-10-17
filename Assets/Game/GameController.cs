@@ -556,21 +556,36 @@ namespace SciFi {
             sPlayerData = new List<ServerPlayerData>();
             Layers.Init();
             PlayersInitialized += players => {
+                var aiStrategies = new List<Strategy>();
+                var aiInputManagers = new List<AIInputManager>();
+
                 FindObjectOfType<EnableUI>().Enable();
+
                 foreach (var player in players) {
                     IInputManager playerInputManager;
                     if (isClient && player.eId == cPlayerId) {
                         playerInputManager = GetComponent<InputManager>();
                     } else if (isServer && sPlayerData[player.eId].aiLevel > 0) {
                         var aiim = new AIInputManager();
+                        // TODO: Redo this function for S2AI.
                         AddAI(player.gameObject, aiim, sPlayerData[player.eId].aiLevel);
                         playerInputManager = aiim;
+
+                        var aiIndex = aiInputManagers.Count;
+                        if (sPlayerData[player.eId].aiLevel == 3) {
+                            aiStrategies.AddRange(StrategySets.GetStandardSet(aiIndex));
+                            aiInputManagers.Add(aiim);
+                        }
                     } else {
                         playerInputManager = NullInputManager.Instance;
                     }
                     player.GameControllerReady(this, playerInputManager);
                 }
-                //s2ai.Ready()
+
+                if (s2ai != null) {
+                    var env = new AIEnvironment(aiInputManagers.Count, this, this, players);
+                    s2ai.Ready(env, aiStrategies, aiInputManagers);
+                }
             };
 
             GameStarted += () => {
@@ -614,7 +629,6 @@ namespace SciFi {
                 if (s2ai == null) {
                     InitS2();
                 }
-                s2ai.AddInputManager(inputManager);
                 return;
             } else {
                 throw new System.ArgumentOutOfRangeException("level");
@@ -679,7 +693,9 @@ namespace SciFi {
                 return;
             }
 
-            //s2ai.ExecAndMoveNext();
+            if (s2ai != null) {
+                s2ai.ExecAndMoveNext();
+            }
             if (itemFrequency != ItemFrequency.None && Time.time > nextItemTime) {
                 nextItemTime = Time.time + GetNextItemSpawnTime();
                 SpawnItem();

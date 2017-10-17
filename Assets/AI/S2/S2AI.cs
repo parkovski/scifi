@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using Random = System.Random;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace SciFi.AI.S2 {
     public class S2AI : IDisposable {
         // -- Game & main thread environment --
         int aiCount;
-        List<AIInputManager> inputManagers;
+        AIInputManager[] inputManagers;
         AIEnvironment env, env2;
         /// Dimensions = [AI ID, action group ID].
         int[,] strategyIdsRead;
@@ -31,6 +32,7 @@ namespace SciFi.AI.S2 {
         int[,] strategyIdsWrite;
         /// Dimensions = [AI ID, action group ID].
         int[,] prevStrategyIds;
+        Random mainThreadRandom;
 
         // -- Evaluator thread environment --
         bool running;
@@ -53,6 +55,7 @@ namespace SciFi.AI.S2 {
         /// Dimensions = [thread ID, AI ID, action group ID * 2].
         Decision[][,] threadResults;
         Thread[] evalThreads;
+        Random[] evalThreadRandom;
 
         // -- Controller state --
         Thread controlThread;
@@ -92,6 +95,11 @@ namespace SciFi.AI.S2 {
             this.blockSize = blockSize;
             this.nextBlockStart = 0;
             this.threadResults = new Decision[threads][,];
+            this.mainThreadRandom = new Random(DateTime.Now.Millisecond);
+            this.evalThreadRandom = new Random[threads];
+            for (int i = 0; i < threads; i++) {
+                this.evalThreadRandom[i] = new Random(DateTime.Now.Millisecond * (i + 1));
+            }
         }
 
         public void Ready(
@@ -102,8 +110,8 @@ namespace SciFi.AI.S2 {
             this.env = env;
             this.env2 = new AIEnvironment(env);
             this.strategies = Shuffle(strategies.ToList());
-            this.inputManagers = inputManagers.ToList();
-            this.aiCount = this.inputManagers.Count;
+            this.inputManagers = inputManagers.ToArray();
+            this.aiCount = this.inputManagers.Length;
 
             int threads = threadResults.Length;
             for (int i = 0; i < threads; i++) {
@@ -149,10 +157,6 @@ namespace SciFi.AI.S2 {
             GC.SuppressFinalize(this);
         }
 
-        public void AddInputManager(AIInputManager inputManager) {
-            this.inputManagers.Add(inputManager);
-        }
-
         /// Rearrange the list so that each AI gets roughly
         /// equal processing time.
         private static List<Strategy> Shuffle(List<Strategy> strategies) {
@@ -179,6 +183,12 @@ namespace SciFi.AI.S2 {
             }
         }
 
+        /// Set non-thread-safe variables to thread-local copies before passing
+        /// the environment to a strategy.
+        private void SetupEnvForThread(AIEnvironment env, Random threadRandom) {
+            env.threadRandom = threadRandom;
+        }
+
         /// Start evaluating the first step, but don't take any action yet.
         public void BeginEvaluate() {
             ResetStrategyIdArray(prevStrategyIds);
@@ -186,7 +196,7 @@ namespace SciFi.AI.S2 {
             for (int i = 0; i < threadResults.Length; i++) {
                 ResetDecisionArray(threadResults[i]);
             }
-            env.Update();
+            env.Update(Time.time);
             Thread.MemoryBarrier();
             Volatile.Write(ref running, true);
             Volatile.Write(ref nextBlockStart, 0);
@@ -202,12 +212,12 @@ namespace SciFi.AI.S2 {
             // thread to collect the new ones when the processing threads pause.
             Execute();
             if (Volatile.Read(ref activeThreads) == 0) {
-                env.Update();
+                env.Update(Time.time);
                 Thread.MemoryBarrier();
                 Volatile.Write(ref nextBlockStart, 0);
                 startEvent.Set();
             } else {
-                env2.Update();
+                env2.Update(Time.time);
                 Thread.MemoryBarrier();
                 Threadctl(ThreadControl.LateUpdate);
             }
@@ -239,16 +249,17 @@ namespace SciFi.AI.S2 {
         private bool ActivateStrategy(
             int newSid,
             ref int oldSid,
+            AIEnvironment env,
             AIInputManager inputManager
         )
         {
             bool hasNewStrategy = newSid >= 0;
             if (newSid == oldSid) { return hasNewStrategy; }
             if (oldSid > -1) {
-                this.strategies[oldSid].Deactivate(inputManager);
+                this.strategies[oldSid].Deactivate(env, inputManager);
             }
             if (newSid > -1) {
-                this.strategies[newSid].Activate();
+                this.strategies[newSid].Activate(env);
             }
             oldSid = newSid;
             return hasNewStrategy;
@@ -256,12 +267,13 @@ namespace SciFi.AI.S2 {
 
         private void Execute() {
             var env = Volatile.Read(ref this.env);
+            SetupEnvForThread(env, mainThreadRandom);
             var strategyIdsRead = Volatile.Read(ref this.strategyIdsRead);
             for (int i = 0; i < strategyIdsRead.GetLength(0); i++) {
                 for (int j = 0; j < strategyIdsRead.GetLength(1); j++) {
                     int s = strategyIdsRead[i, j];
                     var im = inputManagers[i];
-                    if (!ActivateStrategy(s, ref prevStrategyIds[i, j], im)) {
+                    if (!ActivateStrategy(s, ref prevStrategyIds[i, j], env, im)) {
                         continue;
                     }
                     this.strategies[s].Execute(env, im);
@@ -394,6 +406,7 @@ namespace SciFi.AI.S2 {
                     if (blockEnd > strategyCount) {
                         blockEnd = strategyCount;
                     }
+                    SetupEnvForThread(env, evalThreadRandom[threadId]);
                     for (int i = blockStart; i < blockEnd; i++) {
                         TakeBestStrategy(i, threadResults[threadId], env);
                     }

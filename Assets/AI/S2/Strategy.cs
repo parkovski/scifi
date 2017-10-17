@@ -21,8 +21,8 @@ namespace SciFi.AI.S2 {
         /// Returns the desired control.
         protected abstract int OnExecute(AIEnvironment env);
 
-        protected virtual void OnActivate() {}
-        protected virtual void OnDeactivate() {}
+        protected virtual void OnActivate(AIEnvironment env) {}
+        protected virtual void OnDeactivate(AIEnvironment env) {}
         /// Must be thread safe.
         public virtual bool CanTransitionTo(Type type) => true;
 
@@ -44,16 +44,16 @@ namespace SciFi.AI.S2 {
             inputManager.Press(c);
         }
 
-        public void Activate() {
+        public void Activate(AIEnvironment env) {
             this.activeControl = -1;
-            OnActivate();
+            OnActivate(env);
         }
 
-        public void Deactivate(AIInputManager inputManager) {
+        public void Deactivate(AIEnvironment env, AIInputManager inputManager) {
             if (activeControl != Control.None) {
                 inputManager.Release(activeControl);
             }
-            OnDeactivate();
+            OnDeactivate(env);
         }
     }
 }

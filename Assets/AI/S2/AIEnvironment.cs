@@ -13,6 +13,11 @@ namespace SciFi.AI.S2 {
     public class AIEnvironment {
         public readonly int aiCount;
 
+        /// Unity's `Time.time` is not thread-safe.
+        public float time { get; private set; }
+        /// Random is not thread safe, so each thread provides its own here.
+        public System.Random threadRandom;
+
         private IStateSnapshotProvider<GameSnapshot> gameSp;
         public GameSnapshot gameState;
 
@@ -30,6 +35,7 @@ namespace SciFi.AI.S2 {
         )
         {
             this.aiCount = aiCount;
+            this.time = 0;
             this.gameSp = gameSp;
             this.stageSp = stageSp;
             this.playersSp = playersSp.ToArray();
@@ -44,7 +50,8 @@ namespace SciFi.AI.S2 {
             this.playerState = new PlayerSnapshot[this.playersSp.Length];
         }
 
-        public void Update() {
+        public void Update(float time) {
+            this.time = time;
             gameSp.GetStateSnapshot(ref gameState);
             stageSp.GetStateSnapshot(ref stageState);
             for (int i = 0; i < playersSp.Length; i++) {

@@ -841,6 +841,9 @@ namespace SciFi.Players {
             snapshot.magic = 0;
             snapshot.position = transform.position;
             snapshot.velocity = lRb.velocity;
+            this.eAttack1.GetStateSnapshot(ref snapshot.attack1);
+            this.eAttack2.GetStateSnapshot(ref snapshot.attack2);
+            this.eAttack3.GetStateSnapshot(ref snapshot.attack3);
         }
     }
 }

@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 
 using SciFi.Players.Modifiers;
+using SciFi.Environment.State;
 
 namespace SciFi.Players.Attacks {
     public enum AttackHit {
@@ -37,7 +38,7 @@ namespace SciFi.Players.Attacks {
         Player Owner { get; }
     }
 
-    public abstract class Attack {
+    public abstract class Attack : IStateSnapshotProvider<AttackState> {
         protected Player player;
         float cooldown;
         float lastFireTime;
@@ -192,6 +193,11 @@ namespace SciFi.Players.Attacks {
                 return AttackHit.HitOnly;
             }
             return AttackHit.None;
+        }
+
+        public void GetStateSnapshot(ref AttackState snapshot) {
+            snapshot.canCharge = this.canCharge;
+            // TODO: Fill in the rest.
         }
     }
 }
