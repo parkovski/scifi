@@ -281,6 +281,7 @@ namespace SciFi {
         [Server]
         public void EndGame() {
             isPlaying = false;
+            s2ai.Dispose();
             stateChangeListener.GameEnded();
             var winner = FindWinner();
             RpcEndGame(winner);
@@ -669,6 +670,10 @@ namespace SciFi {
 
         /// Spawn items when they are due.
         void Update() {
+            if (!isPlaying) {
+                return;
+            }
+
             if (Time.time > nextPingUpdateTime) {
                 if (pDbgLagField == -1) {
                     pDbgLagField = DebugPrinter.Instance.NewField();
@@ -686,10 +691,6 @@ namespace SciFi {
             }
 
             if (!isServer) {
-                return;
-            }
-
-            if (!isPlaying) {
                 return;
             }
 
