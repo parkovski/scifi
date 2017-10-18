@@ -198,4 +198,34 @@ namespace SciFi.Util.Extensions {
             return arr1.EqualsArray(arr2, EqualityComparer<T>.Default);
         }
     }
+
+    public static class StringExtensions {
+        public static string F(this string format, params object[] args) {
+            return string.Format(format, args);
+        }
+
+        public static void Log(this string message) {
+            UnityEngine.Debug.Log(message);
+        }
+
+        public static void LogF(this string format, params object[] args) {
+            UnityEngine.Debug.Log(format.F(args));
+        }
+
+        public static void Warn(this string message) {
+            UnityEngine.Debug.LogWarning(message);
+        }
+
+        public static void WarnF(this string format, params object[] args) {
+            UnityEngine.Debug.LogWarningFormat(format, args);
+        }
+
+        public static void Error(this string message) {
+            UnityEngine.Debug.LogError(message);
+        }
+
+        public static void ErrorF(this string format, params object[] args) {
+            UnityEngine.Debug.LogErrorFormat(format, args);
+        }
+    }
 }

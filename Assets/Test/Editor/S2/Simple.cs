@@ -10,30 +10,27 @@ namespace SciFi.Test {
         [Test]
         public void TestStayOnStage() {
             var ai = new S2AI(2, 1);
-            var keepWalking = new KeepWalking(0);
+            var inp = new AIInputManager();
+            var keepWalking = new KeepWalking(0, inp);
             Strategy[] strategies = {
-                new StayOnStage(0),
+                new StayOnStage(0, inp),
                 keepWalking
             };
             var player = new DummyPlayerSnapshotProvider();
             var env = new AIEnvironment(
-                1,
                 new DummyGameSnapshotProvider(),
                 new DummyStageSnapshotProvider(20),
                 new [] { player }
             );
-            var inp = new [] {
-                new AIInputManager()
-            };
-            ai.Ready(env, strategies, inp);
+            ai.Ready(env, 1, strategies);
             ai.BeginEvaluate();
             float min = 0, max = 0;
             for (int i = 0; i < 30; i++) {
                 ai.ExecAndMoveNext();
-                if (inp[0].IsControlActive(Control.Left)) {
+                if (inp.IsControlActive(Control.Left)) {
                     player.Move(-1);
                     keepWalking.direction = Control.Left;
-                } else if (inp[0].IsControlActive(Control.Right)) {
+                } else if (inp.IsControlActive(Control.Right)) {
                     player.Move(1);
                     keepWalking.direction = Control.Right;
                 }
@@ -49,7 +46,9 @@ namespace SciFi.Test {
     class KeepWalking : Strategy {
         public int direction;
 
-        public KeepWalking(int aiIndex) : base(aiIndex, ActionGroup.Movement) {}
+        public KeepWalking(int aiIndex, AIInputManager inputManager)
+            : base(aiIndex, ActionGroup.Movement, inputManager)
+        {}
 
         protected override float OnEvaluate(AIEnvironment env) {
             return 0.25f;

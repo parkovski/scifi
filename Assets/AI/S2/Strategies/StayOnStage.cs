@@ -7,16 +7,16 @@ namespace SciFi.AI.S2 {
     /// action.
     public class StayOnStage : Strategy
     {
-        const float redZoneSize = 2f;
-        const float yellowZoneSize = 4f;
+        const float redZoneSize = 1.5f;
+        const float yellowZoneSize = 3f;
 
-        public StayOnStage(int aiIndex)
-            : base(aiIndex, ActionGroup.Movement)
+        public StayOnStage(int aiId, AIInputManager inputManager)
+            : base(aiId, ActionGroup.Movement, inputManager)
         {}
 
         protected override float OnEvaluate(AIEnvironment env) {
             // Note: assumes the center is at x=0.
-            var x = Abs(env.playerState[aiIndex].position.x);
+            var x = Abs(env.playerState[1].position.x);
             var edge = env.stageState.rightEdge;
             var red = edge - redZoneSize;
             var yellow = edge - yellowZoneSize;
@@ -35,7 +35,7 @@ namespace SciFi.AI.S2 {
         }
 
         protected override int OnExecute(AIEnvironment env) {
-            if (env.playerState[aiIndex].position.x < 0) {
+            if (env.playerState[aiId].position.x < 0) {
                 return Control.Right;
             } else {
                 return Control.Left;

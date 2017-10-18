@@ -1,9 +1,9 @@
 namespace SciFi.AI.S2 {
     public static class StrategySets {
-        public static Strategy[] GetStandardSet(int aiIndex) {
+        public static Strategy[] GetStandardSet(int aiId, AIInputManager inputManager) {
             return new Strategy[] {
-                new StayOnStage(aiIndex),
-                new Wander(aiIndex)
+                new StayOnStage(aiId, inputManager),
+                new Wander(aiId, inputManager)
             };
         }
     }

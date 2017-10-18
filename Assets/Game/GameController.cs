@@ -158,6 +158,9 @@ namespace SciFi {
         }
 
         void InitializePlayers() {
+            if (playersInitialized) {
+                return;
+            }
             playersInitialized = true;
             _PlayersInitialized(sPlayerData.Select(d => d.player).ToArray());
         }
@@ -251,11 +254,7 @@ namespace SciFi {
                 stateChangeListener.LifeChanged(pd.player.eId, pd.player.eLives);
                 stateChangeListener.DamageChanged(pd.player.eId, pd.player.eDamage);
             }
-            // If this copy is both client and server, the server
-            // side will already have called this.
-            if (!isServer) {
-                InitializePlayers();
-            }
+            InitializePlayers();
         }
 
         /// Find the active player with ID <c>id</c>.
@@ -558,7 +557,7 @@ namespace SciFi {
             Layers.Init();
             PlayersInitialized += players => {
                 var aiStrategies = new List<Strategy>();
-                var aiInputManagers = new List<AIInputManager>();
+                int aiCount = 0;
 
                 FindObjectOfType<EnableUI>().Enable();
 
@@ -572,10 +571,10 @@ namespace SciFi {
                         AddAI(player.gameObject, aiim, sPlayerData[player.eId].aiLevel);
                         playerInputManager = aiim;
 
-                        var aiIndex = aiInputManagers.Count;
                         if (sPlayerData[player.eId].aiLevel == 3) {
-                            aiStrategies.AddRange(StrategySets.GetStandardSet(aiIndex));
-                            aiInputManagers.Add(aiim);
+                            var set = StrategySets.GetStandardSet(aiCount, aiim);
+                            aiStrategies.AddRange(set);
+                            ++aiCount;
                         }
                     } else {
                         playerInputManager = NullInputManager.Instance;
@@ -584,8 +583,8 @@ namespace SciFi {
                 }
 
                 if (s2ai != null) {
-                    var env = new AIEnvironment(aiInputManagers.Count, this, this, players);
-                    s2ai.Ready(env, aiStrategies, aiInputManagers);
+                    var env = new AIEnvironment(this, this, players);
+                    s2ai.Ready(env, aiCount, aiStrategies);
                 }
             };
 
@@ -597,6 +596,9 @@ namespace SciFi {
                     if (player.isLocalPlayer) {
                         FindObjectOfType<CameraScroll>().playerToFollow = player;
                     }
+                }
+                if (s2ai != null) {
+                    s2ai.BeginEvaluate();
                 }
             };
 
@@ -745,8 +747,8 @@ namespace SciFi {
 
         public void GetStateSnapshot(ref StageState snapshot) {
             // TODO: Remove hard-coded values when additional stages are added.
-            snapshot.leftEdge = -12;
-            snapshot.rightEdge = 12;
+            snapshot.leftEdge = -11;
+            snapshot.rightEdge = 11;
         }
 
         public void GetStateSnapshot(ref GameSnapshot snapshot) {

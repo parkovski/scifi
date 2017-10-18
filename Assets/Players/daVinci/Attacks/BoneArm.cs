@@ -5,10 +5,16 @@ using SciFi.Util;
 using SciFi.Util.Extensions;
 
 namespace SciFi.Players.Attacks {
+    [System.Serializable]
+    public class ShoogityBoogity {
+        public int aboogity;
+        public int ashoogity;
+    }
     public class BoneArm : MonoBehaviour, IAttackSource {
         public GameObject boneHandPrefab;
         public GameObject attachedHand;
         public bool alwaysThrowHand = false;
+        public ShoogityBoogity supdawg;
 
         [HideInInspector]
         public Player player;

@@ -11,8 +11,6 @@ namespace SciFi.AI.S2 {
     /// a lot of code duplication, so I'll just note here - these
     /// should never be changed through a reference to this type!
     public class AIEnvironment {
-        public readonly int aiCount;
-
         /// Unity's `Time.time` is not thread-safe.
         public float time { get; private set; }
         /// Random is not thread safe, so each thread provides its own here.
@@ -28,13 +26,11 @@ namespace SciFi.AI.S2 {
         public PlayerSnapshot[] playerState;
 
         public AIEnvironment(
-            int aiCount,
             IStateSnapshotProvider<GameSnapshot> gameSp,
             IStateSnapshotProvider<StageState> stageSp,
             IEnumerable<IStateSnapshotProvider<PlayerSnapshot>> playersSp
         )
         {
-            this.aiCount = aiCount;
             this.time = 0;
             this.gameSp = gameSp;
             this.stageSp = stageSp;
@@ -43,7 +39,6 @@ namespace SciFi.AI.S2 {
         }
 
         public AIEnvironment(AIEnvironment orig) {
-            this.aiCount = orig.aiCount;
             this.gameSp = orig.gameSp;
             this.stageSp = orig.stageSp;
             this.playersSp = orig.playersSp;

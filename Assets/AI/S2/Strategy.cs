@@ -2,18 +2,20 @@ using System;
 
 namespace SciFi.AI.S2 {
     public abstract class Strategy {
-        public int aiIndex { get; }
+        public int aiId { get; }
         public uint actionGroupMask { get; }
 
         private int activeControl;
+        private AIInputManager inputManager;
 
-        /// <param name="aiIndex">Provided by `GameController`.</param>
+        /// <param name="aiId">Provided by `GameController`.</param>
         /// <param name="actionGroupMask">
         ///   Only the lowest bit is considered currently.
         /// </param>
-        public Strategy(int aiIndex, uint actionGroupMask) {
-            this.aiIndex = aiIndex;
+        public Strategy(int aiId, uint actionGroupMask, AIInputManager inputManager) {
+            this.aiId = aiId;
             this.actionGroupMask = actionGroupMask;
+            this.inputManager = inputManager;
         }
 
         /// Must be thread safe.
@@ -32,7 +34,7 @@ namespace SciFi.AI.S2 {
             return UnityEngine.Mathf.Clamp01(OnEvaluate(env));
         }
 
-        public void Execute(AIEnvironment env, AIInputManager inputManager) {
+        public void Execute(AIEnvironment env) {
             var c = OnExecute(env);
             if (c < Control.None || c >= Control.ArrayLength) {
                 c = Control.None;
@@ -49,7 +51,7 @@ namespace SciFi.AI.S2 {
             OnActivate(env);
         }
 
-        public void Deactivate(AIEnvironment env, AIInputManager inputManager) {
+        public void Deactivate(AIEnvironment env) {
             if (activeControl != Control.None) {
                 inputManager.Release(activeControl);
             }

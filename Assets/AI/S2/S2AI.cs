@@ -9,6 +9,8 @@ using ThreadPriority = System.Threading.ThreadPriority;
 using System.Diagnostics;
 using System.Collections.Concurrent;
 
+using SciFi.Util.Extensions;
+
 namespace SciFi.AI.S2 {
     /// A multithreaded utility (strategy) AI controller.
     /// When signaled, a thread will start a loop where it
@@ -22,8 +24,6 @@ namespace SciFi.AI.S2 {
     /// every few cycles.
     public class S2AI : IDisposable {
         // -- Game & main thread environment --
-        int aiCount;
-        AIInputManager[] inputManagers;
         AIEnvironment env, env2;
         /// Dimensions = [AI ID, action group ID].
         int[,] strategyIdsRead;
@@ -104,14 +104,12 @@ namespace SciFi.AI.S2 {
 
         public void Ready(
             AIEnvironment env,
-            IEnumerable<Strategy> strategies,
-            IEnumerable<AIInputManager> inputManagers
+            int aiCount,
+            IEnumerable<Strategy> strategies
         ) {
             this.env = env;
             this.env2 = new AIEnvironment(env);
             this.strategies = Shuffle(strategies.ToList());
-            this.inputManagers = inputManagers.ToArray();
-            this.aiCount = this.inputManagers.Length;
 
             int threads = threadResults.Length;
             for (int i = 0; i < threads; i++) {
@@ -226,12 +224,13 @@ namespace SciFi.AI.S2 {
         private void MergeDecisions() {
             var strategyIdsWrite = Volatile.Read(ref this.strategyIdsWrite);
             // This should be ok as long as all the numbers stay low.
-            for (int j = 0; j < aiCount; j++) {
-                for (int k = 0; k < ActionGroup.Count; k++) {
+            for (int j = 0; j < strategyIdsWrite.GetLength(0); j++) {
+                for (int k = 0; k < strategyIdsWrite.GetLength(1); k++) {
                     // Inner loop is swapped for better distribution in case
                     // not all strategies are processed at the time we're
                     // picking which ones to use.
                     float bestUtility = 0f;
+                    var old = strategyIdsWrite[j, k];
                     for (int i = 0; i < threadResults.Length; i++) {
                         var r = threadResults[i];
                         if (i == 0 || r[j, k].utility > bestUtility) {
@@ -239,9 +238,18 @@ namespace SciFi.AI.S2 {
                             strategyIdsWrite[j, k] = r[j, k].strategyId;
                         }
                     }
+                    var id = strategyIdsWrite[j, k];
+                    if (strategyIdsWrite[j, k] != old) {
+                        var s = id >= 0 && id < strategies.Count ? strategies[id].GetType() : null;
+                        "Chose {2}:{0}/{1}".LogF(
+                            s,
+                            bestUtility,
+                            id
+                        );
+                    }
                 }
             }
-            Volatile.Write(ref this.strategyIdsWrite, this.strategyIdsRead);
+            Volatile.Write(ref this.strategyIdsWrite, Volatile.Read(ref this.strategyIdsRead));
             Volatile.Write(ref this.strategyIdsRead, strategyIdsWrite);
         }
 
@@ -249,14 +257,13 @@ namespace SciFi.AI.S2 {
         private bool ActivateStrategy(
             int newSid,
             ref int oldSid,
-            AIEnvironment env,
-            AIInputManager inputManager
+            AIEnvironment env
         )
         {
             bool hasNewStrategy = newSid >= 0;
             if (newSid == oldSid) { return hasNewStrategy; }
             if (oldSid > -1) {
-                this.strategies[oldSid].Deactivate(env, inputManager);
+                this.strategies[oldSid].Deactivate(env);
             }
             if (newSid > -1) {
                 this.strategies[newSid].Activate(env);
@@ -272,11 +279,10 @@ namespace SciFi.AI.S2 {
             for (int i = 0; i < strategyIdsRead.GetLength(0); i++) {
                 for (int j = 0; j < strategyIdsRead.GetLength(1); j++) {
                     int s = strategyIdsRead[i, j];
-                    var im = inputManagers[i];
-                    if (!ActivateStrategy(s, ref prevStrategyIds[i, j], env, im)) {
+                    if (!ActivateStrategy(s, ref prevStrategyIds[i, j], env)) {
                         continue;
                     }
-                    this.strategies[s].Execute(env, im);
+                    this.strategies[s].Execute(env);
                 }
             }
         }
@@ -389,7 +395,8 @@ namespace SciFi.AI.S2 {
                                 MergeDecisions();
                             }
                             startEvent.WaitOne();
-                        } catch {
+                        } catch (Exception e) {
+                            "{0}".ErrorF(e);
                             // If we let an exception go between the
                             // decrement and increment, the counter
                             // will stop being accurate. This way, it will
@@ -411,7 +418,8 @@ namespace SciFi.AI.S2 {
                         TakeBestStrategy(i, threadResults[threadId], env);
                     }
                 }
-            } catch {
+            } catch (Exception e) {
+                "{0}".ErrorF(e);
                 Interlocked.Decrement(ref activeThreads);
                 return;
             }
@@ -461,7 +469,7 @@ namespace SciFi.AI.S2 {
             // also greater than first place's utility, replace second.
 
             int agIndex = LeastBitIndex(agMask);
-            int aiIndex = strategy.aiIndex;
+            int aiIndex = strategy.aiId;
             // It's ok if this is being written to - if it is, that means
             // the result from this thread will not be used and we will get
             // reset by `CtlLateUpdate`.
