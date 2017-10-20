@@ -70,20 +70,7 @@ namespace SciFi.Scenes {
             }
 
             TransitionParams.team = team;
-            switch (team) {
-            case 0:
-                selectedColor = Player.blueTeamColor;
-                break;
-            case 1:
-                selectedColor = Player.redTeamColor;
-                break;
-            case 2:
-                selectedColor = Player.greenTeamColor;
-                break;
-            case 3:
-                selectedColor = Player.yellowTeamColor;
-                break;
-            }
+            selectedColor = TeamColor.FromIndex(team);
             selected.GetComponent<SpriteOverlay>().SetColor(selectedColor);
         }
 

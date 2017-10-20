@@ -1,6 +1,7 @@
 using System;
 
 using SciFi.Players.Hooks;
+using SciFi.Util;
 
 namespace SciFi.Players.Modifiers {
     public enum ModId {
@@ -19,18 +20,18 @@ namespace SciFi.Players.Modifiers {
     }
 
     public class ModifierCollection {
-        public Modifier OnFire { get { return modifiers[(int)ModId.OnFire]; } }
-        public Modifier CantMove { get { return modifiers[(int)ModId.CantMove]; } }
-        public Modifier CantJump { get { return modifiers[(int)ModId.CantJump]; } }
-        public Modifier CantAttack { get { return modifiers[(int)ModId.CantAttack]; } }
-        public Modifier Invincible { get { return modifiers[(int)ModId.Invincible]; } }
-        public Modifier Slow { get { return modifiers[(int)ModId.Slow]; } }
-        public Modifier Fast { get { return modifiers[(int)ModId.Fast]; } }
-        public Modifier UsingShield { get { return modifiers[(int)ModId.UsingShield]; } }
-        public Modifier Frozen { get { return modifiers[(int)ModId.Frozen]; } }
-        public Modifier InGravityWell { get { return modifiers[(int)ModId.InGravityWell]; } }
-        public Modifier CanSmash { get { return modifiers[(int)ModId.CanSmash]; } }
-        public Modifier InKnockback { get { return modifiers[(int)ModId.InKnockback]; } }
+        public Modifier OnFire => modifiers[(int)ModId.OnFire];
+        public Modifier CantMove => modifiers[(int)ModId.CantMove];
+        public Modifier CantJump => modifiers[(int)ModId.CantJump];
+        public Modifier CantAttack => modifiers[(int)ModId.CantAttack];
+        public Modifier Invincible => modifiers[(int)ModId.Invincible];
+        public Modifier Slow => modifiers[(int)ModId.Slow];
+        public Modifier Fast => modifiers[(int)ModId.Fast];
+        public Modifier UsingShield => modifiers[(int)ModId.UsingShield];
+        public Modifier Frozen => modifiers[(int)ModId.Frozen];
+        public Modifier InGravityWell => modifiers[(int)ModId.InGravityWell];
+        public Modifier CanSmash => modifiers[(int)ModId.CanSmash];
+        public Modifier InKnockback => modifiers[(int)ModId.InKnockback];
 
         Modifier[] modifiers;
         HookCollection hooks;
@@ -39,8 +40,9 @@ namespace SciFi.Players.Modifiers {
             this.hooks = hooks;
             var count = Enum.GetNames(typeof(ModId)).Length;
             modifiers = new Modifier[count];
+            Func<ModId, bool, bool> callback = ModifierWillChangeState;
             for (var i = 0; i < count; i++) {
-                modifiers[i] = new Modifier((ModId)i, ModifierWillChangeState);
+                modifiers[i] = new Modifier((ModId)i, callback);
             }
         }
 
@@ -82,6 +84,27 @@ namespace SciFi.Players.Modifiers {
                 throw new ArgumentOutOfRangeException("id", "Not a valid modifier ID");
             }
             return modifiers[index];
+        }
+    }
+
+    public class ModifiersDebugField {
+        ModifierCollection mods;
+        string idStr;
+        uint oldState;
+        DebugField field;
+
+        public ModifiersDebugField(ModifierCollection mods, string idStr) {
+            this.mods = mods;
+            this.idStr = idStr;
+            this.oldState = mods.ToBitfield();
+            this.field = new DebugField();
+        }
+
+        public void Update() {
+            var state = mods.ToBitfield();
+            if (state == oldState) { return; }
+            oldState = state;
+            field.Set(idStr + mods.GetDebugString());
         }
     }
 }

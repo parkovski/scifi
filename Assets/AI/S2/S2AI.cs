@@ -90,10 +90,9 @@ namespace SciFi.AI.S2 {
         }
 
         public S2AI(int threads, int blockSize) {
-            this.running = false;
+            this.running = true;
             this.activeThreads = 0;
             this.blockSize = blockSize;
-            this.nextBlockStart = 0;
             this.threadResults = new Decision[threads][,];
             this.mainThreadRandom = new Random(DateTime.Now.Millisecond);
             this.evalThreadRandom = new Random[threads];
@@ -104,13 +103,14 @@ namespace SciFi.AI.S2 {
 
         public void Ready(
             AIEnvironment env,
-            int aiCount,
             IEnumerable<Strategy> strategies
         ) {
             this.env = env;
             this.env2 = new AIEnvironment(env);
             this.strategies = Shuffle(strategies.ToList());
+            this.nextBlockStart = this.strategies.Count;
 
+            var aiCount = env.AiCount();
             int threads = threadResults.Length;
             for (int i = 0; i < threads; i++) {
                 threadResults[i] = new Decision[aiCount, ActionGroup.Count];
@@ -196,7 +196,6 @@ namespace SciFi.AI.S2 {
             }
             env.Update(Time.time);
             Thread.MemoryBarrier();
-            Volatile.Write(ref running, true);
             Volatile.Write(ref nextBlockStart, 0);
             startEvent.Set();
         }
@@ -230,12 +229,15 @@ namespace SciFi.AI.S2 {
                     // not all strategies are processed at the time we're
                     // picking which ones to use.
                     float bestUtility = 0f;
-                    var old = strategyIdsWrite[j, k];
+                    var old = strategyIdsRead[j, k];
+                    strategyIdsWrite[j, k] = -1;
                     for (int i = 0; i < threadResults.Length; i++) {
                         var r = threadResults[i];
-                        if (i == 0 || r[j, k].utility > bestUtility) {
-                            bestUtility = r[j, k].utility;
-                            strategyIdsWrite[j, k] = r[j, k].strategyId;
+                        var utility = r[j, k].utility;
+                        var sid = r[j, k].strategyId;
+                        if (sid >= 0 && utility > bestUtility) {
+                            bestUtility = utility;
+                            strategyIdsWrite[j, k] = sid;
                         }
                     }
                     var id = strategyIdsWrite[j, k];
@@ -249,7 +251,8 @@ namespace SciFi.AI.S2 {
                     }
                 }
             }
-            Volatile.Write(ref this.strategyIdsWrite, Volatile.Read(ref this.strategyIdsRead));
+            this.strategyIdsWrite = this.strategyIdsRead;
+            Thread.MemoryBarrier();
             Volatile.Write(ref this.strategyIdsRead, strategyIdsWrite);
         }
 
@@ -364,22 +367,44 @@ namespace SciFi.AI.S2 {
         /// distributed over all computer players by shuffling the array
         /// at the start.
         private void EvalThreadMain(object threadIdObj) {
-            Volatile.Read(ref startEvent).WaitOne();
+            startEvent.WaitOne();
             int threadId = (int)threadIdObj;
             Interlocked.Increment(ref activeThreads);
-            AIEnvironment env = Volatile.Read(ref this.env);
+            AIEnvironment env = this.env;
             // These don't change (for now).
-            var strategyCount = Volatile.Read(ref this.strategies).Count;
-            var threadCount = Volatile.Read(ref this.evalThreads).Length;
-            var blockSize = Volatile.Read(ref this.blockSize);
+            var strategyCount = this.strategies.Count;
+            var threadCount = this.evalThreads.Length;
+            var blockSize = this.blockSize;
 
             try {
                 while (true) {
                     var blockEnd = Interlocked.Add(ref nextBlockStart, blockSize);
                     var blockStart = blockEnd - blockSize;
                     if (blockStart >= strategyCount) {
+                        // Flush all the results from this thread to memory.
+                        Thread.MemoryBarrier();
                         startEvent.Reset();
-                        bool last = Interlocked.Decrement(ref activeThreads) == 0;
+                        // For the last thread, we need to merge the individual
+                        // results into the main strategy IDs array before
+                        // setting the active thread count to 0.
+                        int currentCount;
+                        do {
+                            currentCount = Volatile.Read(ref activeThreads);
+                            if (currentCount == 1) {
+                                // We're the last thread. No one else is going
+                                // to decrement the value, so we don't have to
+                                // worry about synchronization anymore.
+                                MergeDecisions();
+                                //Volatile.Write(ref activeThreads, 0);
+                                //break;
+                            }
+                        } while (
+                            Interlocked.CompareExchange(
+                                ref activeThreads,
+                                currentCount - 1,
+                                currentCount
+                            ) != currentCount
+                        );
                         try {
                             if (!Volatile.Read(ref running)) {
                                 // Consider: a thread reaches this point before
@@ -391,8 +416,6 @@ namespace SciFi.AI.S2 {
                                 // reset here.
                                 startEvent.Set();
                                 return;
-                            } else if (last) {
-                                MergeDecisions();
                             }
                             startEvent.WaitOne();
                         } catch (Exception e) {

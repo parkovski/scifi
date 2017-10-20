@@ -18,11 +18,12 @@ namespace SciFi.Test {
             };
             var player = new DummyPlayerSnapshotProvider();
             var env = new AIEnvironment(
+                new [] { 0 },
                 new DummyGameSnapshotProvider(),
                 new DummyStageSnapshotProvider(20),
                 new [] { player }
             );
-            ai.Ready(env, 1, strategies);
+            ai.Ready(env, strategies);
             ai.BeginEvaluate();
             float min = 0, max = 0;
             for (int i = 0; i < 30; i++) {

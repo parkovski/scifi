@@ -16,8 +16,8 @@ namespace SciFi.AI.S2 {
 
         protected override float OnEvaluate(AIEnvironment env) {
             // Note: assumes the center is at x=0.
-            var x = Abs(env.playerState[1].position.x);
-            var edge = env.stageState.rightEdge;
+            var x = Abs(env.players[env.AiPlayerId(aiId)].position.x);
+            var edge = env.stage.rightEdge;
             var red = edge - redZoneSize;
             var yellow = edge - yellowZoneSize;
 
@@ -35,7 +35,7 @@ namespace SciFi.AI.S2 {
         }
 
         protected override int OnExecute(AIEnvironment env) {
-            if (env.playerState[aiId].position.x < 0) {
+            if (env.players[env.AiPlayerId(aiId)].position.x < 0) {
                 return Control.Right;
             } else {
                 return Control.Left;

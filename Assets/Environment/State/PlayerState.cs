@@ -1,22 +1,34 @@
 using UnityEngine;
+using System;
+
+using SciFi.Players;
+using SciFi.Players.Modifiers;
+using SciFi.Items;
 
 namespace SciFi.Environment.State {
-    public struct PlayerState {
-        public short lives;
-        public short damage;
-        public sbyte magic;
-        public const sbyte MaxMagic = 100;
+    /// Stats about this game for the player's profile.
+    /// Reported to the server at the end of the game.
+    public struct PlayerGameStats {
+        public ulong profileId;
+        public short kills;
+        public short deaths;
+        public int damageDealt;
     }
 
+    /// Things I want to accomplish with snapshots:
+    /// - AI decision making
+    /// - Game recording / replays
+    /// - Logging / visualization
+    /// - Testing / validation
+    /// - Lag compensation
     public struct PlayerSnapshot {
+        public Team team;
+
         public short lives;
         public short damage;
         public sbyte magic;
         public Vector2 position;
         public Vector2 velocity;
-        public AttackState attack1;
-        public AttackState attack2;
-        public AttackState attack3;
-        public AttackState? item;
+        public AttackState[] attacks;
     }
 }

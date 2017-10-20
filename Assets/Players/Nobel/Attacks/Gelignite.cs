@@ -33,7 +33,7 @@ namespace SciFi.Players.Attacks {
         void Reinit() {
             var spawnedByPlayer = ClientScene.FindLocalObject(spawnedBy).GetComponent<Player>();
             if (spawnedByPlayer.eTeam != -1) {
-                GetComponent<SpriteOverlay>().SetColor(Player.TeamToColor(spawnedByPlayer.eTeam, true));
+                GetComponent<SpriteOverlay>().SetColor(TeamColor.FromIndex(spawnedByPlayer.eTeam, true));
             }
 
             StartCoroutine(BurnUp());

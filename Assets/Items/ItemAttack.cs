@@ -49,7 +49,7 @@ namespace SciFi.Items {
         public override void OnBeginCharging(Direction direction) {
             var throwDirection = GetThrowDirection();
             if (throwDirection != Direction.Invalid) {
-                player.CmdLoseOwnershipOfItem(throwDirection);
+                player.CmdDiscardItem(throwDirection);
                 RequestCancel();
                 return;
             }
@@ -93,7 +93,7 @@ namespace SciFi.Items {
                     throwDirection = direction;
                 }
                 if (throwDirection != Direction.Invalid) {
-                    player.CmdLoseOwnershipOfItem(direction);
+                    player.CmdDiscardItem(direction);
                     player.UpdateItemControlGraphic();
                 } else {
                     item.EndCharging(chargeTime);

@@ -32,7 +32,7 @@ namespace SciFi.UI {
                 if (p.eTeam == -1) {
                     text.color = Color.white;
                 } else {
-                    text.color = Player.TeamToColor(p.eTeam, false);
+                    text.color = TeamColor.FromIndex(p.eTeam, false);
                 }
                 lives = p.eLives;
                 damage = p.eDamage;

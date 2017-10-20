@@ -17,9 +17,9 @@ namespace SciFi.Players {
         private CompoundSpriteFlip spriteFlip;
 
         protected override void OnInitialize() {
-            eAttack1 = new AppleAttack(this, apple, greenApple);
-            eAttack2 = new NetworkAttack(new CalcBookAttack(this, InstantiateBooks()));
-            eAttack3 = new NetworkAttack(new GravityWellAttack(this, gravityWell));
+            eAttacks[0] = new AppleAttack(this, apple, greenApple);
+            eAttacks[1] = new NetworkAttack(new CalcBookAttack(this, InstantiateBooks()));
+            eAttacks[2] = new NetworkAttack(new GravityWellAttack(this, gravityWell));
             animator = GetComponent<Animator>();
             spriteFlip = new CompoundSpriteFlip(gameObject, defaultDirection);
         }

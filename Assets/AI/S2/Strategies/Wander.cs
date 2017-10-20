@@ -45,7 +45,7 @@ namespace SciFi.AI.S2 {
         }
 
         protected override void OnActivate(AIEnvironment env) {
-            var vx = env.playerState[1].velocity.x;
+            var vx = env.players[1].velocity.x;
             if (Abs(vx) < .25f) {
                 ChangeDirection(env.threadRandom);
             } else if (vx < 0) {

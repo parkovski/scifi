@@ -20,8 +20,8 @@ namespace SciFi {
         Dictionary<GameObject, List<PooledObject>> localPools;
 
 #if DEBUG_POOLS
-        int dbgNetPool = -1;
-        int dbgLocPool = -1;
+        DebugField dbgNetPool = new DebugField();
+        DebugField dbgLocPool = new DebugField();
 #endif
 
         public GameObjectPool() {
@@ -102,18 +102,6 @@ namespace SciFi {
 
 #if DEBUG_POOLS
         void UpdateDebug() {
-            var printer = DebugPrinter.Instance;
-            if (printer == null) {
-                return;
-            }
-
-            if (dbgNetPool == -1) {
-                dbgNetPool = printer.NewField();
-            }
-            if (dbgLocPool == -1) {
-                dbgLocPool = printer.NewField();
-            }
-
             int netMax = 0, netAvg = 0;
             foreach (var pair in netPools) {
                 var count = pair.Value.Count;
@@ -138,8 +126,8 @@ namespace SciFi {
                 locAvg /= localPools.Count;
             }
 
-            printer.SetField(dbgNetPool, "NetPool A:" + netAvg + " M:" + netMax);
-            printer.SetField(dbgLocPool, "LocPool A:" + locAvg + " M:" + locMax);
+            dbgNetPool.Set("NetPool A:" + netAvg + " M:" + netMax);
+            dbgLocPool.Set("LocPool A:" + locAvg + " M:" + locMax);
         }
 #endif
     }

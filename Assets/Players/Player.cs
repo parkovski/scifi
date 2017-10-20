@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Networking;
+using System;
 using System.Collections.Generic;
 
 using SciFi.Network;
@@ -27,14 +28,7 @@ namespace SciFi.Players {
         IInteractable,
         IStateSnapshotProvider<PlayerSnapshot>
     {
-        public static readonly Color blueTeamColor = new Color(0.5f, 0.5f, 1f, 1f);
-        public static readonly Color blueTeamColorDark = new Color(0f, 0f, .6f, 1f);
-        public static readonly Color redTeamColor = new Color(1f, .4f, .4f, 1f);
-        public static readonly Color redTeamColorDark = new Color(.6f, 0f, 0f, 1f);
-        public static readonly Color greenTeamColor = new Color(.1f, .6f, .1f, 1f);
-        public static readonly Color greenTeamColorDark = new Color(0, .4f, 0f, 1f);
-        public static readonly Color yellowTeamColor = new Color(1f, 1f, .4f, 1f);
-        public static readonly Color yellowTeamColorDark = new Color(0.6f, 0.6f, 0f, 1f);
+        private PlayerGameStats gameStats;
 
         public GameObject shieldPrefab;
 
@@ -69,15 +63,13 @@ namespace SciFi.Players {
         private int pGroundCollisions;
         private int pNumJumps;
         private bool pIsTouchingGround;
-        private bool pExtraGravityFlag;
         protected GameObject eItemGo;
         protected Item eItem;
         private OneWayPlatform sCurrentOneWayPlatform;
         private HookCollection lHooks;
         private JumpForceHook lJumpForceHook;
         protected ModifierCollection eModifiers;
-        private int pModifiersDebugField;
-        private uint pOldModifierState;
+        private ModifiersDebugField pModifiersDebugField;
         private List<NetworkAttack> lNetworkAttacks;
         private float sKnockbackLockoutEndTime = float.PositiveInfinity;
         private Vector2 sKnockbackForce;
@@ -97,9 +89,8 @@ namespace SciFi.Players {
         TouchButtons pTouchButtons;
 
         // Parameters for child classes to change behavior
-        protected Attack eAttack1;
-        protected Attack eAttack2;
-        protected Attack eAttack3;
+        public const int attackCount = 3;
+        protected Attack[] eAttacks;
         private ItemAttack eItemAttack;
         //protected Attack eSpecialAttack;
         protected Shield eShield;
@@ -125,7 +116,7 @@ namespace SciFi.Players {
             StandardHooks.Install(lHooks, eModifiers);
             lJumpForceHook = new StandardJumpForce();
             lJumpForceHook.Install(lHooks);
-            pModifiersDebugField = DebugPrinter.Instance.NewField();
+            pModifiersDebugField = new ModifiersDebugField(eModifiers, "P" + eId + ": ");
 
             if (pInputManager != null) {
                 Initialize();
@@ -133,22 +124,8 @@ namespace SciFi.Players {
             }
         }
 
-        public static Color TeamToColor(int team, bool dark = false) {
-            switch (team) {
-            case 0:
-                return dark ? Player.blueTeamColorDark : Player.blueTeamColor;
-            case 1:
-                return dark ? Player.redTeamColorDark : Player.redTeamColor;
-            case 2:
-                return dark ? Player.greenTeamColorDark : Player.greenTeamColor;
-            case 3:
-                return dark ? Player.yellowTeamColorDark : Player.yellowTeamColor;
-            default:
-                return Color.clear;
-            }
-        }
-
         private void Initialize() {
+            eAttacks = new Attack[attackCount];
             eItemAttack = new ItemAttack(this, pInputManager, throwItemHoldTime);
             OnInitialize();
         }
@@ -167,7 +144,7 @@ namespace SciFi.Players {
             }
 
             if (eTeam != -1) {
-                GetComponent<SpriteOverlay>().SetColor(TeamToColor(eTeam));
+                GetComponent<SpriteOverlay>().SetColor(TeamColor.FromIndex(eTeam));
             }
 
             pInputManager = inputManager;
@@ -313,7 +290,7 @@ namespace SciFi.Players {
         /// with just regular gravity.
         void AddExtraGravity() {
             if (lRb.velocity.y < 0f && !pIsTouchingGround) {
-                var force = lRb.velocity.y.ScaleClamped(0f, -5f, -1000f, 0f);
+                var force = lRb.velocity.y.ScaleClamped(0f, -5f, -1500f, 0f);
                 lRb.AddForce(new Vector3(0f, force, 0f));
             }
         }
@@ -326,9 +303,9 @@ namespace SciFi.Players {
                 return;
             }
             if (!hasAuthority) {
-                eAttack1.UpdateStateNonAuthoritative();
-                eAttack2.UpdateStateNonAuthoritative();
-                eAttack3.UpdateStateNonAuthoritative();
+                for (var i = 0; i < eAttacks.Length; i++) {
+                    eAttacks[i].UpdateStateNonAuthoritative();
+                }
                 eItemAttack.UpdateStateNonAuthoritative();
                 return;
             }
@@ -350,7 +327,7 @@ namespace SciFi.Players {
             if (pInputManager.IsControlActive(Control.Jump) && !eModifiers.CantMove.IsEnabled() && !eModifiers.CantJump.IsEnabled()) {
                 pInputManager.InvalidateControl(Control.Jump);
                 var jf = lHooks.CallJumpForceHooks(pIsTouchingGround, pNumJumps++, jumpForce);
-                if (!Mathf.Approximately(jf, 0f)) {
+                if (jf != 0) {
                     if (pNumJumps > 0 && lRb.velocity.y < minDoubleJumpVelocity) {
                         lRb.velocity = new Vector2(lRb.velocity.x, minDoubleJumpVelocity);
                     }
@@ -380,18 +357,12 @@ namespace SciFi.Players {
                 }
             }
 
-            eAttack1.UpdateState(pInputManager, Control.Attack1);
-            eAttack2.UpdateState(pInputManager, Control.Attack2);
-            eAttack3.UpdateState(pInputManager, Control.Attack3);
+            for (var i = 0; i < eAttacks.Length; i++) {
+                eAttacks[i].UpdateState(pInputManager, Control.Attack1 + i);
+            }
             eItemAttack.UpdateState(pInputManager, Control.Item);
 
-#if UNITY_EDITOR
-            var modifierState = eModifiers.ToBitfield();
-            if (modifierState != pOldModifierState) {
-                pOldModifierState = modifierState;
-                DebugPrinter.Instance.SetField(pModifiersDebugField, "P" + (eId+1) + ": " + eModifiers.GetDebugString());
-            }
-#endif
+            pModifiersDebugField.Update();
         }
 
         [Command]
@@ -563,7 +534,7 @@ namespace SciFi.Players {
                         return;
                     }
                 }
-                CmdTakeOwnershipOfItem(item);
+                CmdAcquireItem(item);
             }
         }
 
@@ -594,7 +565,7 @@ namespace SciFi.Players {
         }
 
         [Command]
-        void CmdTakeOwnershipOfItem(GameObject itemGo) {
+        void CmdAcquireItem(GameObject itemGo) {
             var item = itemGo.GetComponent<Item>();
             if (!item.SetOwner(gameObject)) {
                 return;
@@ -613,7 +584,7 @@ namespace SciFi.Players {
         }
 
         [Command]
-        public void CmdLoseOwnershipOfItem(Direction direction) {
+        public void CmdDiscardItem(Direction direction) {
             var itemGo = this.eItemGo;
             var item = this.eItem;
             this.eItemGo = null;
@@ -757,9 +728,9 @@ namespace SciFi.Players {
             if (eModifiers.Invincible.IsEnabled()) {
                 return;
             }
-            eAttack1.RequestCancel();
-            eAttack2.RequestCancel();
-            eAttack3.RequestCancel();
+            for (var i = 0; i < eAttacks.Length; i++) {
+                eAttacks[i].RequestCancel();
+            }
             eItemAttack.RequestCancel();
             if (resetVelocity) {
                 lRb.velocity = Vector2.zero;
@@ -841,9 +812,9 @@ namespace SciFi.Players {
             snapshot.magic = 0;
             snapshot.position = transform.position;
             snapshot.velocity = lRb.velocity;
-            this.eAttack1.GetStateSnapshot(ref snapshot.attack1);
-            this.eAttack2.GetStateSnapshot(ref snapshot.attack2);
-            this.eAttack3.GetStateSnapshot(ref snapshot.attack3);
+            for (var i = 0; i < eAttacks.Length; i++) {
+                eAttacks[i].GetStateSnapshot(ref snapshot.attacks[i]);
+            }
         }
     }
 }

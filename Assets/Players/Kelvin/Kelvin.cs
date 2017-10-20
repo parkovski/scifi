@@ -9,15 +9,15 @@ namespace SciFi.Players {
         public GameObject iceballPrefab;
         public GameObject fireballPrefab;
         public GameObject telegraph;
-        
+
         private GameObject chargingFireball;
 
         private CompoundSpriteFlip spriteFlip;
 
         protected override void OnInitialize() {
-            eAttack1 = new IceBallAttack(this, iceballPrefab);
-            eAttack2 = new FireBallAttack(this);
-            eAttack3 = new NetworkAttack(new TelegraphAttack(this, telegraph));
+            eAttacks[0] = new IceBallAttack(this, iceballPrefab);
+            eAttacks[1] = new FireBallAttack(this);
+            eAttacks[2] = new NetworkAttack(new TelegraphAttack(this, telegraph));
             spriteFlip = new CompoundSpriteFlip(gameObject, defaultDirection);
         }
 
@@ -75,7 +75,7 @@ namespace SciFi.Players {
 
         [ClientRpc]
         void RpcSetFireballActive(bool isActive) {
-            ((FireBallAttack)eAttack2).SetHasActiveFireball(isActive);
+            ((FireBallAttack)eAttacks[1]).SetHasActiveFireball(isActive);
         }
 
         [Command]

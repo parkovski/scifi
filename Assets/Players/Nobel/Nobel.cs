@@ -23,9 +23,9 @@ namespace SciFi.Players {
         protected override void OnInitialize() {
             gunGo = Instantiate(gunPrefab, transform.position + GetGunOffset(defaultDirection), Quaternion.identity);
 
-            eAttack1 = new GunAttack(this, gunGo, bulletPrefab);
-            eAttack2 = new GeligniteAttack(this, gelignitePrefab);
-            eAttack3 = new DynamiteAttack(this);
+            eAttacks[0] = new GunAttack(this, gunGo, bulletPrefab);
+            eAttacks[1] = new GeligniteAttack(this, gelignitePrefab);
+            eAttacks[2] = new DynamiteAttack(this);
 
             spriteFlip = new CompoundSpriteFlip(gameObject, defaultDirection);
         }
@@ -137,7 +137,7 @@ namespace SciFi.Players {
 
         [ClientRpc]
         void RpcSetHasPlantedDynamite(bool hasPlantedDynamite) {
-            ((DynamiteAttack)eAttack3).SetHasPlantedDynamite(hasPlantedDynamite);
+            ((DynamiteAttack)eAttacks[2]).SetHasPlantedDynamite(hasPlantedDynamite);
         }
     }
 }

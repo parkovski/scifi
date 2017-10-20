@@ -8,17 +8,17 @@ namespace SciFi.Util {
         float frameRate;
         const float frameRateUpdateInterval = 1f;
         float lastFrameRateUpdateTime;
-        int frameRateDebugField;
+        DebugField frameRateDebugField;
 
         void Start() {
-            frameRateDebugField = DebugPrinter.Instance.NewField();
+            frameRateDebugField = new DebugField();
         }
 
         void Update() {
             if (Time.time > lastFrameRateUpdateTime + frameRateUpdateInterval) {
                 lastFrameRateUpdateTime = Time.time;
                 frameRate = 1 / Time.deltaTime;
-                DebugPrinter.Instance.SetField(frameRateDebugField, "FPS: " + frameRate.ToString());
+                frameRateDebugField.Set("FPS: " + frameRate.ToString());
             }
         }
 #endif

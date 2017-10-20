@@ -20,7 +20,7 @@ namespace SciFi.UI {
                 if (players[i].eTeam == -1) {
                     panels[i].GetComponent<Image>().color = Color.black.WithAlpha(0.4f);
                 } else {
-                    panels[i].GetComponent<Image>().color = Player.TeamToColor(players[i].eTeam, true).WithAlpha(0.4f);
+                    panels[i].GetComponent<Image>().color = TeamColor.FromIndex(players[i].eTeam, true).WithAlpha(0.4f);
                 }
                 labels[i].text = players[i].eDisplayName;
                 i++;

@@ -71,7 +71,7 @@ namespace SciFi {
         int sNumClients;
         S2AI s2ai;
 
-        int pDbgLagField = -1;
+        DebugField pDbgLagField = new DebugField();
         float nextPingUpdateTime;
         const float pingUpdateTime = 1f;
 
@@ -557,7 +557,7 @@ namespace SciFi {
             Layers.Init();
             PlayersInitialized += players => {
                 var aiStrategies = new List<Strategy>();
-                int aiCount = 0;
+                var aiPlayerIds = new List<int>();
 
                 FindObjectOfType<EnableUI>().Enable();
 
@@ -572,9 +572,10 @@ namespace SciFi {
                         playerInputManager = aiim;
 
                         if (sPlayerData[player.eId].aiLevel == 3) {
+                            var aiCount = aiPlayerIds.Count;
                             var set = StrategySets.GetStandardSet(aiCount, aiim);
                             aiStrategies.AddRange(set);
-                            ++aiCount;
+                            aiPlayerIds.Add(player.eId);
                         }
                     } else {
                         playerInputManager = NullInputManager.Instance;
@@ -583,8 +584,8 @@ namespace SciFi {
                 }
 
                 if (s2ai != null) {
-                    var env = new AIEnvironment(this, this, players);
-                    s2ai.Ready(env, aiCount, aiStrategies);
+                    var env = new AIEnvironment(aiPlayerIds, this, this, players);
+                    s2ai.Ready(env, aiStrategies);
                 }
             };
 
@@ -618,6 +619,10 @@ namespace SciFi {
         void OnApplicationQuit() {
             if (playDataLogger != null) {
                 playDataLogger.Dispose();
+            }
+            if (s2ai != null) {
+                s2ai.Dispose();
+                s2ai = null;
             }
         }
 
@@ -677,11 +682,8 @@ namespace SciFi {
             }
 
             if (Time.time > nextPingUpdateTime) {
-                if (pDbgLagField == -1) {
-                    pDbgLagField = DebugPrinter.Instance.NewField();
-                }
                 nextPingUpdateTime = Time.time + pingUpdateTime;
-                DebugPrinter.Instance.SetField(pDbgLagField, "Ping: " + 0);
+                pDbgLagField.Set("Ping: " + 0);
             }
 
             for (int i = 0; i < sPlayerData.Count; i++) {

@@ -1,5 +1,7 @@
 using System;
 
+using SciFi.Util.Extensions;
+
 namespace SciFi.AI.S2 {
     public abstract class Strategy {
         public int aiId { get; }
@@ -47,7 +49,7 @@ namespace SciFi.AI.S2 {
         }
 
         public void Activate(AIEnvironment env) {
-            this.activeControl = -1;
+            this.activeControl = Control.None;
             OnActivate(env);
         }
 

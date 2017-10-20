@@ -72,4 +72,29 @@ namespace SciFi.Util {
             RefreshText();
         }
     }
+
+    public class DebugField {
+        int fieldId;
+
+        public DebugField() {
+            fieldId = DebugPrinter.Instance?.NewField() ?? -1;
+        }
+
+        private int GetField() {
+            if (fieldId == -1) {
+                var dp = DebugPrinter.Instance;
+                if (dp == null) { return -1; }
+                fieldId = dp.NewField();
+            }
+            return fieldId;
+        }
+
+        public void Clear() {
+            DebugPrinter.Instance?.ClearField(GetField());
+        }
+
+        public void Set(string text) {
+            DebugPrinter.Instance?.SetField(GetField(), text);
+        }
+    }
 }
