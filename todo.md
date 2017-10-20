@@ -1,0 +1,61 @@
+# SciFighters TODO
+
+- List attack config for AI on all attacks
+  - Update `AttackProperty` to fit or make a better system
+- Better camera tracking
+  - No jitters in any case
+  - Zoom / follow multiple players
+- Improve AI
+  - Test with lots of strategies and up to three characters
+  - Attack avoidance behaviors
+  - Fighting behaviors
+  - Generate utility graphs?
+- Redo item system
+  - Magic bar
+    - When is magic earned?
+  - Item selection control
+  - Brainstorming
+    - Attacks
+    - Modifiers
+    - Helpers?
+    - Other?
+  - Implement new items
+  - Lots of balance testing
+- Game screens
+  - Use Scott's background
+  - Player profiles and item collections
+  - Networked player selection
+  - Transitions, edge cases, quit/pause/resume
+  - Tutorial callouts
+- Profile server
+  - Included in game server or separate?
+  - C#, Rust, Node?
+  - JSON-RPC or other?
+  - Are web sockets necessary or will a polling model work?
+- Player profiles
+  - Upgrade / redemption system
+    - Which things are upgradable?
+    - What are the currencies?
+    - Are there alternate built-in attack variants?
+    - Alternate item variants?
+  - Statistic tracking
+  - Rewards / treasure chests - when?
+- Marie Curie
+- Design and animation
+- Tuning / balancing
+  - Strength, speed, and type of attack
+  - Different levels of attacks and players
+  - Different devices and screen sizes
+- Music and sound
+- Stretch goals/future:
+  - Lag compensation
+  - Client prediction
+    - Move all authority to server
+  - Additional levels
+    - Could just have different backgrounds
+    - Could do weather effects, maybe an item?
+  - Replays
+  - Clans
+  - Team battles
+  - Tournaments
+  - In-game communication/reactions
