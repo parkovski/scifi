@@ -3,7 +3,7 @@
 - List attack config for AI on all attacks
   - Update `AttackProperty` to fit or make a better system
 - Better camera tracking
-  - No jitters in any case
+  - ✅ No jitters in any case
   - Zoom / follow multiple players
 - Improve AI
   - Test with lots of strategies and up to three characters
@@ -46,6 +46,7 @@
   - Strength, speed, and type of attack
   - Different levels of attacks and players
   - Different devices and screen sizes
+  - Smooth out player acceleration near max speed
 - Music and sound
 - Stretch goals/future:
   - Lag compensation
