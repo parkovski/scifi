@@ -250,16 +250,23 @@ namespace SciFi.Players {
                     axisAmount = 1f;
                 }
                 var localMaxSpeed = lHooks.CallMaxSpeedHooks(axisAmount, maxSpeed);
-                bool canSpeedUp;
-                if (Mathf.Approximately(localMaxSpeed, 0f)) {
-                    canSpeedUp = false;
-                } else if (direction == Direction.Left) {
-                    canSpeedUp = lRb.velocity.x > -localMaxSpeed;
-                } else {
-                    canSpeedUp = lRb.velocity.x < localMaxSpeed;
-                }
-                if (canSpeedUp) {
-                    lRb.AddForce(new Vector2(lHooks.CallWalkForceHooks(direction, axisAmount, walkForce), 0f));
+                if (localMaxSpeed != 0) {
+                    float velocity = lRb.velocity.x;
+                    float velocityPercent;
+                    if (direction == Direction.Left) {
+                        velocityPercent = velocity > 0 ? 0 : Mathf.Clamp01(-velocity / maxSpeed);
+                    } else {
+                        velocityPercent = velocity < 0 ? 0 : Mathf.Clamp01(velocity / maxSpeed);
+                    }
+                    var force = lHooks.CallWalkForceHooks(
+                        axisAmount,
+                        velocityPercent,
+                        walkForce
+                    );
+                    if (direction == Direction.Left) {
+                        force = -force;
+                    }
+                    lRb.AddForce(new Vector2(force, 0));
                 }
 
                 // Without the cached parameter, this will get triggered

@@ -44,12 +44,12 @@ namespace SciFi.Players.Hooks {
             walkForceHooks.Remove(hook);
         }
 
-        public float CallWalkForceHooks(Direction direction, float axisAmount, float walkForce) {
+        public float CallWalkForceHooks(float axisAmount, float velocityPercent, float walkForce) {
             foreach (var hook in walkForceHooks) {
                 if (!hook.IsEnabled) {
                     continue;
                 }
-                if (!hook.Call(direction, axisAmount, ref walkForce)) {
+                if (!hook.Call(axisAmount, velocityPercent, ref walkForce)) {
                     break;
                 }
             }

@@ -14,7 +14,7 @@ namespace SciFi.Players.Hooks {
     }
 
     public abstract class WalkForceHook : Hook {
-        public abstract bool Call(Direction direction, float axisAmount, ref float walkForce);
+        public abstract bool Call(float axisAmount, float velocityPercent, ref float walkForce);
 
         public override void Install(HookCollection hooks) {
             hooks.AddWalkForceHook(this);

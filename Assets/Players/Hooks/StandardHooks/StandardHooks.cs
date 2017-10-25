@@ -6,9 +6,9 @@ namespace SciFi.Players.Hooks {
             new StandardWalkForce().Install(hooks);
 
             (modifiers.CantMove.Hook = new CantMoveMaxSpeedHook()).Install(hooks);
-            new StandardMaxSpeed().Install(hooks);
             (modifiers.Slow.Hook = new SlowMaxSpeedHook()).Install(hooks);
             (modifiers.Fast.Hook = new FastMaxSpeedHook()).Install(hooks);
+            new StandardMaxSpeed().Install(hooks);
         }
     }
 }

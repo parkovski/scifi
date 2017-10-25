@@ -4,10 +4,10 @@ namespace SciFi.Players.Hooks {
             if (axisAmount < .05f) {
                 maxSpeed = 0f;
                 return false;
+            } else if (axisAmount > 0.9f) {
+                return false;
             }
-            if (axisAmount < .55f) {
-                maxSpeed /= 2;
-            }
+            maxSpeed *= axisAmount;
             return true;
         }
     }
