@@ -42,8 +42,11 @@ namespace SciFi.Players.Modifiers {
                     throw new InvalidOperationException("Hook is already assigned.");
                 }
                 hook = value;
-                // Enable/Disable the hook.
-                Count = Count;
+                if (Count == 0) {
+                    hook.Disable();
+                } else {
+                    hook.Enable();
+                }
             }
         }
 

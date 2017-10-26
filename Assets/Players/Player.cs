@@ -164,11 +164,15 @@ namespace SciFi.Players {
             }
         }
 
+        DebugField<Player> groundField = new DebugField<Player>(
+            p => "Gnd{0} = {1}".F(p.eId, p.pIsTouchingGround)
+        );
         protected void BaseCollisionEnter2D(Collision2D collision) {
             if (collision.gameObject.tag == "Ground") {
                 ++pGroundCollisions;
                 pNumJumps = 0;
                 pIsTouchingGround = true;
+                groundField.Update(this);
 
                 var oneWay = collision.gameObject.GetComponent<OneWayPlatform>();
                 if (oneWay != null) {
@@ -181,6 +185,7 @@ namespace SciFi.Players {
             if (collision.gameObject.tag == "Ground") {
                 if (--pGroundCollisions == 0) {
                     pIsTouchingGround = false;
+                    groundField.Update(this);
                 }
 
                 var oneWay = collision.gameObject.GetComponent<OneWayPlatform>();
@@ -238,59 +243,63 @@ namespace SciFi.Players {
             lJumpForceHook = hook;
         }
 
-        void HandleLeftRightInput(MultiPressControl control, Direction direction) {
-            if (control.IsActive()) {
-                float axisAmount;
-                var presses = control.GetPresses();
-                if (presses == 0) {
-                    axisAmount = 0;
-                } else if (presses == 1) {
-                    axisAmount = 0.5f;
-                } else {
-                    axisAmount = 1f;
-                }
-                var localMaxSpeed = lHooks.CallMaxSpeedHooks(axisAmount, maxSpeed);
-                if (localMaxSpeed != 0) {
-                    float velocity = lRb.velocity.x;
-                    float velocityPercent;
-                    if (direction == Direction.Left) {
-                        velocityPercent = velocity > 0 ? 0 : Mathf.Clamp01(-velocity / maxSpeed);
-                    } else {
-                        velocityPercent = velocity < 0 ? 0 : Mathf.Clamp01(velocity / maxSpeed);
-                    }
-                    var force = lHooks.CallWalkForceHooks(
-                        axisAmount,
-                        velocityPercent,
-                        walkForce
-                    );
-                    if (direction == Direction.Left) {
-                        force = -force;
-                    }
-                    lRb.AddForce(new Vector2(force, 0));
-                }
+        void HandleLeftRightInput(float axisAmount, Direction direction) {
+            var localMaxSpeed = lHooks.CallMaxSpeedHooks(axisAmount, maxSpeed);
+            if (localMaxSpeed == 0) {
+                return;
+            }
 
-                // Without the cached parameter, this will get triggered
-                // multiple times until the direction has had a chance to sync.
-                if (this.eDirection != direction && !eModifiers.CantMove.IsEnabled()) {
-                    this.eDirection = direction;
-                    CmdChangeDirection(direction);
+            float velocity = lRb.velocity.x;
+            bool sameDir;
+            if (direction == Direction.Right) {
+                sameDir = velocity > -.1f;
+            } else {
+                sameDir = velocity < .1f;
+            }
+            // If we pressed the opposite direction we're going, just add the
+            // damping force until we start going the other way.
+            // TODO: Probably should make a brake force hook for this.
+            if (!sameDir && pIsTouchingGround) {
+                AddDampingForce();
+            } else {
+                float velocityPercent;
+                if (sameDir) {
+                    velocityPercent = Mathf.Clamp01(
+                        (velocity > 0 ? velocity : -velocity) / localMaxSpeed
+                    );
+                } else {
+                    velocityPercent = 0;
                 }
+                var force = lHooks.CallWalkForceHooks(
+                    axisAmount,
+                    velocityPercent,
+                    walkForce
+                );
+                if (direction == Direction.Left) {
+                    force = -force;
+                }
+                lRb.AddForce(new Vector2(force, 0));
+            }
+
+            // Without the cached parameter, this will get triggered
+            // multiple times until the direction has had a chance to sync.
+            if (eDirection != direction && !eModifiers.CantMove.IsEnabled()) {
+                this.eDirection = direction;
+                CmdChangeDirection(direction);
             }
         }
 
         void AddDampingForce() {
-            if (lRb.velocity.x < .25f && lRb.velocity.x > -.25f) {
-                //lRb.velocity = new Vector2(0f, lRb.velocity.y);
+            var vAbs = Mathf.Abs(lRb.velocity.x);
+            if (vAbs < .125f) {
+                lRb.velocity = new Vector2(0, lRb.velocity.y);
                 return;
             }
-
-            float force;
-            if (lRb.velocity.x < 0) {
-                force = walkForce / 2;
-            } else {
-                force = -walkForce / 2;
+            var force = 2 * walkForce * (.25f + vAbs / maxSpeed);
+            if (lRb.velocity.x > 0) {
+                force = -force;
             }
-            lRb.AddForce(new Vector3(force, 0f));
+            lRb.AddForce(new Vector2(force, 0f));
         }
 
         /// Make the players fall faster than they would
@@ -298,10 +307,11 @@ namespace SciFi.Players {
         void AddExtraGravity() {
             if (lRb.velocity.y < 0f && !pIsTouchingGround) {
                 var force = lRb.velocity.y.ScaleClamped(0f, -5f, -1500f, 0f);
-                lRb.AddForce(new Vector3(0f, force, 0f));
+                lRb.AddForce(new Vector2(0f, force));
             }
         }
 
+        DebugField veloF = new DebugField();
         protected void BaseInput() {
             if (pInputManager == null) {
                 return;
@@ -319,15 +329,27 @@ namespace SciFi.Players {
 
             pLeftControl.Update();
             pRightControl.Update();
+            veloF.Set("Vp{0}x = {1}".F(eId, lRb.velocity.x.ToString()));
 
-            HandleLeftRightInput(pLeftControl, Direction.Left);
-            HandleLeftRightInput(pRightControl, Direction.Right);
-            if (!pLeftControl.IsActive()
-                && !pRightControl.IsActive()
-                && !IsModifierEnabled(ModId.InKnockback)
-                && pIsTouchingGround
-            ) {
-                AddDampingForce();
+            if (!IsModifierEnabled(ModId.InKnockback)) {
+                if (pLeftControl.IsActive() ^ pRightControl.IsActive()) {
+                    MultiPressControl ctrl;
+                    Direction direction;
+                    if (pLeftControl.IsActive()) {
+                        ctrl = pLeftControl;
+                        direction = Direction.Left;
+                    } else {
+                        ctrl = pRightControl;
+                        direction = Direction.Right;
+                    }
+                    float axis = .5f;
+                    if (ctrl.GetPresses() >= 2) {
+                        axis = 1;
+                    }
+                    HandleLeftRightInput(axis, direction);
+                } else if (pIsTouchingGround) {
+                    AddDampingForce();
+                }
             }
             AddExtraGravity();
 

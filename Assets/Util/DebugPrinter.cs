@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -73,11 +74,13 @@ namespace SciFi.Util {
         }
     }
 
-    public class DebugField {
+    public class DebugField<T> {
         int fieldId;
+        Func<T, string> getText;
 
-        public DebugField() {
+        public DebugField(Func<T, string> getText) {
             fieldId = DebugPrinter.Instance?.NewField() ?? -1;
+            this.getText = getText;
         }
 
         private int GetField() {
@@ -93,8 +96,37 @@ namespace SciFi.Util {
             DebugPrinter.Instance?.ClearField(GetField());
         }
 
+        public void Update(T item) {
+            DebugPrinter.Instance?.SetField(GetField(), getText(item));
+        }
+    }
+
+    public class DebugField {
+        DebugField<object> field;
+        string text;
+
+        public DebugField(Func<string> getText) {
+            field = new DebugField<object>(unused => getText());
+        }
+
+        // TODO: Remove this. Passing lambdas makes it so this can exist
+        // with no overhead when not in debug mode.
+        // (Also TODO: make methods partial/conditional.)
+        public DebugField() {
+            field = new DebugField<object>(unused => this.text);
+        }
+
+        public void Clear() {
+            field.Clear();
+        }
+
+        public void Update() {
+            field.Update(null);
+        }
+
         public void Set(string text) {
-            DebugPrinter.Instance?.SetField(GetField(), text);
+            this.text = text;
+            Update();
         }
     }
 }
