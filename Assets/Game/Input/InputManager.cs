@@ -231,7 +231,7 @@ namespace SciFi {
         GameObject joystickOuter;
         float joystickInnerRadius;
         float joystickOuterRadius;
-        const float joystickDeadZonePercent = 0.3f;
+        const float joystickDeadZonePercent = 0.15f;
 
         /// Is <c>control</c> currently pressed or touched?
         public bool IsControlActive(int control) {

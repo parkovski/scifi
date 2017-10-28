@@ -84,8 +84,7 @@ namespace SciFi.Players {
         /// item to throw it, so you can use an item while moving.
         const float throwItemHoldTime = .15f;
 
-        MultiPressControl pLeftControl;
-        MultiPressControl pRightControl;
+        JoystickControl pJoystick;
         TouchButtons pTouchButtons;
 
         // Parameters for child classes to change behavior
@@ -148,8 +147,7 @@ namespace SciFi.Players {
             }
 
             pInputManager = inputManager;
-            pLeftControl = new MultiPressControl(pInputManager, Control.Left, .4f);
-            pRightControl = new MultiPressControl(pInputManager, Control.Right, .4f);
+            pJoystick = new JoystickControl(inputManager);
 
             if (isLocalPlayer) {
                 var leftButton = GameObject.Find("LeftButton");
@@ -243,39 +241,46 @@ namespace SciFi.Players {
             lJumpForceHook = hook;
         }
 
-        void HandleLeftRightInput(float axisAmount, Direction direction) {
-            var localMaxSpeed = lHooks.CallMaxSpeedHooks(axisAmount, maxSpeed);
-            if (localMaxSpeed == 0) {
-                return;
+        void Walk(float horizontal) {
+            var absHorizontal = Mathf.Abs(horizontal);
+            float localMaxSpeed;
+            float velocity = lRb.velocity.x;
+            var braking = false;
+            Direction direction;
+            if (horizontal == 0) {
+                localMaxSpeed = 0;
+                braking = true;
+                direction = eDirection;
+            } else {
+                localMaxSpeed = lHooks.CallMaxSpeedHooks(absHorizontal, maxSpeed);
+                if (localMaxSpeed == 0) {
+                    braking = true;
+                    direction = eDirection;
+                } else if (horizontal > 0) {
+                    braking = velocity < -.1f;
+                    direction = Direction.Right;
+                } else {
+                    localMaxSpeed = -localMaxSpeed;
+                    braking = velocity > .1f;
+                    direction = Direction.Left;
+                }
             }
 
-            float velocity = lRb.velocity.x;
-            bool sameDir;
-            if (direction == Direction.Right) {
-                sameDir = velocity > -.1f;
-            } else {
-                sameDir = velocity < .1f;
-            }
             // If we pressed the opposite direction we're going, just add the
             // damping force until we start going the other way.
             // TODO: Probably should make a brake force hook for this.
-            if (!sameDir && pIsTouchingGround) {
-                AddDampingForce();
-            } else {
-                float velocityPercent;
-                if (sameDir) {
-                    velocityPercent = Mathf.Clamp01(
-                        (velocity > 0 ? velocity : -velocity) / localMaxSpeed
-                    );
-                } else {
-                    velocityPercent = 0;
+            if (braking) {
+                if (pIsTouchingGround) {
+                    AddDampingForce();
                 }
+            } else {
+                float velocityPercent = Mathf.Clamp01(velocity / localMaxSpeed);
                 var force = lHooks.CallWalkForceHooks(
-                    axisAmount,
+                    absHorizontal,
                     velocityPercent,
                     walkForce
                 );
-                if (direction == Direction.Left) {
+                if (horizontal < 0) {
                     force = -force;
                 }
                 lRb.AddForce(new Vector2(force, 0));
@@ -283,7 +288,7 @@ namespace SciFi.Players {
 
             // Without the cached parameter, this will get triggered
             // multiple times until the direction has had a chance to sync.
-            if (eDirection != direction && !eModifiers.CantMove.IsEnabled()) {
+            if (direction != eDirection && !eModifiers.CantMove.IsEnabled()) {
                 this.eDirection = direction;
                 CmdChangeDirection(direction);
             }
@@ -327,29 +332,11 @@ namespace SciFi.Players {
                 return;
             }
 
-            pLeftControl.Update();
-            pRightControl.Update();
+            pJoystick.KeyboardUpdate();
             veloF.Set("Vp{0}x = {1}".F(eId, lRb.velocity.x.ToString()));
 
             if (!IsModifierEnabled(ModId.InKnockback)) {
-                if (pLeftControl.IsActive() ^ pRightControl.IsActive()) {
-                    MultiPressControl ctrl;
-                    Direction direction;
-                    if (pLeftControl.IsActive()) {
-                        ctrl = pLeftControl;
-                        direction = Direction.Left;
-                    } else {
-                        ctrl = pRightControl;
-                        direction = Direction.Right;
-                    }
-                    float axis = .5f;
-                    if (ctrl.GetPresses() >= 2) {
-                        axis = 1;
-                    }
-                    HandleLeftRightInput(axis, direction);
-                } else if (pIsTouchingGround) {
-                    AddDampingForce();
-                }
+                Walk(pJoystick.GetHorizontalAxis());
             }
             AddExtraGravity();
 
@@ -364,7 +351,8 @@ namespace SciFi.Players {
                 }
             }
 
-            if (pInputManager.IsControlActive(Control.Down) && !eModifiers.CantMove.IsEnabled()) {
+            // Only fall through for a "hard down".
+            if (pJoystick.GetVerticalAxis() < -.85f && !eModifiers.CantMove.IsEnabled()) {
                 if (!eShouldFallThroughOneWayPlatform) {
                     eShouldFallThroughOneWayPlatform = true;
                     CmdFallThroughOneWayPlatform();
