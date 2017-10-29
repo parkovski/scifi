@@ -443,9 +443,9 @@ MonoBehaviour:
   sDamageDealt: 0
   sLastAttacker: {fileID: 0}
   defaultDirection: 1
-  maxSpeed: 6
-  walkForce: 1000
-  jumpForce: 500
+  maxSpeed: 6.5
+  walkForce: 1100
+  jumpForce: 400
   minDoubleJumpVelocity: 2
   dynamitePrefab: {fileID: 1165641169296308, guid: c8e4ff9fdf48a124aae113895c0bff1e,
     type: 2}

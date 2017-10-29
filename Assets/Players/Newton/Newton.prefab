@@ -502,8 +502,8 @@ MonoBehaviour:
   sDamageDealt: 0
   sLastAttacker: {fileID: 0}
   defaultDirection: 1
-  maxSpeed: 6.5
-  walkForce: 1500
+  maxSpeed: 6
+  walkForce: 900
   jumpForce: 500
   minDoubleJumpVelocity: 2
   apple: {fileID: 1357499644953146, guid: c0cadcf302e68684fbf4486bf3efe53c, type: 2}

@@ -441,9 +441,9 @@ MonoBehaviour:
   sDamageDealt: 0
   sLastAttacker: {fileID: 0}
   defaultDirection: 1
-  maxSpeed: 6
-  walkForce: 1500
-  jumpForce: 550
+  maxSpeed: 5.5
+  walkForce: 800
+  jumpForce: 400
   minDoubleJumpVelocity: 2
   iceballPrefab: {fileID: 1284917634577738, guid: ab2f5738fa6e25b46bcaf4df5013554a,
     type: 2}
