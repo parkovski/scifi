@@ -34,13 +34,15 @@ sysinfo.txt
 /Doc/
 /Util/node_modules
 
-# Ignore local updates to this file
-/Assets/StreamingAssets/default-server.txt
+/Assets/*
+!/Assets/SciFi
+!/Assets/SciFi.meta
+!/Assets/Standard Assets
+!/Assets/Standard Assets.meta
+
+# Local configuration
+/Assets/SciFi/StreamingAssets/default-server.txt*
 # Play data log
-/Assets/StreamingAssets/pdl.txt
-/Assets/StreamingAssets/pdl.txt.meta
-/Assets/Editor/VSCode
+/Assets/SciFi/StreamingAssets/pdl.txt*
 
 .DS_Store
-
-ThirdParty/
