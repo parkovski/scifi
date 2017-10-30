@@ -333,8 +333,9 @@ namespace SciFi.AI.S2 {
             // any other stuck threads.
             Volatile.Write(ref nextBlockStart, blockSize);
             Volatile.Write(ref running, false);
+            SpinWait.SpinUntil(() => Volatile.Read(ref activeThreads) == 0);
             startEvent.Set();
-            SpinWait.SpinUntil(() => evalThreads.All(t => !t.IsAlive), 25);
+            SpinWait.SpinUntil(() => evalThreads.All(t => !t.IsAlive));
             startEvent.Close();
             startEvent = null;
             ctlEvent.Close();
@@ -350,13 +351,14 @@ namespace SciFi.AI.S2 {
         }
 
         private void CtlLateUpdate() {
+            Volatile.Write(ref nextBlockStart, blockSize);
             SpinWait.SpinUntil(() => Volatile.Read(ref activeThreads) == 0);
             // We want to always update the env from the main thread,
             // but if we're not ready, we'll use the backup and then swap
             // them here when no other thread is using them.
-            var tmp = env;
-            Volatile.Write(ref env, env2);
-            env2 = tmp;
+            // Note - the non-atomic write to env2 is ok because it won't get
+            // accessed until next frame.
+            env2 = Interlocked.Exchange(ref env, env2);
             Volatile.Write(ref nextBlockStart, 0);
             startEvent.Set();
         }
@@ -388,15 +390,14 @@ namespace SciFi.AI.S2 {
                         // results into the main strategy IDs array before
                         // setting the active thread count to 0.
                         int currentCount;
+                        bool merged = false;
                         do {
                             currentCount = Volatile.Read(ref activeThreads);
-                            if (currentCount == 1) {
-                                // We're the last thread. No one else is going
-                                // to decrement the value, so we don't have to
-                                // worry about synchronization anymore.
+                            if (currentCount == 1 && !merged) {
+                                // TODO: Someone may do this twice.
+                                // Get rid of this by sharding AIs over threads.
                                 MergeDecisions();
-                                //Volatile.Write(ref activeThreads, 0);
-                                //break;
+                                merged = true;
                             }
                         } while (
                             Interlocked.CompareExchange(
@@ -406,18 +407,11 @@ namespace SciFi.AI.S2 {
                             ) != currentCount
                         );
                         try {
+                            startEvent.WaitOne();
                             if (!Volatile.Read(ref running)) {
-                                // Consider: a thread reaches this point before
-                                // `running` has been set to false, but
-                                // another thread calls `Reset` before it can
-                                // wait and after the controller has called
-                                // `Set`. This thread would get stuck waiting
-                                // forever unless the second thread undid its
-                                // reset here.
-                                startEvent.Set();
+                                "EndThread({0}/{1})".LogF(currentCount, threadCount);
                                 return;
                             }
-                            startEvent.WaitOne();
                         } catch (Exception e) {
                             "{0}".ErrorF(e);
                             // If we let an exception go between the
@@ -425,6 +419,8 @@ namespace SciFi.AI.S2 {
                             // will stop being accurate. This way, it will
                             // always be set to zero whether a thread
                             // terminates or they all are just paused.
+                            // TODO: If startEvent fails, that messes up the
+                            // synchronization entirely. How to handle this?
                             return;
                         }
                         ResetDecisionArray(threadResults[threadId]);
@@ -436,6 +432,8 @@ namespace SciFi.AI.S2 {
                     if (blockEnd > strategyCount) {
                         blockEnd = strategyCount;
                     }
+                    // FIXME! Move thread specific environment out -
+                    // AIEnvironment is immutable only during processing!
                     SetupEnvForThread(env, evalThreadRandom[threadId]);
                     for (int i = blockStart; i < blockEnd; i++) {
                         TakeBestStrategy(i, threadResults[threadId], env);

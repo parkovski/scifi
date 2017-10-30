@@ -10,11 +10,13 @@
   - Attack avoidance behaviors
   - Fighting behaviors
   - Generate utility graphs?
+  - Redo strategy grouping - per player, sharding for threads.
+    - Implement add/remove AIs.
 - Redo item system
   - Magic bar
     - When is magic earned?
   - Item selection control
-  - Brainstorming
+  - ✅ Brainstorming
     - Attacks
     - Modifiers
     - Helpers?
@@ -24,7 +26,7 @@
 - Game screens
   - Use Scott's background
   - Player profiles and item collections
-  - Networked player selection
+  - ❌ Networked player selection
   - Transitions, edge cases, quit/pause/resume
   - Tutorial callouts
 - Profile server

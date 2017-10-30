@@ -15,6 +15,7 @@ namespace SciFi.AI.S2 {
         /// Unity's `Time.time` is not thread-safe.
         public float time { get; private set; }
         /// Random is not thread safe, so each thread provides its own here.
+        /// FIXME! This will not work! This is a shared object!
         public System.Random threadRandom;
         /// Note: This is shared, deal with that if it ever becomes mutable.
         int[] aiIdMap;
