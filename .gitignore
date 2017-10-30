@@ -35,14 +35,13 @@ sysinfo.txt
 /Util/node_modules
 
 /Assets/*
-!/Assets/SciFi
-!/Assets/SciFi.meta
-!/Assets/Standard Assets
-!/Assets/Standard Assets.meta
+!/Assets/SciFi*
+!/Assets/Standard Assets*
+!/Assets/StreamingAssets*
 
 # Local configuration
-/Assets/SciFi/StreamingAssets/default-server.txt*
+/Assets/StreamingAssets/default-server.txt*
 # Play data log
-/Assets/SciFi/StreamingAssets/pdl.txt*
+/Assets/StreamingAssets/pdl.txt*
 
 .DS_Store
