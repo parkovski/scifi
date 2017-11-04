@@ -11,26 +11,26 @@ namespace SciFi.UI {
             BottomLeft, BottomCenter, BottomRight,
         }
 
-        public enum OffsetMode {
-            /// Offset is a percentage of my size.
-            Self,
-            /// Offset is a percentage of the screen size.
-            Screen,
-            /// Offset is in Unity units.
-            UnityUnits,
-            /// Offset is in pixels.
-            Pixels,
-        }
-
         public enum ScaleMode {
-            /// Size is specified on this object.
-            Self,
-            /// Size is adjusted to maintain original aspect ratio.
-            Aspect,
-            /// Size is based on parent (reference) size.
-            Parent,
-            /// Size is based on screen size.
-            Screen,
+            /// Size is in units with no scale adjustment.
+            UnadjustedUnits,
+            /// Size is in units normalized to a standard screen unit.
+            ScaleNormalizedUnits,
+            /// Size is a percentage of regular size at normalized scale.
+            ScaleNormalizedPercent,
+            /// Size is a percentage of regular size with the same scale
+            /// as the reference object.
+            ReferenceScalePercent,
+            /// Size is a percentage of the size of the reference object.
+            ReferenceSizePercent,
+            /// Size is a percentage of screen size.
+            ScreenPercent,
+            /// Size is calculated from the other side to maintain the aspect ratio.
+            MaintainAspect,
+            /// Size is in pixels scaled to standard DPI.
+            DpiScaledPixels,
+            /// Size is in pixels.
+            Pixels,
         }
 
         public enum ScreenAspectScaleMode {
@@ -51,36 +51,66 @@ namespace SciFi.UI {
         }
 
         private const float screenDiagonal = 13.333333f;
+        private const float invStandardDpi = 1f / 96f;
 
-        public Layout reference = null;
+        public Layout positionRef = null;
+        public Layout sizeRef = null;
         public Anchor anchor = Anchor.Center;
         public bool overlapParent = false;
         public ScreenAspectScaleMode screenAspectScaling = ScreenAspectScaleMode.None;
         public Vector2Int designAspect = new Vector2Int(16, 9);
-        public ScaleMode widthMode = ScaleMode.Self;
-        public ScaleMode heightMode = ScaleMode.Self;
-        public OffsetMode offsetMode = OffsetMode.UnityUnits;
-        public float percentWidth = 1;
-        public float percentHeight = 1;
+        public ScaleMode widthMode = ScaleMode.ScaleNormalizedUnits;
+        public ScaleMode heightMode = ScaleMode.ScaleNormalizedUnits;
+        public ScaleMode offsetMode = ScaleMode.ScaleNormalizedUnits;
+        public float width = 1;
+        public float height = 1;
         public Vector2 offset = new Vector2(0, 0);
         public bool rectTransformScaling = false;
         public Vector2 rtBaseSize = new Vector2(200, 100);
 
 #if UNITY_EDITOR
-        public RefreshButton resyncSize = new RefreshButton("sync-size");
+        public RefreshButton resyncRtSize = new RefreshButton("sync-rect-size");
         public RefreshButton refreshAllLayouts = new RefreshButton("refresh");
 
         void OnValidate() {
             if (!Application.isPlaying) {
                 isCurrent = false;
+                staticsInitialized = false;
+                InitializeStatics();
                 CalculateLayoutRecursive();
             }
         }
 #endif
         private bool isCurrent = false;
+        private Vector2 unscaledSize;
+        private Vector2 scaledSize;
+        private Vector2 baseScale;
+        private Vector2 adjustedScale;
+
+        private static bool staticsInitialized = false;
+        private static Vector2 screenSize;
+        private static Vector2 cameraPixels;
+        private static float dpiScale;
+
+        static void InitializeStatics() {
+            if (staticsInitialized) {
+                return;
+            }
+
+            screenSize.y = Camera.main.orthographicSize * 2;
+            screenSize.x = screenSize.y * Camera.main.aspect;
+            cameraPixels.y = Camera.main.pixelHeight;
+            cameraPixels.x = Camera.main.pixelWidth;
+            // Round scales to the nearest .5x.
+            dpiScale = Mathf.Round(2 * Screen.dpi * invStandardDpi) * .5f;
+
+            staticsInitialized = true;
+        }
 
         void IRefreshComponent.RefreshComponent(string action) {
             if (action == "refresh") {
+                staticsInitialized = false;
+                InitializeStatics();
                 var all = FindObjectsOfType<Layout>();
                 foreach (var layout in all) {
                     layout.isCurrent = false;
@@ -88,7 +118,7 @@ namespace SciFi.UI {
                 foreach (var layout in all) {
                     layout.CalculateLayoutRecursive();
                 }
-            } else if (action == "sync-size") {
+            } else if (action == "sync-rect-size") {
                 var rt = GetComponent<RectTransform>();
                 if (rt == null) { return; }
                 rtBaseSize = rt.rect.size;
@@ -96,120 +126,234 @@ namespace SciFi.UI {
         }
 
         void Start() {
+            InitializeStatics();
             CalculateLayoutRecursive();
         }
 
-        void CalculateLayoutRecursive() {
+        void CalculateLayoutRecursive(Layout cycle = null) {
             if (isCurrent) {
                 return;
             }
-            if (reference != null) {
-                reference.CalculateLayoutRecursive();
+            if (cycle == null) {
+                cycle = this;
+            } else if (object.ReferenceEquals(cycle, this)) {
+                throw new InvalidOperationException(
+                    "Infinite recursion while calculating layout"
+                );
+            }
+            if (positionRef != null) {
+                positionRef.CalculateLayoutRecursive(cycle);
+            }
+            if (sizeRef != null) {
+                sizeRef.CalculateLayoutRecursive(cycle);
             }
             CalculateLayout();
             isCurrent = true;
         }
 
         void CalculateLayout() {
+            var rt = GetComponent<RectTransform>();
+            if (rt != null && rectTransformScaling) {
+                CalculateRectTransformLayout(rt);
+                return;
+            }
+
             Vector3 position;
-            SetScale();
-            if (reference == null) {
-                position = GetScreenAnchor();
+            transform.localScale = Vector3.one;
+            unscaledSize = GetSize();
+            baseScale = transform.lossyScale;
+            adjustedScale = GetScale();
+            transform.localScale = new Vector3(adjustedScale.x, adjustedScale.y, 1);
+            adjustedScale.x *= baseScale.x;
+            adjustedScale.y *= baseScale.y;
+            var offsets = GetOffsets();
+            scaledSize = unscaledSize;
+            scaledSize.x *= adjustedScale.x;
+            scaledSize.y *= adjustedScale.y;
+            if (positionRef == null) {
+                position = GetReferenceAnchor(Vector2.zero, screenSize);
             } else {
-                position = GetReferenceAnchor();
+                position = GetReferenceAnchor(
+                    positionRef.transform.position,
+                    positionRef.scaledSize
+                );
             }
             Vector3 overlap = GetOverlap();
             if (overlapParent) {
-                position += overlap + (Vector3)GetOffsets();
+                position += overlap + (Vector3)offsets;
             } else {
-                position -= overlap - (Vector3)GetOffsets();
+                position -= overlap - (Vector3)offsets;
             }
+            position.z = 0;
             transform.position = position;
+            transform.localPosition = new Vector3(
+                transform.localPosition.x,
+                transform.localPosition.y,
+                0
+            );
         }
 
+        void CalculateRectTransformLayout(RectTransform rt) {
+            Vector3 position;
+            baseScale = transform.lossyScale;
+            baseScale.x /= transform.localScale.x;
+            baseScale.y /= transform.localScale.y;
+            unscaledSize.x = rtBaseSize.x * baseScale.x;
+            unscaledSize.y = rtBaseSize.y * baseScale.y;
+            var rectScale = GetScale();
+            adjustedScale = rectScale;
+            adjustedScale.x *= transform.lossyScale.x;
+            adjustedScale.y *= transform.lossyScale.y;
+            var offsets = GetOffsets();
+            scaledSize = unscaledSize;
+            scaledSize.x *= adjustedScale.x;
+            scaledSize.y *= adjustedScale.y;
+            if (positionRef == null) {
+                position = GetReferenceAnchor(Vector2.zero, screenSize);
+            } else {
+                position = GetReferenceAnchor(
+                    positionRef.transform.position,
+                    positionRef.scaledSize
+                );
+            }
+            Vector3 overlap = GetOverlap();
+            if (overlapParent) {
+                position += overlap + (Vector3)offsets;
+            } else {
+                position -= overlap - (Vector3)offsets;
+            }
+            position.x /= baseScale.x;
+            position.y /= baseScale.y;
+            position.z = 0;
+            rt.localPosition = position;
+            rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, rtBaseSize.x * adjustedScale.x);
+            rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, rtBaseSize.y * adjustedScale.y);
+        }
+
+        /// Returns original size without scaling.
         Vector2 GetSize() {
             var sr = GetComponent<SpriteRenderer>();
             if (sr != null) {
-                return sr.bounds.size;
+                var size = sr.bounds.size;
+                size.x /= transform.lossyScale.x;
+                size.y /= transform.lossyScale.y;
+                return size;
             }
             var rt = GetComponent<RectTransform>();
             var r = rt.rect;
-            var x = (r.max.x - r.min.x) * transform.lossyScale.x;
-            var y = (r.max.y - r.min.y) * transform.lossyScale.y;
+            var x = (r.max.x - r.min.x);
+            var y = (r.max.y - r.min.y);
             return new Vector2(x, y);
         }
 
-        void SetScale() {
-            var screenHeight = Camera.main.orthographicSize * 2;
-            var screenWidth = Camera.main.aspect * screenHeight;
-            var rt = GetComponent<RectTransform>();
-            if (rt == null || !rectTransformScaling) {
-                if (transform.parent != null) {
-                    transform.localScale = new Vector3(
-                        1 / transform.parent.lossyScale.x,
-                        1 / transform.parent.lossyScale.y,
-                        transform.localScale.z
-                    );
-                } else {
-                    transform.localScale = new Vector3(1, 1, transform.localScale.z);
-                }
-            } else {
-                rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, rtBaseSize.x);
-                rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, rtBaseSize.y);
-            }
-            var mySize = GetSize();
-            Vector2 scale = Vector2.one;
-            switch (heightMode) {
-            case ScaleMode.Self:
-                scale.y = percentHeight;
+        static float VectorGetX(Vector2 vec) {
+            return vec.x;
+        }
+
+        static float VectorGetY(Vector2 vec) {
+            return vec.y;
+        }
+
+        float GetScaleValue(
+            ScaleMode mode,
+            float value,
+            Layout reference,
+            Func<Vector2, float> axis
+        )
+        {
+            float newValue;
+            switch (mode) {
+            case ScaleMode.UnadjustedUnits:
+                return value;
+            case ScaleMode.ScaleNormalizedUnits:
+                newValue = value / axis(unscaledSize);
                 break;
-            case ScaleMode.Parent:
+            case ScaleMode.ScaleNormalizedPercent:
+                newValue = value;
+                break;
+            case ScaleMode.ReferenceScalePercent:
                 if (reference == null) {
-                    goto case ScaleMode.Screen;
+                    goto case ScaleMode.ScaleNormalizedPercent;
                 }
-                scale.y = percentHeight * reference.GetSize().y / mySize.y;
+                newValue
+                    = value
+                    * axis(reference.adjustedScale);
                 break;
-            case ScaleMode.Screen:
-                scale.y = screenHeight * percentHeight / mySize.y;
-                break;
-            }
-            switch (widthMode) {
-            case ScaleMode.Self:
-                scale.x = percentWidth;
-                break;
-            case ScaleMode.Parent:
+            case ScaleMode.ReferenceSizePercent:
                 if (reference == null) {
-                    goto case ScaleMode.Screen;
+                    goto case ScaleMode.ScaleNormalizedPercent;
                 }
-                scale.x = percentWidth * reference.GetSize().x / mySize.x;
+                newValue
+                    = value
+                    * axis(reference.scaledSize)
+                    / axis(unscaledSize);
                 break;
-            case ScaleMode.Screen:
-                scale.x = screenWidth * percentWidth / mySize.x;
+            case ScaleMode.ScreenPercent:
+                newValue = value * axis(screenSize) / axis(unscaledSize);
                 break;
+            case ScaleMode.DpiScaledPixels:
+                newValue = value * axis(screenSize) * dpiScale / axis(cameraPixels);
+                break;
+            case ScaleMode.Pixels:
+                newValue = value * axis(screenSize) / axis(cameraPixels);
+                break;
+            default:
+                return 0;
             }
-            if (heightMode == ScaleMode.Aspect && widthMode == ScaleMode.Aspect) {
-                scale.x = percentWidth;
-                scale.y = percentHeight;
-            } else if (heightMode == ScaleMode.Aspect) {
-                scale.y = scale.x;
-            } else if (widthMode == ScaleMode.Aspect) {
-                scale.x = scale.y;
-            }
-            SetAspectScaling(ref scale);
-            if (rt != null && rectTransformScaling) {
-                rt.SetSizeWithCurrentAnchors(
-                    RectTransform.Axis.Horizontal,
-                    rtBaseSize.x * scale.x
-                );
-                rt.SetSizeWithCurrentAnchors(
-                    RectTransform.Axis.Vertical,
-                    rtBaseSize.y * scale.y
-                );
-            } else {
-                transform.localScale = new Vector3(scale.x, scale.y, transform.localScale.z);
+            return newValue / axis(baseScale);
+        }
+
+        float GetOffsetValue(
+            ScaleMode mode,
+            float value,
+            Layout reference,
+            Func<Vector2, float> axis
+        )
+        {
+            switch (mode)
+            {
+            case ScaleMode.UnadjustedUnits:
+                return value * axis(baseScale);
+            case ScaleMode.ScaleNormalizedUnits:
+                return value * axis(adjustedScale);
+            case ScaleMode.ScaleNormalizedPercent:
+                return value * axis(scaledSize);
+            case ScaleMode.ReferenceScalePercent:
+                if (reference == null) {
+                    goto case ScaleMode.ScaleNormalizedPercent;
+                }
+                return value * axis(unscaledSize) * axis(reference.adjustedScale);
+            case ScaleMode.ReferenceSizePercent:
+                if (reference == null) {
+                    goto case ScaleMode.ReferenceSizePercent;
+                }
+                return value * axis(reference.scaledSize);
+            case ScaleMode.ScreenPercent:
+                return value * axis(screenSize);
+            case ScaleMode.DpiScaledPixels:
+                return value * axis(screenSize) * dpiScale / axis(cameraPixels);
+            case ScaleMode.Pixels:
+                return value * axis(screenSize) / axis(cameraPixels);
+            default:
+                return 0;
             }
         }
 
+        Vector2 GetScale() {
+            Vector2 scale;
+            var reference = sizeRef ?? positionRef;
+            scale.x = GetScaleValue(widthMode, width, reference, VectorGetX);
+            scale.y = GetScaleValue(heightMode, height, reference, VectorGetY);
+            if (heightMode == ScaleMode.MaintainAspect) {
+                scale.y = scale.x * baseScale.x / baseScale.y;
+            } else if (widthMode == ScaleMode.MaintainAspect) {
+                scale.x = scale.y * baseScale.y / baseScale.x;
+            }
+            SetAspectScaling(ref scale);
+            return scale;
+        }
+
+        // FIXME - Shrink and grow modes are wrong.
         void SetAspectScaling(ref Vector2 scale)
         {
             switch (screenAspectScaling)
@@ -242,39 +386,10 @@ namespace SciFi.UI {
             }
         }
 
-        Vector3 GetScreenAnchor() {
-            float screenHeightExtent = Camera.main.orthographicSize;
-            float screenWidthExtent = screenHeightExtent * Camera.main.aspect;
-            float z = transform.position.z;
-            switch (anchor) {
-            case Anchor.TopLeft:
-                return new Vector3(-screenWidthExtent, screenHeightExtent, z);
-            case Anchor.TopCenter:
-                return new Vector3(0, screenHeightExtent, z);
-            case Anchor.TopRight:
-                return new Vector3(screenWidthExtent, screenHeightExtent, z);
-            case Anchor.MiddleLeft:
-                return new Vector3(-screenWidthExtent, 0, z);
-            case Anchor.Center:
-                return new Vector3(0, 0, z);
-            case Anchor.MiddleRight:
-                return new Vector3(screenWidthExtent, 0, z);
-            case Anchor.BottomLeft:
-                return new Vector3(-screenWidthExtent, -screenHeightExtent, z);
-            case Anchor.BottomCenter:
-                return new Vector3(0, -screenHeightExtent, z);
-            case Anchor.BottomRight:
-                return new Vector3(screenWidthExtent, -screenHeightExtent, z);
-            default:
-                throw new ArgumentOutOfRangeException(nameof(anchor));
-            }
-        }
-
-        Vector3 GetReferenceAnchor() {
-            Vector2 referenceExtents = reference.GetSize() / 2;
-            float x = reference.transform.position.x;
-            float y = reference.transform.position.y;
-            float z = transform.position.z;
+        Vector3 GetReferenceAnchor(Vector2 refPosition, Vector2 refSize) {
+            Vector2 referenceExtents = refSize / 2;
+            float x = refPosition.x;
+            float y = refPosition.y;
             switch (anchor) {
             case Anchor.TopLeft:
                 x -= referenceExtents.x;
@@ -309,11 +424,11 @@ namespace SciFi.UI {
             default:
                 throw new System.ArgumentOutOfRangeException(nameof(anchor));
             }
-            return new Vector3(x, y, z);
+            return new Vector3(x, y, transform.position.z);
         }
 
         Vector2 GetOverlap() {
-            Vector2 myExtents = GetSize() / 2;
+            Vector2 myExtents = scaledSize / 2;
             switch (anchor) {
             case Anchor.TopLeft:
                 return new Vector2(myExtents.x, -myExtents.y);
@@ -339,29 +454,19 @@ namespace SciFi.UI {
         }
 
         Vector2 GetOffsets() {
-            switch (offsetMode)
-            {
-            case OffsetMode.Self: {
-                var size = GetSize();
-                return new Vector2(offset.x * size.x, offset.y * size.y);
+            Vector2 offsets;
+            var mode = offsetMode == ScaleMode.MaintainAspect ? ScaleMode.Pixels : offsetMode;
+            offsets.x = GetOffsetValue(mode, offset.x, positionRef, VectorGetX);
+            offsets.y = GetOffsetValue(mode, offset.y, positionRef, VectorGetY);
+            // TODO: Make this be scaled to the standard aspect ratio.
+            if (offsetMode == ScaleMode.MaintainAspect) {
+                if (cameraPixels.x > cameraPixels.y) {
+                    offsets.x *= cameraPixels.y / cameraPixels.x;
+                } else {
+                    offsets.x *= cameraPixels.x / cameraPixels.y;
+                }
             }
-            case OffsetMode.Screen: {
-                var ortho = Camera.main.orthographicSize;
-                return new Vector2(offset.x * ortho / Camera.main.aspect, offset.y * ortho);
-            }
-            case OffsetMode.UnityUnits:
-                return offset;
-            case OffsetMode.Pixels: {
-                var unitHeight = Camera.main.orthographicSize;
-                var unitWidth = unitHeight / Camera.main.aspect;
-                return new Vector2(
-                    offset.x * unitWidth / Camera.main.pixelWidth,
-                    offset.y * unitHeight / Camera.main.pixelHeight
-                );
-            }
-            default:
-                return Vector2.zero;
-            }
+            return offsets;
         }
     }
 }

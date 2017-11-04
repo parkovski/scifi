@@ -121,9 +121,9 @@ GameObject:
   m_Component:
   - component: {fileID: 31478549}
   - component: {fileID: 31478548}
-  - component: {fileID: 31478547}
   - component: {fileID: 31478546}
   - component: {fileID: 31478550}
+  - component: {fileID: 31478547}
   m_Layer: 5
   m_Name: TouchControlCanvas
   m_TagString: Untagged
@@ -155,19 +155,27 @@ MonoBehaviour:
   m_GameObject: {fileID: 31478545}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1980459831, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: 15736098c02f8b84ab63f55a789b6da2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
-  m_ReferencePixelsPerUnit: 100
-  m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
-  m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
-  m_PhysicalUnit: 3
-  m_FallbackScreenDPI: 96
-  m_DefaultSpriteDPI: 96
-  m_DynamicPixelsPerUnit: 1
+  positionRef: {fileID: 0}
+  sizeRef: {fileID: 0}
+  anchor: 4
+  overlapParent: 0
+  screenAspectScaling: 0
+  designAspect: {x: 16, y: 9}
+  widthMode: 5
+  heightMode: 5
+  offsetMode: 1
+  width: 1
+  height: 1
+  offset: {x: 0, y: 0}
+  rectTransformScaling: 0
+  rtBaseSize: {x: 1, y: 1}
+  resyncRtSize:
+    action: sync-rect-size
+  refreshAllLayouts:
+    action: refresh
 --- !u!223 &31478548
 Canvas:
   m_ObjectHideFlags: 0
@@ -176,7 +184,7 @@ Canvas:
   m_GameObject: {fileID: 31478545}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 1
+  m_RenderMode: 2
   m_Camera: {fileID: 166321932}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
@@ -184,8 +192,8 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_AdditionalShaderChannelsFlag: 25
-  m_SortingLayerID: 0
+  m_AdditionalShaderChannelsFlag: 0
+  m_SortingLayerID: -477321861
   m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!224 &31478549
@@ -195,8 +203,8 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 31478545}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 90}
-  m_LocalScale: {x: 0.012668919, y: 0.012668919, z: 0.012668919}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 13.333333, y: 7.499999, z: 1}
   m_Children:
   - {fileID: 771726741}
   - {fileID: 988461236}
@@ -209,10 +217,10 @@ RectTransform:
   m_Father: {fileID: 0}
   m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 13.333333, y: 7.499999}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &31478550
 MonoBehaviour:
@@ -362,7 +370,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 3.75
+  orthographic size: 3.7499995
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -636,8 +644,8 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 241391961}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 193, y: -162.8, z: -5640.0005}
-  m_LocalScale: {x: 88.8, y: 88.8, z: 0.010026666}
+  m_LocalPosition: {x: 0.19523571, y: -0.27319327, z: 0}
+  m_LocalScale: {x: 0.07875, y: 0.14000002, z: 1}
   m_Children:
   - {fileID: 1597137014}
   m_Father: {fileID: 31478549}
@@ -679,14 +687,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15736098c02f8b84ab63f55a789b6da2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  reference: {fileID: 1099738249}
+  positionRef: {fileID: 1099738249}
+  sizeRef: {fileID: 2134407078}
   anchor: 3
-  autoWidth: 1
-  percentWidth: 0
-  autoHeight: 0
-  percentHeight: 0.15
-  marginMode: 0
-  margin: {x: 0, y: 0}
+  overlapParent: 0
+  screenAspectScaling: 0
+  designAspect: {x: 16, y: 9}
+  widthMode: 4
+  heightMode: 4
+  offsetMode: 1
+  width: 1
+  height: 1
+  offset: {x: 0, y: 0}
+  rectTransformScaling: 0
+  rtBaseSize: {x: 200, y: 100}
+  resyncRtSize:
+    action: sync-rect-size
+  refreshAllLayouts:
+    action: refresh
 --- !u!212 &241391965
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -985,8 +1003,8 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 336553020}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 459.4, y: -162.8, z: -5640.0005}
-  m_LocalScale: {x: 88.8, y: 88.8, z: 0.01}
+  m_LocalPosition: {x: 0.43148568, y: -0.27319327, z: 0}
+  m_LocalScale: {x: 0.07875, y: 0.14000002, z: 1}
   m_Children:
   - {fileID: 616034190}
   m_Father: {fileID: 31478549}
@@ -1003,14 +1021,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15736098c02f8b84ab63f55a789b6da2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  reference: {fileID: 2134407078}
+  positionRef: {fileID: 2134407078}
+  sizeRef: {fileID: 2134407078}
   anchor: 1
-  autoWidth: 1
-  percentWidth: 0
-  autoHeight: 0
-  percentHeight: 0.15
-  marginMode: 0
-  margin: {x: 0, y: 0}
+  overlapParent: 0
+  screenAspectScaling: 0
+  designAspect: {x: 16, y: 9}
+  widthMode: 4
+  heightMode: 4
+  offsetMode: 1
+  width: 1
+  height: 1
+  offset: {x: 0, y: 0}
+  rectTransformScaling: 0
+  rtBaseSize: {x: 200, y: 100}
+  resyncRtSize:
+    action: sync-rect-size
+  refreshAllLayouts:
+    action: refresh
 --- !u!61 &336553024
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1785,8 +1813,8 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 771726739}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 193, y: -251.6, z: -5640.0005}
-  m_LocalScale: {x: 88.8, y: 88.8, z: 0.01}
+  m_LocalPosition: {x: 0.19523571, y: -0.4131933, z: 0}
+  m_LocalScale: {x: 0.07875, y: 0.14000002, z: 1}
   m_Children:
   - {fileID: 1061302015}
   m_Father: {fileID: 31478549}
@@ -1803,14 +1831,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15736098c02f8b84ab63f55a789b6da2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  reference: {fileID: 988461237}
+  positionRef: {fileID: 988461237}
+  sizeRef: {fileID: 2134407078}
   anchor: 3
-  autoWidth: 1
-  percentWidth: 0
-  autoHeight: 0
-  percentHeight: 0.15
-  marginMode: 0
-  margin: {x: 0, y: 0}
+  overlapParent: 0
+  screenAspectScaling: 0
+  designAspect: {x: 16, y: 9}
+  widthMode: 4
+  heightMode: 4
+  offsetMode: 1
+  width: 1
+  height: 1
+  offset: {x: 0, y: 0}
+  rectTransformScaling: 0
+  rtBaseSize: {x: 200, y: 100}
+  resyncRtSize:
+    action: sync-rect-size
+  refreshAllLayouts:
+    action: refresh
 --- !u!61 &771726743
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2003,8 +2041,8 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 822711270}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -437.2, y: -207.2, z: -5640.001}
-  m_LocalScale: {x: 59.200005, y: 59.200005, z: 1}
+  m_LocalPosition: {x: -0.4117982, y: -0.3431933, z: 0}
+  m_LocalScale: {x: 0.0525, y: 0.09333334, z: 1}
   m_Children: []
   m_Father: {fileID: 31478549}
   m_RootOrder: 6
@@ -2020,14 +2058,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15736098c02f8b84ab63f55a789b6da2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  reference: {fileID: 0}
+  positionRef: {fileID: 0}
+  sizeRef: {fileID: 0}
   anchor: 6
-  autoWidth: 1
-  percentWidth: 0
-  autoHeight: 0
-  percentHeight: 0.3
-  marginMode: 0
-  margin: {x: 0, y: 0}
+  overlapParent: 1
+  screenAspectScaling: 0
+  designAspect: {x: 16, y: 9}
+  widthMode: 6
+  heightMode: 2
+  offsetMode: 7
+  width: 1
+  height: 0.7
+  offset: {x: 10, y: 10}
+  rectTransformScaling: 0
+  rtBaseSize: {x: 200, y: 100}
+  resyncRtSize:
+    action: sync-rect-size
+  refreshAllLayouts:
+    action: refresh
 --- !u!212 &822711273
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2475,8 +2523,8 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 988461234}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 326.2, y: -251.6, z: -5640.001}
-  m_LocalScale: {x: 88.8, y: 88.8, z: 0.01}
+  m_LocalPosition: {x: 0.3133607, y: -0.4131933, z: 0}
+  m_LocalScale: {x: 0.07875, y: 0.14000002, z: 1}
   m_Children:
   - {fileID: 1944449355}
   m_Father: {fileID: 31478549}
@@ -2493,14 +2541,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15736098c02f8b84ab63f55a789b6da2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  reference: {fileID: 2134407078}
+  positionRef: {fileID: 2134407078}
+  sizeRef: {fileID: 2134407078}
   anchor: 3
-  autoWidth: 1
-  percentWidth: 0
-  autoHeight: 0
-  percentHeight: 0.15
-  marginMode: 0
-  margin: {x: 0, y: 0}
+  overlapParent: 0
+  screenAspectScaling: 0
+  designAspect: {x: 16, y: 9}
+  widthMode: 4
+  heightMode: 4
+  offsetMode: 1
+  width: 1
+  height: 1
+  offset: {x: 0, y: 0}
+  rectTransformScaling: 0
+  rtBaseSize: {x: 200, y: 100}
+  resyncRtSize:
+    action: sync-rect-size
+  refreshAllLayouts:
+    action: refresh
 --- !u!61 &988461238
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2812,8 +2870,8 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1099738246}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 326.2, y: -162.8, z: -5640.001}
-  m_LocalScale: {x: 88.8, y: 88.8, z: 0.01}
+  m_LocalPosition: {x: 0.3133607, y: -0.27319327, z: 0}
+  m_LocalScale: {x: 0.07875, y: 0.14000002, z: 1}
   m_Children:
   - {fileID: 524429608}
   m_Father: {fileID: 31478549}
@@ -2830,14 +2888,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15736098c02f8b84ab63f55a789b6da2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  reference: {fileID: 2134407078}
+  positionRef: {fileID: 2134407078}
+  sizeRef: {fileID: 2134407078}
   anchor: 0
-  autoWidth: 1
-  percentWidth: 0
-  autoHeight: 0
-  percentHeight: 0.15
-  marginMode: 0
-  margin: {x: 0, y: 0}
+  overlapParent: 0
+  screenAspectScaling: 0
+  designAspect: {x: 16, y: 9}
+  widthMode: 4
+  heightMode: 4
+  offsetMode: 5
+  width: 1
+  height: 1
+  offset: {x: 0, y: 0}
+  rectTransformScaling: 0
+  rtBaseSize: {x: 200, y: 100}
+  resyncRtSize:
+    action: sync-rect-size
+  refreshAllLayouts:
+    action: refresh
 --- !u!61 &1099738250
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -3860,7 +3928,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1868839609}
   - component: {fileID: 1868839608}
-  - component: {fileID: 1868839607}
   - component: {fileID: 1868839606}
   - component: {fileID: 1868839605}
   - component: {fileID: 1868839604}
@@ -3926,27 +3993,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &1868839607
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1868839602}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1980459831, guid: f70555f144d8491a825f0804e09c671c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
-  m_ReferencePixelsPerUnit: 1
-  m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
-  m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
-  m_PhysicalUnit: 3
-  m_FallbackScreenDPI: 96
-  m_DefaultSpriteDPI: 96
-  m_DynamicPixelsPerUnit: 1
 --- !u!223 &1868839608
 Canvas:
   m_ObjectHideFlags: 0
@@ -3963,7 +4009,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_AdditionalShaderChannelsFlag: 25
+  m_AdditionalShaderChannelsFlag: 0
   m_SortingLayerID: -477321861
   m_SortingOrder: 0
   m_TargetDisplay: 0
@@ -3974,7 +4020,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1868839602}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 526, y: 296, z: 0}
+  m_LocalPosition: {x: 529, y: 297.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2070651867}
@@ -3988,8 +4034,8 @@ RectTransform:
   m_Father: {fileID: 0}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
@@ -4154,8 +4200,8 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1959001583}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -437.2, y: -207.2, z: -5640.0005}
-  m_LocalScale: {x: 59.200005, y: 59.200005, z: 62.666668}
+  m_LocalPosition: {x: -0.4117982, y: -0.3431933, z: 0}
+  m_LocalScale: {x: 0.052500002, y: 0.09333334, z: 1}
   m_Children: []
   m_Father: {fileID: 31478549}
   m_RootOrder: 7
@@ -4242,14 +4288,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15736098c02f8b84ab63f55a789b6da2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  reference: {fileID: 822711272}
+  positionRef: {fileID: 822711272}
+  sizeRef: {fileID: 0}
   anchor: 4
-  autoWidth: 1
-  percentWidth: 0
-  autoHeight: 0
-  percentHeight: 0.3
-  marginMode: 0
-  margin: {x: 0, y: 0}
+  overlapParent: 0
+  screenAspectScaling: 0
+  designAspect: {x: 16, y: 9}
+  widthMode: 3
+  heightMode: 3
+  offsetMode: 1
+  width: 1
+  height: 1
+  offset: {x: 0, y: 0}
+  rectTransformScaling: 0
+  rtBaseSize: {x: 200, y: 100}
+  resyncRtSize:
+    action: sync-rect-size
+  refreshAllLayouts:
+    action: refresh
 --- !u!1 &1963055515
 GameObject:
   m_ObjectHideFlags: 0
@@ -4875,8 +4931,8 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2134407075}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 459.4, y: -251.6, z: -5640.003}
-  m_LocalScale: {x: 88.8, y: 88.8, z: 0.01}
+  m_LocalPosition: {x: 0.43148568, y: -0.4131933, z: 0}
+  m_LocalScale: {x: 0.07875, y: 0.14000002, z: 1}
   m_Children:
   - {fileID: 1437276352}
   m_Father: {fileID: 31478549}
@@ -4893,14 +4949,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15736098c02f8b84ab63f55a789b6da2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  reference: {fileID: 0}
+  positionRef: {fileID: 0}
+  sizeRef: {fileID: 822711272}
   anchor: 8
-  autoWidth: 1
-  percentWidth: 0
-  autoHeight: 0
-  percentHeight: 0.15
-  marginMode: 0
-  margin: {x: 0, y: 0}
+  overlapParent: 1
+  screenAspectScaling: 0
+  designAspect: {x: 16, y: 9}
+  widthMode: 6
+  heightMode: 4
+  offsetMode: 7
+  width: 1
+  height: 0.5
+  offset: {x: -10, y: 10}
+  rectTransformScaling: 0
+  rtBaseSize: {x: 200, y: 100}
+  resyncRtSize:
+    action: sync-rect-size
+  refreshAllLayouts:
+    action: refresh
 --- !u!61 &2134407079
 BoxCollider2D:
   m_ObjectHideFlags: 0
