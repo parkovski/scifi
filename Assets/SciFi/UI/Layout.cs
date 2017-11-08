@@ -6,6 +6,7 @@ namespace SciFi.UI {
     [ExecuteInEditMode]
     public class Layout : MonoBehaviour, IRefreshComponent {
         public enum Anchor {
+            None,
             TopLeft, TopCenter, TopRight,
             MiddleLeft, Center, MiddleRight,
             BottomLeft, BottomCenter, BottomRight,
@@ -164,12 +165,13 @@ namespace SciFi.UI {
             baseScale = transform.lossyScale;
             adjustedScale = GetScale();
             transform.localScale = new Vector3(adjustedScale.x, adjustedScale.y, 1);
-            adjustedScale.x *= baseScale.x;
-            adjustedScale.y *= baseScale.y;
             var offsets = GetOffsets();
             scaledSize = unscaledSize;
             scaledSize.x *= adjustedScale.x;
             scaledSize.y *= adjustedScale.y;
+            if (anchor == Anchor.None) {
+                return;
+            }
             if (positionRef == null) {
                 position = GetReferenceAnchor(Vector2.zero, screenSize);
             } else {
@@ -191,43 +193,50 @@ namespace SciFi.UI {
                 transform.localPosition.y,
                 0
             );
+            scaledSize.x *= baseScale.x;
+            scaledSize.y *= baseScale.y;
         }
 
         void CalculateRectTransformLayout(RectTransform rt) {
             Vector3 position;
-            baseScale = transform.lossyScale;
-            baseScale.x /= transform.localScale.x;
-            baseScale.y /= transform.localScale.y;
+            baseScale = rt.lossyScale;
+            adjustedScale = baseScale;
             unscaledSize.x = rtBaseSize.x * baseScale.x;
             unscaledSize.y = rtBaseSize.y * baseScale.y;
-            var rectScale = GetScale();
-            adjustedScale = rectScale;
-            adjustedScale.x *= transform.lossyScale.x;
-            adjustedScale.y *= transform.lossyScale.y;
+            var rtScale = GetScale();
             var offsets = GetOffsets();
-            scaledSize = unscaledSize;
-            scaledSize.x *= adjustedScale.x;
-            scaledSize.y *= adjustedScale.y;
-            if (positionRef == null) {
-                position = GetReferenceAnchor(Vector2.zero, screenSize);
-            } else {
-                position = GetReferenceAnchor(
-                    positionRef.transform.position,
-                    positionRef.scaledSize
+            scaledSize = rtBaseSize;
+            scaledSize.x *= rtScale.x;
+            scaledSize.y *= rtScale.y;
+            if (anchor != Anchor.None) {
+                if (positionRef == null) {
+                    position = GetReferenceAnchor(Vector2.zero, screenSize);
+                } else {
+                    position = GetReferenceAnchor(
+                        positionRef.transform.position,
+                        positionRef.scaledSize
+                    );
+                }
+                Vector3 overlap = GetOverlap();
+                overlap.x *= rt.lossyScale.x;
+                overlap.y *= rt.lossyScale.y;
+                if (overlapParent) {
+                    position += overlap + (Vector3)offsets;
+                } else {
+                    position -= overlap - (Vector3)offsets;
+                }
+                position.z = 0;
+                transform.position = position;
+                transform.localPosition = new Vector3(
+                    transform.localPosition.x,
+                    transform.localPosition.y,
+                    0
                 );
             }
-            Vector3 overlap = GetOverlap();
-            if (overlapParent) {
-                position += overlap + (Vector3)offsets;
-            } else {
-                position -= overlap - (Vector3)offsets;
-            }
-            position.x /= baseScale.x;
-            position.y /= baseScale.y;
-            position.z = 0;
-            rt.localPosition = position;
-            rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, rtBaseSize.x * adjustedScale.x);
-            rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, rtBaseSize.y * adjustedScale.y);
+            rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, scaledSize.x);
+            rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, scaledSize.y);
+            scaledSize.x *= baseScale.x;
+            scaledSize.y *= baseScale.y;
         }
 
         /// Returns original size without scaling.
@@ -300,7 +309,7 @@ namespace SciFi.UI {
             default:
                 return 0;
             }
-            return newValue / axis(baseScale);
+            return newValue;
         }
 
         float GetOffsetValue(
@@ -341,7 +350,7 @@ namespace SciFi.UI {
 
         Vector2 GetScale() {
             Vector2 scale;
-            var reference = sizeRef ?? positionRef;
+            var reference = sizeRef;
             scale.x = GetScaleValue(widthMode, width, reference, VectorGetX);
             scale.y = GetScaleValue(heightMode, height, reference, VectorGetY);
             if (heightMode == ScaleMode.MaintainAspect) {
