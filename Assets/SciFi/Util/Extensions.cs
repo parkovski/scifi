@@ -37,6 +37,54 @@ namespace SciFi.Util.Extensions {
                 return vec.FlipX();
             }
         }
+
+        /// Non-mutating version of `Vector2.Scale`.
+        public static Vector2 ScaledBy(this Vector2 vec, Vector2 scale) {
+            Vector2 scaled = vec;
+            scaled.Scale(scale);
+            return scaled;
+        }
+
+        /// Inverse scale - divides components by scale.
+        public static Vector2 InvScaledBy(this Vector2 vec, Vector2 scale) {
+            Vector2 scaled = vec;
+            scaled.x /= scale.x;
+            scaled.y /= scale.y;
+            return scaled;
+        }
+
+        /// Non-mutating version of `Vector3.Scale`.
+        public static Vector3 ScaledBy(this Vector3 vec, Vector3 scale) {
+            Vector3 scaled = vec;
+            scaled.Scale(scale);
+            return scaled;
+        }
+
+        /// Inverse scale - divides components by scale.
+        public static Vector3 InvScaledBy(this Vector3 vec, Vector3 scale) {
+            Vector3 scaled = vec;
+            scaled.x /= scale.x;
+            scaled.y /= scale.y;
+            scaled.z /= scale.z;
+            return scaled;
+        }
+
+        public static Vector3 ToVec3(this Vector2 vec, float z) {
+            return new Vector3(vec.x, vec.y, z);
+        }
+
+        public static Vector2 ToVec2(this Vector3 vec) {
+            return vec;
+        }
+
+        /// Returns a vector of (1/x, 1/y).
+        public static Vector2 InverseComponents(this Vector2 vec) {
+            return new Vector2(1 / vec.x, 1 / vec.y);
+        }
+
+        public static Vector2 Abs(this Vector2 vec) {
+            return new Vector2(Mathf.Abs(vec.x), Mathf.Abs(vec.y));
+        }
     }
 
     public static class NumberExtensions {

@@ -62,3 +62,15 @@
   - Team battles
   - Tournaments
   - In-game communication/reactions
+
+
+### New item system
+- Player Builder page
+- Item chooser dropdown
+- Implement new items & new system
+- Profile page
+- Treasure chests
+- Battle rewards
+- Profile server
+- Account integration (FB, GameCenter, etc)
+- Currency and purchasing

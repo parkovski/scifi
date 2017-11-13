@@ -3,9 +3,7 @@ using UnityEngine;
 
 namespace SciFi.UI {
     public interface IRefreshComponent {
-#if UNITY_EDITOR
         void RefreshComponent(string action);
-#endif
     }
 
     [Serializable]

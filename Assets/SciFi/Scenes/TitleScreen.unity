@@ -326,7 +326,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 720337877}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 322.9725, y: -182.98499, z: 0}
+  m_LocalPosition: {x: 312.5, y: -205.62498, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1200955916}
@@ -335,8 +335,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -637.02747, y: -722.985}
-  m_SizeDelta: {x: 300, y: 150}
+  m_AnchoredPosition: {x: 312.5, y: -205.62502}
+  m_SizeDelta: {x: 285.00006, y: 142.50003}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &720337879
 MonoBehaviour:
@@ -432,27 +432,28 @@ MonoBehaviour:
   m_GameObject: {fileID: 720337877}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 15736098c02f8b84ab63f55a789b6da2, type: 3}
+  m_Script: {fileID: 11500000, guid: 4d67d74b6f22f444796e93a5ade886cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  refreshAllLayouts:
+    action: refresh
+  printDebug:
+    action: debug
   positionRef: {fileID: 0}
   sizeRef: {fileID: 0}
-  anchor: 8
+  anchor: 9
   overlapParent: 1
+  widthMode: 1
+  heightMode: 1
+  offsetMode: 7
+  width: 4
+  height: 2
+  offset: {x: -20, y: 20}
   screenAspectScaling: 0
-  designAspect: {x: 16, y: 9}
-  widthMode: 2
-  heightMode: 2
-  offsetMode: 1
-  width: 1
-  height: 1
-  offset: {x: -0.25, y: 0.25}
-  rectTransformScaling: 1
+  designAspect: {x: 16, y: 10}
   rtBaseSize: {x: 300, y: 150}
   resyncRtSize:
     action: sync-rect-size
-  refreshAllLayouts:
-    action: refresh
 --- !u!1 &813666220
 GameObject:
   m_ObjectHideFlags: 0
@@ -481,24 +482,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15736098c02f8b84ab63f55a789b6da2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  refreshAllLayouts:
+    action: refresh
+  printDebug:
+    action: debug
   positionRef: {fileID: 0}
   sizeRef: {fileID: 0}
-  anchor: 4
+  anchor: 5
   overlapParent: 0
-  screenAspectScaling: 0
-  designAspect: {x: 16, y: 9}
   widthMode: 5
   heightMode: 5
   offsetMode: 2
   width: 1
   height: 1
   offset: {x: 0, y: 0}
-  rectTransformScaling: 0
-  rtBaseSize: {x: 0, y: 0}
-  resyncRtSize:
-    action: sync-rect-size
-  refreshAllLayouts:
-    action: refresh
+  screenAspectScaling: 0
+  designAspect: {x: 16, y: 9}
 --- !u!4 &813666222
 Transform:
   m_ObjectHideFlags: 0
@@ -507,7 +506,7 @@ Transform:
   m_GameObject: {fileID: 813666220}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.47348472, y: 0.47348472, z: 1}
+  m_LocalScale: {x: 0.47348472, y: 0.52609414, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4
@@ -655,8 +654,8 @@ RectTransform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1231064437}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -322.9725, y: -182.98499, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -312.5, y: -205.62498, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 218827408}
@@ -665,8 +664,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -1282.9725, y: -722.985}
-  m_SizeDelta: {x: 300, y: 150}
+  m_AnchoredPosition: {x: -312.5, y: -205.62502}
+  m_SizeDelta: {x: 285.00006, y: 142.50003}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1231064439
 MonoBehaviour:
@@ -762,27 +761,28 @@ MonoBehaviour:
   m_GameObject: {fileID: 1231064437}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 15736098c02f8b84ab63f55a789b6da2, type: 3}
+  m_Script: {fileID: 11500000, guid: 4d67d74b6f22f444796e93a5ade886cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  refreshAllLayouts:
+    action: refresh
+  printDebug:
+    action: debug
   positionRef: {fileID: 0}
   sizeRef: {fileID: 0}
-  anchor: 6
+  anchor: 7
   overlapParent: 1
+  widthMode: 1
+  heightMode: 1
+  offsetMode: 7
+  width: 4
+  height: 2
+  offset: {x: 20, y: 20}
   screenAspectScaling: 0
-  designAspect: {x: 16, y: 9}
-  widthMode: 2
-  heightMode: 2
-  offsetMode: 1
-  width: 1
-  height: 1
-  offset: {x: 0.25, y: 0.25}
-  rectTransformScaling: 1
+  designAspect: {x: 16, y: 10}
   rtBaseSize: {x: 300, y: 150}
   resyncRtSize:
     action: sync-rect-size
-  refreshAllLayouts:
-    action: refresh
 --- !u!1 &1364404385
 GameObject:
   m_ObjectHideFlags: 0
@@ -807,7 +807,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1364404385}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.08, y: 1.132499, z: 0}
+  m_LocalPosition: {x: -0.125, y: 1.5491655, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -868,24 +868,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15736098c02f8b84ab63f55a789b6da2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  positionRef: {fileID: 0}
-  sizeRef: {fileID: 0}
-  anchor: 1
-  overlapParent: 1
-  screenAspectScaling: 0
-  designAspect: {x: 16, y: 10}
-  widthMode: 2
-  heightMode: 6
-  offsetMode: 1
-  width: 0.5
-  height: 1
-  offset: {x: -0.16, y: -0.5}
-  rectTransformScaling: 0
-  rtBaseSize: {x: 200, y: 100}
-  resyncRtSize:
-    action: sync-rect-size
   refreshAllLayouts:
     action: refresh
+  printDebug:
+    action: debug
+  positionRef: {fileID: 0}
+  sizeRef: {fileID: 0}
+  anchor: 2
+  overlapParent: 1
+  widthMode: 2
+  heightMode: 2
+  offsetMode: 1
+  width: 0.5
+  height: 0.5
+  offset: {x: -0.125, y: -0.25}
+  screenAspectScaling: 0
+  designAspect: {x: 16, y: 10}
 --- !u!1 &1451112368
 GameObject:
   m_ObjectHideFlags: 0
@@ -957,8 +955,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1633991030}
   - component: {fileID: 1633991029}
-  - component: {fileID: 1633991028}
   - component: {fileID: 1633991027}
+  - component: {fileID: 1633991028}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -988,21 +986,30 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1633991026}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1980459831, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: 4d67d74b6f22f444796e93a5ade886cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
-  m_ReferencePixelsPerUnit: 100
-  m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 1920, y: 1080}
-  m_ScreenMatchMode: 1
-  m_MatchWidthOrHeight: 0
-  m_PhysicalUnit: 3
-  m_FallbackScreenDPI: 96
-  m_DefaultSpriteDPI: 96
-  m_DynamicPixelsPerUnit: 1
+  refreshAllLayouts:
+    action: refresh
+  printDebug:
+    action: debug
+  positionRef: {fileID: 0}
+  sizeRef: {fileID: 0}
+  anchor: 5
+  overlapParent: 0
+  widthMode: 5
+  heightMode: 5
+  offsetMode: 1
+  width: 100
+  height: 100
+  offset: {x: 0, y: 0}
+  screenAspectScaling: 0
+  designAspect: {x: 16, y: 10}
+  rtBaseSize: {x: 100, y: 100}
+  resyncRtSize:
+    action: sync-rect-size
 --- !u!223 &1633991029
 Canvas:
   m_ObjectHideFlags: 0
@@ -1011,7 +1018,7 @@ Canvas:
   m_GameObject: {fileID: 1633991026}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 2
+  m_RenderMode: 1
   m_Camera: {fileID: 2086260094}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
@@ -1019,7 +1026,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_AdditionalShaderChannelsFlag: 25
+  m_AdditionalShaderChannelsFlag: 0
   m_SortingLayerID: -477321861
   m_SortingOrder: 0
   m_TargetDisplay: 0
@@ -1031,7 +1038,7 @@ RectTransform:
   m_GameObject: {fileID: 1633991026}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 90}
-  m_LocalScale: {x: 0.0135666765, y: 0.0135666765, z: 0.0135666765}
+  m_LocalScale: {x: 0.014035084, y: 0.014035084, z: 0.014035084}
   m_Children:
   - {fileID: 1231064438}
   - {fileID: 1995152864}
@@ -1042,8 +1049,8 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1920, y: 1080}
-  m_Pivot: {x: 0, y: 0}
+  m_SizeDelta: {x: 1333.333, y: 749.9998}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1995152863
 GameObject:
   m_ObjectHideFlags: 0
@@ -1070,7 +1077,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1995152863}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -182.98499, z: 0}
+  m_LocalPosition: {x: 0, y: -205.62498, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 663448361}
@@ -1079,8 +1086,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -960, y: -722.985}
-  m_SizeDelta: {x: 300, y: 150}
+  m_AnchoredPosition: {x: 0, y: -205.62502}
+  m_SizeDelta: {x: 285.00006, y: 142.50003}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1995152865
 MonoBehaviour:
@@ -1176,27 +1183,28 @@ MonoBehaviour:
   m_GameObject: {fileID: 1995152863}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 15736098c02f8b84ab63f55a789b6da2, type: 3}
+  m_Script: {fileID: 11500000, guid: 4d67d74b6f22f444796e93a5ade886cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  refreshAllLayouts:
+    action: refresh
+  printDebug:
+    action: debug
   positionRef: {fileID: 0}
   sizeRef: {fileID: 0}
-  anchor: 7
+  anchor: 8
   overlapParent: 1
+  widthMode: 1
+  heightMode: 1
+  offsetMode: 7
+  width: 4
+  height: 2
+  offset: {x: 0, y: 20}
   screenAspectScaling: 0
-  designAspect: {x: 16, y: 9}
-  widthMode: 2
-  heightMode: 2
-  offsetMode: 1
-  width: 1
-  height: 1
-  offset: {x: 0, y: 0.25}
-  rectTransformScaling: 1
+  designAspect: {x: 16, y: 10}
   rtBaseSize: {x: 300, y: 150}
   resyncRtSize:
     action: sync-rect-size
-  refreshAllLayouts:
-    action: refresh
 --- !u!1 &2086260090
 GameObject:
   m_ObjectHideFlags: 0
@@ -1258,7 +1266,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 3.749999
+  orthographic size: 4.1666656
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
