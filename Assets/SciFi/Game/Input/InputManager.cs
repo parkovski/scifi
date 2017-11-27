@@ -232,6 +232,7 @@ namespace SciFi {
         float joystickInnerRadius;
         float joystickOuterRadius;
         const float joystickDeadZonePercent = 0.15f;
+        SciFi.UI.ItemPicker itemPicker;
 
         /// Is <c>control</c> currently pressed or touched?
         public bool IsControlActive(int control) {
@@ -538,6 +539,22 @@ namespace SciFi {
             }
         }
 
+        void ItemPickerInput(Touch touch) {
+            if (itemPicker == null) {
+                itemPicker = FindObjectOfType<SciFi.UI.ItemPicker>();
+            }
+            switch (touch.phase) {
+            case TouchPhase.Began:
+            case TouchPhase.Moved:
+                itemPicker.InputPositionChanged(touch.position);
+                break;
+            case TouchPhase.Ended:
+            case TouchPhase.Canceled:
+                itemPicker.InputEnded();
+                break;
+            }
+        }
+
         void TouchBegan(Touch touch) {
             var obj = GetObjectAtPosition(touch.position);
             var controlName = obj == null ? null : obj.name;
@@ -563,6 +580,9 @@ namespace SciFi {
                 touch.phase = TouchPhase.Moved;
                 JoystickInput(touch);
                 return;
+            } else if (controlName == "ItemPicker") {
+                activeTouches.Add(touch.fingerId, controlName);
+                ItemPickerInput(touch);
             }
             var control = GetTouchControl(controlName);
             if (control == -1) {
@@ -585,6 +605,9 @@ namespace SciFi {
             }
             if (currentControlName == "JoyStickInner") {
                 JoystickInput(touch);
+                return;
+            } else if (currentControlName == "ItemPicker") {
+                ItemPickerInput(touch);
                 return;
             }
             var currentControl = GetTouchControl(currentControlName);
@@ -619,6 +642,9 @@ namespace SciFi {
                 if (control == "JoyStickInner") {
                     JoystickInput(touch);
                     return;
+                } else if (control == "ItemPicker") {
+                    ItemPickerInput(touch);
+                    return;
                 }
                 UpdateTouchTime(GetTouchControl(control));
             }
@@ -629,6 +655,10 @@ namespace SciFi {
             if (activeTouches.TryGetValue(touch.fingerId, out control)) {
                 if (control == "JoyStickInner") {
                     JoystickInput(touch);
+                    activeTouches.Remove(touch.fingerId);
+                    return;
+                } else if (control == "ItemPicker") {
+                    ItemPickerInput(touch);
                     activeTouches.Remove(touch.fingerId);
                     return;
                 }
