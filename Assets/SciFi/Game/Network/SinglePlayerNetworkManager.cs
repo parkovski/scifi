@@ -57,6 +57,7 @@ namespace SciFi.Network {
             GameController.Instance.StartGame();
         }
 
+#if ENABLE_FACEBOOK
         IEnumerator SetLeaderboardIdForFacebookId(int playerId) {
             if (FacebookLogin.globalLogin == null) {
                 yield return new FacebookLogin(new [] { "public_profile" });
@@ -76,5 +77,6 @@ namespace SciFi.Network {
                 GameController.Instance.SetLeaderboardId(playerId, leaderboardId);
             }
         }
+#endif
     }
 }

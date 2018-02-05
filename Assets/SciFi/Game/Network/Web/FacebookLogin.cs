@@ -1,3 +1,5 @@
+#if ENABLE_FACEBOOK
+
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -34,3 +36,5 @@ namespace SciFi.Network.Web {
         }
     }
 }
+
+#endif

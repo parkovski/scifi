@@ -27,6 +27,7 @@ namespace SciFi.Scenes {
         }
 
         IEnumerator DoFacebookLogin() {
+#if ENABLE_FACEBOOK
             yield return new FacebookLogin(new [] { "public_profile" });
             if (FacebookLogin.globalLogin == null || FacebookLogin.globalLogin.loginResult == null) {
                 print("No response from Facebook");
@@ -37,6 +38,10 @@ namespace SciFi.Scenes {
             } else {
                 facebookLoginText.text = string.Format("Log out", FacebookLogin.globalLogin.fbid);
             }
+#else
+            print("Facebook is not enabled");
+            yield break;
+#endif
         }
 
         public void OtherLoginClicked() {

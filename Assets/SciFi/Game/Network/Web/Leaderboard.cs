@@ -2,7 +2,9 @@ using UnityEngine;
 using UnityEngine.Networking;
 using System;
 
+#if ENABLE_FACEBOOK
 using Facebook.Unity;
+#endif
 
 using SciFi.Util;
 
@@ -87,6 +89,7 @@ namespace SciFi.Network.Web {
             return id;
         }
 
+#if ENABLE_FACEBOOK
         public static YieldPromise<ulong, string> GetFacebookIdForAccessToken(string accessToken) {
             var query = "/me?access_token=" + Uri.EscapeDataString(accessToken);
             var promise = new YieldPromise<ulong, string>();
@@ -109,6 +112,7 @@ namespace SciFi.Network.Web {
         public static UnityWebRequest GetPlayerIdForFacebookIdRequest(ulong fbid) {
             return CreateRequest("/player/id-for-fbid/" + fbid);
         }
+#endif
 
         public static int GetPlayerIdForFacebookIdResult(UnityWebRequest finishedRequest) {
             if (!CheckFinishedRequest(finishedRequest)) {
