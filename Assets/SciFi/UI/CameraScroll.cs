@@ -54,12 +54,12 @@ namespace SciFi.UI {
             float screenWidth = screenHeight * Screen.width / Screen.height;
             var bgExtents = backgroundRenderer.bounds.extents;
             var screenExtents = new Vector2(screenWidth, screenHeight) / 2;
-            if (Mathf.Abs(bgExtents.x - screenExtents.x) < screenSizeTolerance) {
+            if (bgExtents.x - screenExtents.x < screenSizeTolerance) {
                 maxX = 0;
             } else {
                 maxX = bgExtents.x - screenExtents.x;
             }
-            if (Mathf.Abs(bgExtents.y - screenExtents.y) < screenSizeTolerance) {
+            if (bgExtents.y - screenExtents.y < screenSizeTolerance) {
                 maxY = 0;
             } else {
                 maxY = bgExtents.y - screenExtents.y;

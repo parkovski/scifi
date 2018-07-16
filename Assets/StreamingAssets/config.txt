@@ -1,2 +1,2 @@
-multiplayer server = 192.168.1.102
+multiplayer server = 192.168.0.13
 leaderboard server = localhost:3000

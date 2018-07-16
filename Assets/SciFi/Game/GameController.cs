@@ -206,7 +206,7 @@ namespace SciFi {
         IEnumerator StartGameWhenPlayersReady(bool showCountdown) {
             yield return new WaitUntil(() => sPlayerData.All(d => d.player.IsInitialized()));
 
-            stateChangeListener = stateChangeListenerFactory.Get();
+            //stateChangeListener = stateChangeListenerFactory.Get();
             stateChangeListener.GameStarted();
             for (var i = 0; i < sPlayerData.Count; i++) {
                 var player = sPlayerData[i].player;
@@ -250,6 +250,7 @@ namespace SciFi {
             yield return new WaitWhile(() => sPlayerData.Count(d => d.player.eId == 0) > 1);
             yield return new WaitUntil(() => sPlayerData.Any(d => d.player.hasAuthority));
             cPlayerId = sPlayerData.First(d => d.player.hasAuthority).player.eId;
+            stateChangeListener = stateChangeListenerFactory.Get();
             foreach (var pd in sPlayerData) {
                 stateChangeListener.LifeChanged(pd.player.eId, pd.player.eLives);
                 stateChangeListener.DamageChanged(pd.player.eId, pd.player.eDamage);
