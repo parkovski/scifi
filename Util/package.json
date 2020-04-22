@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "",
   "dependencies": {
-    "js-yaml": "^3.7.0",
+    "js-yaml": "^3.13.1",
     "node-fetch": "^1.6.3",
     "vis": "^4.20.1"
   },
